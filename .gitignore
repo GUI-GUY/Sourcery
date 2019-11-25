@@ -1,3 +1,5 @@
 **/env
 Sourcery.code-workspace
 settings.json
+activate_env.bat
+**.pyc

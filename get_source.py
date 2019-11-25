@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import requests, re
+from comment_builder import build_comment
 
 def create_link_dictionary(soup):
 	dic = {}
@@ -52,22 +53,22 @@ if __name__ == "__main__":
 	print("This is also a standalone program. You can put the image url in the line below.")
 	sauce = get_source_data('https://i.imgur.com/5iWlGz2.png')
 	
-	# with open('comm', 'w') as ot:
-	# 	for line in build_comment(sauce):
-	# 		ot.write(line)
+	with open('comm', 'w') as ot:
+		for line in build_comment(sauce):
+			ot.write(line)
 
-	# print("\n\n")
-	# print("Overwiev:\n")
-	# print("Creator: "+sauce.get('Creator', ''))
-	# print("Material: "+sauce.get('Material', ''))
-	# print("Author: "+sauce.get('Author', ''))
-	# print("Member: "+sauce.get('Member', ''))
-	# print("\nLinks:\n")
-	# print("DeviantArt_art: "+sauce.get('DeviantArt_art', ''))
-	# print("DeviantArt_src: "+sauce.get('DeviantArt_src', ''))
-	# print("Pixiv_art: "+sauce.get('Pixiv_art', ''))
-	# print("Pixiv_src: "+sauce.get('Pixiv_src', ''))
-	# print("Gelbooru: "+sauce.get('Gelbooru', ''))
-	# print("Danbooru: "+sauce.get('Danbooru', ''))
-	# print("Sankaku: "+sauce.get('Sankaku', ''))
-	# print("\n\n")
+	print("\n\n")
+	print("Overwiev:\n")
+	print("Creator: "+sauce.get('Creator', ''))
+	print("Material: "+sauce.get('Material', ''))
+	print("Author: "+sauce.get('Author', ''))
+	print("Member: "+sauce.get('Member', ''))
+	print("\nLinks:\n")
+	print("DeviantArt_art: "+sauce.get('DeviantArt_art', ''))
+	print("DeviantArt_src: "+sauce.get('DeviantArt_src', ''))
+	print("Pixiv_art: "+sauce.get('Pixiv_art', ''))
+	print("Pixiv_src: "+sauce.get('Pixiv_src', ''))
+	print("Gelbooru: "+sauce.get('Gelbooru', ''))
+	print("Danbooru: "+sauce.get('Danbooru', ''))
+	print("Sankaku: "+sauce.get('Sankaku', ''))
+	print("\n\n")
