@@ -1,0 +1,29 @@
+Current theme=Dark Theme
+
+Dark Theme
+background=#252525
+foreground=#ddd
+button_background=#444
+button_background_active=white
+button_foreground_active=blue
+button_background_pressed=#111
+button_foreground_pressed=red
+
+Light Theme
+background=#fff
+foreground=#ddd
+button_background=#444
+button_background_active=white
+button_foreground_active=blue
+button_background_pressed=#111
+button_foreground_pressed=red
+
+Custom Theme
+background=#000
+foreground=#ddd
+button_background=#444
+button_background_active=white
+button_foreground_active=blue
+button_background_pressed=#111
+button_foreground_pressed=red
+
