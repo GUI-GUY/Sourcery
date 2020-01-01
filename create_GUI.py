@@ -5,18 +5,34 @@ from tkinter.filedialog import askdirectory
 from PIL import ImageTk, Image, ImageDraw
 import os
 import time
-from file_operations import init_directories, read_theme, is_image
-
-from upload_file import get_url
+import shutil
+from file_operations import init_directories, read_theme, is_image, read_credentials
+from saucenao_caller import get_response, decode_response
+from pixiv_handler import pixiv_authenticate, pixiv_login, pixiv_download
+#from upload_file import get_url
 #from get_source import get_source_data 
 
-def meth():
-    return
+def magic():
+    # For every input image a request goes out to saucenao and gets decoded (and printed, currently)
     for img in input_images_array:
-        #print(get_source_data(cwd + "/test_images/" + img))
-        url = get_url(cwd, img)
-        time.sleep(1)
-    print(input_images_array)
+        shutil.copy(cwd + '/Input/' + img, cwd + '/Sourcery/sourced_original')
+        res = get_response(img, cwd, saucenao_key)
+        if res[0] == 403:
+            # stop()
+            mb.showerror('ERROR', res[1])
+        elif res[0] == 2:
+            # stop()
+            mb.showerror('ERROR', res[1] + '\nSauceNao servers are overloaded\nor you are out of searches.\nTry again tomorrow.')
+        elif res[0] == 600:
+            # stop()
+            mb.showerror('ERROR', res[1] + '\nSauceNao gave a response but there was a problem on their end')
+        elif res[0] == 41:
+            mb.showerror('ERROR', res[1])
+        elif res[0] == 402:
+            mb.showerror('ERROR', res[1])
+        elif res[0] == 200:
+            #pixiv_authenticate()
+            decode_response(res[1])
 
 def init_window():
     global input_images_array
@@ -40,7 +56,7 @@ def init_window():
     stop_btn.place(x = 20, y = 220)
     view_results_btn.place(x = 20, y = 240)
 
-    input_images_array = os.listdir(cwd + "/test_images")
+    input_images_array = os.listdir(cwd + "/Input")
     for img in input_images_array:
         if (not is_image(img)):
             input_images_array.remove(img)
@@ -75,6 +91,17 @@ def forget_all_widgets():
     provider_options_btn.place_forget()
     saucenao_options_btn.place_forget()
     sourcery_options_btn.place_forget()
+
+    pixiv_login_lbl.place_forget()
+    pixiv_user_lbl.place_forget()
+    pixiv_user_filled_lbl.place_forget()
+    pixiv_user_entry.place_forget()
+    pixiv_password_lbl.place_forget()
+    pixiv_password_filled_lbl.place_forget()
+    pixiv_password_entry.place_forget()
+    pixiv_login_change_btn.place_forget()
+    pixiv_login_confirm_btn.place_forget()
+
     saucenao_key_number_lbl.place_forget()
     saucenao_key_lbl.place_forget()
     saucenao_key_entry.place_forget()
@@ -113,18 +140,25 @@ def display_basic_options():
     provider_options_btn.place(x = 150, y = 50)
     saucenao_options_btn.place(x = 250, y = 50)
 
+    options_back_btn.place(x = 50, y = 500)
+
 def display_sourcery_options():
     forget_all_widgets()
     display_basic_options()
     
-    options_back_btn.place(x = 50, y = 150)
+    
 
 def display_provider_options():
     forget_all_widgets()
     display_basic_options()
 
+    pixiv_login_lbl.place(x = 50, y = 100)
+    pixiv_user_lbl.place(x = 50, y = 130)
+    pixiv_user_filled_lbl.place(x = 120, y = 130)
+    pixiv_password_lbl.place(x = 50, y = 160)
+    pixiv_password_filled_lbl.place(x = 120, y = 160)
+    pixiv_login_change_btn.place(x = 50, y = 190)
     
-    options_back_btn.place(x = 50, y = 150)
 
 def display_saucenao_options():
     forget_all_widgets()
@@ -133,8 +167,31 @@ def display_saucenao_options():
     saucenao_key_number_lbl.place(x = 150, y = 100)
     saucenao_key_change_btn.place(x = 550, y = 100)
     
-    
-    options_back_btn.place(x = 50, y = 150)
+def pixiv_change_login():
+    pixiv_user_filled_lbl.place_forget()
+    pixiv_password_filled_lbl.place_forget()
+    pixiv_login_change_btn.place_forget()
+    pixiv_user_entry.place(x = 120, y = 130)
+    pixiv_password_entry.place(x = 120, y = 160)
+    pixiv_login_confirm_btn.place(x = 50, y = 190)
+    pixiv_user_entry.delete(0, len(pixiv_username))
+    pixiv_password_entry.delete(0, len(pixiv_password))
+    pixiv_user_entry.insert(0, pixiv_username)
+    pixiv_password_entry.insert(0, pixiv_password)
+
+def pixiv_set_login():
+    global pixiv_username
+    global pixiv_password
+    pixiv_user_entry.place_forget()
+    pixiv_password_entry.place_forget()
+    pixiv_login_confirm_btn.place_forget()
+    pixiv_user_filled_lbl.place(x = 120, y = 130)
+    pixiv_password_filled_lbl.place(x = 120, y = 160)
+    pixiv_login_change_btn.place(x = 50, y = 190)
+    pixiv_username = pixiv_user_entry.get()
+    pixiv_password = pixiv_password_entry.get()
+    pixiv_user_filled_lbl.configure(text=pixiv_username)
+    pixiv_password_filled_lbl.configure(text=pixiv_password)
 
 def saucenao_change_key():
     saucenao_key_change_btn.place_forget()
@@ -203,7 +260,7 @@ if __name__ == '__main__':
     elapsed_time_lbl = Label(window, text="Elapsed time:", style="label.TLabel")
     eta_lbl = Label(window, text="ETA:", style="label.TLabel")
 
-    method_name_or_text_here_btn = Button(window, text="Do the magic", command=meth, style="button.TLabel")
+    method_name_or_text_here_btn = Button(window, text="Do the magic", command=magic, style="button.TLabel")
     open_input_btn = Button(window, text="Open Input", command=open_input, style="button.TLabel")
     open_sourced_btn = Button(window, text="Open Sourced", command=open_sourced, style="button.TLabel")
     statistics_btn = Button(window, text="Statistics", command=display_statistics, style="button.TLabel")
@@ -219,8 +276,21 @@ if __name__ == '__main__':
     saucenao_options_btn = Button(window, text="SauceNao", command=display_saucenao_options, style="button.TLabel")
     sourcery_options_btn = Button(window, text="Sourcery", command=display_sourcery_options, style="button.TLabel")
 
-    saucenao_key = "6c7d69007327331ea6182b517c9488d7ba024e2c"
-    saucenao_key_lbl = Label(window, text="SauceNao Key", style="label.TLabel")
+    credentials_array = read_credentials(cwd)
+    pixiv_username = credentials_array[1]
+    pixiv_password = credentials_array[2]
+    pixiv_login_lbl = Label(window, text="Pixiv Login", style="label.TLabel")
+    pixiv_user_lbl = Label(window, text="Username", style="label.TLabel")
+    pixiv_user_filled_lbl = Label(window, width=50, text=pixiv_username, style="button.TLabel")
+    pixiv_user_entry = Entry(window, width=52, style="button.TLabel")
+    pixiv_password_lbl = Label(window, text="Password", style="label.TLabel")
+    pixiv_password_filled_lbl = Label(window, width=50, text=pixiv_password, style="button.TLabel")
+    pixiv_password_entry = Entry(window, width=52, style="button.TLabel")
+    pixiv_login_change_btn = Button(window, text="Change", command=pixiv_change_login, style="button.TLabel")
+    pixiv_login_confirm_btn = Button(window, text="Confirm", command=pixiv_set_login, style="button.TLabel")
+
+    saucenao_key = credentials_array[0]
+    saucenao_key_lbl = Label(window, text="SauceNao API-Key", style="label.TLabel")
     saucenao_key_number_lbl = Label(window, width=50, text=saucenao_key, style="button.TLabel")
     saucenao_key_entry = Entry(window, width=52, style="button.TLabel")
     saucenao_key_change_btn = Button(window, text="Change", command=saucenao_change_key, style="button.TLabel")

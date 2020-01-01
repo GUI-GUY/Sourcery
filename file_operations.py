@@ -15,7 +15,7 @@ def init_directories(cwd):
 
 def read_theme(cwd):
     """
-    Returns a list with color values as strings for the currently chosen style.\n
+    Returns a list with colour values as strings for the currently chosen style.\n
     Order:\n
     [0]background, [1]foreground, [2]button_background, [3]button_background_active, 
     [4]button_foreground_active, [5]button_background_pressed, [6]button_foreground_pressed
@@ -50,4 +50,38 @@ def is_image(img):
         return True
     if img.endswith(".jfif"):
         return True
+    if img.endswith(".gif"):
+        return True
+    if img.endswith(".bmp"):
+        return True
     return False
+
+def read_credentials(cwd):
+    """
+    Returns a list with saved credentials.\n
+    Order:\n
+    [0]SauceNao API-Key, [1]Pixiv Username, [2]Pixiv Password, [3]Pixiv refreshtoken, 
+    """
+    
+    try:
+        f = open(cwd + '/Sourcery/credentials')
+    except Exception as e:
+        print(e)
+        mb.showerror("ERROR", e)
+
+    credentials_array = ['','','','']
+    creds = f.readline()
+    while creds != 'END':
+        if creds == 'SauceNao\n':
+            creds = f.readline()
+            credentials_array[0] = creds[creds.find('=')+1:-1]
+        if creds == 'Pixiv\n':
+            creds = f.readline()
+            credentials_array[1] = creds[creds.find('=')+1:-1]
+            creds = f.readline()
+            credentials_array[2] = creds[creds.find('=')+1:-1]
+            creds = f.readline()
+            credentials_array[3] = creds[creds.find('=')+1:-1]
+        creds = f.readline()
+    
+    return credentials_array
