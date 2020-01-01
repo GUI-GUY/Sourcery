@@ -1,5 +1,5 @@
 from tkinter import Tk, W, E, IntVar
-from tkinter.ttk import Label, Checkbutton, Progressbar, Button, Style, Frame, Notebook
+from tkinter.ttk import Label, Checkbutton, Progressbar, Button, Style, Frame, Notebook, Entry
 from tkinter import messagebox as mb
 from tkinter.filedialog import askdirectory
 from PIL import ImageTk, Image, ImageDraw
@@ -47,7 +47,7 @@ def init_window():
     images_in_input_count_lbl.configure(text=str(len(input_images_array)))
     
     if stay:
-        window.after(100, init_window)
+        window.after(250, init_window)
     else:
         display_sourcery_options()
 
@@ -75,6 +75,12 @@ def forget_all_widgets():
     provider_options_btn.place_forget()
     saucenao_options_btn.place_forget()
     sourcery_options_btn.place_forget()
+    saucenao_key_number_lbl.place_forget()
+    saucenao_key_lbl.place_forget()
+    saucenao_key_entry.place_forget()
+    saucenao_key_change_btn.place_forget()
+    saucenao_key_confirm_btn.place_forget()
+    
     options_back_btn.place_forget()
 
 def open_input():
@@ -123,9 +129,33 @@ def display_provider_options():
 def display_saucenao_options():
     forget_all_widgets()
     display_basic_options()
-
+    saucenao_key_lbl.place(x = 50, y = 100)
+    saucenao_key_number_lbl.place(x = 150, y = 100)
+    saucenao_key_change_btn.place(x = 550, y = 100)
+    
     
     options_back_btn.place(x = 50, y = 150)
+
+def saucenao_change_key():
+    saucenao_key_change_btn.place_forget()
+    saucenao_key_number_lbl.place_forget()
+    saucenao_key_confirm_btn.place(x = 550, y = 100)
+    saucenao_key_entry.place(x = 150, y = 100)
+    saucenao_key_entry.delete(0, len(saucenao_key))
+    saucenao_key_entry.insert(0, saucenao_key)
+    
+
+
+def saucenao_set_key():
+    global saucenao_key
+    saucenao_key = saucenao_key_entry.get()
+    saucenao_key_confirm_btn.place_forget()
+    saucenao_key_entry.place_forget()
+    saucenao_key_change_btn.place(x = 550, y = 100)
+    saucenao_key_number_lbl.configure(text=saucenao_key)
+    saucenao_key_number_lbl.place(x = 150, y = 100)
+
+    
 
 def do_sourcery():
     pass
@@ -189,7 +219,12 @@ if __name__ == '__main__':
     saucenao_options_btn = Button(window, text="SauceNao", command=display_saucenao_options, style="button.TLabel")
     sourcery_options_btn = Button(window, text="Sourcery", command=display_sourcery_options, style="button.TLabel")
 
-    
+    saucenao_key = "6c7d69007327331ea6182b517c9488d7ba024e2c"
+    saucenao_key_lbl = Label(window, text="SauceNao Key", style="label.TLabel")
+    saucenao_key_number_lbl = Label(window, width=50, text=saucenao_key, style="button.TLabel")
+    saucenao_key_entry = Entry(window, width=52, style="button.TLabel")
+    saucenao_key_change_btn = Button(window, text="Change", command=saucenao_change_key, style="button.TLabel")
+    saucenao_key_confirm_btn = Button(window, text="Confirm", command=saucenao_set_key, style="button.TLabel")
 
     options_back_btn = Button(window, text="Back", command=init_window, style="button.TLabel")
 
