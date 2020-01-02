@@ -6,13 +6,13 @@ from PIL import ImageTk, Image, ImageDraw
 import os
 import time
 import shutil
-from file_operations import init_directories, read_theme, is_image, read_credentials
+from file_operations import init_directories, read_theme, is_image, read_credentials, write_credentials, write_theme
 from saucenao_caller import get_response, decode_response
 from pixiv_handler import pixiv_authenticate, pixiv_login, pixiv_download
 #from upload_file import get_url
 #from get_source import get_source_data 
 
-def magic():
+def do_sourcery():
     # For every input image a request goes out to saucenao and gets decoded (and printed, currently)
     for img in input_images_array:
         shutil.copy(cwd + '/Input/' + img, cwd + '/Sourcery/sourced_original')
@@ -31,7 +31,7 @@ def magic():
         elif res[0] == 402:
             mb.showerror('ERROR', res[1])
         elif res[0] == 200:
-            #pixiv_authenticate()
+            #pixiv_authenticate(pixiv_username, pixiv_password, credentials_array)
             decode_response(res[1])
 
 def init_window():
@@ -47,7 +47,6 @@ def init_window():
     elapsed_time_lbl.place(x = 200, y = 200)
     eta_lbl.place(x = 200, y = 220)
 
-    method_name_or_text_here_btn.place(x = 20, y = 100)
     open_input_btn.place(x = 20, y = 120)
     open_sourced_btn.place(x = 20, y = 140)
     statistics_btn.place(x = 20, y = 160)
@@ -77,7 +76,6 @@ def forget_all_widgets():
     elapsed_time_lbl.place_forget()
     eta_lbl.place_forget()
 
-    method_name_or_text_here_btn.place_forget()
     open_input_btn.place_forget()
     open_sourced_btn.place_forget()
     statistics_btn.place_forget()
@@ -107,6 +105,26 @@ def forget_all_widgets():
     saucenao_key_entry.place_forget()
     saucenao_key_change_btn.place_forget()
     saucenao_key_confirm_btn.place_forget()
+
+    Theme_lbl.place_forget()
+    dark_theme_btn.place_forget()
+    light_theme_btn .place_forget()
+    custom_theme_btn.place_forget()
+    custom_background_lbl.place_forget()
+    custom_foreground_lbl.place_forget()
+    custom_button_background_lbl.place_forget()
+    custom_button_background_active_lbl.place_forget()
+    custom_button_foreground_active_lbl.place_forget()
+    custom_button_background_pressed_lbl.place_forget()
+    custom_button_foreground_pressed_lbl.place_forget()
+    custom_background_entry.place_forget()
+    custom_foreground_entry.place_forget()
+    custom_button_background_entry.place_forget()
+    custom_button_background_active_entry.place_forget()
+    custom_button_foreground_active_entry.place_forget()
+    custom_button_background_pressed_entry.place_forget()
+    custom_button_foreground_pressed_entry.place_forget()
+    save_custom_theme_btn.place_forget()
     
     options_back_btn.place_forget()
 
@@ -145,8 +163,51 @@ def display_basic_options():
 def display_sourcery_options():
     forget_all_widgets()
     display_basic_options()
-    
-    
+    y = 100
+    c = 25
+    x1 = 50
+    x2 = 240
+    Theme_lbl.place(x = x1, y = y)
+    dark_theme_btn.place(x = x1, y = y + c * 1)
+    light_theme_btn .place(x = x1, y = y + c * 2)
+    custom_theme_btn.place(x = x1, y = y + c * 3)
+    custom_background_lbl.place(x = x1, y = y + c * 4)
+    custom_foreground_lbl.place(x = x1, y = y + c * 5)
+    custom_button_background_lbl.place(x = x1, y = y + c * 6)
+    custom_button_background_active_lbl.place(x = x1, y = y + c * 7)
+    custom_button_foreground_active_lbl.place(x = x1, y = y + c * 8)
+    custom_button_background_pressed_lbl.place(x = x1, y = y + c * 9)
+    custom_button_foreground_pressed_lbl.place(x = x1, y = y + c * 10)
+    custom_background_entry.place(x = x2, y = y + c * 4)
+    custom_foreground_entry.place(x = x2, y = y + c * 5)
+    custom_button_background_entry.place(x = x2, y = y + c * 6)
+    custom_button_background_active_entry.place(x = x2, y = y + c * 7)
+    custom_button_foreground_active_entry.place(x = x2, y = y + c * 8)
+    custom_button_background_pressed_entry.place(x = x2, y = y + c * 9)
+    custom_button_foreground_pressed_entry.place(x = x2, y = y + c * 10)
+    save_custom_theme_btn.place(x = x1, y = y + c * 11)
+
+def change_to_dark_theme():
+    write_theme(cwd, "Dark Theme", custom_array)
+    enforce_style()
+
+def change_to_light_theme():
+    write_theme(cwd, "Light Theme", custom_array)
+    enforce_style()
+
+def change_to_custom_theme():
+    write_theme(cwd, "Custom Theme", custom_array)
+    enforce_style()
+
+def save_custom_theme():
+    global custom_array
+    custom_array[0] = custom_background_entry.get()
+    custom_array[1] = custom_foreground_entry.get()
+    custom_array[2] = custom_button_background_entry.get()
+    custom_array[3] = custom_button_background_active_entry.get()
+    custom_array[4] = custom_button_foreground_active_entry.get()
+    custom_array[5] = custom_button_background_pressed_entry.get()
+    custom_array[6] = custom_button_foreground_pressed_entry.get()
 
 def display_provider_options():
     forget_all_widgets()
@@ -159,7 +220,6 @@ def display_provider_options():
     pixiv_password_filled_lbl.place(x = 120, y = 160)
     pixiv_login_change_btn.place(x = 50, y = 190)
     
-
 def display_saucenao_options():
     forget_all_widgets()
     display_basic_options()
@@ -192,6 +252,9 @@ def pixiv_set_login():
     pixiv_password = pixiv_password_entry.get()
     pixiv_user_filled_lbl.configure(text=pixiv_username)
     pixiv_password_filled_lbl.configure(text=pixiv_password)
+    credentials_array[1] = pixiv_username
+    credentials_array[2] = pixiv_password
+    write_credentials(cwd, credentials_array)
 
 def saucenao_change_key():
     saucenao_key_change_btn.place_forget()
@@ -201,18 +264,16 @@ def saucenao_change_key():
     saucenao_key_entry.delete(0, len(saucenao_key))
     saucenao_key_entry.insert(0, saucenao_key)
     
-
-
 def saucenao_set_key():
     global saucenao_key
     saucenao_key = saucenao_key_entry.get()
+    credentials_array[0] = saucenao_key
+    write_credentials(cwd, credentials_array)
     saucenao_key_confirm_btn.place_forget()
     saucenao_key_entry.place_forget()
     saucenao_key_change_btn.place(x = 550, y = 100)
     saucenao_key_number_lbl.configure(text=saucenao_key)
     saucenao_key_number_lbl.place(x = 150, y = 100)
-
-    
 
 def do_sourcery():
     pass
@@ -224,7 +285,8 @@ def display_view_results():
     pass
 
 def enforce_style():
-    colour_array = read_theme(cwd)
+    global colour_array, custom_array
+    colour_array, custom_array = read_theme(cwd)
     window.configure(bg=colour_array[0])
     style = Style()
     style.configure("label.TLabel", foreground=colour_array[1], background=colour_array[0], font=("Arial Bold", 10))
@@ -248,6 +310,8 @@ if __name__ == '__main__':
     #dateS =  time.strftime("20%y-%m-%d")
 
     # set style
+    colour_array = []
+    custom_array = []
     enforce_style()
 
     # widgets for start screen
@@ -260,7 +324,6 @@ if __name__ == '__main__':
     elapsed_time_lbl = Label(window, text="Elapsed time:", style="label.TLabel")
     eta_lbl = Label(window, text="ETA:", style="label.TLabel")
 
-    method_name_or_text_here_btn = Button(window, text="Do the magic", command=magic, style="button.TLabel")
     open_input_btn = Button(window, text="Open Input", command=open_input, style="button.TLabel")
     open_sourced_btn = Button(window, text="Open Sourced", command=open_sourced, style="button.TLabel")
     statistics_btn = Button(window, text="Statistics", command=display_statistics, style="button.TLabel")
@@ -295,6 +358,34 @@ if __name__ == '__main__':
     saucenao_key_entry = Entry(window, width=52, style="button.TLabel")
     saucenao_key_change_btn = Button(window, text="Change", command=saucenao_change_key, style="button.TLabel")
     saucenao_key_confirm_btn = Button(window, text="Confirm", command=saucenao_set_key, style="button.TLabel")
+
+    Theme_lbl = Label(window, text="Theme", font=("Arial Bold", 14), style="label.TLabel")
+    dark_theme_btn = Button(window, text="Dark Theme", command=change_to_dark_theme, style="button.TLabel")
+    light_theme_btn = Button(window, text="Light Theme", command=change_to_light_theme, style="button.TLabel")
+    custom_theme_btn = Button(window, text="Custom Theme", command=change_to_custom_theme, style="button.TLabel")
+    custom_background_lbl = Label(window, text="Background", style="label.TLabel")
+    custom_foreground_lbl = Label(window, text="Foreground", style="label.TLabel")
+    custom_button_background_lbl = Label(window, text="Button Background", style="label.TLabel")
+    custom_button_background_active_lbl = Label(window, text="Button Background Active", style="label.TLabel")
+    custom_button_foreground_active_lbl = Label(window, text="Button Foreground Active", style="label.TLabel")
+    custom_button_background_pressed_lbl = Label(window, text="Button Background Pressed", style="label.TLabel")
+    custom_button_foreground_pressed_lbl = Label(window, text="Button Foreground Pressed", style="label.TLabel")
+    custom_background_entry = Entry(window, width=30, style="button.TLabel")
+    custom_foreground_entry = Entry(window, width=30, style="button.TLabel")
+    custom_button_background_entry = Entry(window, width=30, style="button.TLabel")
+    custom_button_background_active_entry = Entry(window, width=30, style="button.TLabel")
+    custom_button_foreground_active_entry = Entry(window, width=30, style="button.TLabel")
+    custom_button_background_pressed_entry = Entry(window, width=30, style="button.TLabel")
+    custom_button_foreground_pressed_entry = Entry(window, width=30, style="button.TLabel")
+    save_custom_theme_btn = Button(window, text="Save Custom Theme", command=save_custom_theme, style="button.TLabel")
+
+    custom_background_entry.insert(0, custom_array[0])
+    custom_foreground_entry.insert(0, custom_array[1])
+    custom_button_background_entry.insert(0, custom_array[2])
+    custom_button_background_active_entry.insert(0, custom_array[3])
+    custom_button_foreground_active_entry.insert(0, custom_array[4])
+    custom_button_background_pressed_entry.insert(0, custom_array[5])
+    custom_button_foreground_pressed_entry.insert(0, custom_array[6])
 
     options_back_btn = Button(window, text="Back", command=init_window, style="button.TLabel")
 

@@ -3,28 +3,26 @@ from pixivapi import Client, Size
 from tkinter import messagebox as mb
 import os
 
-# def pixiv_init():
-#     global client
-#     global refreshtoken
 client = Client()
-refreshtoken = 'R8nav4UBcoRwYueYvfKFJgyoWhJDeYVr9hnBgmjSVm0'
 
-def pixiv_login():
-    global refreshtoken
+#username = user_xhcz2358
+#password = GoaldIsland
+#refreshtoken = 'R8nav4UBcoRwYueYvfKFJgyoWhJDeYVr9hnBgmjSVm0'
+
+def pixiv_login(username, password, credentials_array):
     try:
-        client.login('user_xhcz2358', 'GoaldIsland')
-        refreshtoken = client.refresh_token
+        client.login(username, password)
+        credentials_array[3] = client.refresh_token
     except Exception as e:
         print(e)
         mb.showerror("ERROR", 'Login failed')
 
-def pixiv_authenticate():
-    global refreshtoken
+def pixiv_authenticate(username, password, credentials_array):
     try:
-        client.authenticate(refreshtoken)
+        client.authenticate(credentials_array[3])
     except Exception as e:
-        print('auth failed')
-        pixiv_login()
+        print('auth with refreshtoken failed')
+        pixiv_login(username, password, credentials_array)
 
 def pixiv_download(imgid):
     try:
@@ -34,4 +32,4 @@ def pixiv_download(imgid):
         print(e)
         mb.showerror("ERROR", e)
 
-pixiv_authenticate()
+#pixiv_authenticate(username, password, credentials_array)
