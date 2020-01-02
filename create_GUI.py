@@ -1,11 +1,11 @@
-from tkinter import Tk, W, E, IntVar
-from tkinter.ttk import Label, Checkbutton, Progressbar, Button, Style, Frame, Notebook, Entry
+from tkinter import Tk, IntVar, Canvas, Scrollbar
+from tkinter.ttk import Label, Checkbutton, Button, Style, Frame, Notebook, Entry, Frame
 from tkinter import messagebox as mb
-from tkinter.filedialog import askdirectory
-from PIL import ImageTk, Image, ImageDraw
-import os
-import time
-import shutil
+#from tkinter.filedialog import askdirectory
+from PIL import ImageTk, Image
+from os import getcwd, listdir, startfile
+#import time
+from shutil import copy
 from file_operations import init_directories, read_theme, is_image, read_credentials, write_credentials, write_theme
 from saucenao_caller import get_response, decode_response
 from pixiv_handler import pixiv_authenticate, pixiv_login, pixiv_download
@@ -15,7 +15,7 @@ from pixiv_handler import pixiv_authenticate, pixiv_login, pixiv_download
 def do_sourcery():
     # For every input image a request goes out to saucenao and gets decoded (and printed, currently)
     for img in input_images_array:
-        shutil.copy(cwd + '/Input/' + img, cwd + '/Sourcery/sourced_original')
+        copy(cwd + '/Input/' + img, cwd + '/Sourcery/sourced_original')
         res = get_response(img, cwd, saucenao_key)
         if res[0] == 403:
             # stop()
@@ -37,34 +37,38 @@ def do_sourcery():
 def init_window():
     global input_images_array
     forget_all_widgets()
-
+    y = 100
+    c = 23
     sourcery_lbl.place(x = 20, y = 10)
-    images_in_input_lbl.place(x = 200, y = 100)
-    images_in_input_count_lbl.place(x = 200, y = 120)
-    currently_sourcing_lbl.place(x = 200, y = 140)
-    currently_sourcing_img_lbl.place(x = 200, y = 160)
-    saucenao_requests_count_lbl.place(x = 200, y = 180)
-    elapsed_time_lbl.place(x = 200, y = 200)
-    eta_lbl.place(x = 200, y = 220)
+    images_in_input_lbl.place(x = 200, y = y)
+    images_in_input_count_lbl.place(x = 350, y = y)
+    currently_sourcing_lbl.place(x = 200, y = y + c * 2)
+    currently_sourcing_img_lbl.place(x = 350, y = y + c * 2)
+    saucenao_requests_count_lbl.place(x = 350, y = y + c * 3)
+    elapsed_time_lbl.place(x = 200, y = y + c * 4)
+    eta_lbl.place(x = 200, y = y + c * 5)
 
-    open_input_btn.place(x = 20, y = 120)
-    open_sourced_btn.place(x = 20, y = 140)
-    statistics_btn.place(x = 20, y = 160)
-    options_btn.place(x = 20, y = 180)
-    do_sourcery_btn.place(x = 20, y = 200)
-    stop_btn.place(x = 20, y = 220)
-    view_results_btn.place(x = 20, y = 240)
+    
+    open_input_btn.place(x = 20, y = y + c * 0)
+    open_sourced_btn.place(x = 20, y = y + c * 1)
+    statistics_btn.place(x = 20, y = y + c * 2)
+    options_btn.place(x = 20, y = y + c * 3)
+    do_sourcery_btn.place(x = 380, y = 100)
+    stop_btn.place(x = 200, y = y + c * 6)
+    view_results_btn.place(x = 350, y = y + c * 6)
 
-    input_images_array = os.listdir(cwd + "/Input")
+    input_images_array = listdir(cwd + "/Input")
     for img in input_images_array:
         if (not is_image(img)):
             input_images_array.remove(img)
     images_in_input_count_lbl.configure(text=str(len(input_images_array)))
     
-    if stay:
-        window.after(250, init_window)
-    else:
+    if esc_op:
         display_sourcery_options()
+    elif esc_res:
+        display_view_results()
+    else:
+        window.after(250, init_window)
 
 def forget_all_widgets():
     sourcery_lbl.place_forget()
@@ -106,7 +110,7 @@ def forget_all_widgets():
     saucenao_key_change_btn.place_forget()
     saucenao_key_confirm_btn.place_forget()
 
-    Theme_lbl.place_forget()
+    theme_lbl.place_forget()
     dark_theme_btn.place_forget()
     light_theme_btn .place_forget()
     custom_theme_btn.place_forget()
@@ -128,16 +132,19 @@ def forget_all_widgets():
     
     options_back_btn.place_forget()
 
+    results_lbl.place_forget()
+    results_frame.place_forget()
+
 def open_input():
     try:
-        os.startfile(cwd + "/Input")
+        startfile(cwd + "/Input")
     except Exception as e:
         print(e)
         mb.showerror("ERROR", e)
 
 def open_sourced():
     try:
-        os.startfile(cwd + "/Sourced")
+        startfile(cwd + "/Sourced")
     except Exception as e:
         print(e)
         mb.showerror("ERROR", e)
@@ -145,13 +152,17 @@ def open_sourced():
 def display_statistics():
     pass
 
-def set_options():
-    global stay
-    stay = False
+def escape_options():
+    global esc_op
+    esc_op = True
+
+def escape_results():
+    global esc_res
+    esc_res = True
 
 def display_basic_options():
-    global stay
-    stay = True
+    global esc_op
+    esc_op = False
     options_lbl.place(x = 50, y = 10)
 
     sourcery_options_btn.place(x = 50, y = 50)
@@ -164,10 +175,10 @@ def display_sourcery_options():
     forget_all_widgets()
     display_basic_options()
     y = 100
-    c = 25
+    c = 23
     x1 = 50
     x2 = 240
-    Theme_lbl.place(x = x1, y = y)
+    theme_lbl.place(x = x1, y = y)
     dark_theme_btn.place(x = x1, y = y + c * 1)
     light_theme_btn .place(x = x1, y = y + c * 2)
     custom_theme_btn.place(x = x1, y = y + c * 3)
@@ -275,14 +286,41 @@ def saucenao_set_key():
     saucenao_key_number_lbl.configure(text=saucenao_key)
     saucenao_key_number_lbl.place(x = 150, y = 100)
 
-def do_sourcery():
-    pass
-
 def stop():
     pass
 
 def display_view_results():
-    pass
+    global esc_res
+    esc_res = False
+    forget_all_widgets()
+    results_lbl.place(x = 50, y = 20)
+    options_back_btn.place(x = 50, y = 500)
+    results_frame.place(x = 50, y = 100)
+    
+    
+
+    
+    # pixiv_dir_array = listdir(cwd + '/Sourcery/sourced_progress/pixiv')
+    # pixiv_images = []
+    # for img in pixiv_dir_array:
+    #     try:
+    #         pixiv_images.append(Image.open(cwd + '/Sourcery/sourced_original/' + img)), (Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + img))
+    #     except Exception as e:
+    #         print(e)
+    #         mb.showerror("ERROR", e)
+
+    # for tup in pixiv_images:
+    #     tup[0] = tup[0].thumbnail()
+    #     tup[1] = tup[1].thumbnail()
+
+    # for t in range(0,len(txtversions)):
+    #     photoImages[t] = ImageTk.PhotoImage(images[t])
+    #     imgpanels[t].configure(image = photoImages[t])
+    #     imgpanels[t].grid(column=t+3 , row=2)
+
+def myfunction(event):
+    results_canvas.configure(scrollregion=results_canvas.bbox("all"),width=200,height=200)
+
 
 def enforce_style():
     global colour_array, custom_array
@@ -295,11 +333,14 @@ def enforce_style():
         foreground=[('pressed', colour_array[6]), ('active', colour_array[4])],
         background=[('pressed', '!disabled', colour_array[5]), ('active', colour_array[3])]
     )
+    style.configure("frame.TFrame", foreground=colour_array[1], background=colour_array[0])
+    #style.configure("scroll.Vertical.TScrollbar", foreground=colour_array[1], background=colour_array[2], throughcolor=colour_array[2], activebackground=colour_array[2])
+    results_canvas.configure(background=colour_array[0])
 
 if __name__ == '__main__':
     #freeze_support()
 
-    cwd = os.getcwd()
+    cwd = getcwd()
     window = Tk()
     window.title("Sourcery")
     window.update_idletasks()
@@ -312,6 +353,7 @@ if __name__ == '__main__':
     # set style
     colour_array = []
     custom_array = []
+    results_canvas=Canvas(window)
     enforce_style()
 
     # widgets for start screen
@@ -327,10 +369,10 @@ if __name__ == '__main__':
     open_input_btn = Button(window, text="Open Input", command=open_input, style="button.TLabel")
     open_sourced_btn = Button(window, text="Open Sourced", command=open_sourced, style="button.TLabel")
     statistics_btn = Button(window, text="Statistics", command=display_statistics, style="button.TLabel")
-    options_btn = Button(window, text="Options", command=set_options, style="button.TLabel")
+    options_btn = Button(window, text="Options", command=escape_options, style="button.TLabel")
     do_sourcery_btn = Button(window, text="Do Sourcery", command=do_sourcery, style="button.TLabel")
     stop_btn = Button(window, text="Stop", command=stop, style="button.TLabel")
-    view_results_btn = Button(window, text="View Results", command=display_view_results, style="button.TLabel")
+    view_results_btn = Button(window, text="View Results", command=escape_results, style="button.TLabel")
 
     # widgets for options
     options_lbl = Label(window, text="Options", font=("Arial Bold", 20), style="label.TLabel")
@@ -359,7 +401,7 @@ if __name__ == '__main__':
     saucenao_key_change_btn = Button(window, text="Change", command=saucenao_change_key, style="button.TLabel")
     saucenao_key_confirm_btn = Button(window, text="Confirm", command=saucenao_set_key, style="button.TLabel")
 
-    Theme_lbl = Label(window, text="Theme", font=("Arial Bold", 14), style="label.TLabel")
+    theme_lbl = Label(window, text="Theme", font=("Arial Bold", 14), style="label.TLabel")
     dark_theme_btn = Button(window, text="Dark Theme", command=change_to_dark_theme, style="button.TLabel")
     light_theme_btn = Button(window, text="Light Theme", command=change_to_light_theme, style="button.TLabel")
     custom_theme_btn = Button(window, text="Custom Theme", command=change_to_custom_theme, style="button.TLabel")
@@ -389,10 +431,30 @@ if __name__ == '__main__':
 
     options_back_btn = Button(window, text="Back", command=init_window, style="button.TLabel")
 
+    # widgets for results
+    results_lbl = Label(window, text="Results", font=("Arial Bold", 14), style="label.TLabel")
+
+    results_frame=Frame(window, width=1520, height=1520, style="frame.TFrame")
+    results_canvas=Canvas(results_frame, width=1520, height=1520, background=colour_array[0], highlightthickness=0)
+    frame=Frame(results_canvas, width=1520, height=1520, style="frame.TFrame")
+    results_scrollbar=Scrollbar(results_frame, orient="vertical", command=results_canvas.yview)
+    results_canvas.configure(yscrollcommand=results_scrollbar.set)
+
+    results_scrollbar.pack(side="right",fill="y")
+    results_canvas.pack(side="left")
+    results_canvas.create_window((0,0),window=frame,anchor='nw')
+    frame.bind("<Configure>",myfunction)
+
+#     for i in range(50):
+#        Label(frame,text=i, style="label.TLabel").grid(row=i+1,column=0)
+#        Label(frame,text="my text"+str(i), style="label.TLabel").grid(row=i,column=1)
+#        Label(frame,text=".................1..............2..............3...............4......", style="label.TLabel").grid(row=i,column=2)
+    
     # global arrays
     input_images_array = []
 
-    stay = True
+    esc_op = False
+    esc_res = False
     init_directories(cwd)
     init_window()
     window.mainloop()
