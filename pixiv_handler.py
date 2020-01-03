@@ -24,10 +24,11 @@ def pixiv_authenticate(username, password, credentials_array):
         print('auth with refreshtoken failed')
         pixiv_login(username, password, credentials_array)
 
-def pixiv_download(imgid):
+def pixiv_download(imgid, img_name_original):
     try:
         illustration = client.fetch_illustration(imgid) # 75523989
-        illustration.download(directory=Path.cwd() / 'Sourcery/sourced_progress/pixiv', size=Size.ORIGINAL)
+        newname = img_name_original[:img_name_original.rfind('.')]
+        illustration.download(directory=Path.cwd() / 'Sourcery/sourced_progress/pixiv', size=Size.ORIGINAL, filename=newname)
     except Exception as e:
         print(e)
         mb.showerror("ERROR", e)

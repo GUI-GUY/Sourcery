@@ -22,12 +22,12 @@ index_hcg='0'
 index_ddbobjects='0'
 index_ddbsamples='0'
 index_pixiv='1'
-index_pixivhistorical='1'
+index_pixivhistorical='0'
 index_reserved='0'
-index_seigaillust='1'
+index_seigaillust='0'
 index_danbooru='0'
-index_drawr='1'
-index_nijie='1'
+index_drawr='0'
+index_nijie='0'
 index_yandere='0'
 index_animeop='0'
 index_reserved='0'
@@ -49,7 +49,7 @@ index_idolcomplex='0'
 index_bcyillust='0'
 index_bcycosplay='0'
 index_portalgraphics='0'
-index_da='1'
+index_da='0'
 index_pawoo='0'
 index_madokami='0'
 index_mangadex='0'
@@ -84,30 +84,38 @@ def get_response(image, cwd, api_key, minsim='80!'):
         results = json.JSONDecoder(object_pairs_hook=OrderedDict).decode(r.text)
         if int(results['header']['user_id'])>0:
             #api responded
-            print('Remaining Searches 30s|24h: '+str(results['header']['short_remaining'])+'|'+str(results['header']['long_remaining']))
+            # TODO hier
+            #print('Remaining Searches 30s|24h: '+str(results['header']['short_remaining'])+'|'+str(results['header']['long_remaining']))
             if int(results['header']['status'])>0:
                 #One or more indexes are having an issue.
                 #This search is considered partially successful, even if all indexes failed, so is still counted against your limit.
                 #The error may be transient, but because we don't want to waste searches, allow time for recovery.
-                return [600, 'API Error.']
+                return [600, 'API Error.', results['header']['short_remaining'], results['header']['long_remaining']]
             elif int(results['header']['status'])<0:
                 #Problem with search as submitted, bad image, or impossible request.
                 #Issue is unclear, so don't flood requests.
-                return [41, 'Bad image or other request error.']
+                return [41, 'Bad image or other request error.', results['header']['short_remaining'], results['header']['long_remaining']]
         else:
             #General issue, api did not respond. Normal site took over for this error state.
             #Issue is unclear, so don't flood requests.
             return [402, 'Bad image, or API failure.']
 
-    return [200, results]
+    return [200, results, results['header']['short_remaining'], results['header']['long_remaining']]
 
 def decode_response(results, EnableRename=False):
+    """
+    Returns a list:\n
+    [0]service - pixiv or '' if failure\n
+    [1]illust_id - 0 if failure\n
+    [2]member_id - negative if failure\n
+    [3]source_url - '' if failure\n
+    """
     # print(results)
     
     if int(results['header']['results_returned']) > 0:
         #one or more results were returned
         if float(results['results'][0]['header']['similarity']) > float(results['header']['minimum_similarity']):
-            print('hit! '+str(results['results'][0]['header']['similarity']))
+            # print('hit! '+str(results['results'][0]['header']['similarity']))
 
             #get vars to use
             service_name = ''
@@ -116,6 +124,7 @@ def decode_response(results, EnableRename=False):
             index_id = results['results'][0]['header']['index_id']
             page_string = ''
             page_match = re.search('(_p[\d]+)\.', results['results'][0]['header']['thumbnail'])
+            source = ''
             if page_match:
                 page_string = page_match.group(1)
                 
@@ -124,32 +133,31 @@ def decode_response(results, EnableRename=False):
                 service_name='pixiv'
                 member_id = results['results'][0]['data']['member_id']
                 illust_id = results['results'][0]['data']['pixiv_id']
-                #pixiv_download(illust_id)
                 source = results['results'][0]['data']['ext_urls']
-                print(source)
-            elif index_id == 8:
-                #8->nico nico seiga
-                service_name='seiga'
-                member_id = results['results'][0]['data']['member_id']
-                illust_id = results['results'][0]['data']['seiga_id']
-            elif index_id == 10:
-                #10->drawr
-                service_name='drawr'
-                member_id = results['results'][0]['data']['member_id']
-                illust_id = results['results'][0]['data']['drawr_id']								
-            elif index_id == 11:
-                #11->nijie
-                service_name='nijie'
-                member_id = results['results'][0]['data']['member_id']
-                illust_id = results['results'][0]['data']['nijie_id']
-            elif index_id == 34:
-                #34->da
-                service_name='da'
-                illust_id = results['results'][0]['data']['da_id']
-            else:
-                #unknown
-                print('Unhandled Index! Exiting...')
-                sys.exit(2)
+                # print(source)
+            # elif index_id == 8:
+            #     #8->nico nico seiga
+            #     service_name='seiga'
+            #     member_id = results['results'][0]['data']['member_id']
+            #     illust_id = results['results'][0]['data']['seiga_id']
+            # elif index_id == 10:
+            #     #10->drawr
+            #     service_name='drawr'
+            #     member_id = results['results'][0]['data']['member_id']
+            #     illust_id = results['results'][0]['data']['drawr_id']								
+            # elif index_id == 11:
+            #     #11->nijie
+            #     service_name='nijie'
+            #     member_id = results['results'][0]['data']['member_id']
+            #     illust_id = results['results'][0]['data']['nijie_id']
+            # elif index_id == 34:
+            #     #34->da
+            #     service_name='da'
+            #     illust_id = results['results'][0]['data']['da_id']
+            # else:
+            #     #unknown
+            #     #print('Unhandled Index! Exiting...')
+            #     #sys.exit(2)
                 
             # try:
             #     if member_id >= 0:
@@ -163,17 +171,18 @@ def decode_response(results, EnableRename=False):
             #     print(e)
             #     sys.exit(3)
             
-        else:
-            print('miss... '+str(results['results'][0]['header']['similarity']))
+        # else:
+        #     print('miss... '+str(results['results'][0]['header']['similarity']))
 
-        if int(results['header']['long_remaining'])<1: #could potentially be negative
-            print('Out of searches for today. Sleeping for 6 hours...')
-            time.sleep(6*60*60)
-        if int(results['header']['short_remaining'])<1:
-            print('Out of searches for this 30 second period. Sleeping for 25 seconds...')
-            time.sleep(25)
-                    
-    print('All Done!')
+        # if int(results['header']['long_remaining'])<1: #could potentially be negative
+        #     #print('Out of searches for today. Sleeping for 6 hours...')
+        #     time.sleep(6*60*60)
+        # if int(results['header']['short_remaining'])<1:
+        #     #print('Out of searches for this 30 second period. Sleeping for 25 seconds...')
+        #     time.sleep(25)
+    
+    return [service_name, illust_id, member_id, source]
+    #print('All Done!')
 
     # OrderedDict([('header', 
     #   OrderedDict([

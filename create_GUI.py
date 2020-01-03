@@ -3,36 +3,14 @@ from tkinter.ttk import Label, Checkbutton, Button, Style, Frame, Notebook, Entr
 from tkinter import messagebox as mb
 #from tkinter.filedialog import askdirectory
 from PIL import ImageTk, Image
-from os import getcwd, listdir, startfile
+from os import getcwd, listdir, startfile, path
 #import time
-from shutil import copy
-from file_operations import init_directories, read_theme, is_image, read_credentials, write_credentials, write_theme
-from saucenao_caller import get_response, decode_response
-from pixiv_handler import pixiv_authenticate, pixiv_login, pixiv_download
-#from upload_file import get_url
-#from get_source import get_source_data 
+from shutil import copy, move
+from file_operations import init_directories, read_theme, is_image, read_credentials, write_credentials, write_theme, save
+from sourcery import do_sourcery
 
-def do_sourcery():
-    # For every input image a request goes out to saucenao and gets decoded (and printed, currently)
-    for img in input_images_array:
-        copy(cwd + '/Input/' + img, cwd + '/Sourcery/sourced_original')
-        res = get_response(img, cwd, saucenao_key)
-        if res[0] == 403:
-            # stop()
-            mb.showerror('ERROR', res[1])
-        elif res[0] == 2:
-            # stop()
-            mb.showerror('ERROR', res[1] + '\nSauceNao servers are overloaded\nor you are out of searches.\nTry again tomorrow.')
-        elif res[0] == 600:
-            # stop()
-            mb.showerror('ERROR', res[1] + '\nSauceNao gave a response but there was a problem on their end')
-        elif res[0] == 41:
-            mb.showerror('ERROR', res[1])
-        elif res[0] == 402:
-            mb.showerror('ERROR', res[1])
-        elif res[0] == 200:
-            #pixiv_authenticate(pixiv_username, pixiv_password, credentials_array)
-            decode_response(res[1])
+def magic():
+    do_sourcery(cwd, input_images_array, saucenao_key, saucenao_requests_count_lbl, pixiv_username, pixiv_password, credentials_array)
 
 def init_window():
     global input_images_array
@@ -134,6 +112,8 @@ def forget_all_widgets():
 
     results_lbl.place_forget()
     results_frame.place_forget()
+    save_and_back_btn.place_forget()
+    save_and_refresh_btn.place_forget()
 
 def open_input():
     try:
@@ -295,32 +275,103 @@ def display_view_results():
     forget_all_widgets()
     results_lbl.place(x = 50, y = 20)
     options_back_btn.place(x = 50, y = 500)
+    save_and_back_btn.place(x = 150, y = 500)
+    save_and_refresh_btn.place(x = 250, y = 500)
     results_frame.place(x = 50, y = 100)
-    
-    
+
+    thumbSize = (70,70)
 
     
-    # pixiv_dir_array = listdir(cwd + '/Sourcery/sourced_progress/pixiv')
-    # pixiv_images = []
-    # for img in pixiv_dir_array:
-    #     try:
-    #         pixiv_images.append(Image.open(cwd + '/Sourcery/sourced_original/' + img)), (Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + img))
-    #     except Exception as e:
-    #         print(e)
-    #         mb.showerror("ERROR", e)
+    sourced_original_array = listdir(cwd + '/Sourcery/sourced_original')
+    for t in range(len(sourced_original_array)):
+        sourced_original_array[t] = sourced_original_array[t].rpartition('.')
 
-    # for tup in pixiv_images:
-    #     tup[0] = tup[0].thumbnail()
-    #     tup[1] = tup[1].thumbnail()
+    pixiv_dir_array = listdir(cwd + '/Sourcery/sourced_progress/pixiv')
+    
+    t = 0
+    for img in pixiv_dir_array:
+        flag = False
+        pointdex = img.rfind(".")
+        if pointdex == -1:
+            cropped = img
+        else:
+            cropped = img[:pointdex] # deletes the suffix
+        suffix = ''
+        sub = ''
+        if path.isfile(cwd + '/Sourcery/sourced_progress/pixiv/' + img):
+            for image in sourced_original_array:
+                if image[0] == cropped:
+                    suffix = image[2]
+                    break
+            try:
+                original_image = Image.open(cwd + '/Sourcery/sourced_original/' + cropped + '.' + suffix) 
+                downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
+            except Exception as e:
+                print(e)
+                mb.showerror("ERROR", e)
+        elif path.isdir(cwd + '/Sourcery/sourced_progress/pixiv/' + img):
+            flag = True
+            try:
+                pixiv_sub_dir_array = listdir(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
+                if len(pixiv_sub_dir_array) == 0:
+                    continue
+                pathname = ''
+                for image in sourced_original_array:
+                    if image[0] == img:
+                        pathname = cwd + '/Sourcery/sourced_original/' + image[0] + image[1] + image[2]
+                        suffix = image[2]
+                        break
+                sub = pixiv_sub_dir_array[0]
+                original_image = Image.open(pathname)
+                downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + img + '/' + pixiv_sub_dir_array[0])
+            except Exception as e:
+                print(e)
+                mb.showerror("ERROR", e)
 
-    # for t in range(0,len(txtversions)):
-    #     photoImages[t] = ImageTk.PhotoImage(images[t])
-    #     imgpanels[t].configure(image = photoImages[t])
-    #     imgpanels[t].grid(column=t+3 , row=2)
+        original_size = original_image.size
+        downloaded_size = downloaded_image.size
+
+        original_image.thumbnail(thumbSize, resample=Image.ANTIALIAS)
+        downloaded_image.thumbnail(thumbSize, resample=Image.ANTIALIAS)
+
+        original_photoImage = ImageTk.PhotoImage(original_image)
+        downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
+
+        original_chkbtn = Checkbutton(frame, image=original_photoImage, var=chkbtn_vars_array[int(t/3)][0], style="chkbtn.TCheckbutton")
+        dowloaded_chkbtn = Checkbutton(frame, image=downloaded_photoImage, var=chkbtn_vars_array[int(t/3)][1], style="chkbtn.TCheckbutton")
+        original_chkbtn.image = original_photoImage
+        dowloaded_chkbtn.image = downloaded_photoImage
+        original_chkbtn.grid(column = 0, row = t+1)
+        dowloaded_chkbtn.grid(column = 0, row = t+2)
+        cropped_name_lbl = Label(frame, text = cropped, style='label.TLabel').grid(column = 1, row = t, columnspan=3)
+        original_lbl = Label(frame, text = "original", style='label.TLabel').grid(column = 2, row = t+1)
+        original_wxh_lbl = Label(frame, text = str(original_size), style='label.TLabel').grid(column = 3, row = t+1)
+        original_type_lbl = Label(frame, text = suffix, style='label.TLabel').grid(column = 4, row = t+1)
+        downloaded_lbl = Label(frame, text = "pixiv", style='label.TLabel').grid(column = 2, row = t+2)
+        dowloaded_wxh_lbl = Label(frame, text = str(downloaded_size), style='label.TLabel').grid(column = 3, row = t+2)
+        if flag:
+            downloaded_type_lbl = Label(frame, text = "More images", style='label.TLabel').grid(column = 4, row = t+2)
+        else:
+            downloaded_type_lbl = Label(frame, text = img[img.rfind(".")+1:], style='label.TLabel').grid(column = 4, row = t+2)
+
+        pixiv_images_array.append([[img, sub, cropped, suffix, cropped_name_lbl], 
+            [original_image, original_photoImage, original_chkbtn, original_lbl, original_wxh_lbl, original_type_lbl], 
+            [downloaded_image, downloaded_photoImage, dowloaded_chkbtn, downloaded_lbl, dowloaded_wxh_lbl, downloaded_type_lbl, flag]])
+        if t > 32:
+            break
+        t += 3
+
+def save_and_back():
+    save(cwd, chkbtn_vars_array, pixiv_images_array)
+    init_window()
+
+def save_and_refresh():
+    save(cwd, chkbtn_vars_array, pixiv_images_array)
+    display_view_results()
+
 
 def myfunction(event):
-    results_canvas.configure(scrollregion=results_canvas.bbox("all"),width=200,height=200)
-
+    results_canvas.configure(scrollregion=results_canvas.bbox("all"), width=width-620, height=height-620)
 
 def enforce_style():
     global colour_array, custom_array
@@ -334,6 +385,7 @@ def enforce_style():
         background=[('pressed', '!disabled', colour_array[5]), ('active', colour_array[3])]
     )
     style.configure("frame.TFrame", foreground=colour_array[1], background=colour_array[0])
+    style.configure("chkbtn.TCheckbutton", foreground=colour_array[1], background=colour_array[0], borderwidth = 0, highlightthickness = 10, selectcolor=colour_array[2], activebackground=colour_array[2], activeforeground=colour_array[2], disabledforeground=colour_array[2], highlightcolor=colour_array[2])
     #style.configure("scroll.Vertical.TScrollbar", foreground=colour_array[1], background=colour_array[2], throughcolor=colour_array[2], activebackground=colour_array[2])
     results_canvas.configure(background=colour_array[0])
 
@@ -370,7 +422,7 @@ if __name__ == '__main__':
     open_sourced_btn = Button(window, text="Open Sourced", command=open_sourced, style="button.TLabel")
     statistics_btn = Button(window, text="Statistics", command=display_statistics, style="button.TLabel")
     options_btn = Button(window, text="Options", command=escape_options, style="button.TLabel")
-    do_sourcery_btn = Button(window, text="Do Sourcery", command=do_sourcery, style="button.TLabel")
+    do_sourcery_btn = Button(window, text="Do Sourcery", command=magic, style="button.TLabel")
     stop_btn = Button(window, text="Stop", command=stop, style="button.TLabel")
     view_results_btn = Button(window, text="View Results", command=escape_results, style="button.TLabel")
 
@@ -434,25 +486,29 @@ if __name__ == '__main__':
     # widgets for results
     results_lbl = Label(window, text="Results", font=("Arial Bold", 14), style="label.TLabel")
 
-    results_frame=Frame(window, width=1520, height=1520, style="frame.TFrame")
-    results_canvas=Canvas(results_frame, width=1520, height=1520, background=colour_array[0], highlightthickness=0)
-    frame=Frame(results_canvas, width=1520, height=1520, style="frame.TFrame")
+    results_frame=Frame(window, width=width-620, height=height-620, style="frame.TFrame")
+    results_canvas=Canvas(results_frame, width=width-620, height=height-620, background=colour_array[0], highlightthickness=0)
+    frame=Frame(results_canvas, width=width-620, height=height-620, style="frame.TFrame")
     results_scrollbar=Scrollbar(results_frame, orient="vertical", command=results_canvas.yview)
     results_canvas.configure(yscrollcommand=results_scrollbar.set)
-
+    #https://stackoverflow.com/questions/17355902/python-tkinter-binding-mousewheel-to-scrollbar
     results_scrollbar.pack(side="right",fill="y")
     results_canvas.pack(side="left")
     results_canvas.create_window((0,0),window=frame,anchor='nw')
     frame.bind("<Configure>",myfunction)
 
-#     for i in range(50):
-#        Label(frame,text=i, style="label.TLabel").grid(row=i+1,column=0)
-#        Label(frame,text="my text"+str(i), style="label.TLabel").grid(row=i,column=1)
-#        Label(frame,text=".................1..............2..............3...............4......", style="label.TLabel").grid(row=i,column=2)
-    
+    save_and_back_btn = Button(window, text="Save & Back", command=save_and_back, style="button.TLabel")
+    save_and_refresh_btn = Button(window, text="Save & Refresh", command=save_and_refresh, style="button.TLabel")
+
     # global arrays
     input_images_array = []
-
+    pixiv_images_array = []
+    chkbtn_vars_array = []
+    for i in range(12):
+        chkbtn_vars_array.append(((IntVar()), (IntVar())))
+        chkbtn_vars_array[i][0].set(0)
+        chkbtn_vars_array[i][1].set(1)
+    
     esc_op = False
     esc_res = False
     init_directories(cwd)
