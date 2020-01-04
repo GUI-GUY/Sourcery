@@ -2,6 +2,7 @@ from tkinter import Tk, IntVar, Canvas, Scrollbar
 from tkinter.ttk import Label, Checkbutton, Button, Style, Frame, Notebook, Entry, Frame
 from tkinter import messagebox as mb
 #from tkinter.filedialog import askdirectory
+from functools import partial
 from PIL import ImageTk, Image
 from os import getcwd, listdir, startfile, path
 #import time
@@ -49,71 +50,8 @@ def init_window():
         window.after(250, init_window)
 
 def forget_all_widgets():
-    sourcery_lbl.place_forget()
-    images_in_input_lbl.place_forget()
-    images_in_input_count_lbl.place_forget()
-    currently_sourcing_lbl.place_forget()
-    currently_sourcing_img_lbl.place_forget()
-    saucenao_requests_count_lbl.place_forget()
-    elapsed_time_lbl.place_forget()
-    eta_lbl.place_forget()
-
-    open_input_btn.place_forget()
-    open_sourced_btn.place_forget()
-    statistics_btn.place_forget()
-    options_btn.place_forget()
-    do_sourcery_btn.place_forget()
-    stop_btn.place_forget()
-    view_results_btn.place_forget()
-
-    options_lbl.place_forget()
-
-    provider_options_btn.place_forget()
-    saucenao_options_btn.place_forget()
-    sourcery_options_btn.place_forget()
-
-    pixiv_login_lbl.place_forget()
-    pixiv_user_lbl.place_forget()
-    pixiv_user_filled_lbl.place_forget()
-    pixiv_user_entry.place_forget()
-    pixiv_password_lbl.place_forget()
-    pixiv_password_filled_lbl.place_forget()
-    pixiv_password_entry.place_forget()
-    pixiv_login_change_btn.place_forget()
-    pixiv_login_confirm_btn.place_forget()
-
-    saucenao_key_number_lbl.place_forget()
-    saucenao_key_lbl.place_forget()
-    saucenao_key_entry.place_forget()
-    saucenao_key_change_btn.place_forget()
-    saucenao_key_confirm_btn.place_forget()
-
-    theme_lbl.place_forget()
-    dark_theme_btn.place_forget()
-    light_theme_btn .place_forget()
-    custom_theme_btn.place_forget()
-    custom_background_lbl.place_forget()
-    custom_foreground_lbl.place_forget()
-    custom_button_background_lbl.place_forget()
-    custom_button_background_active_lbl.place_forget()
-    custom_button_foreground_active_lbl.place_forget()
-    custom_button_background_pressed_lbl.place_forget()
-    custom_button_foreground_pressed_lbl.place_forget()
-    custom_background_entry.place_forget()
-    custom_foreground_entry.place_forget()
-    custom_button_background_entry.place_forget()
-    custom_button_background_active_entry.place_forget()
-    custom_button_foreground_active_entry.place_forget()
-    custom_button_background_pressed_entry.place_forget()
-    custom_button_foreground_pressed_entry.place_forget()
-    save_custom_theme_btn.place_forget()
-    
-    options_back_btn.place_forget()
-
-    results_lbl.place_forget()
-    results_frame.place_forget()
-    save_and_back_btn.place_forget()
-    save_and_refresh_btn.place_forget()
+    for widget in window.winfo_children():
+        widget.place_forget()
 
 def open_input():
     try:
@@ -199,6 +137,7 @@ def save_custom_theme():
     custom_array[4] = custom_button_foreground_active_entry.get()
     custom_array[5] = custom_button_background_pressed_entry.get()
     custom_array[6] = custom_button_foreground_pressed_entry.get()
+    enforce_style()
 
 def display_provider_options():
     forget_all_widgets()
@@ -269,6 +208,81 @@ def saucenao_set_key():
 def stop():
     pass
 
+# 5.2 Resize images to fit on screen
+def resize(image):
+    global width
+    global height
+
+    oldwidth = image.width
+    oldheight = image.height
+
+    if oldwidth > width/3:
+        newwidth = round(width/3)
+        newheight = round(newwidth/(oldwidth/oldheight))
+        newsize = newwidth, newheight
+        image = image.resize(newsize, Image.ANTIALIAS)
+    if image.height > height-320:
+        newheight = height - 320
+        newwidth = round(newheight/(oldheight/oldwidth))
+        newsize = newwidth, newheight
+        image = image.resize(newsize, Image.ANTIALIAS)
+    return image
+
+def display_big_selector(index):
+    forget_all_widgets()
+    big_selector_frame.place(x = round(width/3), y = 73)
+    original_image = Image.open(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[index][2] + '.' + pixiv_images_array[index][3])
+    original_size = original_image.size
+    original_image = resize(original_image)
+    original_photoImage = ImageTk.PhotoImage(original_image)
+
+    original_chkbtn = Checkbutton(window, image=original_photoImage, var=chkbtn_vars_array[index][0], style="chkbtn.TCheckbutton")
+    original_chkbtn.image = original_photoImage
+    original_chkbtn.place(x = 20, y = 73)
+
+    cropped_name_lbl = Label(window, text = pixiv_images_array[index][2], style='label.TLabel')
+    original_wxh_lbl = Label(window, text = original_size, style='label.TLabel')
+    original_type_lbl = Label(window, text = pixiv_images_array[index][3], style='label.TLabel')
+    cropped_name_lbl.place(x = 50, y = 50)
+    original_wxh_lbl.place(x = 50, y = 500)
+    original_type_lbl.place(x = 50, y = 523)
+
+    if pixiv_images_array[index][9]:
+        t = 0
+        chkbtn_vars_big_array = []
+        for img in pixiv_images_array[index][10]:
+            chkbtn_vars_big_array.append(IntVar())
+            downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[index][0] + '/' + img)
+            downloaded_size = downloaded_image.size # TODO is this runtime or instant assigned in the label?
+            downloaded_image = resize(downloaded_image)
+            downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
+
+            dowloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_big_array[int(t/4)], style="chkbtn.TCheckbutton")
+            dowloaded_chkbtn.image = downloaded_photoImage
+            dowloaded_chkbtn.grid(column = 0, row = t, rowspan = 4)
+            downloaded_lbl = Label(frame2, text = "pixiv", style='label.TLabel')
+            dowloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
+            downloaded_type_lbl = Label(frame2, text = img[img.rfind(".")+1:], style='label.TLabel')
+            downloaded_lbl.grid(column = 1, row = t + 0)
+            dowloaded_wxh_lbl.grid(column = 1, row = t + 1)
+            downloaded_type_lbl.grid(column = 1, row = t + 2)
+            t += 4
+    else:
+        downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[index][0])
+        downloaded_size = downloaded_image.size
+        downloaded_image = resize(downloaded_image)
+        downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
+
+        dowloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_array[index][1], style="chkbtn.TCheckbutton")
+        dowloaded_chkbtn.image = downloaded_photoImage
+        dowloaded_chkbtn.grid(column = 0, row = 0, rowspan = 4)
+        downloaded_lbl = Label(frame2, text = "pixiv", style='label.TLabel')
+        dowloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
+        downloaded_type_lbl = Label(frame2, text = pixiv_images_array[index][0][pixiv_images_array[index][0].rfind(".")+1:], style='label.TLabel')
+        downloaded_lbl.grid(column = 1, row = 0)
+        dowloaded_wxh_lbl.grid(column = 1, row = 1)
+        downloaded_type_lbl.grid(column = 1, row = 2)
+
 def display_view_results():
     global esc_res
     esc_res = False
@@ -279,18 +293,21 @@ def display_view_results():
     save_and_refresh_btn.place(x = 250, y = 500)
     results_frame.place(x = 50, y = 100)
 
-    thumbSize = (70,70)
-
-    
+    thumb_size = (70,70)
+    pixiv_dir_array = listdir(cwd + '/Sourcery/sourced_progress/pixiv')
+    pixiv_sub_dir_array = []
     sourced_original_array = listdir(cwd + '/Sourcery/sourced_original')
+    # TODO delete non images
     for t in range(len(sourced_original_array)):
         sourced_original_array[t] = sourced_original_array[t].rpartition('.')
-
-    pixiv_dir_array = listdir(cwd + '/Sourcery/sourced_progress/pixiv')
     
     t = 0
     for img in pixiv_dir_array:
-        flag = False
+        # If input is empty, delete every element
+        if len(sourced_original_array) == 0:
+            delete_dirs_array.append(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
+            continue
+        flag = False # IsDirectory flag
         pointdex = img.rfind(".")
         if pointdex == -1:
             cropped = img
@@ -303,6 +320,9 @@ def display_view_results():
                 if image[0] == cropped:
                     suffix = image[2]
                     break
+            if suffix == '':
+                delete_dirs_array.append(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
+                continue
             try:
                 original_image = Image.open(cwd + '/Sourcery/sourced_original/' + cropped + '.' + suffix) 
                 downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
@@ -314,6 +334,7 @@ def display_view_results():
             try:
                 pixiv_sub_dir_array = listdir(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
                 if len(pixiv_sub_dir_array) == 0:
+                    delete_dirs_array.append(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
                     continue
                 pathname = ''
                 for image in sourced_original_array:
@@ -321,6 +342,9 @@ def display_view_results():
                         pathname = cwd + '/Sourcery/sourced_original/' + image[0] + image[1] + image[2]
                         suffix = image[2]
                         break
+                if suffix == '':
+                    delete_dirs_array.append(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
+                    continue
                 sub = pixiv_sub_dir_array[0]
                 original_image = Image.open(pathname)
                 downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + img + '/' + pixiv_sub_dir_array[0])
@@ -331,8 +355,8 @@ def display_view_results():
         original_size = original_image.size
         downloaded_size = downloaded_image.size
 
-        original_image.thumbnail(thumbSize, resample=Image.ANTIALIAS)
-        downloaded_image.thumbnail(thumbSize, resample=Image.ANTIALIAS)
+        original_image.thumbnail(thumb_size, resample=Image.ANTIALIAS)
+        downloaded_image.thumbnail(thumb_size, resample=Image.ANTIALIAS)
 
         original_photoImage = ImageTk.PhotoImage(original_image)
         downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
@@ -343,35 +367,47 @@ def display_view_results():
         dowloaded_chkbtn.image = downloaded_photoImage
         original_chkbtn.grid(column = 0, row = t+1)
         dowloaded_chkbtn.grid(column = 0, row = t+2)
-        cropped_name_lbl = Label(frame, text = cropped, style='label.TLabel').grid(column = 1, row = t, columnspan=3)
-        original_lbl = Label(frame, text = "original", style='label.TLabel').grid(column = 2, row = t+1)
-        original_wxh_lbl = Label(frame, text = str(original_size), style='label.TLabel').grid(column = 3, row = t+1)
-        original_type_lbl = Label(frame, text = suffix, style='label.TLabel').grid(column = 4, row = t+1)
-        downloaded_lbl = Label(frame, text = "pixiv", style='label.TLabel').grid(column = 2, row = t+2)
-        dowloaded_wxh_lbl = Label(frame, text = str(downloaded_size), style='label.TLabel').grid(column = 3, row = t+2)
+        cropped_name_lbl = Label(frame, text = cropped, style='label.TLabel')
+        original_lbl = Label(frame, text = "original", style='label.TLabel')
+        original_wxh_lbl = Label(frame, text = str(original_size), style='label.TLabel')
+        original_type_lbl = Label(frame, text = suffix, style='label.TLabel')
+        downloaded_lbl = Label(frame, text = "pixiv", style='label.TLabel')
+        cropped_name_lbl.grid(column = 1, row = t, columnspan=3)
+        original_lbl.grid(column = 2, row = t+1)
+        original_wxh_lbl.grid(column = 3, row = t+1)
+        original_type_lbl.grid(column = 4, row = t+1)
+        downloaded_lbl.grid(column = 2, row = t+2)
         if flag:
-            downloaded_type_lbl = Label(frame, text = "More images", style='label.TLabel').grid(column = 4, row = t+2)
+            downloaded_wxh_lbl = Label(frame, text = "More images", style='label.TLabel')
+            downloaded_type_lbl = Label(frame, text = "More images", style='label.TLabel')
         else:
-            downloaded_type_lbl = Label(frame, text = img[img.rfind(".")+1:], style='label.TLabel').grid(column = 4, row = t+2)
+            downloaded_wxh_lbl = Label(frame, text = str(downloaded_size), style='label.TLabel')
+            downloaded_type_lbl = Label(frame, text = img[img.rfind(".")+1:], style='label.TLabel')
+        downloaded_wxh_lbl.grid(column = 3, row = t+2)
+        downloaded_type_lbl.grid(column = 4, row = t+2)
+        big_selector_partial = partial(display_big_selector, int(t/3))
+        big_selector_btn = Button(frame, text='View in Big Selector', command=big_selector_partial, style='button.TLabel')
+        big_selector_btn.grid(column = 5, row = t+2)
 
-        pixiv_images_array.append([[img, sub, cropped, suffix, cropped_name_lbl], 
-            [original_image, original_photoImage, original_chkbtn, original_lbl, original_wxh_lbl, original_type_lbl], 
-            [downloaded_image, downloaded_photoImage, dowloaded_chkbtn, downloaded_lbl, dowloaded_wxh_lbl, downloaded_type_lbl, flag]])
+        pixiv_images_array.append([img, sub, cropped, suffix, cropped_name_lbl, original_image, original_photoImage, downloaded_image, downloaded_photoImage, flag, pixiv_sub_dir_array])
         if t > 32:
             break
         t += 3
 
 def save_and_back():
-    save(cwd, chkbtn_vars_array, pixiv_images_array)
+    save(cwd, chkbtn_vars_array, pixiv_images_array, delete_dirs_array, frame)
     init_window()
 
 def save_and_refresh():
-    save(cwd, chkbtn_vars_array, pixiv_images_array)
+    save(cwd, chkbtn_vars_array, pixiv_images_array, delete_dirs_array, frame)
     display_view_results()
 
 
 def myfunction(event):
     results_canvas.configure(scrollregion=results_canvas.bbox("all"), width=width-620, height=height-620)
+
+def myfunction2(event):
+    big_selector_canvas.configure(scrollregion=big_selector_canvas.bbox("all"), width=(width/3)*2 - 50, height=height-125)
 
 def enforce_style():
     global colour_array, custom_array
@@ -486,10 +522,10 @@ if __name__ == '__main__':
     # widgets for results
     results_lbl = Label(window, text="Results", font=("Arial Bold", 14), style="label.TLabel")
 
-    results_frame=Frame(window, width=width-620, height=height-620, style="frame.TFrame")
-    results_canvas=Canvas(results_frame, width=width-620, height=height-620, background=colour_array[0], highlightthickness=0)
-    frame=Frame(results_canvas, width=width-620, height=height-620, style="frame.TFrame")
-    results_scrollbar=Scrollbar(results_frame, orient="vertical", command=results_canvas.yview)
+    results_frame = Frame(window, width=width-620, height=height-620, style="frame.TFrame")
+    results_canvas = Canvas(results_frame, width=width-620, height=height-620, background=colour_array[0], highlightthickness=0)
+    frame = Frame(results_canvas, width=width-620, height=height-620, style="frame.TFrame")
+    results_scrollbar = Scrollbar(results_frame, orient="vertical", command=results_canvas.yview)
     results_canvas.configure(yscrollcommand=results_scrollbar.set)
     #https://stackoverflow.com/questions/17355902/python-tkinter-binding-mousewheel-to-scrollbar
     results_scrollbar.pack(side="right",fill="y")
@@ -500,9 +536,22 @@ if __name__ == '__main__':
     save_and_back_btn = Button(window, text="Save & Back", command=save_and_back, style="button.TLabel")
     save_and_refresh_btn = Button(window, text="Save & Refresh", command=save_and_refresh, style="button.TLabel")
 
+    # widgets for big_selector
+    big_selector_frame = Frame(window, width=width-620, height=height-620, style="frame.TFrame")
+    big_selector_canvas = Canvas(big_selector_frame, width=width-620, height=height-620, background=colour_array[0], highlightthickness=0)
+    frame2 = Frame(big_selector_canvas, width=width-620, height=height-620, style="frame.TFrame")
+    big_selector_scrollbar = Scrollbar(big_selector_frame, orient="vertical", command=big_selector_canvas.yview)
+    big_selector_canvas.configure(yscrollcommand=big_selector_scrollbar.set)
+
+    big_selector_scrollbar.pack(side="right",fill="y")
+    big_selector_canvas.pack(side="left")
+    big_selector_canvas.create_window((0,0),window=frame2,anchor='nw')
+    frame2.bind("<Configure>",myfunction2)
+
     # global arrays
     input_images_array = []
     pixiv_images_array = []
+    delete_dirs_array = []
     chkbtn_vars_array = []
     for i in range(12):
         chkbtn_vars_array.append(((IntVar()), (IntVar())))
