@@ -59,18 +59,18 @@ background=#252525
 foreground=#ddd
 button_background=#444
 button_background_active=white
-button_foreground_active=blue
+button_foreground_active=black
 button_background_pressed=#111
-button_foreground_pressed=red
+button_foreground_pressed=white
 
 Light Theme
-background=#fff
-foreground=#ddd
-button_background=#444
-button_background_active=white
-button_foreground_active=blue
-button_background_pressed=#111
-button_foreground_pressed=red
+background=#eee
+foreground=black
+button_background=#aaa
+button_background_active=black
+button_foreground_active=white
+button_background_pressed=#ddd
+button_foreground_pressed=black
 
 Custom Theme
 background=""" + custom_theme[0] + """

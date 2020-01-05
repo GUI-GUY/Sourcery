@@ -11,7 +11,7 @@ from shutil import copy, move
 from file_operations import init_directories, read_theme, is_image, read_credentials, write_credentials, write_theme, save
 from sourcery import do_sourcery
 from display_thread import display_view_results2, display_big_selector2
-from test import test
+#from test import test
 
 def magic():
     global saucenao_requests_count_array
@@ -155,7 +155,7 @@ def save_custom_theme():
     custom_array[4] = custom_button_foreground_active_entry.get()
     custom_array[5] = custom_button_background_pressed_entry.get()
     custom_array[6] = custom_button_foreground_pressed_entry.get()
-    enforce_style()
+    change_to_custom_theme()
 
 def display_provider_options():
     forget_all_widgets()
@@ -277,6 +277,30 @@ def enforce_style():
     style.configure("chkbtn.TCheckbutton", foreground=colour_array[1], background=colour_array[0], borderwidth = 0, highlightthickness = 10, selectcolor=colour_array[2], activebackground=colour_array[2], activeforeground=colour_array[2], disabledforeground=colour_array[2], highlightcolor=colour_array[2])
     #style.configure("scroll.Vertical.TScrollbar", foreground=colour_array[1], background=colour_array[2], throughcolor=colour_array[2], activebackground=colour_array[2])
     results_canvas.configure(background=colour_array[0])
+
+
+def bound_to_mousewheel(event):
+    results_canvas.bind_all("<MouseWheel>", on_mousewheel)
+    # # with Windows OS
+    # root.bind("<MouseWheel>", mouse_wheel)
+    # # with Linux OS
+    # root.bind("<Button-4>", mouse_wheel)
+    # root.bind("<Button-5>", mouse_wheel)  
+
+def unbound_to_mousewheel(event):
+    results_canvas.unbind_all("<MouseWheel>") 
+
+def on_mousewheel(event):
+    results_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+
+def bound_to_mousewheel2(event):
+    big_selector_canvas.bind_all("<MouseWheel>", on_mousewheel2)   
+
+def unbound_to_mousewheel2(event):
+    big_selector_canvas.unbind_all("<MouseWheel>") 
+
+def on_mousewheel2(event):
+    big_selector_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
 
 if __name__ == '__main__':
     freeze_support()
@@ -411,6 +435,12 @@ if __name__ == '__main__':
         chkbtn_vars_array.append(((IntVar()), (IntVar())))
         chkbtn_vars_array[i][0].set(0)
         chkbtn_vars_array[i][1].set(1)
+
+    # results_canvas.bind_all("<MouseWheel>", on_mousewheel)
+    frame.bind('<Enter>', bound_to_mousewheel)
+    frame.bind('<Leave>', unbound_to_mousewheel)
+    frame2.bind('<Enter>', bound_to_mousewheel2)
+    frame2.bind('<Leave>', unbound_to_mousewheel2)
     
     esc_op = False
     esc_res = False
