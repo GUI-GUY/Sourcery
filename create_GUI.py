@@ -5,16 +5,21 @@ from tkinter import messagebox as mb
 from functools import partial
 from PIL import ImageTk, Image
 from os import getcwd, listdir, startfile, path
+from multiprocessing import Process, freeze_support, Queue
 #import time
 from shutil import copy, move
 from file_operations import init_directories, read_theme, is_image, read_credentials, write_credentials, write_theme, save
 from sourcery import do_sourcery
+from display_thread import display_view_results2, display_big_selector2
+from test import test
 
 def magic():
-    do_sourcery(cwd, input_images_array, saucenao_key, saucenao_requests_count_lbl, pixiv_username, pixiv_password, credentials_array)
+    global saucenao_requests_count_array
+    if __name__ == '__main__':
+        process = Process(target=do_sourcery, args=(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv_username, pixiv_password, credentials_array,))
+        process.start()
 
-def init_window():
-    global input_images_array
+def display_startpage():
     forget_all_widgets()
     y = 100
     c = 23
@@ -27,7 +32,6 @@ def init_window():
     elapsed_time_lbl.place(x = 200, y = y + c * 4)
     eta_lbl.place(x = 200, y = y + c * 5)
 
-    
     open_input_btn.place(x = 20, y = y + c * 0)
     open_sourced_btn.place(x = 20, y = y + c * 1)
     statistics_btn.place(x = 20, y = y + c * 2)
@@ -35,19 +39,33 @@ def init_window():
     do_sourcery_btn.place(x = 380, y = 100)
     stop_btn.place(x = 200, y = y + c * 6)
     view_results_btn.place(x = 350, y = y + c * 6)
-
+    
+    refresh_startpage()
+    
+def refresh_startpage():
+    global input_images_array
     input_images_array = listdir(cwd + "/Input")
     for img in input_images_array:
         if (not is_image(img)):
             input_images_array.remove(img)
     images_in_input_count_lbl.configure(text=str(len(input_images_array)))
-    
+
+    answer1 = 201
+    if not comm_q.empty():
+        answer1 = comm_q.get()
+        saucenao_requests_count_lbl.configure(text=str(answer1) + "/200")
+    if not comm_img_q.empty():
+        if answer1 < 1:
+            answer2 = "Out of requests"
+        else:
+            answer2 = comm_img_q.get()
+        currently_sourcing_img_lbl.configure(text=answer2)
     if esc_op:
         display_sourcery_options()
     elif esc_res:
         display_view_results()
     else:
-        window.after(250, init_window)
+        window.after(100, refresh_startpage)
 
 def forget_all_widgets():
     for widget in window.winfo_children():
@@ -206,82 +224,17 @@ def saucenao_set_key():
     saucenao_key_number_lbl.place(x = 150, y = 100)
 
 def stop():
-    pass
-
-# 5.2 Resize images to fit on screen
-def resize(image):
-    global width
-    global height
-
-    oldwidth = image.width
-    oldheight = image.height
-
-    if oldwidth > width/3:
-        newwidth = round(width/3)
-        newheight = round(newwidth/(oldwidth/oldheight))
-        newsize = newwidth, newheight
-        image = image.resize(newsize, Image.ANTIALIAS)
-    if image.height > height-320:
-        newheight = height - 320
-        newwidth = round(newheight/(oldheight/oldwidth))
-        newsize = newwidth, newheight
-        image = image.resize(newsize, Image.ANTIALIAS)
-    return image
+    currently_sourcing_img_lbl.configure(text="Stopped")
+    try:
+        process.join()
+    except:
+        pass
 
 def display_big_selector(index):
     forget_all_widgets()
     big_selector_frame.place(x = round(width/3), y = 73)
-    original_image = Image.open(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[index][2] + '.' + pixiv_images_array[index][3])
-    original_size = original_image.size
-    original_image = resize(original_image)
-    original_photoImage = ImageTk.PhotoImage(original_image)
 
-    original_chkbtn = Checkbutton(window, image=original_photoImage, var=chkbtn_vars_array[index][0], style="chkbtn.TCheckbutton")
-    original_chkbtn.image = original_photoImage
-    original_chkbtn.place(x = 20, y = 73)
-
-    cropped_name_lbl = Label(window, text = pixiv_images_array[index][2], style='label.TLabel')
-    original_wxh_lbl = Label(window, text = original_size, style='label.TLabel')
-    original_type_lbl = Label(window, text = pixiv_images_array[index][3], style='label.TLabel')
-    cropped_name_lbl.place(x = 50, y = 50)
-    original_wxh_lbl.place(x = 50, y = 500)
-    original_type_lbl.place(x = 50, y = 523)
-
-    if pixiv_images_array[index][9]:
-        t = 0
-        chkbtn_vars_big_array = []
-        for img in pixiv_images_array[index][10]:
-            chkbtn_vars_big_array.append(IntVar())
-            downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[index][0] + '/' + img)
-            downloaded_size = downloaded_image.size # TODO is this runtime or instant assigned in the label?
-            downloaded_image = resize(downloaded_image)
-            downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
-
-            dowloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_big_array[int(t/4)], style="chkbtn.TCheckbutton")
-            dowloaded_chkbtn.image = downloaded_photoImage
-            dowloaded_chkbtn.grid(column = 0, row = t, rowspan = 4)
-            downloaded_lbl = Label(frame2, text = "pixiv", style='label.TLabel')
-            dowloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
-            downloaded_type_lbl = Label(frame2, text = img[img.rfind(".")+1:], style='label.TLabel')
-            downloaded_lbl.grid(column = 1, row = t + 0)
-            dowloaded_wxh_lbl.grid(column = 1, row = t + 1)
-            downloaded_type_lbl.grid(column = 1, row = t + 2)
-            t += 4
-    else:
-        downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[index][0])
-        downloaded_size = downloaded_image.size
-        downloaded_image = resize(downloaded_image)
-        downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
-
-        dowloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_array[index][1], style="chkbtn.TCheckbutton")
-        dowloaded_chkbtn.image = downloaded_photoImage
-        dowloaded_chkbtn.grid(column = 0, row = 0, rowspan = 4)
-        downloaded_lbl = Label(frame2, text = "pixiv", style='label.TLabel')
-        dowloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
-        downloaded_type_lbl = Label(frame2, text = pixiv_images_array[index][0][pixiv_images_array[index][0].rfind(".")+1:], style='label.TLabel')
-        downloaded_lbl.grid(column = 1, row = 0)
-        dowloaded_wxh_lbl.grid(column = 1, row = 1)
-        downloaded_type_lbl.grid(column = 1, row = 2)
+    window.after(100, display_big_selector2, index, cwd, window, frame2, pixiv_images_array, chkbtn_vars_array)
 
 def display_view_results():
     global esc_res
@@ -293,115 +246,15 @@ def display_view_results():
     save_and_refresh_btn.place(x = 250, y = 500)
     results_frame.place(x = 50, y = 100)
 
-    thumb_size = (70,70)
-    pixiv_dir_array = listdir(cwd + '/Sourcery/sourced_progress/pixiv')
-    pixiv_sub_dir_array = []
-    sourced_original_array = listdir(cwd + '/Sourcery/sourced_original')
-    # TODO delete non images
-    for t in range(len(sourced_original_array)):
-        sourced_original_array[t] = sourced_original_array[t].rpartition('.')
-    
-    t = 0
-    for img in pixiv_dir_array:
-        # If input is empty, delete every element
-        if len(sourced_original_array) == 0:
-            delete_dirs_array.append(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
-            continue
-        flag = False # IsDirectory flag
-        pointdex = img.rfind(".")
-        if pointdex == -1:
-            cropped = img
-        else:
-            cropped = img[:pointdex] # deletes the suffix
-        suffix = ''
-        sub = ''
-        if path.isfile(cwd + '/Sourcery/sourced_progress/pixiv/' + img):
-            for image in sourced_original_array:
-                if image[0] == cropped:
-                    suffix = image[2]
-                    break
-            if suffix == '':
-                delete_dirs_array.append(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
-                continue
-            try:
-                original_image = Image.open(cwd + '/Sourcery/sourced_original/' + cropped + '.' + suffix) 
-                downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
-            except Exception as e:
-                print(e)
-                mb.showerror("ERROR", e)
-        elif path.isdir(cwd + '/Sourcery/sourced_progress/pixiv/' + img):
-            flag = True
-            try:
-                pixiv_sub_dir_array = listdir(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
-                if len(pixiv_sub_dir_array) == 0:
-                    delete_dirs_array.append(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
-                    continue
-                pathname = ''
-                for image in sourced_original_array:
-                    if image[0] == img:
-                        pathname = cwd + '/Sourcery/sourced_original/' + image[0] + image[1] + image[2]
-                        suffix = image[2]
-                        break
-                if suffix == '':
-                    delete_dirs_array.append(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
-                    continue
-                sub = pixiv_sub_dir_array[0]
-                original_image = Image.open(pathname)
-                downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + img + '/' + pixiv_sub_dir_array[0])
-            except Exception as e:
-                print(e)
-                mb.showerror("ERROR", e)
-
-        original_size = original_image.size
-        downloaded_size = downloaded_image.size
-
-        original_image.thumbnail(thumb_size, resample=Image.ANTIALIAS)
-        downloaded_image.thumbnail(thumb_size, resample=Image.ANTIALIAS)
-
-        original_photoImage = ImageTk.PhotoImage(original_image)
-        downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
-
-        original_chkbtn = Checkbutton(frame, image=original_photoImage, var=chkbtn_vars_array[int(t/3)][0], style="chkbtn.TCheckbutton")
-        dowloaded_chkbtn = Checkbutton(frame, image=downloaded_photoImage, var=chkbtn_vars_array[int(t/3)][1], style="chkbtn.TCheckbutton")
-        original_chkbtn.image = original_photoImage
-        dowloaded_chkbtn.image = downloaded_photoImage
-        original_chkbtn.grid(column = 0, row = t+1)
-        dowloaded_chkbtn.grid(column = 0, row = t+2)
-        cropped_name_lbl = Label(frame, text = cropped, style='label.TLabel')
-        original_lbl = Label(frame, text = "original", style='label.TLabel')
-        original_wxh_lbl = Label(frame, text = str(original_size), style='label.TLabel')
-        original_type_lbl = Label(frame, text = suffix, style='label.TLabel')
-        downloaded_lbl = Label(frame, text = "pixiv", style='label.TLabel')
-        cropped_name_lbl.grid(column = 1, row = t, columnspan=3)
-        original_lbl.grid(column = 2, row = t+1)
-        original_wxh_lbl.grid(column = 3, row = t+1)
-        original_type_lbl.grid(column = 4, row = t+1)
-        downloaded_lbl.grid(column = 2, row = t+2)
-        if flag:
-            downloaded_wxh_lbl = Label(frame, text = "More images", style='label.TLabel')
-            downloaded_type_lbl = Label(frame, text = "More images", style='label.TLabel')
-        else:
-            downloaded_wxh_lbl = Label(frame, text = str(downloaded_size), style='label.TLabel')
-            downloaded_type_lbl = Label(frame, text = img[img.rfind(".")+1:], style='label.TLabel')
-        downloaded_wxh_lbl.grid(column = 3, row = t+2)
-        downloaded_type_lbl.grid(column = 4, row = t+2)
-        big_selector_partial = partial(display_big_selector, int(t/3))
-        big_selector_btn = Button(frame, text='View in Big Selector', command=big_selector_partial, style='button.TLabel')
-        big_selector_btn.grid(column = 5, row = t+2)
-
-        pixiv_images_array.append([img, sub, cropped, suffix, cropped_name_lbl, original_image, original_photoImage, downloaded_image, downloaded_photoImage, flag, pixiv_sub_dir_array])
-        if t > 32:
-            break
-        t += 3
+    window.after(100, display_view_results2, cwd, delete_dirs_array, frame, chkbtn_vars_array, pixiv_images_array, width, height, display_big_selector)
 
 def save_and_back():
     save(cwd, chkbtn_vars_array, pixiv_images_array, delete_dirs_array, frame)
-    init_window()
+    display_startpage()
 
 def save_and_refresh():
     save(cwd, chkbtn_vars_array, pixiv_images_array, delete_dirs_array, frame)
     display_view_results()
-
 
 def myfunction(event):
     results_canvas.configure(scrollregion=results_canvas.bbox("all"), width=width-620, height=height-620)
@@ -426,7 +279,7 @@ def enforce_style():
     results_canvas.configure(background=colour_array[0])
 
 if __name__ == '__main__':
-    #freeze_support()
+    freeze_support()
 
     cwd = getcwd()
     window = Tk()
@@ -450,7 +303,8 @@ if __name__ == '__main__':
     images_in_input_count_lbl = Label(window, text="Number here", style="label.TLabel")
     currently_sourcing_lbl = Label(window, text="Currently Sourcing:", style="label.TLabel")
     currently_sourcing_img_lbl = Label(window, text="Image name here", style="label.TLabel")
-    saucenao_requests_count_lbl = Label(window, text="Number here/200", style="label.TLabel")
+    saucenao_requests_count_lbl = Label(window, text="???/200", style="label.TLabel")
+    saucenao_requests_count_array = [200]
     elapsed_time_lbl = Label(window, text="Elapsed time:", style="label.TLabel")
     eta_lbl = Label(window, text="ETA:", style="label.TLabel")
 
@@ -517,7 +371,7 @@ if __name__ == '__main__':
     custom_button_background_pressed_entry.insert(0, custom_array[5])
     custom_button_foreground_pressed_entry.insert(0, custom_array[6])
 
-    options_back_btn = Button(window, text="Back", command=init_window, style="button.TLabel")
+    options_back_btn = Button(window, text="Back", command=display_startpage, style="button.TLabel")
 
     # widgets for results
     results_lbl = Label(window, text="Results", font=("Arial Bold", 14), style="label.TLabel")
@@ -560,6 +414,9 @@ if __name__ == '__main__':
     
     esc_op = False
     esc_res = False
+    process = Process()
+    comm_q = Queue()
+    comm_img_q = Queue()
     init_directories(cwd)
-    init_window()
+    display_startpage()
     window.mainloop()
