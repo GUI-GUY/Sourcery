@@ -1,9 +1,9 @@
 beta 0.1
 Big Selector in save
 stop
-+mousewheel scrolling
-write tutorial
-+light theme
++ mousewheel scrolling
++ write tutorial
++ light theme
 no message boxes but labels
 clear all arrays on startscreen?
 other memory leaks
