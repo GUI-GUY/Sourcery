@@ -1,4 +1,8 @@
 **/env
+**/tests
+**/pixiv
+**/sourced_original
+**/.vscode
 Sourcery.code-workspace
 settings.json
 activate_env.bat

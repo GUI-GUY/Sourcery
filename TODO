@@ -1,12 +1,19 @@
 beta 0.1
-Big Selector in save
++ - + big Selector checkbuttons
++ (untested) Big Selector in save
++ big Selector back
 stop
 + mousewheel scrolling
++ scrolling accuracy
 + write tutorial
 + light theme
 no message boxes but labels
-clear all arrays on startscreen?
-other memory leaks
++ array memory leaks
+open memory leaks
+~ comments
+big selector: image data data image
+what happens when search finished (Currently Sourcing)
+Error handling
 
 beta 0.2
 logfile + log on screen
@@ -23,3 +30,21 @@ beta 0.3
 2nd service
 service options
 png over jpg over high res options
+optimizations
+foreign folder support
+
+All arrays: (+: no memory leaks 10.01.2020)
++ input_images_array = [] # For all images in Input folder
++- pixiv_images_array = [] # For all images in sourced_progress/pixiv folder
++- delete_dirs_array = [] # For empty directories or dirs where no original is present 
++- chkbtn_vars_big_array = [] # [[imgname, (img, IntVar), (img, IntVar) ...]...]
++? safe_to_show_array
++ chkbtn_vars_array = [] # 12x2 Checkbutton variables for the results screen
+
++ credentials_array = read_credentials(cwd) # [0]SauceNao API-Key, [1]Pixiv Username, [2]Pixiv Password, [3]Pixiv refreshtoken
+
++ colour_array = [] # For all current theme colours
++ custom_array = [] # Custom theme colours
+
+comm_q = Queue() # Queue for 'Remaining searches'
+comm_img_q = Queue() # Queue for 'Currently Sourcing'

@@ -161,12 +161,22 @@ END"""
         mb.showerror("ERROR", e)
     f.close()
 
-def save(cwd, chkbtn_vars_array, pixiv_images_array, delete_dirs_array, frame):
+def save(cwd, chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame):
     for element in delete_dirs_array:
         if path.isdir(element):
             rmtree(element)
         else:
             remove(element)
+    delete_dirs_array.clear()
+
+    for elem in chkbtn_vars_big_array:
+        for img in elem:
+            if img[1].get() == 1:
+                move(cwd + '/Sourcery/sourced_progress/pixiv/' + elem[0] + '/' + img[0], 
+                    cwd + '/Sourced/' + elem[0] + '/' + img[0])
+        rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + elem[0])
+    chkbtn_vars_big_array.clear()
+
     for tup in chkbtn_vars_array:
         original_var = tup[0].get()
         downloaded_var = tup [1].get()
@@ -174,12 +184,12 @@ def save(cwd, chkbtn_vars_array, pixiv_images_array, delete_dirs_array, frame):
         if len(pixiv_images_array) > 0:
             if original_var == 1:
                 if downloaded_var == 1:
-                    if pixiv_images_array[0][9]:
-                        move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2] + '/' + pixiv_images_array[0][1], 
-                            cwd + '/Sourced/new_' + pixiv_images_array[0][1])
-                        rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2])
-                    else:
-                        move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][0], 
+                    # if pixiv_images_array[0][9]:
+                    #     move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2] + '/' + pixiv_images_array[0][1], 
+                    #         cwd + '/Sourced/new_' + pixiv_images_array[0][1])
+                    #     rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2])
+                    # else:
+                    move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][0], # war im else
                             cwd + '/Sourced/new_' + pixiv_images_array[0][0])
                     move(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3], 
                         cwd + '/Sourced/old_' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3])
@@ -191,15 +201,16 @@ def save(cwd, chkbtn_vars_array, pixiv_images_array, delete_dirs_array, frame):
                     else:
                         remove(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][0])
             elif downloaded_var == 1:
-                    if pixiv_images_array[0][9]:
-                        move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2] + '/' + pixiv_images_array[0][1], 
-                            cwd + '/Sourced/' + pixiv_images_array[0][1])
-                        rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2])
-                    else:
-                        move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][0], 
+                    # if pixiv_images_array[0][9]:
+                    #     move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2] + '/' + pixiv_images_array[0][1], 
+                    #         cwd + '/Sourced/' + pixiv_images_array[0][1])
+                    #     rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2])
+                    # else:
+                    move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][0], # war im else
                             cwd + '/Sourced/' + pixiv_images_array[0][0])
                     remove(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3])
             remove(cwd + '/Input/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3])
+            safe_to_show_array.remove(pixiv_images_array[0][2])
             for widget in frame.winfo_children():
                 widget.grid_forget()
             for a in pixiv_images_array[0]:

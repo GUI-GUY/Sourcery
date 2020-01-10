@@ -16,5 +16,5 @@ NOTE: SauceNao currently caps the requests you can make to 200 per day and 6 per
 7. Click the "View results" button to see the original images and the freshly downloaded images with some metadata.
 8. You can choose the images you want to keep and hit one of the save button OR
 9. You can look at the images in a higher resolution in the big selector
-10. If you put in an image that has been uploaded alongside many others, a folder will be downloaded and you have to choose the one you want, or all of them. If you don't, the first image will be chosen which might not be the one you were looking for
+10. If you put in an image that has been uploaded alongside many others, a folder will be downloaded and you have to choose the one you want, or all of them. If you don't, the inpu image will be chosen and you wasted a request
 11. If you want to stop the application from further sourcery, hit the stop button

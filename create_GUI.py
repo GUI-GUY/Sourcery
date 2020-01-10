@@ -14,12 +14,17 @@ from display_thread import display_view_results2, display_big_selector2
 #from test import test
 
 def magic():
-    global saucenao_requests_count_array
+    """
+    Starts second process which searches for images and downloads them.
+    """
     if __name__ == '__main__':
         process = Process(target=do_sourcery, args=(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv_username, pixiv_password, credentials_array,))
         process.start()
 
 def display_startpage():
+    """
+    Draws the basic startpage widgets.
+    """
     forget_all_widgets()
     y = 100
     c = 23
@@ -43,6 +48,13 @@ def display_startpage():
     refresh_startpage()
     
 def refresh_startpage():
+    """
+    Updates these startpage widgets:
+    - Images in Input folder
+    - Remaining searches on SauceNao
+    - Current image that is being processed
+    """
+    global currently_processing
     global input_images_array
     input_images_array = listdir(cwd + "/Input")
     for img in input_images_array:
@@ -59,6 +71,13 @@ def refresh_startpage():
             answer2 = "Out of requests"
         else:
             answer2 = comm_img_q.get()
+            if answer2 != currently_processing:
+                if currently_processing != '':
+                    safe_to_show_array.append(currently_processing)
+                currently_processing = answer2
+                pointdex = currently_processing.rfind(".")
+                if pointdex != -1:
+                    currently_processing = currently_processing[:pointdex] # deletes the suffix
         currently_sourcing_img_lbl.configure(text=answer2)
     if esc_op:
         display_sourcery_options()
@@ -89,14 +108,23 @@ def display_statistics():
     pass
 
 def escape_options():
+    """
+    Sets an escape variable on 'options'-button press for refresh_startpage to stop looping.
+    """
     global esc_op
     esc_op = True
 
 def escape_results():
+    """
+    Sets an escape variable on 'view results'-button press for refresh_startpage to stop looping.
+    """
     global esc_res
     esc_res = True
 
 def display_basic_options():
+    """
+    Draws options widgets that are shown on all options pages.
+    """
     global esc_op
     esc_op = False
     options_lbl.place(x = 50, y = 10)
@@ -108,6 +136,10 @@ def display_basic_options():
     options_back_btn.place(x = 50, y = 500)
 
 def display_sourcery_options():
+    """
+    Draw options for Sourcery Application:
+    - Themes
+    """
     forget_all_widgets()
     display_basic_options()
     y = 100
@@ -158,6 +190,10 @@ def save_custom_theme():
     change_to_custom_theme()
 
 def display_provider_options():
+    """
+    Draw options (login) for all image providers:
+    - Pixiv 
+    """
     forget_all_widgets()
     display_basic_options()
 
@@ -169,6 +205,9 @@ def display_provider_options():
     pixiv_login_change_btn.place(x = 50, y = 190)
     
 def display_saucenao_options():
+    """
+    Draw options (API-Key) for SauceNao:
+    """
     forget_all_widgets()
     display_basic_options()
     saucenao_key_lbl.place(x = 50, y = 100)
@@ -176,6 +215,9 @@ def display_saucenao_options():
     saucenao_key_change_btn.place(x = 550, y = 100)
     
 def pixiv_change_login():
+    """
+    Unlock login widget for pixiv, so that you can change your login data. 
+    """
     pixiv_user_filled_lbl.place_forget()
     pixiv_password_filled_lbl.place_forget()
     pixiv_login_change_btn.place_forget()
@@ -188,6 +230,9 @@ def pixiv_change_login():
     pixiv_password_entry.insert(0, pixiv_password)
 
 def pixiv_set_login():
+    """
+    Save pixiv login data and revert the widgets to being uneditable.
+    """
     global pixiv_username
     global pixiv_password
     pixiv_user_entry.place_forget()
@@ -205,6 +250,9 @@ def pixiv_set_login():
     write_credentials(cwd, credentials_array)
 
 def saucenao_change_key():
+    """
+    Unlock API-Key widget for SauceNao, so that you can change your API-Key. 
+    """
     saucenao_key_change_btn.place_forget()
     saucenao_key_number_lbl.place_forget()
     saucenao_key_confirm_btn.place(x = 550, y = 100)
@@ -213,6 +261,9 @@ def saucenao_change_key():
     saucenao_key_entry.insert(0, saucenao_key)
     
 def saucenao_set_key():
+    """
+    Save SauceNao API-Key and revert the widget to being uneditable.
+    """
     global saucenao_key
     saucenao_key = saucenao_key_entry.get()
     credentials_array[0] = saucenao_key
@@ -224,6 +275,9 @@ def saucenao_set_key():
     saucenao_key_number_lbl.place(x = 150, y = 100)
 
 def stop():
+    """
+    Stop further search for images and halt the second process.
+    """
     currently_sourcing_img_lbl.configure(text="Stopped")
     try:
         process.join()
@@ -234,7 +288,7 @@ def display_big_selector(index):
     forget_all_widgets()
     big_selector_frame.place(x = round(width/3), y = 73)
 
-    window.after(100, display_big_selector2, index, cwd, window, frame2, pixiv_images_array, chkbtn_vars_array)
+    window.after(10, display_big_selector2, index, cwd, window, frame2, pixiv_images_array, chkbtn_vars_array, display_view_results, chkbtn_vars_big_array)
 
 def display_view_results():
     global esc_res
@@ -246,23 +300,51 @@ def display_view_results():
     save_and_refresh_btn.place(x = 250, y = 500)
     results_frame.place(x = 50, y = 100)
 
-    window.after(100, display_view_results2, cwd, delete_dirs_array, frame, chkbtn_vars_array, pixiv_images_array, width, height, display_big_selector)
+    window.after(10, display_view_results2, cwd, delete_dirs_array, frame, chkbtn_vars_array, pixiv_images_array, width, height, display_big_selector, safe_to_show_array)
 
 def save_and_back():
-    save(cwd, chkbtn_vars_array, pixiv_images_array, delete_dirs_array, frame)
+    """
+    Save selected images from results page and go back to startpage.
+    """
+    save(cwd, chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame)
     display_startpage()
 
 def save_and_refresh():
-    save(cwd, chkbtn_vars_array, pixiv_images_array, delete_dirs_array, frame)
-    display_view_results()
+    """
+    Save selected images from results page and show the next dozen.
+    """
+    global currently_processing
+    
+    if not comm_img_q.empty():
+        answer2 = comm_img_q.get()
+        if answer2 != currently_processing:
+            if currently_processing != '':
+                safe_to_show_array.append(currently_processing)
+            currently_processing = answer2
+            pointdex = currently_processing.rfind(".")
+            if pointdex != -1:
+                currently_processing = currently_processing[:pointdex] # deletes the suffix
+        window.after(1, save_and_refresh)
+    else:
+        save(cwd, chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame)
+        display_view_results()
 
 def myfunction(event):
+    """
+    Setup scroll region for results screen.
+    """
     results_canvas.configure(scrollregion=results_canvas.bbox("all"), width=width-620, height=height-620)
 
 def myfunction2(event):
+    """
+    Setup scroll region for big selector screen.
+    """
     big_selector_canvas.configure(scrollregion=big_selector_canvas.bbox("all"), width=(width/3)*2 - 50, height=height-125)
 
 def enforce_style():
+    """
+    Changes style of all widgets to the currently selected theme.
+    """
     global colour_array, custom_array
     colour_array, custom_array = read_theme(cwd)
     window.configure(bg=colour_array[0])
@@ -277,7 +359,6 @@ def enforce_style():
     style.configure("chkbtn.TCheckbutton", foreground=colour_array[1], background=colour_array[0], borderwidth = 0, highlightthickness = 10, selectcolor=colour_array[2], activebackground=colour_array[2], activeforeground=colour_array[2], disabledforeground=colour_array[2], highlightcolor=colour_array[2])
     #style.configure("scroll.Vertical.TScrollbar", foreground=colour_array[1], background=colour_array[2], throughcolor=colour_array[2], activebackground=colour_array[2])
     results_canvas.configure(background=colour_array[0])
-
 
 def bound_to_mousewheel(event):
     results_canvas.bind_all("<MouseWheel>", on_mousewheel)
@@ -316,9 +397,9 @@ if __name__ == '__main__':
     #dateS =  time.strftime("20%y-%m-%d")
 
     # set style
-    colour_array = []
-    custom_array = []
-    results_canvas=Canvas(window)
+    colour_array = [] # For all current theme colours
+    custom_array = [] # Custom theme colours
+    results_canvas = Canvas(window)
     enforce_style()
 
     # widgets for start screen
@@ -326,9 +407,8 @@ if __name__ == '__main__':
     images_in_input_lbl = Label(window, text="Images in input", style="label.TLabel")
     images_in_input_count_lbl = Label(window, text="Number here", style="label.TLabel")
     currently_sourcing_lbl = Label(window, text="Currently Sourcing:", style="label.TLabel")
-    currently_sourcing_img_lbl = Label(window, text="Image name here", style="label.TLabel")
+    currently_sourcing_img_lbl = Label(window, text="None", style="label.TLabel")
     saucenao_requests_count_lbl = Label(window, text="???/200", style="label.TLabel")
-    saucenao_requests_count_array = [200]
     elapsed_time_lbl = Label(window, text="Elapsed time:", style="label.TLabel")
     eta_lbl = Label(window, text="ETA:", style="label.TLabel")
 
@@ -347,7 +427,7 @@ if __name__ == '__main__':
     saucenao_options_btn = Button(window, text="SauceNao", command=display_saucenao_options, style="button.TLabel")
     sourcery_options_btn = Button(window, text="Sourcery", command=display_sourcery_options, style="button.TLabel")
 
-    credentials_array = read_credentials(cwd)
+    credentials_array = read_credentials(cwd) # [0]SauceNao API-Key, [1]Pixiv Username, [2]Pixiv Password, [3]Pixiv refreshtoken
     pixiv_username = credentials_array[1]
     pixiv_password = credentials_array[2]
     pixiv_login_lbl = Label(window, text="Pixiv Login", style="label.TLabel")
@@ -360,7 +440,7 @@ if __name__ == '__main__':
     pixiv_login_change_btn = Button(window, text="Change", command=pixiv_change_login, style="button.TLabel")
     pixiv_login_confirm_btn = Button(window, text="Confirm", command=pixiv_set_login, style="button.TLabel")
 
-    saucenao_key = credentials_array[0]
+    saucenao_key = credentials_array[0] # SauceNao API-Key
     saucenao_key_lbl = Label(window, text="SauceNao API-Key", style="label.TLabel")
     saucenao_key_number_lbl = Label(window, width=50, text=saucenao_key, style="button.TLabel")
     saucenao_key_entry = Entry(window, width=52, style="button.TLabel")
@@ -427,10 +507,19 @@ if __name__ == '__main__':
     frame2.bind("<Configure>",myfunction2)
 
     # global arrays
-    input_images_array = []
-    pixiv_images_array = []
-    delete_dirs_array = []
-    chkbtn_vars_array = []
+    input_images_array = [] # For all images in Input folder
+    pixiv_images_array = [] # For all images in sourced_progress/pixiv folder
+    safe_to_show_array = [] # For all images that are fully downloaded
+    safe_to_show_array.extend(listdir(cwd + '/Sourcery/sourced_original/'))
+    tt=0
+    for img in safe_to_show_array:
+        pointdex = img.rfind(".")
+        if pointdex != -1:
+            safe_to_show_array[tt] = img[:pointdex] # deletes the suffix
+        tt += 1
+    delete_dirs_array = [] # For empty directories or dirs where no original is present
+    chkbtn_vars_big_array = [] # [[imgname, (img, IntVar), (img, IntVar) ...]...]
+    chkbtn_vars_array = [] # 12x2 Checkbutton variables for the results screen
     for i in range(12):
         chkbtn_vars_array.append(((IntVar()), (IntVar())))
         chkbtn_vars_array[i][0].set(0)
@@ -442,11 +531,13 @@ if __name__ == '__main__':
     frame2.bind('<Enter>', bound_to_mousewheel2)
     frame2.bind('<Leave>', unbound_to_mousewheel2)
     
-    esc_op = False
-    esc_res = False
+    currently_processing = ''
+    esc_op = False # Escape variable for options
+    esc_res = False # Escape variable for results
     process = Process()
-    comm_q = Queue()
-    comm_img_q = Queue()
-    init_directories(cwd)
+    comm_q = Queue() # Queue for 'Remaining searches'
+    comm_img_q = Queue() # Queue for 'Currently Sourcing'
+    init_directories(cwd) # create all neccesary directories
+    # (missing) TODO create all options files
     display_startpage()
     window.mainloop()
