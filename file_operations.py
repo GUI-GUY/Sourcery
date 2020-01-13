@@ -196,7 +196,7 @@ def save(cwd, chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, dele
                 else:
                     move(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3], 
                         cwd + '/Sourced/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3])
-                    if pixiv_images_array[0][9]:
+                    if pixiv_images_array[0][9-4]:
                         rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2])
                     else:
                         remove(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][0])

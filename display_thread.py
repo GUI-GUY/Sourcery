@@ -46,6 +46,7 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
     original_size = original_image.size
     original_image = resize(original_image)
     original_photoImage = ImageTk.PhotoImage(original_image)
+    original_image.close()
 
     original_chkbtn = Checkbutton(window, image=original_photoImage, var=chkbtn_vars_array[index][0], style="chkbtn.TCheckbutton")
     original_chkbtn.image = original_photoImage
@@ -69,17 +70,18 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
     if not skip:
         chkbtn_vars_big_array.append([pixiv_images_array[index][2]]) #Append original img name w/o suffix
         btn_index = len(chkbtn_vars_big_array)-1
-    if pixiv_images_array[index][9]: # if image has a corresponding folder
+    if pixiv_images_array[index][9-4]: # if image has a corresponding folder
         t = 0
         
-        for img in pixiv_images_array[index][10]:
+        for img in pixiv_images_array[index][10-4]:
             if not skip:
                 chkbtn_vars_big_array[btn_index].append((img, IntVar())) # Append tuple with sub img name with suffix and corresponding IntVar
             downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[index][0] + '/' + img)
             downloaded_size = downloaded_image.size
             downloaded_image = resize(downloaded_image)
             downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
-            
+            downloaded_image.close()
+
             dowloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_big_array[btn_index][int(t/4)+1][1], style="chkbtn.TCheckbutton")
             dowloaded_chkbtn.image = downloaded_photoImage
             dowloaded_chkbtn.grid(column = 0, row = t, rowspan = 4)
@@ -95,6 +97,8 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
         downloaded_size = downloaded_image.size
         downloaded_image = resize(downloaded_image)
         downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
+        downloaded_image.close()
+        
 
         dowloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_array[index][1], style="chkbtn.TCheckbutton")
         dowloaded_chkbtn.image = downloaded_photoImage
@@ -106,7 +110,7 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
         dowloaded_wxh_lbl.grid(column = 1, row = 1)
         downloaded_type_lbl.grid(column = 1, row = 2)
 
-def display_view_results2(cwd, delete_dirs_array, frame, chkbtn_vars_array, pixiv_images_array, width1, height1, display_big_selector, safe_to_show_array):
+def display_view_results2(cwd, delete_dirs_array, frame, chkbtn_vars_array, pixiv_images_array, width1, height1, display_big_selector, safe_to_show_array, results_12_tuple_widgets_array):
     """
     Draws all widgets for first dozen in pixiv images:
     - Name of image
@@ -121,13 +125,14 @@ def display_view_results2(cwd, delete_dirs_array, frame, chkbtn_vars_array, pixi
     """
     global width
     global height
+    width = width1
+    height = height1
+    
     for b in pixiv_images_array:
         for a in b:
             del a
     pixiv_images_array.clear()
 
-    width = width1
-    height = height1
     thumb_size = (70,70)
     pixiv_dir_array = listdir(cwd + '/Sourcery/sourced_progress/pixiv')
     pixiv_sub_dir_array = []
@@ -138,7 +143,6 @@ def display_view_results2(cwd, delete_dirs_array, frame, chkbtn_vars_array, pixi
     
     t = 0
     for img in pixiv_dir_array:
-        flag = False # IsDirectory flag
         pointdex = img.rfind(".")
         if pointdex == -1:
             cropped = img
@@ -153,93 +157,118 @@ def display_view_results2(cwd, delete_dirs_array, frame, chkbtn_vars_array, pixi
         
         if cropped not in safe_to_show_array:
             continue
-        suffix = ''
-        sub = ''
-        if path.isfile(cwd + '/Sourcery/sourced_progress/pixiv/' + img):
+
+        original_image, downloaded_image, suffix, sub, dir_flag, continue_flag = image_opener(cwd, img, cropped, t, sourced_original_array, delete_dirs_array, safe_to_show_array, pixiv_sub_dir_array, chkbtn_vars_array)
+        if continue_flag:
+            continue
+
+        original_size = original_image.size
+        original_image.thumbnail(thumb_size, resample=Image.ANTIALIAS)
+        original_photoImage = ImageTk.PhotoImage(original_image)
+        original_image.close()
+
+        downloaded_size = downloaded_image.size
+        downloaded_image.thumbnail(thumb_size, resample=Image.ANTIALIAS)
+        downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
+        downloaded_image.close()
+
+        cropped_name_lbl = display_view_results_helper(frame, original_photoImage, downloaded_photoImage, chkbtn_vars_array, t, img, cropped, suffix, original_size, downloaded_size, dir_flag, display_big_selector, results_12_tuple_widgets_array)
+
+        pixiv_images_array.append([img, sub, cropped, suffix, cropped_name_lbl, dir_flag, pixiv_sub_dir_array]) # , original_image, original_photoImage, downloaded_image, downloaded_photoImage
+        if t > 32:
+            break
+        t += 3
+
+def image_opener(cwd, img, cropped, t, sourced_original_array, delete_dirs_array, safe_to_show_array, pixiv_sub_dir_array, chkbtn_vars_array):
+    dir_flag = False
+    suffix = ''
+    sub = ''
+    if path.isfile(cwd + '/Sourcery/sourced_progress/pixiv/' + img):
+        for image in sourced_original_array:
+            if image[0] == cropped:
+                suffix = image[2]
+                break
+        if suffix == '':
+            if cwd + '/Sourcery/sourced_progress/pixiv/' + img not in delete_dirs_array:
+                delete_dirs_array.append(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
+                safe_to_show_array.remove(cropped)
+            return None,None,None,None,None, True
+        try:
+            original_image = Image.open(cwd + '/Sourcery/sourced_original/' + cropped + '.' + suffix) 
+            downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
+        except Exception as e:
+            print(e)
+            mb.showerror("ERROR", e)
+    elif path.isdir(cwd + '/Sourcery/sourced_progress/pixiv/' + img):
+        dir_flag = True
+        try:
+            pixiv_sub_dir_array.extend(listdir(cwd + '/Sourcery/sourced_progress/pixiv/' + img))
+            if len(pixiv_sub_dir_array) == 0:
+                if cwd + '/Sourcery/sourced_progress/pixiv/' + img not in delete_dirs_array:
+                    delete_dirs_array.append(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
+                    safe_to_show_array.remove(cropped)
+                return None,None,None,None,None, True
+            pathname = ''
             for image in sourced_original_array:
-                if image[0] == cropped:
+                if image[0] == img:
+                    pathname = cwd + '/Sourcery/sourced_original/' + image[0] + image[1] + image[2]
                     suffix = image[2]
                     break
             if suffix == '':
                 if cwd + '/Sourcery/sourced_progress/pixiv/' + img not in delete_dirs_array:
                     delete_dirs_array.append(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
                     safe_to_show_array.remove(cropped)
-                continue
-            try:
-                original_image = Image.open(cwd + '/Sourcery/sourced_original/' + cropped + '.' + suffix) 
-                downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
-            except Exception as e:
-                print(e)
-                mb.showerror("ERROR", e)
-        elif path.isdir(cwd + '/Sourcery/sourced_progress/pixiv/' + img):
-            flag = True
-            try:
-                pixiv_sub_dir_array = listdir(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
-                if len(pixiv_sub_dir_array) == 0:
-                    if cwd + '/Sourcery/sourced_progress/pixiv/' + img not in delete_dirs_array:
-                        delete_dirs_array.append(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
-                        safe_to_show_array.remove(cropped)
-                    continue
-                pathname = ''
-                for image in sourced_original_array:
-                    if image[0] == img:
-                        pathname = cwd + '/Sourcery/sourced_original/' + image[0] + image[1] + image[2]
-                        suffix = image[2]
-                        break
-                if suffix == '':
-                    if cwd + '/Sourcery/sourced_progress/pixiv/' + img not in delete_dirs_array:
-                        delete_dirs_array.append(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
-                        safe_to_show_array.remove(cropped)
-                    continue
-                chkbtn_vars_array[int(t/3)][0].set(1)
-                chkbtn_vars_array[int(t/3)][1].set(0)
-                sub = pixiv_sub_dir_array[0]
-                original_image = Image.open(pathname)
-                downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + img + '/' + pixiv_sub_dir_array[0])
-            except Exception as e:
-                print(e)
-                mb.showerror("ERROR", e)
+                return None,None,None,None,None, True
+            chkbtn_vars_array[int(t/3)][0].set(1)
+            chkbtn_vars_array[int(t/3)][1].set(0)
+            sub = pixiv_sub_dir_array[0]
+            original_image = Image.open(pathname)
+            downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + img + '/' + pixiv_sub_dir_array[0])
+        except Exception as e:
+            print(e)
+            mb.showerror("ERROR", e)
+    return original_image, downloaded_image, suffix, sub, dir_flag, False
+        
+def display_view_results_helper(frame, original_photoImage, downloaded_photoImage, chkbtn_vars_array, t, img, cropped, suffix, original_size, downloaded_size, dir_flag, display_big_selector, results_12_tuple_widgets_array):
+    rst = results_12_tuple_widgets_array
+    # [([original_chkbtn, original_lbl, original_wxh_lbl, original_type_lbl, cropped_name_lbl], 
+    # [dowloaded_chkbtn, downloaded_lbl, downloaded_wxh_lbl, downloaded_type_lbl, big_selector_btn]), ([], []), ...]
+    # original_chkbtn:
+    rst[int(t/3)][0][0].configure(image=original_photoImage, var=chkbtn_vars_array[int(t/3)][0])
+    rst[int(t/3)][0][0].image = original_photoImage
+    rst[int(t/3)][0][0].grid(column = 0, row = t+1)
+    # original_lbl:
+    rst[int(t/3)][0][1].grid(column = 2, row = t+1)
+    # original_wxh_lbl:
+    rst[int(t/3)][0][2].configure(text = str(original_size))
+    rst[int(t/3)][0][2].grid(column = 3, row = t+1)
+    # original_type_lbl:
+    rst[int(t/3)][0][3].configure(text = suffix)
+    rst[int(t/3)][0][3].grid(column = 4, row = t+1)
+    # cropped_name_lbl:
+    rst[int(t/3)][0][4].configure(text = cropped)
+    rst[int(t/3)][0][4].grid(column = 1, row = t, columnspan=3)
 
-        original_size = original_image.size
-        downloaded_size = downloaded_image.size
+    # dowloaded_chkbtn:
+    rst[int(t/3)][1][0].configure(image=downloaded_photoImage, var=chkbtn_vars_array[int(t/3)][1])
+    rst[int(t/3)][1][0].image = downloaded_photoImage
+    rst[int(t/3)][1][0].grid(column = 0, row = t+2)
+    # downloaded_lbl:
+    rst[int(t/3)][1][1].grid(column = 2, row = t+2)
+    # misc:
+    if dir_flag:
+        rst[int(t/3)][1][0].configure(state = 'disabled')
+    else:
+        rst[int(t/3)][1][2].configure(text = str(downloaded_size))# downloaded_wxh_lbl
+        rst[int(t/3)][1][3].configure(text = img[img.rfind(".")+1:])# downloaded_type_lbl
+        rst[int(t/3)][1][0].configure(state = 'enabled')
+    # downloaded_wxh_lbl:
+    rst[int(t/3)][1][2].grid(column = 3, row = t+2)
+    # downloaded_type_lbl:
+    rst[int(t/3)][1][3].grid(column = 4, row = t+2)
+    # big_selector_btn:
+    big_selector_partial = partial(display_big_selector, int(t/3))
+    rst[int(t/3)][1][4].configure(command=big_selector_partial)
+    rst[int(t/3)][1][4].grid(column = 5, row = t+2)
 
-        original_image.thumbnail(thumb_size, resample=Image.ANTIALIAS)
-        downloaded_image.thumbnail(thumb_size, resample=Image.ANTIALIAS)
-
-        original_photoImage = ImageTk.PhotoImage(original_image)
-        downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
-
-        original_chkbtn = Checkbutton(frame, image=original_photoImage, var=chkbtn_vars_array[int(t/3)][0], style="chkbtn.TCheckbutton")
-        dowloaded_chkbtn = Checkbutton(frame, image=downloaded_photoImage, var=chkbtn_vars_array[int(t/3)][1], style="chkbtn.TCheckbutton")
-        original_chkbtn.image = original_photoImage
-        dowloaded_chkbtn.image = downloaded_photoImage
-        original_chkbtn.grid(column = 0, row = t+1)
-        dowloaded_chkbtn.grid(column = 0, row = t+2)
-        cropped_name_lbl = Label(frame, text = cropped, style='label.TLabel')
-        original_lbl = Label(frame, text = "original", style='label.TLabel')
-        original_wxh_lbl = Label(frame, text = str(original_size), style='label.TLabel')
-        original_type_lbl = Label(frame, text = suffix, style='label.TLabel')
-        downloaded_lbl = Label(frame, text = "pixiv", style='label.TLabel')
-        cropped_name_lbl.grid(column = 1, row = t, columnspan=3)
-        original_lbl.grid(column = 2, row = t+1)
-        original_wxh_lbl.grid(column = 3, row = t+1)
-        original_type_lbl.grid(column = 4, row = t+1)
-        downloaded_lbl.grid(column = 2, row = t+2)
-        if flag:
-            downloaded_wxh_lbl = Label(frame, text = "More images", style='label.TLabel')
-            downloaded_type_lbl = Label(frame, text = "More images", style='label.TLabel')
-            dowloaded_chkbtn.configure(state = 'disabled')
-        else:
-            downloaded_wxh_lbl = Label(frame, text = str(downloaded_size), style='label.TLabel')
-            downloaded_type_lbl = Label(frame, text = img[img.rfind(".")+1:], style='label.TLabel')
-            dowloaded_chkbtn.configure(state = 'enabled')
-        downloaded_wxh_lbl.grid(column = 3, row = t+2)
-        downloaded_type_lbl.grid(column = 4, row = t+2)
-        big_selector_partial = partial(display_big_selector, int(t/3))
-        big_selector_btn = Button(frame, text='View in Big Selector', command=big_selector_partial, style='button.TLabel')
-        big_selector_btn.grid(column = 5, row = t+2)
-
-        pixiv_images_array.append([img, sub, cropped, suffix, cropped_name_lbl, original_image, original_photoImage, downloaded_image, downloaded_photoImage, flag, pixiv_sub_dir_array])
-        if t > 32:
-            break
-        t += 3
+    return rst[int(t/3)][0][4]

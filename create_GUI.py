@@ -300,7 +300,7 @@ def display_view_results():
     save_and_refresh_btn.place(x = 250, y = 500)
     results_frame.place(x = 50, y = 100)
 
-    window.after(10, display_view_results2, cwd, delete_dirs_array, frame, chkbtn_vars_array, pixiv_images_array, width, height, display_big_selector, safe_to_show_array)
+    window.after(10, display_view_results2, cwd, delete_dirs_array, frame, chkbtn_vars_array, pixiv_images_array, width, height, display_big_selector, safe_to_show_array, results_12_tuple_widgets_array)
 
 def save_and_back():
     """
@@ -520,6 +520,9 @@ if __name__ == '__main__':
     delete_dirs_array = [] # For empty directories or dirs where no original is present
     chkbtn_vars_big_array = [] # [[imgname, (img, IntVar), (img, IntVar) ...]...]
     chkbtn_vars_array = [] # 12x2 Checkbutton variables for the results screen
+    results_12_tuple_widgets_array = [] # [([original_chkbtn, original_lbl, original_wxh_lbl, original_type_lbl, cropped_name_lbl], [dowloaded_chkbtn, downloaded_lbl, downloaded_wxh_lbl, downloaded_type_lbl, big_selector_btn]), ([], []), ...]
+    for i in range(12):
+        results_12_tuple_widgets_array.append(([Checkbutton(frame, style="chkbtn.TCheckbutton"), Label(frame, text = "original", style='label.TLabel'), Label(frame, style='label.TLabel'), Label(frame, style='label.TLabel'), Label(frame, style='label.TLabel')], [Checkbutton(frame, style="chkbtn.TCheckbutton"), Label(frame, text = "pixiv", style='label.TLabel'), Label(frame, text = "More images", style='label.TLabel'), Label(frame, text = "More images", style='label.TLabel'), Button(frame, text='View in Big Selector', style='button.TLabel')]))
     for i in range(12):
         chkbtn_vars_array.append(((IntVar()), (IntVar())))
         chkbtn_vars_array[i][0].set(0)
