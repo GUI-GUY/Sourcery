@@ -1,20 +1,22 @@
 beta 0.1
-+ - + big Selector checkbuttons
++ big Selector checkbuttons
 + (untested) Big Selector in save
 + big Selector back
-stop
++ (untested) stop
 + mousewheel scrolling
 + scrolling accuracy
 + write tutorial
 + light theme
 no message boxes but labels
 + array memory leaks
-open memory leaks
+big selector memory leaks
 ~ comments
 big selector: image data data image
 what happens when search finished (Currently Sourcing)
 Fehlerbehandlung
-frame2 grid_forget
++ frame2 grid_forget
++ (untested) block sourcery button while processing
+reset scrollbars
 
 beta 0.2
 logfile + log on screen
@@ -25,7 +27,10 @@ more metadata(tags, source, illustrator)
 better big Selector
 previews widgets for custom theme
 theme errors
-next prev in big Selector
+next & prev in big Selector
+minileak in results
+better sync for stop
+scrolling accuracy?
 
 beta 0.3
 2nd service

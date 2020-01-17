@@ -17,8 +17,9 @@ def magic():
     """
     Starts second process which searches for images and downloads them.
     """
+    do_sourcery_btn.configure(state='disabled')
     if __name__ == '__main__':
-        process = Process(target=do_sourcery, args=(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv_username, pixiv_password, credentials_array,))
+        process = Process(target=do_sourcery, args=(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv_username, pixiv_password, credentials_array, comm_stop_q,))
         process.start()
 
 def display_startpage():
@@ -78,6 +79,8 @@ def refresh_startpage():
                 pointdex = currently_processing.rfind(".")
                 if pointdex != -1:
                     currently_processing = currently_processing[:pointdex] # deletes the suffix
+        if answer2 == 'Stopped':
+            do_sourcery_btn.configure(state='enabled')
         currently_sourcing_img_lbl.configure(text=answer2)
     if esc_op:
         display_sourcery_options()
@@ -278,27 +281,29 @@ def stop():
     """
     Stop further search for images and halt the second process.
     """
-    currently_sourcing_img_lbl.configure(text="Stopped")
-    try:
-        process.join()
-    except:
-        pass
+    if p.is_alive():
+        comm_stop_q.put("Stopped")
+    #currently_sourcing_img_lbl.configure(text="Stopped")
 
 def display_big_selector(index):
     forget_all_widgets()
     big_selector_frame.place(x = round(width/3), y = 73)
 
-    window.after(10, display_big_selector2, index, cwd, window, frame2, pixiv_images_array, chkbtn_vars_array, display_view_results, chkbtn_vars_big_array)
+    window.after(10, display_big_selector2, index, cwd, window, frame2, pixiv_images_array, chkbtn_vars_array, display_view_results, chkbtn_vars_big_array, big_ref_array)
 
 def display_view_results():
     global esc_res
     esc_res = False
     forget_all_widgets()
     results_lbl.place(x = 50, y = 20)
-    options_back_btn.place(x = 50, y = 500)
-    save_and_back_btn.place(x = 150, y = 500)
-    save_and_refresh_btn.place(x = 250, y = 500)
+    options_back_btn.place(x = 50, y = height-80)
+    save_and_back_btn.place(x = 150, y = height-80)
+    save_and_refresh_btn.place(x = 250, y = height-80)
     results_frame.place(x = 50, y = 100)
+
+    for x in big_ref_array:
+        del x
+    big_ref_array.clear()
 
     window.after(10, display_view_results2, cwd, delete_dirs_array, frame, chkbtn_vars_array, pixiv_images_array, width, height, display_big_selector, safe_to_show_array, results_12_tuple_widgets_array)
 
@@ -333,13 +338,13 @@ def myfunction(event):
     """
     Setup scroll region for results screen.
     """
-    results_canvas.configure(scrollregion=results_canvas.bbox("all"), width=width-620, height=height-620)
+    results_canvas.configure(scrollregion=results_canvas.bbox("all"), width=results_frame_width, height=results_frame_height)
 
 def myfunction2(event):
     """
     Setup scroll region for big selector screen.
     """
-    big_selector_canvas.configure(scrollregion=big_selector_canvas.bbox("all"), width=(width/3)*2 - 50, height=height-125)
+    big_selector_canvas.configure(scrollregion=big_selector_canvas.bbox("all"), width=big_selector_frame_width, height=big_selector_frame_height)
 
 def enforce_style():
     """
@@ -390,10 +395,14 @@ if __name__ == '__main__':
     window = Tk()
     window.title("Sourcery")
     window.update_idletasks()
-    #window.state('zoomed')
+    window.state('zoomed')
     height = window.winfo_screenheight()
     width = window.winfo_screenwidth()
-    window.geometry(str(width-500) + 'x' + str(height-500))
+    results_frame_height = height-200
+    results_frame_width = width-200
+    big_selector_frame_height = height-125 # height-620
+    big_selector_frame_width = (width/3)*2 - 50 # width-620
+    #window.geometry(str(width-500) + 'x' + str(height-500))
     #dateS =  time.strftime("20%y-%m-%d")
 
     # set style
@@ -480,31 +489,31 @@ if __name__ == '__main__':
     # widgets for results
     results_lbl = Label(window, text="Results", font=("Arial Bold", 14), style="label.TLabel")
 
-    results_frame = Frame(window, width=width-620, height=height-620, style="frame.TFrame")
-    results_canvas = Canvas(results_frame, width=width-620, height=height-620, background=colour_array[0], highlightthickness=0)
-    frame = Frame(results_canvas, width=width-620, height=height-620, style="frame.TFrame")
+    results_frame = Frame(window, width=results_frame_width, height=results_frame_height, style="frame.TFrame")
+    results_canvas = Canvas(results_frame, width=results_frame_width, height=results_frame_height, background=colour_array[0], highlightthickness=0)
+    frame = Frame(results_canvas, width=results_frame_width, height=results_frame_height, style="frame.TFrame")
     results_scrollbar = Scrollbar(results_frame, orient="vertical", command=results_canvas.yview)
     results_canvas.configure(yscrollcommand=results_scrollbar.set)
     #https://stackoverflow.com/questions/17355902/python-tkinter-binding-mousewheel-to-scrollbar
     results_scrollbar.pack(side="right",fill="y")
     results_canvas.pack(side="left")
     results_canvas.create_window((0,0),window=frame,anchor='nw')
-    frame.bind("<Configure>",myfunction)
+    frame.bind("<Configure>", myfunction)
 
     save_and_back_btn = Button(window, text="Save & Back", command=save_and_back, style="button.TLabel")
     save_and_refresh_btn = Button(window, text="Save & Refresh", command=save_and_refresh, style="button.TLabel")
 
     # widgets for big_selector
-    big_selector_frame = Frame(window, width=width-620, height=height-620, style="frame.TFrame")
-    big_selector_canvas = Canvas(big_selector_frame, width=width-620, height=height-620, background=colour_array[0], highlightthickness=0)
-    frame2 = Frame(big_selector_canvas, width=width-620, height=height-620, style="frame.TFrame")
+    big_selector_frame = Frame(window, width=big_selector_frame_width, height=big_selector_frame_width, style="frame.TFrame")
+    big_selector_canvas = Canvas(big_selector_frame, width=big_selector_frame_width, height=big_selector_frame_width, background=colour_array[0], highlightthickness=0)
+    frame2 = Frame(big_selector_canvas, width=big_selector_frame_width, height=big_selector_frame_width, style="frame.TFrame")
     big_selector_scrollbar = Scrollbar(big_selector_frame, orient="vertical", command=big_selector_canvas.yview)
     big_selector_canvas.configure(yscrollcommand=big_selector_scrollbar.set)
 
     big_selector_scrollbar.pack(side="right",fill="y")
     big_selector_canvas.pack(side="left")
     big_selector_canvas.create_window((0,0),window=frame2,anchor='nw')
-    frame2.bind("<Configure>",myfunction2)
+    frame2.bind("<Configure>", myfunction2)
 
     # global arrays
     input_images_array = [] # For all images in Input folder
@@ -520,7 +529,8 @@ if __name__ == '__main__':
     delete_dirs_array = [] # For empty directories or dirs where no original is present
     chkbtn_vars_big_array = [] # [[imgname, (img, IntVar), (img, IntVar) ...]...]
     chkbtn_vars_array = [] # 12x2 Checkbutton variables for the results screen
-    results_12_tuple_widgets_array = [] # [([original_chkbtn, original_lbl, original_wxh_lbl, original_type_lbl, cropped_name_lbl], [dowloaded_chkbtn, downloaded_lbl, downloaded_wxh_lbl, downloaded_type_lbl, big_selector_btn]), ([], []), ...]
+    big_ref_array = [] # reference for all big selector widgets
+    results_12_tuple_widgets_array = [] # [([original_chkbtn, original_lbl, original_wxh_lbl, original_type_lbl, cropped_name_lbl], [downloaded_chkbtn, downloaded_lbl, downloaded_wxh_lbl, downloaded_type_lbl, big_selector_btn]), ([], []), ...]
     for i in range(12):
         results_12_tuple_widgets_array.append(([Checkbutton(frame, style="chkbtn.TCheckbutton"), Label(frame, text = "original", style='label.TLabel'), Label(frame, style='label.TLabel'), Label(frame, style='label.TLabel'), Label(frame, style='label.TLabel')], [Checkbutton(frame, style="chkbtn.TCheckbutton"), Label(frame, text = "pixiv", style='label.TLabel'), Label(frame, text = "More images", style='label.TLabel'), Label(frame, text = "More images", style='label.TLabel'), Button(frame, text='View in Big Selector', style='button.TLabel')]))
     for i in range(12):
@@ -540,6 +550,7 @@ if __name__ == '__main__':
     process = Process()
     comm_q = Queue() # Queue for 'Remaining searches'
     comm_img_q = Queue() # Queue for 'Currently Sourcing'
+    comm_stop_q = Queue() # Queue for stop signal
     init_directories(cwd) # create all neccesary directories
     # (missing) TODO create all options files
     display_startpage()

@@ -32,7 +32,7 @@ def resize(image):
         image = image.resize(newsize, Image.ANTIALIAS)
     return image
 
-def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn_vars_array, display_view_results, chkbtn_vars_big_array):
+def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn_vars_array, display_view_results, chkbtn_vars_big_array, big_ref_array):
     """
     Draws all widgets for given image:
     - Name of image
@@ -42,6 +42,13 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
     - Downloaded image data
     - Back button to results
     """
+    for widget in frame2.winfo_children():
+        widget.grid_forget()
+
+    for x in big_ref_array:
+        del x
+    big_ref_array.clear()
+
     original_image = Image.open(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[index][2] + '.' + pixiv_images_array[index][3])
     original_size = original_image.size
     original_image = resize(original_image)
@@ -58,7 +65,9 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
     cropped_name_lbl.place(x = 50, y = 50)
     original_wxh_lbl.place(x = 50, y = 500)
     original_type_lbl.place(x = 50, y = 523)
-    Button(window, text = 'Back', command = display_view_results, style = 'button.TLabel').place(x = 50, y = 546)
+    back_btn = Button(window, text = 'Back', command = display_view_results, style = 'button.TLabel').place(x = 50, y = 546)
+
+    array_appender(big_ref_array, [original_photoImage, original_size, original_chkbtn, cropped_name_lbl, original_wxh_lbl, original_type_lbl, back_btn])
 
     skip = False
     
@@ -82,15 +91,17 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
             downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
             downloaded_image.close()
 
-            dowloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_big_array[btn_index][int(t/4)+1][1], style="chkbtn.TCheckbutton")
-            dowloaded_chkbtn.image = downloaded_photoImage
-            dowloaded_chkbtn.grid(column = 0, row = t, rowspan = 4)
+            downloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_big_array[btn_index][int(t/4)+1][1], style="chkbtn.TCheckbutton")
+            downloaded_chkbtn.image = downloaded_photoImage
+            downloaded_chkbtn.grid(column = 0, row = t, rowspan = 4)
             downloaded_lbl = Label(frame2, text = "pixiv", style='label.TLabel')
-            dowloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
+            downloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
             downloaded_type_lbl = Label(frame2, text = img[img.rfind(".")+1:], style='label.TLabel')
             downloaded_lbl.grid(column = 1, row = t + 0)
-            dowloaded_wxh_lbl.grid(column = 1, row = t + 1)
+            downloaded_wxh_lbl.grid(column = 1, row = t + 1)
             downloaded_type_lbl.grid(column = 1, row = t + 2)
+
+            array_appender(big_ref_array, [downloaded_photoImage, downloaded_size, downloaded_chkbtn, downloaded_lbl, downloaded_wxh_lbl, downloaded_type_lbl])
             t += 4
     else:
         downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[index][0])
@@ -100,15 +111,21 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
         downloaded_image.close()
         
 
-        dowloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_array[index][1], style="chkbtn.TCheckbutton")
-        dowloaded_chkbtn.image = downloaded_photoImage
-        dowloaded_chkbtn.grid(column = 0, row = 0, rowspan = 4)
+        downloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_array[index][1], style="chkbtn.TCheckbutton")
+        downloaded_chkbtn.image = downloaded_photoImage
+        downloaded_chkbtn.grid(column = 0, row = 0, rowspan = 4)
         downloaded_lbl = Label(frame2, text = "pixiv", style='label.TLabel')
-        dowloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
+        downloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
         downloaded_type_lbl = Label(frame2, text = pixiv_images_array[index][0][pixiv_images_array[index][0].rfind(".")+1:], style='label.TLabel')
         downloaded_lbl.grid(column = 1, row = 0)
-        dowloaded_wxh_lbl.grid(column = 1, row = 1)
+        downloaded_wxh_lbl.grid(column = 1, row = 1)
         downloaded_type_lbl.grid(column = 1, row = 2)
+
+        array_appender(big_ref_array, [downloaded_photoImage, downloaded_size, downloaded_chkbtn, downloaded_lbl, downloaded_wxh_lbl, downloaded_type_lbl])
+    
+def array_appender(liste, appends):
+    for x in appends:
+        liste.append(x)
 
 def display_view_results2(cwd, delete_dirs_array, frame, chkbtn_vars_array, pixiv_images_array, width1, height1, display_big_selector, safe_to_show_array, results_12_tuple_widgets_array):
     """
@@ -229,10 +246,10 @@ def image_opener(cwd, img, cropped, t, sourced_original_array, delete_dirs_array
             mb.showerror("ERROR", e)
     return original_image, downloaded_image, suffix, sub, dir_flag, False
         
-def display_view_results_helper(frame, original_photoImage, downloaded_photoImage, chkbtn_vars_array, t, img, cropped, suffix, original_size, downloaded_size, dir_flag, display_big_selector, results_12_tuple_widgets_array):
-    rst = results_12_tuple_widgets_array
+def display_view_results_helper(frame, original_photoImage, downloaded_photoImage, chkbtn_vars_array, t, img, cropped, suffix, original_size, downloaded_size, dir_flag, display_big_selector, rst):
+    # rst = results_12_tuple_widgets_array
     # [([original_chkbtn, original_lbl, original_wxh_lbl, original_type_lbl, cropped_name_lbl], 
-    # [dowloaded_chkbtn, downloaded_lbl, downloaded_wxh_lbl, downloaded_type_lbl, big_selector_btn]), ([], []), ...]
+    # [downloaded_chkbtn, downloaded_lbl, downloaded_wxh_lbl, downloaded_type_lbl, big_selector_btn]), ([], []), ...]
     # original_chkbtn:
     rst[int(t/3)][0][0].configure(image=original_photoImage, var=chkbtn_vars_array[int(t/3)][0])
     rst[int(t/3)][0][0].image = original_photoImage
@@ -249,7 +266,7 @@ def display_view_results_helper(frame, original_photoImage, downloaded_photoImag
     rst[int(t/3)][0][4].configure(text = cropped)
     rst[int(t/3)][0][4].grid(column = 1, row = t, columnspan=3)
 
-    # dowloaded_chkbtn:
+    # downloaded_chkbtn:
     rst[int(t/3)][1][0].configure(image=downloaded_photoImage, var=chkbtn_vars_array[int(t/3)][1])
     rst[int(t/3)][1][0].image = downloaded_photoImage
     rst[int(t/3)][1][0].grid(column = 0, row = t+2)

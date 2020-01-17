@@ -4,7 +4,7 @@ from shutil import copy
 from saucenao_caller import get_response, decode_response
 from pixiv_handler import pixiv_authenticate, pixiv_login, pixiv_download
 
-def do_sourcery(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv_username, pixiv_password, credentials_array):
+def do_sourcery(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv_username, pixiv_password, credentials_array, comm_stop_q):
     pixiv_authenticate(pixiv_username, pixiv_password, credentials_array)
     # For every input image a request goes out to saucenao and gets decoded
     for img in input_images_array:
@@ -38,6 +38,15 @@ def do_sourcery(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv
                 #stop()
             if res[2] < 1:
                 sleep(30)
+        if not comm_stop_q.empty():
+            try:
+                stop_signal = comm_stop_q.get()
+                if stop_signal != None:
+                    comm_img_q.put(stop_signal)
+                    break
+            except:
+                pass
+            
 
 def process_img_data(img_data_array, img_name_original):
     if img_data_array[1] != 0:
