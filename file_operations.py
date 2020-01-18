@@ -1,8 +1,12 @@
-from os import makedirs, remove, path
+from os import makedirs, remove, path, startfile
 from shutil import move, rmtree
 from tkinter import messagebox as mb
 
-def init_directories(cwd):
+cwd = ''
+
+def init_directories(cwd1):
+    global cwd
+    cwd = cwd1
     try:
         makedirs(cwd + "/Input", 0o777, True)
         makedirs(cwd + "/Sourced", 0o777, True)
@@ -14,7 +18,7 @@ def init_directories(cwd):
         print(e)
         mb.showerror("ERROR", e)
 
-def read_theme(cwd):
+def read_theme():
     """
     Returns a list with colour values as strings for the currently chosen style and a list with colour values for the custom style.\n
     Order:\n
@@ -51,7 +55,7 @@ def read_theme(cwd):
     f.close()
     return colour_array, custom_array
 
-def write_theme(cwd, chosen_theme, custom_theme):
+def write_theme(chosen_theme, custom_theme):
     theme = """Current theme=""" + chosen_theme + """
 
 Dark Theme
@@ -112,7 +116,7 @@ def is_image(img):
         return True
     return False
 
-def read_credentials(cwd):
+def read_credentials():
     """
     Returns a list with saved credentials.\n
     Order:\n
@@ -142,7 +146,7 @@ def read_credentials(cwd):
     f.close()
     return credentials_array
 
-def write_credentials(cwd, credentials_array):
+def write_credentials(credentials_array):
     creds = """SauceNao
 API-Key=""" + credentials_array[0] + """
 
@@ -161,7 +165,7 @@ END"""
         mb.showerror("ERROR", e)
     f.close()
 
-def save(cwd, chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame):
+def save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame):
     for element in delete_dirs_array:
         if path.isdir(element):
             rmtree(element)
@@ -220,3 +224,20 @@ def save(cwd, chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, dele
 if __name__ == '__main__':
     pass
     #write_credentials(getcwd(), read_credentials(getcwd()))
+
+def open_input():
+    try:
+        startfile(cwd + "/Input")
+    except Exception as e:
+        print(e)
+        mb.showerror("ERROR", e)
+
+def open_sourced():
+    try:
+        startfile(cwd + "/Sourced")
+    except Exception as e:
+        print(e)
+        mb.showerror("ERROR", e)
+
+def display_statistics():
+    pass

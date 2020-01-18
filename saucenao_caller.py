@@ -1,17 +1,17 @@
-import sys
-import os
-import io
-import unicodedata
-import requests
+from sys import stdout, stderr
+#from os import path, rename
+from io import BytesIO
+#import unicodedata
+from requests import post
 from PIL import Image
-import json
-import codecs
-import re
-import time
+from json import JSONDecoder
+from codecs import getwriter
+from re import search
+#import time
 from collections import OrderedDict
 #from pixiv_handler import pixiv_download
-sys.stdout = codecs.getwriter('utf8')(sys.stdout.detach())
-sys.stderr = codecs.getwriter('utf8')(sys.stderr.detach())
+stdout = getwriter('utf8')(stdout.detach())
+stderr = getwriter('utf8')(stderr.detach())
 
 thumbSize = (250,250)
 

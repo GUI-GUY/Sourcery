@@ -1,7 +1,7 @@
 from pathlib import Path
 from pixivapi import Client, Size
 from tkinter import messagebox as mb
-import os
+#import os
 
 client = Client()
 

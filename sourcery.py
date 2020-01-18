@@ -2,7 +2,7 @@ from tkinter import messagebox as mb
 from time import sleep
 from shutil import copy
 from saucenao_caller import get_response, decode_response
-from pixiv_handler import pixiv_authenticate, pixiv_login, pixiv_download
+from pixiv_handler import pixiv_authenticate, pixiv_download
 
 def do_sourcery(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv_username, pixiv_password, credentials_array, comm_stop_q):
     pixiv_authenticate(pixiv_username, pixiv_password, credentials_array)
@@ -46,6 +46,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv
                     break
             except:
                 pass
+    comm_img_q.put("Finished")
             
 
 def process_img_data(img_data_array, img_name_original):

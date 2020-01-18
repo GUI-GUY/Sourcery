@@ -9,14 +9,16 @@ beta 0.1
 + light theme
 no message boxes but labels
 + array memory leaks
-~ big selector memory leaks
++ big selector memory leaks
 ~ comments
-big selector: image data data image
-what happens when search finished (Currently Sourcing)
++ big selector: image data data image
++ (untested) what happens when search finished (Currently Sourcing)
 Fehlerbehandlung
 + frame2 grid_forget
 + (untested) block sourcery button while processing
-reset scrollbars
++ reset scrollbars
+beautify
+sourcery error stop
 
 beta 0.2
 logfile + log on screen
@@ -31,6 +33,7 @@ next & prev in big Selector
 minileak in results
 better sync for stop
 scrolling accuracy?
+in window tutorial
 
 beta 0.3
 2nd service

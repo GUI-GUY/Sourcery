@@ -21,12 +21,12 @@ def resize(image):
     oldheight = image.height
 
     if oldwidth > width/3:
-        newwidth = round(width/3)
+        newwidth = round(width*0.4)
         newheight = round(newwidth/(oldwidth/oldheight))
         newsize = newwidth, newheight
         image = image.resize(newsize, Image.ANTIALIAS)
-    if image.height > height-320:
-        newheight = height - 320
+    if image.height > height-120:
+        newheight = height - 120
         newwidth = round(newheight/(oldheight/oldwidth))
         newsize = newwidth, newheight
         image = image.resize(newsize, Image.ANTIALIAS)
@@ -58,16 +58,18 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
 
     original_chkbtn = Checkbutton(window, image=original_photoImage, var=chkbtn_vars_array[index][0], style="chkbtn.TCheckbutton")
     original_chkbtn.image = original_photoImage
-    original_chkbtn.place(x = 20, y = 73)
+    original_chkbtn.place(x = 15, y = 20)
 
     cropped_name_lbl = Label(window, text = pixiv_images_array[index][2], style='label.TLabel')
+    original_lbl = Label(window, text = 'original', style='label.TLabel')
     original_wxh_lbl = Label(window, text = original_size, style='label.TLabel')
     original_type_lbl = Label(window, text = pixiv_images_array[index][3], style='label.TLabel')
-    cropped_name_lbl.place(x = 50, y = 50)
-    original_wxh_lbl.place(x = 50, y = 500)
-    original_type_lbl.place(x = 50, y = 523)
+    cropped_name_lbl.place(x = round(width*0.43), y = 15)
+    original_lbl.place(x = round(width*0.43), y = 35)
+    original_wxh_lbl.place(x = round(width*0.43), y = 55)
+    original_type_lbl.place(x = round(width*0.43), y = 75)
     back_btn = Button(window, text = 'Back', command = display_view_results, style = 'button.TLabel')
-    back_btn.place(x = 50, y = 546)
+    back_btn.place(x = round(width*0.43), y = 100)
 
     big_ref_array.extend([original_photoImage, original_image, original_chkbtn, cropped_name_lbl, original_wxh_lbl, original_type_lbl, back_btn])
 
@@ -90,40 +92,40 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
             downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[index][0] + '/' + img)
             downloaded_size = downloaded_image.size
             downloaded_image = resize(downloaded_image)
-            # downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
-            # downloaded_image.close()
+            downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
+            downloaded_image.close()
 
-            # downloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_big_array[btn_index][int(t/4)+1][1], style="chkbtn.TCheckbutton")
-            # downloaded_chkbtn.image = downloaded_photoImage
-            # downloaded_chkbtn.grid(column = 0, row = t, rowspan = 4)
+            downloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_big_array[btn_index][int(t/4)+1][1], style="chkbtn.TCheckbutton")
+            downloaded_chkbtn.image = downloaded_photoImage
+            downloaded_chkbtn.grid(column = 1, row = t, rowspan = 4)
             downloaded_lbl = Label(frame2, text = "pixiv", style='label.TLabel')
-            #downloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
+            downloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
             downloaded_type_lbl = Label(frame2, text = img[img.rfind(".")+1:], style='label.TLabel')
-            downloaded_lbl.grid(column = 1, row = t + 0)
-            #downloaded_wxh_lbl.grid(column = 1, row = t + 1)
-            downloaded_type_lbl.grid(column = 1, row = t + 2)
+            downloaded_lbl.grid(column = 0, row = t + 0)
+            downloaded_wxh_lbl.grid(column = 0, row = t + 1)
+            downloaded_type_lbl.grid(column = 0, row = t + 2)
 
-            # big_ref_array.extend([downloaded_photoImage, downloaded_image])
+            big_ref_array.extend([downloaded_photoImage, downloaded_image, downloaded_chkbtn])
             t += 4
     else:
         downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[index][0])
         downloaded_size = downloaded_image.size
         downloaded_image = resize(downloaded_image)
-        # downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
-        # downloaded_image.close()
+        downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
+        downloaded_image.close()
         
 
-        # downloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_array[index][1], style="chkbtn.TCheckbutton")
-        # downloaded_chkbtn.image = downloaded_photoImage
-        # downloaded_chkbtn.grid(column = 0, row = 0, rowspan = 4)
+        downloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_array[index][1], style="chkbtn.TCheckbutton")
+        downloaded_chkbtn.image = downloaded_photoImage
+        downloaded_chkbtn.grid(column = 1, row = 0, rowspan = 4)
         downloaded_lbl = Label(frame2, text = "pixiv", style='label.TLabel')
-        #downloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
+        downloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
         downloaded_type_lbl = Label(frame2, text = pixiv_images_array[index][0][pixiv_images_array[index][0].rfind(".")+1:], style='label.TLabel')
-        downloaded_lbl.grid(column = 1, row = 0)
-        #downloaded_wxh_lbl.grid(column = 1, row = 1)
-        downloaded_type_lbl.grid(column = 1, row = 2)
+        downloaded_lbl.grid(column = 0, row = 0)
+        downloaded_wxh_lbl.grid(column = 0, row = 1)
+        downloaded_type_lbl.grid(column = 0, row = 2)
 
-        # big_ref_array.extend([downloaded_photoImage, downloaded_image])
+        big_ref_array.extend([downloaded_photoImage, downloaded_image, downloaded_chkbtn])
 
 def display_view_results2(cwd, delete_dirs_array, frame, chkbtn_vars_array, pixiv_images_array, width1, height1, display_big_selector, safe_to_show_array, results_12_tuple_widgets_array):
     """

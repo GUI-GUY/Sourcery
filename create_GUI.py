@@ -1,13 +1,13 @@
 from tkinter import Tk, IntVar, Canvas, Scrollbar
-from tkinter.ttk import Label, Checkbutton, Button, Style, Frame, Notebook, Entry, Frame
-from tkinter import messagebox as mb
+from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
+#from tkinter import messagebox as mb
 #from tkinter.filedialog import askdirectory
-from functools import partial
-from PIL import ImageTk, Image
-from os import getcwd, listdir, startfile, path
+#from functools import partial
+#from PIL import ImageTk, Image
+from os import getcwd, listdir
 from multiprocessing import Process, freeze_support, Queue
 #import time
-from shutil import copy, move
+#from shutil import copy, move
 from file_operations import init_directories, read_theme, is_image, read_credentials, write_credentials, write_theme, save
 from sourcery import do_sourcery
 from display_thread import display_view_results2, display_big_selector2
@@ -40,7 +40,7 @@ def display_startpage():
 
     open_input_btn.place(x = 20, y = y + c * 0)
     open_sourced_btn.place(x = 20, y = y + c * 1)
-    statistics_btn.place(x = 20, y = y + c * 2)
+    #statistics_btn.place(x = 20, y = y + c * 2)
     options_btn.place(x = 20, y = y + c * 3)
     do_sourcery_btn.place(x = 380, y = 100)
     stop_btn.place(x = 200, y = y + c * 6)
@@ -79,7 +79,7 @@ def refresh_startpage():
                 pointdex = currently_processing.rfind(".")
                 if pointdex != -1:
                     currently_processing = currently_processing[:pointdex] # deletes the suffix
-        if answer2 == 'Stopped':
+        if answer2 == 'Stopped' or answer2 == 'Finished':
             do_sourcery_btn.configure(state='enabled')
         currently_sourcing_img_lbl.configure(text=answer2)
     if esc_op:
@@ -92,23 +92,6 @@ def refresh_startpage():
 def forget_all_widgets():
     for widget in window.winfo_children():
         widget.place_forget()
-
-def open_input():
-    try:
-        startfile(cwd + "/Input")
-    except Exception as e:
-        print(e)
-        mb.showerror("ERROR", e)
-
-def open_sourced():
-    try:
-        startfile(cwd + "/Sourced")
-    except Exception as e:
-        print(e)
-        mb.showerror("ERROR", e)
-
-def display_statistics():
-    pass
 
 def escape_options():
     """
@@ -170,15 +153,15 @@ def display_sourcery_options():
     save_custom_theme_btn.place(x = x1, y = y + c * 11)
 
 def change_to_dark_theme():
-    write_theme(cwd, "Dark Theme", custom_array)
+    write_theme("Dark Theme", custom_array)
     enforce_style()
 
 def change_to_light_theme():
-    write_theme(cwd, "Light Theme", custom_array)
+    write_theme("Light Theme", custom_array)
     enforce_style()
 
 def change_to_custom_theme():
-    write_theme(cwd, "Custom Theme", custom_array)
+    write_theme("Custom Theme", custom_array)
     enforce_style()
 
 def save_custom_theme():
@@ -250,7 +233,7 @@ def pixiv_set_login():
     pixiv_password_filled_lbl.configure(text=pixiv_password)
     credentials_array[1] = pixiv_username
     credentials_array[2] = pixiv_password
-    write_credentials(cwd, credentials_array)
+    write_credentials(credentials_array)
 
 def saucenao_change_key():
     """
@@ -270,7 +253,7 @@ def saucenao_set_key():
     global saucenao_key
     saucenao_key = saucenao_key_entry.get()
     credentials_array[0] = saucenao_key
-    write_credentials(cwd, credentials_array)
+    write_credentials(credentials_array)
     saucenao_key_confirm_btn.place_forget()
     saucenao_key_entry.place_forget()
     saucenao_key_change_btn.place(x = 550, y = 100)
@@ -287,8 +270,8 @@ def stop():
 
 def display_big_selector(index):
     forget_all_widgets()
-    big_selector_frame.place(x = round(width/3), y = 73)
-
+    big_selector_frame.place(x = round(width*0.515), y = 20)
+    big_selector_canvas.yview_moveto(0)
     window.after(10, display_big_selector2, index, cwd, window, frame2, pixiv_images_array, chkbtn_vars_array, display_view_results, chkbtn_vars_big_array, big_ref_array)
 
 def display_view_results():
@@ -300,6 +283,7 @@ def display_view_results():
     save_and_back_btn.place(x = 150, y = height-80)
     save_and_refresh_btn.place(x = 250, y = height-80)
     results_frame.place(x = 50, y = 100)
+    results_canvas.yview_moveto(0)
 
     for x in range(len(big_ref_array)):
         try:
@@ -321,7 +305,7 @@ def save_and_back():
     """
     Save selected images from results page and go back to startpage.
     """
-    save(cwd, chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame)
+    save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame)
     display_startpage()
 
 def save_and_refresh():
@@ -341,7 +325,7 @@ def save_and_refresh():
                 currently_processing = currently_processing[:pointdex] # deletes the suffix
         window.after(1, save_and_refresh)
     else:
-        save(cwd, chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame)
+        save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame)
         display_view_results()
 
 def myfunction(event):
@@ -361,7 +345,7 @@ def enforce_style():
     Changes style of all widgets to the currently selected theme.
     """
     global colour_array, custom_array
-    colour_array, custom_array = read_theme(cwd)
+    colour_array, custom_array = read_theme()
     window.configure(bg=colour_array[0])
     style = Style()
     style.configure("label.TLabel", foreground=colour_array[1], background=colour_array[0], font=("Arial Bold", 10))
@@ -410,8 +394,8 @@ if __name__ == '__main__':
     width = window.winfo_screenwidth()
     results_frame_height = height-200
     results_frame_width = width-200
-    big_selector_frame_height = height-125 # height-620
-    big_selector_frame_width = (width/3)*2 - 50 # width-620
+    big_selector_frame_height = height-100 # height-620
+    big_selector_frame_width = round(width*0.48) - 25 # width-620
     #window.geometry(str(width-500) + 'x' + str(height-500))
     #dateS =  time.strftime("20%y-%m-%d")
 
@@ -433,7 +417,7 @@ if __name__ == '__main__':
 
     open_input_btn = Button(window, text="Open Input", command=open_input, style="button.TLabel")
     open_sourced_btn = Button(window, text="Open Sourced", command=open_sourced, style="button.TLabel")
-    statistics_btn = Button(window, text="Statistics", command=display_statistics, style="button.TLabel")
+    #statistics_btn = Button(window, text="Statistics", command=display_statistics, style="button.TLabel")
     options_btn = Button(window, text="Options", command=escape_options, style="button.TLabel")
     do_sourcery_btn = Button(window, text="Do Sourcery", command=magic, style="button.TLabel")
     stop_btn = Button(window, text="Stop", command=stop, style="button.TLabel")
@@ -446,7 +430,7 @@ if __name__ == '__main__':
     saucenao_options_btn = Button(window, text="SauceNao", command=display_saucenao_options, style="button.TLabel")
     sourcery_options_btn = Button(window, text="Sourcery", command=display_sourcery_options, style="button.TLabel")
 
-    credentials_array = read_credentials(cwd) # [0]SauceNao API-Key, [1]Pixiv Username, [2]Pixiv Password, [3]Pixiv refreshtoken
+    credentials_array = read_credentials() # [0]SauceNao API-Key, [1]Pixiv Username, [2]Pixiv Password, [3]Pixiv refreshtoken
     pixiv_username = credentials_array[1]
     pixiv_password = credentials_array[2]
     pixiv_login_lbl = Label(window, text="Pixiv Login", style="label.TLabel")
