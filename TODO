@@ -9,7 +9,7 @@ beta 0.1
 + light theme
 no message boxes but labels
 + array memory leaks
-big selector memory leaks
+~ big selector memory leaks
 ~ comments
 big selector: image data data image
 what happens when search finished (Currently Sourcing)

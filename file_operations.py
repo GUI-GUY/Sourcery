@@ -213,9 +213,9 @@ def save(cwd, chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, dele
             safe_to_show_array.remove(pixiv_images_array[0][2])
             for widget in frame.winfo_children():
                 widget.grid_forget()
-            for a in pixiv_images_array[0]:
-                del a
-            pixiv_images_array.pop(0)
+            for a in range(len(pixiv_images_array[0])):
+                del pixiv_images_array[0][0]
+            #pixiv_images_array.pop(0)
 
 if __name__ == '__main__':
     pass

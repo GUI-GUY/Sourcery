@@ -301,9 +301,19 @@ def display_view_results():
     save_and_refresh_btn.place(x = 250, y = height-80)
     results_frame.place(x = 50, y = 100)
 
-    for x in big_ref_array:
-        del x
-    big_ref_array.clear()
+    for x in range(len(big_ref_array)):
+        try:
+            big_ref_array[0].place_forget()
+        except:
+            pass
+        try:
+            big_ref_array[0].image = None
+        except:
+            pass
+        # big_ref_array.remove(x)
+        del big_ref_array[0]
+    #print(big_ref_array)
+    # big_ref_array.clear()
 
     window.after(10, display_view_results2, cwd, delete_dirs_array, frame, chkbtn_vars_array, pixiv_images_array, width, height, display_big_selector, safe_to_show_array, results_12_tuple_widgets_array)
 

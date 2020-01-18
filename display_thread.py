@@ -42,12 +42,13 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
     - Downloaded image data
     - Back button to results
     """
-    for widget in frame2.winfo_children():
-        widget.grid_forget()
+    forget = frame2.winfo_children()
+    for widget in range(len(forget)):
+        forget[0].grid_forget()
+        del forget[0]
 
-    for x in big_ref_array:
-        del x
-    big_ref_array.clear()
+    for x in range(len(big_ref_array)):
+        del big_ref_array[0]
 
     original_image = Image.open(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[index][2] + '.' + pixiv_images_array[index][3])
     original_size = original_image.size
@@ -65,9 +66,10 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
     cropped_name_lbl.place(x = 50, y = 50)
     original_wxh_lbl.place(x = 50, y = 500)
     original_type_lbl.place(x = 50, y = 523)
-    back_btn = Button(window, text = 'Back', command = display_view_results, style = 'button.TLabel').place(x = 50, y = 546)
+    back_btn = Button(window, text = 'Back', command = display_view_results, style = 'button.TLabel')
+    back_btn.place(x = 50, y = 546)
 
-    array_appender(big_ref_array, [original_photoImage, original_size, original_chkbtn, cropped_name_lbl, original_wxh_lbl, original_type_lbl, back_btn])
+    big_ref_array.extend([original_photoImage, original_image, original_chkbtn, cropped_name_lbl, original_wxh_lbl, original_type_lbl, back_btn])
 
     skip = False
     
@@ -88,44 +90,40 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
             downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[index][0] + '/' + img)
             downloaded_size = downloaded_image.size
             downloaded_image = resize(downloaded_image)
-            downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
-            downloaded_image.close()
+            # downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
+            # downloaded_image.close()
 
-            downloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_big_array[btn_index][int(t/4)+1][1], style="chkbtn.TCheckbutton")
-            downloaded_chkbtn.image = downloaded_photoImage
-            downloaded_chkbtn.grid(column = 0, row = t, rowspan = 4)
+            # downloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_big_array[btn_index][int(t/4)+1][1], style="chkbtn.TCheckbutton")
+            # downloaded_chkbtn.image = downloaded_photoImage
+            # downloaded_chkbtn.grid(column = 0, row = t, rowspan = 4)
             downloaded_lbl = Label(frame2, text = "pixiv", style='label.TLabel')
-            downloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
+            #downloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
             downloaded_type_lbl = Label(frame2, text = img[img.rfind(".")+1:], style='label.TLabel')
             downloaded_lbl.grid(column = 1, row = t + 0)
-            downloaded_wxh_lbl.grid(column = 1, row = t + 1)
+            #downloaded_wxh_lbl.grid(column = 1, row = t + 1)
             downloaded_type_lbl.grid(column = 1, row = t + 2)
 
-            array_appender(big_ref_array, [downloaded_photoImage, downloaded_size, downloaded_chkbtn, downloaded_lbl, downloaded_wxh_lbl, downloaded_type_lbl])
+            # big_ref_array.extend([downloaded_photoImage, downloaded_image])
             t += 4
     else:
         downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[index][0])
         downloaded_size = downloaded_image.size
         downloaded_image = resize(downloaded_image)
-        downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
-        downloaded_image.close()
+        # downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
+        # downloaded_image.close()
         
 
-        downloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_array[index][1], style="chkbtn.TCheckbutton")
-        downloaded_chkbtn.image = downloaded_photoImage
-        downloaded_chkbtn.grid(column = 0, row = 0, rowspan = 4)
+        # downloaded_chkbtn = Checkbutton(frame2, image=downloaded_photoImage, var=chkbtn_vars_array[index][1], style="chkbtn.TCheckbutton")
+        # downloaded_chkbtn.image = downloaded_photoImage
+        # downloaded_chkbtn.grid(column = 0, row = 0, rowspan = 4)
         downloaded_lbl = Label(frame2, text = "pixiv", style='label.TLabel')
-        downloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
+        #downloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
         downloaded_type_lbl = Label(frame2, text = pixiv_images_array[index][0][pixiv_images_array[index][0].rfind(".")+1:], style='label.TLabel')
         downloaded_lbl.grid(column = 1, row = 0)
-        downloaded_wxh_lbl.grid(column = 1, row = 1)
+        #downloaded_wxh_lbl.grid(column = 1, row = 1)
         downloaded_type_lbl.grid(column = 1, row = 2)
 
-        array_appender(big_ref_array, [downloaded_photoImage, downloaded_size, downloaded_chkbtn, downloaded_lbl, downloaded_wxh_lbl, downloaded_type_lbl])
-    
-def array_appender(liste, appends):
-    for x in appends:
-        liste.append(x)
+        # big_ref_array.extend([downloaded_photoImage, downloaded_image])
 
 def display_view_results2(cwd, delete_dirs_array, frame, chkbtn_vars_array, pixiv_images_array, width1, height1, display_big_selector, safe_to_show_array, results_12_tuple_widgets_array):
     """
@@ -145,10 +143,10 @@ def display_view_results2(cwd, delete_dirs_array, frame, chkbtn_vars_array, pixi
     width = width1
     height = height1
     
-    for b in pixiv_images_array:
-        for a in b:
-            del a
-    pixiv_images_array.clear()
+    for b in range(len(pixiv_images_array)):
+        for a in range(len(pixiv_images_array[0])):
+            del pixiv_images_array[0][0]
+        del pixiv_images_array[0]
 
     thumb_size = (70,70)
     pixiv_dir_array = listdir(cwd + '/Sourcery/sourced_progress/pixiv')
