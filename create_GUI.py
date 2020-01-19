@@ -8,7 +8,7 @@ from os import getcwd, listdir
 from multiprocessing import Process, freeze_support, Queue
 #import time
 #from shutil import copy, move
-from file_operations import init_directories, read_theme, is_image, read_credentials, write_credentials, write_theme, save
+from file_operations import init_directories, read_theme, is_image, read_credentials, write_credentials, write_theme, save, open_input, open_sourced, display_statistics
 from sourcery import do_sourcery
 from display_thread import display_view_results2, display_big_selector2
 #from test import test
@@ -19,7 +19,7 @@ def magic():
     """
     do_sourcery_btn.configure(state='disabled')
     if __name__ == '__main__':
-        process = Process(target=do_sourcery, args=(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv_username, pixiv_password, credentials_array, comm_stop_q,))
+        process = Process(target=do_sourcery, args=(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv_username, pixiv_password, credentials_array, comm_stop_q, comm_error_q, ))
         process.start()
 
 def display_startpage():
@@ -37,6 +37,7 @@ def display_startpage():
     saucenao_requests_count_lbl.place(x = 350, y = y + c * 3)
     elapsed_time_lbl.place(x = 200, y = y + c * 4)
     eta_lbl.place(x = 200, y = y + c * 5)
+    error_lbl.place(x = 550, y = y + c * 2)
 
     open_input_btn.place(x = 20, y = y + c * 0)
     open_sourced_btn.place(x = 20, y = y + c * 1)
@@ -65,23 +66,34 @@ def refresh_startpage():
 
     answer1 = 201
     if not comm_q.empty():
-        answer1 = comm_q.get()
-        saucenao_requests_count_lbl.configure(text=str(answer1) + "/200")
+        try:
+            answer1 = comm_q.get()
+            saucenao_requests_count_lbl.configure(text=str(answer1) + "/200")
+        except:
+            pass
     if not comm_img_q.empty():
         if answer1 < 1:
             answer2 = "Out of requests"
         else:
-            answer2 = comm_img_q.get()
-            if answer2 != currently_processing:
-                if currently_processing != '':
-                    safe_to_show_array.append(currently_processing)
-                currently_processing = answer2
-                pointdex = currently_processing.rfind(".")
+            try:
+                answer2 = comm_img_q.get()
+                if answer2 != currently_processing:
+                    if currently_processing != '':
+                        safe_to_show_array.append(currently_processing)
+                    currently_processing = answer2
+                    pointdex = currently_processing.rfind(".")
                 if pointdex != -1:
                     currently_processing = currently_processing[:pointdex] # deletes the suffix
+            except:
+                pass
         if answer2 == 'Stopped' or answer2 == 'Finished':
             do_sourcery_btn.configure(state='enabled')
         currently_sourcing_img_lbl.configure(text=answer2)
+    if not comm_error_q.empty():
+        try:
+            error_lbl.configure(text=comm_error_q.get())
+        except:
+            pass
     if esc_op:
         display_sourcery_options()
     elif esc_res:
@@ -414,6 +426,7 @@ if __name__ == '__main__':
     saucenao_requests_count_lbl = Label(window, text="???/200", style="label.TLabel")
     elapsed_time_lbl = Label(window, text="Elapsed time:", style="label.TLabel")
     eta_lbl = Label(window, text="ETA:", style="label.TLabel")
+    error_lbl = Label(window, text="Errors will be displayed here", style="label.TLabel")
 
     open_input_btn = Button(window, text="Open Input", command=open_input, style="button.TLabel")
     open_sourced_btn = Button(window, text="Open Sourced", command=open_sourced, style="button.TLabel")
@@ -545,7 +558,8 @@ if __name__ == '__main__':
     comm_q = Queue() # Queue for 'Remaining searches'
     comm_img_q = Queue() # Queue for 'Currently Sourcing'
     comm_stop_q = Queue() # Queue for stop signal
-    init_directories(cwd) # create all neccesary directories
+    comm_error_q = Queue() # Queue for error messages
+    init_directories() # create all neccesary directories
     # (missing) TODO create all options files
     display_startpage()
     window.mainloop()

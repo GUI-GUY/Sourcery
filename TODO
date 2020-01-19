@@ -7,18 +7,21 @@ beta 0.1
 + scrolling accuracy
 + write tutorial
 + light theme
-no message boxes but labels
 + array memory leaks
 + big selector memory leaks
 ~ comments
 + big selector: image data data image
 + (untested) what happens when search finished (Currently Sourcing)
-Fehlerbehandlung
 + frame2 grid_forget
 + (untested) block sourcery button while processing
 + reset scrollbars
++ (untested) sourcery error stop
 beautify
-sourcery error stop
+Fehlerbehandlung
+create theme and credentials
+rework save system
+Last Issue: 0011
+
 
 beta 0.2
 logfile + log on screen
@@ -34,6 +37,9 @@ minileak in results
 better sync for stop
 scrolling accuracy?
 in window tutorial
+no message boxes but labels
+Fehlerbehandlung
+checking a folder keeps it 100%
 
 beta 0.3
 2nd service

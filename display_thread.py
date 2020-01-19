@@ -50,7 +50,16 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
     for x in range(len(big_ref_array)):
         del big_ref_array[0]
 
-    original_image = Image.open(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[index][2] + '.' + pixiv_images_array[index][3])
+    back_btn = Button(window, text = 'Back', command = display_view_results, style = 'button.TLabel')
+    back_btn.place(x = round(width*0.43), y = 100)
+
+    try:
+        original_image = Image.open(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[index][2] + '.' + pixiv_images_array[index][3])
+    except Exception as e:
+        print(e)
+        mb.showerror("Something went wrong while loading an image, please go back and try again [0001]")
+        return
+
     original_size = original_image.size
     original_image = resize(original_image)
     original_photoImage = ImageTk.PhotoImage(original_image)
@@ -68,8 +77,6 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
     original_lbl.place(x = round(width*0.43), y = 35)
     original_wxh_lbl.place(x = round(width*0.43), y = 55)
     original_type_lbl.place(x = round(width*0.43), y = 75)
-    back_btn = Button(window, text = 'Back', command = display_view_results, style = 'button.TLabel')
-    back_btn.place(x = round(width*0.43), y = 100)
 
     big_ref_array.extend([original_photoImage, original_image, original_chkbtn, cropped_name_lbl, original_wxh_lbl, original_type_lbl, back_btn])
 
@@ -89,7 +96,13 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
         for img in pixiv_images_array[index][10-4]:
             if not skip:
                 chkbtn_vars_big_array[btn_index].append((img, IntVar())) # Append tuple with sub img name with suffix and corresponding IntVar
-            downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[index][0] + '/' + img)
+            try:
+                downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[index][0] + '/' + img)
+            except Exception as e:
+                print(e)
+                mb.showerror("Something went wrong while loading an image, please go back and try again [0002]")
+                return
+            
             downloaded_size = downloaded_image.size
             downloaded_image = resize(downloaded_image)
             downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
@@ -108,7 +121,12 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
             big_ref_array.extend([downloaded_photoImage, downloaded_image, downloaded_chkbtn])
             t += 4
     else:
-        downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[index][0])
+        try:
+            downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[index][0])
+        except Exception as e:
+            print(e)
+            mb.showerror("Something went wrong while loading an image, please go back and try again [0003]")
+            return
         downloaded_size = downloaded_image.size
         downloaded_image = resize(downloaded_image)
         downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
@@ -151,9 +169,16 @@ def display_view_results2(cwd, delete_dirs_array, frame, chkbtn_vars_array, pixi
         del pixiv_images_array[0]
 
     thumb_size = (70,70)
-    pixiv_dir_array = listdir(cwd + '/Sourcery/sourced_progress/pixiv')
+    try:
+        pixiv_dir_array = listdir(cwd + '/Sourcery/sourced_progress/pixiv')
+        sourced_original_array = listdir(cwd + '/Sourcery/sourced_original')
+    except Exception as e:
+        print(e)
+        mb.showerror("Something went wrong while accessing a folder, please go back and try again [0004]")
+        return        
+    
     pixiv_sub_dir_array = []
-    sourced_original_array = listdir(cwd + '/Sourcery/sourced_original')
+    
     # TODO delete non images
     for t in range(len(sourced_original_array)):
         sourced_original_array[t] = sourced_original_array[t].rpartition('.')
@@ -215,7 +240,8 @@ def image_opener(cwd, img, cropped, t, sourced_original_array, delete_dirs_array
             downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
         except Exception as e:
             print(e)
-            mb.showerror("ERROR", e)
+            mb.showerror("Something went wrong while loading an image, please go back and try again [0005]")
+            return
     elif path.isdir(cwd + '/Sourcery/sourced_progress/pixiv/' + img):
         dir_flag = True
         try:
@@ -243,7 +269,8 @@ def image_opener(cwd, img, cropped, t, sourced_original_array, delete_dirs_array
             downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + img + '/' + pixiv_sub_dir_array[0])
         except Exception as e:
             print(e)
-            mb.showerror("ERROR", e)
+            mb.showerror("Something went wrong while loading an image, please go back and try again [0006]")
+            return
     return original_image, downloaded_image, suffix, sub, dir_flag, False
         
 def display_view_results_helper(frame, original_photoImage, downloaded_photoImage, chkbtn_vars_array, t, img, cropped, suffix, original_size, downloaded_size, dir_flag, display_big_selector, rst):

@@ -1,22 +1,22 @@
-from os import makedirs, remove, path, startfile
+from os import makedirs, remove, path, startfile, getcwd
 from shutil import move, rmtree
 from tkinter import messagebox as mb
 
-cwd = ''
+cwd = getcwd()
 
-def init_directories(cwd1):
+def init_directories():
     global cwd
-    cwd = cwd1
     try:
         makedirs(cwd + "/Input", 0o777, True)
         makedirs(cwd + "/Sourced", 0o777, True)
         makedirs(cwd + "/Sourcery/sourced_original", 0o777, True)
         makedirs(cwd + "/Sourcery/sourced_progress/pixiv", 0o777, True)
-        makedirs(cwd + "/Sourcery/sourced_progress/danbooru", 0o777, True)
-        makedirs(cwd + "/Sourcery/sourced_progress/gelbooru", 0o777, True)
+        # makedirs(cwd + "/Sourcery/sourced_progress/danbooru", 0o777, True)
+        # makedirs(cwd + "/Sourcery/sourced_progress/gelbooru", 0o777, True)
     except Exception as e:
         print(e)
-        mb.showerror("ERROR", e)
+        mb.showerror("Something went wrong while creating directories, please restart Sourcery [0007]")
+        return
 
 def read_theme():
     """
@@ -25,11 +25,13 @@ def read_theme():
     [0]background, [1]foreground, [2]button_background, [3]button_background_active, 
     [4]button_foreground_active, [5]button_background_pressed, [6]button_foreground_pressed
     """
+    global cwd
     try:
         f = open(cwd + '/Sourcery/theme')
     except Exception as e:
         print(e)
-        mb.showerror("ERROR", e)
+        mb.showerror("Something went wrong while accessing a configuration file(theme), please restart Sourcery [0008]")
+        return
     theme = f.readline()
     theme = theme[theme.find('=')+1:]
     ct = False
@@ -56,6 +58,7 @@ def read_theme():
     return colour_array, custom_array
 
 def write_theme(chosen_theme, custom_theme):
+    global cwd
     theme = """Current theme=""" + chosen_theme + """
 
 Dark Theme
@@ -92,7 +95,9 @@ END"""
         f.write(theme)
     except Exception as e:
         print(e)
-        mb.showerror("ERROR", e)
+        mb.showerror("Something went wrong while accessing a configuration file(theme), please try again [0009]")
+        f.close()
+        return
     
     f.close()
 
@@ -122,12 +127,13 @@ def read_credentials():
     Order:\n
     [0]SauceNao API-Key, [1]Pixiv Username, [2]Pixiv Password, [3]Pixiv refreshtoken
     """
-    
+    global cwd
     try:
         f = open(cwd + '/Sourcery/credentials')
     except Exception as e:
         print(e)
-        mb.showerror("ERROR", e)
+        mb.showerror("Something went wrong while accessing a configuration file(credentials), please try again [0010]")
+        return
 
     credentials_array = ['','','',''] 
     creds = f.readline()
@@ -147,6 +153,7 @@ def read_credentials():
     return credentials_array
 
 def write_credentials(credentials_array):
+    global cwd
     creds = """SauceNao
 API-Key=""" + credentials_array[0] + """
 
@@ -162,10 +169,13 @@ END"""
         f.write(creds)
     except Exception as e:
         print(e)
-        mb.showerror("ERROR", e)
+        mb.showerror("Something went wrong while accessing a configuration file(credentials), please try again [0011]")
+        f.close()
+        return
     f.close()
 
 def save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame):
+    global cwd
     for element in delete_dirs_array:
         if path.isdir(element):
             rmtree(element)
@@ -173,12 +183,24 @@ def save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_di
             remove(element)
     delete_dirs_array.clear()
 
+    do_not_delete_tree = False
     for elem in chkbtn_vars_big_array:
         for img in elem:
             if img[1].get() == 1:
-                move(cwd + '/Sourcery/sourced_progress/pixiv/' + elem[0] + '/' + img[0], 
+                try:
+                    move(cwd + '/Sourcery/sourced_progress/pixiv/' + elem[0] + '/' + img[0], 
                     cwd + '/Sourced/' + elem[0] + '/' + img[0])
-        rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + elem[0])
+                except Exception as e:
+                    print(e)
+                    mb.showerror("Something went wrong while saving the image " + img[0] + " from the folder " + cwd + '/Sourcery/sourced_progress/pixiv/' + elem[0] + ". You have to recover the image and delete the folder manually.")
+                    do_not_delete_tree = True
+        try:
+            if do_not_delete_tree:
+                rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + elem[0])
+                do_not_delete_tree = False
+        except Exception as e:
+            print(e)
+        
     chkbtn_vars_big_array.clear()
 
     for tup in chkbtn_vars_array:
@@ -188,19 +210,22 @@ def save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_di
         if len(pixiv_images_array) > 0:
             if original_var == 1:
                 if downloaded_var == 1:
-                    # if pixiv_images_array[0][9]:
+                    # if pixiv_images_array[0][5]:
                     #     move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2] + '/' + pixiv_images_array[0][1], 
                     #         cwd + '/Sourced/new_' + pixiv_images_array[0][1])
                     #     rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2])
                     # else:
+
+                    # Move original and downloaded image from their respective folders to Sourced and rename them 
                     move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][0], # war im else
                             cwd + '/Sourced/new_' + pixiv_images_array[0][0])
                     move(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3], 
                         cwd + '/Sourced/old_' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3])
                 else:
+                    # Move original image to Sourced and delete downloaded image/directory
                     move(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3], 
                         cwd + '/Sourced/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3])
-                    if pixiv_images_array[0][9-4]:
+                    if pixiv_images_array[0][5]:
                         rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2])
                     else:
                         remove(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][0])
@@ -210,9 +235,12 @@ def save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_di
                     #         cwd + '/Sourced/' + pixiv_images_array[0][1])
                     #     rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2])
                     # else:
+
+                    # Move downloaded image to Sourced and delete original image
                     move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][0], # war im else
                             cwd + '/Sourced/' + pixiv_images_array[0][0])
                     remove(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3])
+            # Delete image from input
             remove(cwd + '/Input/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3])
             safe_to_show_array.remove(pixiv_images_array[0][2])
             for widget in frame.winfo_children():
@@ -226,18 +254,21 @@ if __name__ == '__main__':
     #write_credentials(getcwd(), read_credentials(getcwd()))
 
 def open_input():
+    global cwd
     try:
         startfile(cwd + "/Input")
     except Exception as e:
         print(e)
-        mb.showerror("ERROR", e)
+        #mb.showerror("ERROR", e)
 
 def open_sourced():
+    global cwd
     try:
         startfile(cwd + "/Sourced")
     except Exception as e:
         print(e)
-        mb.showerror("ERROR", e)
+        #mb.showerror("ERROR", e)
 
 def display_statistics():
+    global cwd
     pass
