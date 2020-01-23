@@ -1,6 +1,5 @@
 beta 0.1
 + big Selector checkbuttons
-+ (untested) Big Selector in save
 + big Selector back
 + (untested) stop
 + mousewheel scrolling
@@ -9,18 +8,19 @@ beta 0.1
 + light theme
 + array memory leaks
 + big selector memory leaks
-~ comments
 + big selector: image data data image
-+ (untested) what happens when search finished (Currently Sourcing)
++ what happens when search finished (Currently Sourcing)
 + frame2 grid_forget
-+ (untested) block sourcery button while processing
++ block sourcery button while processing
 + reset scrollbars
 + (untested) sourcery error stop
+~ comments
++ (untested) create theme and credentials
 beautify
-+ Fehlerbehandlung
-+ create theme and credentials
-+ (untested) rework save system
-Last Issue: 0014
+Fehlerbehandlung
+- (untested) Big Selector in save
+- (untested) rework save system
+Last Issue: 0023
 
 
 beta 0.2

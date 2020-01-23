@@ -1,58 +1,59 @@
-from sys import stdout, stderr
+#from sys import stdout, stderr
 #from os import path, rename
 from io import BytesIO
 #import unicodedata
 from requests import post
 from PIL import Image
 from json import JSONDecoder
-from codecs import getwriter
+#from codecs import getwriter
 from re import search
 #import time
 from collections import OrderedDict
 #from pixiv_handler import pixiv_download
-stdout = getwriter('utf8')(stdout.detach())
-stderr = getwriter('utf8')(stderr.detach())
+# stdout = getwriter('utf8')(stdout.detach())
+# stderr = getwriter('utf8')(stderr.detach())
 
 thumbSize = (250,250)
 
-#enable or disable indexes
-index_hmags='0'
-index_reserved='0'
-index_hcg='0'
-index_ddbobjects='0'
-index_ddbsamples='0'
-index_pixiv='1'
-index_pixivhistorical='0'
-index_reserved='0'
-index_seigaillust='0'
-index_danbooru='0'
-index_drawr='0'
-index_nijie='0'
-index_yandere='0'
-index_animeop='0'
-index_reserved='0'
-index_shutterstock='0'
-index_fakku='0'
-index_hmisc='0'
-index_2dmarket='0'
-index_medibang='0'
-index_anime='0'
-index_hanime='0'
-index_movies='0'
-index_shows='0'
-index_gelbooru='0'
-index_konachan='0'
-index_sankaku='0'
-index_animepictures='0'
-index_e621='0'
-index_idolcomplex='0'
-index_bcyillust='0'
-index_bcycosplay='0'
-index_portalgraphics='0'
-index_da='0'
-index_pawoo='0'
-index_madokami='0'
-index_mangadex='0'
+if True:
+    #enable or disable indexes
+    index_hmags='0'
+    index_reserved='0'
+    index_hcg='0'
+    index_ddbobjects='0'
+    index_ddbsamples='0'
+    index_pixiv='1'
+    index_pixivhistorical='0'
+    index_reserved='0'
+    index_seigaillust='0'
+    index_danbooru='0'
+    index_drawr='0'
+    index_nijie='0'
+    index_yandere='0'
+    index_animeop='0'
+    index_reserved='0'
+    index_shutterstock='0'
+    index_fakku='0'
+    index_hmisc='0'
+    index_2dmarket='0'
+    index_medibang='0'
+    index_anime='0'
+    index_hanime='0'
+    index_movies='0'
+    index_shows='0'
+    index_gelbooru='0'
+    index_konachan='0'
+    index_sankaku='0'
+    index_animepictures='0'
+    index_e621='0'
+    index_idolcomplex='0'
+    index_bcyillust='0'
+    index_bcycosplay='0'
+    index_portalgraphics='0'
+    index_da='0'
+    index_pawoo='0'
+    index_madokami='0'
+    index_mangadex='0'
 
 #generate appropriate bitmask
 db_bitmask = int(index_mangadex+index_madokami+index_pawoo+index_da+index_portalgraphics+index_bcycosplay+index_bcyillust+index_idolcomplex+index_e621+index_animepictures+index_sankaku+index_konachan+index_gelbooru+index_shows+index_movies+index_hanime+index_anime+index_medibang+index_2dmarket+index_hmisc+index_fakku+index_shutterstock+index_reserved+index_animeop+index_yandere+index_nijie+index_drawr+index_danbooru+index_seigaillust+index_anime+index_pixivhistorical+index_pixiv+index_ddbsamples+index_ddbobjects+index_hcg+index_hanime+index_hmags,2)
@@ -61,12 +62,12 @@ def get_response(image, cwd, api_key, minsim='80!'):
     try:
         image = Image.open(cwd + '/Sourcery/sourced_original/' + image)
     except Exception as e:
-        print(e)
-        #mb.showerror("Something went wrong while opening the image " + image + '[0015]')
+        print('ERROR [0019] ' + str(e))
+        #mb.showerror("ERROR CODE [0015]\nSomething went wrong while opening the image " + image)
         return [401, 'Something went wrong while opening the image ' + image]
     image = image.convert('RGB')
     image.thumbnail(thumbSize, resample=Image.ANTIALIAS)
-    imageData = io.BytesIO()
+    imageData = BytesIO()
     image.save(imageData,format='PNG')
     
     url = 'http://saucenao.com/search.php?output_type=2&numres=1&minsim='+minsim+'&dbmask='+str(db_bitmask)+'&api_key='+api_key
@@ -74,7 +75,7 @@ def get_response(image, cwd, api_key, minsim='80!'):
     imageData.close()
     
     
-    r = requests.post(url, files=files)
+    r = post(url, files=files)
     if r.status_code != 200:
         if r.status_code == 403:
             return [403, 'Incorrect or Invalid API Key!\nGo to Options->SauceNao->SauceNao API-Key and insert a Key']
@@ -82,7 +83,7 @@ def get_response(image, cwd, api_key, minsim='80!'):
             #generally non 200 statuses are due to either overloaded servers or the user is out of searches
             return [2, "status code: "+str(r.status_code)]
     else:
-        results = json.JSONDecoder(object_pairs_hook=OrderedDict).decode(r.text)
+        results = JSONDecoder(object_pairs_hook=OrderedDict).decode(r.text)
         if int(results['header']['user_id'])>0:
             #api responded
             #print('Remaining Searches 30s|24h: '+str(results['header']['short_remaining'])+'|'+str(results['header']['long_remaining']))
@@ -123,7 +124,7 @@ def decode_response(results, EnableRename=False):
             member_id = -1
             index_id = results['results'][0]['header']['index_id']
             page_string = ''
-            page_match = re.search('(_p[\d]+)\.', results['results'][0]['header']['thumbnail'])
+            page_match = search('(_p[\d]+)\.', results['results'][0]['header']['thumbnail'])
             source = ''
             if page_match:
                 page_string = page_match.group(1)
@@ -168,7 +169,7 @@ def decode_response(results, EnableRename=False):
             #     if EnableRename:
             #         os.rename(fname, newfname)
             # except Exception as e:
-            #     print(e)
+            #     print(str(e))
             #     sys.exit(3)
             
         # else:
@@ -181,7 +182,8 @@ def decode_response(results, EnableRename=False):
         #     #print('Out of searches for this 30 second period. Sleeping for 25 seconds...')
         #     time.sleep(25)
     
-    return [service_name, illust_id, member_id, source]
+            return [service_name, illust_id, member_id, source]
+    return['', 0, -1, '']
     #print('All Done!')
 
     # OrderedDict([('header', 

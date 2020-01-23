@@ -15,7 +15,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv
         try:
             copy(cwd + '/Input/' + img, cwd + '/Sourcery/sourced_original')
         except Exception as e:
-            comm_error_q.put(e)
+            comm_error_q.put(str(e))
             comm_img_q.put('Stopped')
             return
         res = get_response(img, cwd, saucenao_key)

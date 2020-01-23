@@ -1,4 +1,4 @@
-from os import makedirs, remove, path, startfile, getcwd
+from os import makedirs, remove, path, startfile, getcwd, listdir
 from shutil import move, rmtree
 from tkinter import messagebox as mb
 
@@ -14,8 +14,8 @@ def init_directories():
         # makedirs(cwd + "/Sourcery/sourced_progress/danbooru", 0o777, True)
         # makedirs(cwd + "/Sourcery/sourced_progress/gelbooru", 0o777, True)
     except Exception as e:
-        print(e)
-        mb.showerror("Something went wrong while creating directories, please restart Sourcery [0007]")
+        print("ERROR [0007] " + str(e))
+        mb.showerror("ERROR [0007]", "ERROR CODE [0007]\nSomething went wrong while creating directories, please restart Sourcery.")
         return
 
 def init_configs():
@@ -36,8 +36,8 @@ def read_theme():
     try:
         f = open(cwd + '/Sourcery/theme')
     except Exception as e:
-        print(e)
-        mb.showerror("Something went wrong while accessing a configuration file(theme), please restart Sourcery [0008]")
+        print("ERROR [0008] " + str(e))
+        mb.showerror("ERROR [0008]", "ERROR CODE [0008]\nSomething went wrong while accessing a configuration file(theme), please restart Sourcery.")
         f.close()
         return
     theme = f.readline()
@@ -102,8 +102,8 @@ END"""
         f = open(cwd + '/Sourcery/theme', 'w')
         f.write(theme)
     except Exception as e:
-        print(e)
-        mb.showerror("Something went wrong while accessing a configuration file(theme), please try again [0009]")
+        print("ERROR [0009] " + str(e))
+        mb.showerror("ERROR [0009]", "ERROR CODE [0009]\nSomething went wrong while accessing a configuration file(theme), please try again.")
         f.close()
         return
     
@@ -127,6 +127,8 @@ def is_image(img):
         return True
     if img.endswith(".bmp"):
         return True
+    # if img.endswith(".webp"):
+    #     return True
     return False
 
 def read_credentials():
@@ -139,8 +141,8 @@ def read_credentials():
     try:
         f = open(cwd + '/Sourcery/credentials')
     except Exception as e:
-        print(e)
-        mb.showerror("Something went wrong while accessing a configuration file(credentials), please try again [0010]")
+        print("ERROR [0010] " + str(e))
+        mb.showerror("ERROR [0010]", "ERROR CODE [0010]\nSomething went wrong while accessing a configuration file(credentials), please try again.")
         return
 
     credentials_array = ['','','',''] 
@@ -176,18 +178,17 @@ END"""
         f = open(cwd + '/Sourcery/credentials', 'w')
         f.write(creds)
     except Exception as e:
-        print(e)
-        mb.showerror("Something went wrong while accessing a configuration file(credentials), please try again [0011]")
+        print("ERROR [0011] " + str(e))
+        mb.showerror("ERROR [0011]", "ERROR CODE [0011]\nSomething went wrong while accessing a configuration file(credentials), please try again.")
         f.close()
         return
     f.close()
 
-def save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame):
+def save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame, process):
     global cwd
     downloaded_name_new = None
     original_name_new = None
     pixiv_dir = cwd + '/Sourcery/sourced_progress/pixiv/'
-
     for i in range(len(pixiv_images_array)):
         original_var = chkbtn_vars_array[i][0].get()
         downloaded_var = chkbtn_vars_array[i][1].get()
@@ -199,12 +200,14 @@ def save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_di
                 # Move original image to Sourced and delete downloaded image/directory
                 downloaded_name_new = None
                 original_name_new = pixiv_images_array[i][0]
-                delete_dirs_array.append(pixiv_dir + pixiv_images_array[i][0])
+                if pixiv_dir + pixiv_images_array[i][0] not in delete_dirs_array:
+                    delete_dirs_array.append(pixiv_dir + pixiv_images_array[i][0])
         elif downloaded_var == 1:
             # Move downloaded image to Sourced and delete original image
             downloaded_name_new = pixiv_images_array[i][0]
             original_name_new = None
-            delete_dirs_array.append(pixiv_dir + pixiv_images_array[i][0])
+            if pixiv_dir + pixiv_images_array[i][0] not in delete_dirs_array:
+                delete_dirs_array.append(pixiv_dir + pixiv_images_array[i][0])
         
         if downloaded_var == 1:
             index = -1
@@ -214,32 +217,42 @@ def save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_di
                     downloaded_name_new = None
                     break
             if index != -1:
+                skip_first = True
                 for img in chkbtn_vars_big_array[index]:
+                    if skip_first:
+                        skip_first = False
+                        continue
                     if img[1].get() == 1:
                         try:
                             move(pixiv_dir + pixiv_images_array[i][0] + '/' + img[0], cwd + '/Sourced/' + pixiv_images_array[i][0] + '/' + img[0])
-                            delete_dirs_array.append(pixiv_dir + pixiv_images_array[i][0])
+                            if pixiv_dir + pixiv_images_array[i][0] + '/' + img[0] not in delete_dirs_array:
+                                delete_dirs_array.append(pixiv_dir + pixiv_images_array[i][0])
                         except Exception as e:
-                            print(e)
-                            mb.showerror("Something went wrong while moving the image " + img[0] + " from the folder " + pixiv_dir + pixiv_images_array[i][0])
+                            print("ERROR [0016] " + str(e))
+                            mb.showerror("ERROR [0016]", "ERROR CODE [0016]\nSomething went wrong while moving the image " + img[0] + " from the folder " + pixiv_dir + pixiv_images_array[i][0])
 
         if downloaded_name_new != None:
             try:
                 move(pixiv_dir + pixiv_images_array[i][0], cwd + '/Sourced/' + downloaded_name_new)
             except Exception as e:
-                print(e)
-                mb.showerror("Something went wrong while moving the image " + pixiv_images_array[i][0] + " from the folder " + pixiv_dir + '[0012]')
+                print("ERROR [0012] " + str(e))
+                mb.showerror("ERROR [0012]", "ERROR CODE [0012]\nSomething went wrong while moving the image " + pixiv_images_array[i][0] + " from the folder " + pixiv_dir)
         if original_name_new != None:
             try:
-                move(pixiv_dir + pixiv_images_array[i][0], cwd + '/Sourced/' + original_name_new)
+                move(cwd + '/Sourcery/sourced_original/pixiv/' + pixiv_images_array[i][0], cwd + '/Sourced/' + original_name_new)
             except Exception as e:
-                print(e)
-                mb.showerror("Something went wrong while moving the image " + pixiv_images_array[i][0] + " from the folder " + pixiv_dir + '[0013]')
+                print("ERROR [0013] " + str(e))
+                mb.showerror("ERROR [0013]", "ERROR CODE [0013]\nSomething went wrong while moving the image " + pixiv_images_array[i][0] + " from the folder " + pixiv_dir)
         try:
             remove(cwd + '/Input/' + pixiv_images_array[i][0])
         except Exception as e:
-            print(e)
-            mb.showerror("Something went wrong while removing the image " + pixiv_images_array[i][0] + " from the folder " + cwd + '/Input/' + '[0014]')
+            print("ERROR [0014] " + str(e))
+            mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + pixiv_images_array[i][0] + " from the folder " + cwd + '/Input/')
+        try:
+            remove(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[i][0])
+        except Exception as e:
+            print("ERROR [0015] " + str(e))
+            mb.showerror("ERROR [0015]", "ERROR CODE [0015]\nSomething went wrong while removing the image " + pixiv_images_array[i][0] + " from the folder " + cwd + '/Sourcery/sourced_original/')
 
         safe_to_show_array.remove(pixiv_images_array[i][2])
 
@@ -248,11 +261,21 @@ def save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_di
             del pixiv_images_array[a][0]
     pixiv_images_array.clear()
 
+    if not process.is_alive():
+        for img in listdir(cwd + '/Sourcery/sourced_original/'):
+            if cwd + '/Sourcery/sourced_original/' + img not in delete_dirs_array:
+                delete_dirs_array.append(cwd + '/Sourcery/sourced_original/' + img)
+
     for element in delete_dirs_array:
-        if path.isdir(element):
-            rmtree(element)
-        else:
-            remove(element)
+        try:
+            if path.isdir(element):
+                rmtree(element)
+            else:
+                remove(element)
+        except Exception as e:
+            print('ERROR [0017] ' + str(e))
+            #mb.showerror("ERROR", "ERROR CODE [0017]\nSomething went wrong while removing the image " + element)
+
     delete_dirs_array.clear()
     	
     for widget in frame.winfo_children():
@@ -275,7 +298,7 @@ def save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_di
 #                     move(cwd + '/Sourcery/sourced_progress/pixiv/' + elem[0] + '/' + img[0], 
 #                     cwd + '/Sourced/' + elem[0] + '/' + img[0])
 #                 except Exception as e:
-#                     print(e)
+#                     print(str(e))
 #                     mb.showerror("Something went wrong while saving the image " + img[0] + " from the folder " + cwd + '/Sourcery/sourced_progress/pixiv/' + elem[0] + ". You have to recover the image and delete the folder manually.")
 #                     do_not_delete_tree = True
 #         try:
@@ -283,7 +306,7 @@ def save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_di
 #                 rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + elem[0])
 #                 do_not_delete_tree = False
 #         except Exception as e:
-#             print(e)
+#             print(str(e))
         
 #     chkbtn_vars_big_array.clear()
 
@@ -339,7 +362,7 @@ def open_input():
     try:
         startfile(cwd + "/Input")
     except Exception as e:
-        print(e)
+        print('ERROR [0022] ' + str(e))
         #mb.showerror("ERROR", e)
 
 def open_sourced():
@@ -347,7 +370,7 @@ def open_sourced():
     try:
         startfile(cwd + "/Sourced")
     except Exception as e:
-        print(e)
+        print('ERROR [0023] ' + str(e))
         #mb.showerror("ERROR", e)
 
 def display_statistics():

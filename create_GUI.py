@@ -319,15 +319,19 @@ def save_and_back():
     """
     Save selected images from results page and go back to startpage.
     """
-    save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame)
+    save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame, process)
     display_startpage()
 
 def save_and_refresh():
     """
     Save selected images from results page and show the next dozen.
     """
+    save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame, process)
+    refresh()
+
+def refresh():
     global currently_processing
-    
+    # Get all images processed while on results screen and put them in safe_to_show_array
     if not comm_img_q.empty():
         answer2 = comm_img_q.get()
         if answer2 != currently_processing:
@@ -337,9 +341,11 @@ def save_and_refresh():
             pointdex = currently_processing.rfind(".")
             if pointdex != -1:
                 currently_processing = currently_processing[:pointdex] # deletes the suffix
-        window.after(1, save_and_refresh)
+        window.after(1, refresh)
     else:
-        save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame)
+        for elem in chkbtn_vars_array:
+            elem[0].set(0)
+            elem[1].set(0)
         display_view_results()
 
 def myfunction(event):
@@ -398,7 +404,6 @@ def on_mousewheel2(event):
 
 if __name__ == '__main__':
     freeze_support()
-
     cwd = getcwd()
     window = Tk()
     window.title("Sourcery")

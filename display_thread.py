@@ -56,8 +56,8 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
     try:
         original_image = Image.open(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[index][2] + '.' + pixiv_images_array[index][3])
     except Exception as e:
-        print(e)
-        mb.showerror("Something went wrong while loading an image, please go back and try again [0001]")
+        print("ERROR [0001] " + str(e))
+        mb.showerror("ERROR [0001]", "ERROR CODE [0001]\nSomething went wrong while loading an image, please go back and try again.")
         return
 
     original_size = original_image.size
@@ -99,8 +99,8 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
             try:
                 downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[index][0] + '/' + img)
             except Exception as e:
-                print(e)
-                mb.showerror("Something went wrong while loading an image, please go back and try again [0002]")
+                print("ERROR [0002] " + str(e))
+                mb.showerror("ERROR [0002]", "ERROR CODE [0002]\nSomething went wrong while loading an image, please go back and try again.")
                 return
             
             downloaded_size = downloaded_image.size
@@ -124,8 +124,8 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
         try:
             downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[index][0])
         except Exception as e:
-            print(e)
-            mb.showerror("Something went wrong while loading an image, please go back and try again [0003]")
+            print("ERROR [0003] " + str(e))
+            mb.showerror("ERROR [0003]", "ERROR CODE [0003]\nSomething went wrong while loading an image, please go back and try again.")
             return
         downloaded_size = downloaded_image.size
         downloaded_image = resize(downloaded_image)
@@ -173,8 +173,8 @@ def display_view_results2(cwd, delete_dirs_array, frame, chkbtn_vars_array, pixi
         pixiv_dir_array = listdir(cwd + '/Sourcery/sourced_progress/pixiv')
         sourced_original_array = listdir(cwd + '/Sourcery/sourced_original')
     except Exception as e:
-        print(e)
-        mb.showerror("Something went wrong while accessing a folder, please go back and try again [0004]")
+        print("ERROR [0004] " + str(e))
+        mb.showerror("ERROR [0004]", "ERROR CODE [0004]\nSomething went wrong while accessing a folder, please go back and try again.")
         return        
     
     pixiv_sub_dir_array = []
@@ -239,8 +239,8 @@ def image_opener(cwd, img, cropped, t, sourced_original_array, delete_dirs_array
             original_image = Image.open(cwd + '/Sourcery/sourced_original/' + cropped + '.' + suffix) 
             downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
         except Exception as e:
-            print(e)
-            mb.showerror("Something went wrong while loading an image, please go back and try again [0005]")
+            print("ERROR [0005] " + str(e))
+            mb.showerror("ERROR [0005]", "ERROR CODE [0005]\nSomething went wrong while loading an image, please go back and try again.")
             return
     elif path.isdir(cwd + '/Sourcery/sourced_progress/pixiv/' + img):
         dir_flag = True
@@ -268,8 +268,8 @@ def image_opener(cwd, img, cropped, t, sourced_original_array, delete_dirs_array
             original_image = Image.open(pathname)
             downloaded_image = Image.open(cwd + '/Sourcery/sourced_progress/pixiv/' + img + '/' + pixiv_sub_dir_array[0])
         except Exception as e:
-            print(e)
-            mb.showerror("Something went wrong while loading an image, please go back and try again [0006]")
+            print("ERROR [0006] " + str(e))
+            mb.showerror("ERROR [0006]", "ERROR CODE [0006]\nSomething went wrong while loading an image, please go back and try again.")
             return
     return original_image, downloaded_image, suffix, sub, dir_flag, False
         
