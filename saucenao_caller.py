@@ -58,7 +58,12 @@ index_mangadex='0'
 db_bitmask = int(index_mangadex+index_madokami+index_pawoo+index_da+index_portalgraphics+index_bcycosplay+index_bcyillust+index_idolcomplex+index_e621+index_animepictures+index_sankaku+index_konachan+index_gelbooru+index_shows+index_movies+index_hanime+index_anime+index_medibang+index_2dmarket+index_hmisc+index_fakku+index_shutterstock+index_reserved+index_animeop+index_yandere+index_nijie+index_drawr+index_danbooru+index_seigaillust+index_anime+index_pixivhistorical+index_pixiv+index_ddbsamples+index_ddbobjects+index_hcg+index_hanime+index_hmags,2)
 
 def get_response(image, cwd, api_key, minsim='80!'):
-    image = Image.open(cwd + '/Sourcery/sourced_original/' + image)
+    try:
+        image = Image.open(cwd + '/Sourcery/sourced_original/' + image)
+    except Exception as e:
+        print(e)
+        #mb.showerror("Something went wrong while opening the image " + image + '[0015]')
+        return [401, 'Something went wrong while opening the image ' + image]
     image = image.convert('RGB')
     image.thumbnail(thumbSize, resample=Image.ANTIALIAS)
     imageData = io.BytesIO()
@@ -80,7 +85,6 @@ def get_response(image, cwd, api_key, minsim='80!'):
         results = json.JSONDecoder(object_pairs_hook=OrderedDict).decode(r.text)
         if int(results['header']['user_id'])>0:
             #api responded
-            # TODO hier
             #print('Remaining Searches 30s|24h: '+str(results['header']['short_remaining'])+'|'+str(results['header']['long_remaining']))
             if int(results['header']['status'])>0:
                 #One or more indexes are having an issue.

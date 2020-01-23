@@ -8,7 +8,7 @@ from os import getcwd, listdir
 from multiprocessing import Process, freeze_support, Queue
 #import time
 #from shutil import copy, move
-from file_operations import init_directories, read_theme, is_image, read_credentials, write_credentials, write_theme, save, open_input, open_sourced, display_statistics
+from file_operations import init_directories, init_configs, read_theme, is_image, read_credentials, write_credentials, write_theme, save, open_input, open_sourced, display_statistics
 from sourcery import do_sourcery
 from display_thread import display_view_results2, display_big_selector2
 #from test import test
@@ -88,6 +88,7 @@ def refresh_startpage():
                 pass
         if answer2 == 'Stopped' or answer2 == 'Finished':
             do_sourcery_btn.configure(state='enabled')
+            stop_btn.configure(state='enabled')
         currently_sourcing_img_lbl.configure(text=answer2)
     if not comm_error_q.empty():
         try:
@@ -276,8 +277,9 @@ def stop():
     """
     Stop further search for images and halt the second process.
     """
-    if p.is_alive():
+    if process.is_alive():
         comm_stop_q.put("Stopped")
+        stop_btn.configure(state='disabled')
     #currently_sourcing_img_lbl.configure(text="Stopped")
 
 def display_big_selector(index):
@@ -560,6 +562,6 @@ if __name__ == '__main__':
     comm_stop_q = Queue() # Queue for stop signal
     comm_error_q = Queue() # Queue for error messages
     init_directories() # create all neccesary directories
-    # (missing) TODO create all options files
+    init_configs() # creates all options files
     display_startpage()
     window.mainloop()

@@ -5,10 +5,6 @@ from pixivapi import Client, Size
 
 client = Client()
 
-#username = user_xhcz2358
-#password = GoaldIsland
-#refreshtoken = 'R8nav4UBcoRwYueYvfKFJgyoWhJDeYVr9hnBgmjSVm0'
-
 def pixiv_login(username, password, credentials_array):
     try:
         client.login(username, password)
@@ -16,13 +12,17 @@ def pixiv_login(username, password, credentials_array):
     except Exception as e:
         print(e)
         #mb.showerror("ERROR", 'Login failed')
+        return False
+    return True
+
 
 def pixiv_authenticate(username, password, credentials_array):
     try:
         client.authenticate(credentials_array[3])
     except Exception as e:
-        print('auth with refreshtoken failed')
-        pixiv_login(username, password, credentials_array)
+        print('Authentication with refreshtoken failed - Attempting with login data')
+        return pixiv_login(username, password, credentials_array)
+    return True
 
 def pixiv_download(imgid, img_name_original):
     try:

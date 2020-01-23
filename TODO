@@ -17,10 +17,10 @@ beta 0.1
 + reset scrollbars
 + (untested) sourcery error stop
 beautify
-Fehlerbehandlung
-create theme and credentials
-rework save system
-Last Issue: 0011
++ Fehlerbehandlung
++ create theme and credentials
++ (untested) rework save system
+Last Issue: 0014
 
 
 beta 0.2

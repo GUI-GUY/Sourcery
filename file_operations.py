@@ -18,6 +18,13 @@ def init_directories():
         mb.showerror("Something went wrong while creating directories, please restart Sourcery [0007]")
         return
 
+def init_configs():
+    global cwd
+    if not path.exists(cwd + '/Sourcery/theme'):
+        write_theme('Dark Theme', ['blue', 'red', '#12345', 'orange', 'grey', 'purple', 'magenta'])
+    if not path.exists(cwd + '/Sourcery/credentials'):
+        write_credentials(['', '', '', ''])
+
 def read_theme():
     """
     Returns a list with colour values as strings for the currently chosen style and a list with colour values for the custom style.\n
@@ -31,6 +38,7 @@ def read_theme():
     except Exception as e:
         print(e)
         mb.showerror("Something went wrong while accessing a configuration file(theme), please restart Sourcery [0008]")
+        f.close()
         return
     theme = f.readline()
     theme = theme[theme.find('=')+1:]
@@ -176,82 +184,155 @@ END"""
 
 def save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame):
     global cwd
+    downloaded_name_new = None
+    original_name_new = None
+    pixiv_dir = cwd + '/Sourcery/sourced_progress/pixiv/'
+
+    for i in range(len(pixiv_images_array)):
+        original_var = chkbtn_vars_array[i][0].get()
+        downloaded_var = chkbtn_vars_array[i][1].get()
+        if original_var == 1:
+            if downloaded_var == 1:
+                downloaded_name_new = 'new_' + pixiv_images_array[i][0]
+                original_name_new = 'old_' + pixiv_images_array[i][0]
+            else:
+                # Move original image to Sourced and delete downloaded image/directory
+                downloaded_name_new = None
+                original_name_new = pixiv_images_array[i][0]
+                delete_dirs_array.append(pixiv_dir + pixiv_images_array[i][0])
+        elif downloaded_var == 1:
+            # Move downloaded image to Sourced and delete original image
+            downloaded_name_new = pixiv_images_array[i][0]
+            original_name_new = None
+            delete_dirs_array.append(pixiv_dir + pixiv_images_array[i][0])
+        
+        if downloaded_var == 1:
+            index = -1
+            for elem in chkbtn_vars_big_array:
+                if pixiv_images_array[i][2] == elem[0]:
+                    index = chkbtn_vars_big_array.index(elem)
+                    downloaded_name_new = None
+                    break
+            if index != -1:
+                for img in chkbtn_vars_big_array[index]:
+                    if img[1].get() == 1:
+                        try:
+                            move(pixiv_dir + pixiv_images_array[i][0] + '/' + img[0], cwd + '/Sourced/' + pixiv_images_array[i][0] + '/' + img[0])
+                            delete_dirs_array.append(pixiv_dir + pixiv_images_array[i][0])
+                        except Exception as e:
+                            print(e)
+                            mb.showerror("Something went wrong while moving the image " + img[0] + " from the folder " + pixiv_dir + pixiv_images_array[i][0])
+
+        if downloaded_name_new != None:
+            try:
+                move(pixiv_dir + pixiv_images_array[i][0], cwd + '/Sourced/' + downloaded_name_new)
+            except Exception as e:
+                print(e)
+                mb.showerror("Something went wrong while moving the image " + pixiv_images_array[i][0] + " from the folder " + pixiv_dir + '[0012]')
+        if original_name_new != None:
+            try:
+                move(pixiv_dir + pixiv_images_array[i][0], cwd + '/Sourced/' + original_name_new)
+            except Exception as e:
+                print(e)
+                mb.showerror("Something went wrong while moving the image " + pixiv_images_array[i][0] + " from the folder " + pixiv_dir + '[0013]')
+        try:
+            remove(cwd + '/Input/' + pixiv_images_array[i][0])
+        except Exception as e:
+            print(e)
+            mb.showerror("Something went wrong while removing the image " + pixiv_images_array[i][0] + " from the folder " + cwd + '/Input/' + '[0014]')
+
+        safe_to_show_array.remove(pixiv_images_array[i][2])
+
+    for a in range(len(pixiv_images_array)):
+        for b in range(len(pixiv_images_array[a])):
+            del pixiv_images_array[a][0]
+    pixiv_images_array.clear()
+
     for element in delete_dirs_array:
         if path.isdir(element):
             rmtree(element)
         else:
             remove(element)
     delete_dirs_array.clear()
+    	
+    for widget in frame.winfo_children():
+        widget.grid_forget()
 
-    do_not_delete_tree = False
-    for elem in chkbtn_vars_big_array:
-        for img in elem:
-            if img[1].get() == 1:
-                try:
-                    move(cwd + '/Sourcery/sourced_progress/pixiv/' + elem[0] + '/' + img[0], 
-                    cwd + '/Sourced/' + elem[0] + '/' + img[0])
-                except Exception as e:
-                    print(e)
-                    mb.showerror("Something went wrong while saving the image " + img[0] + " from the folder " + cwd + '/Sourcery/sourced_progress/pixiv/' + elem[0] + ". You have to recover the image and delete the folder manually.")
-                    do_not_delete_tree = True
-        try:
-            if do_not_delete_tree:
-                rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + elem[0])
-                do_not_delete_tree = False
-        except Exception as e:
-            print(e)
+# def save_deprecated(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame):
+#     global cwd
+#     for element in delete_dirs_array:
+#         if path.isdir(element):
+#             rmtree(element)
+#         else:
+#             remove(element)
+#     delete_dirs_array.clear()
+
+#     do_not_delete_tree = False
+#     for elem in chkbtn_vars_big_array:
+#         for img in elem:
+#             if img[1].get() == 1:
+#                 try:
+#                     move(cwd + '/Sourcery/sourced_progress/pixiv/' + elem[0] + '/' + img[0], 
+#                     cwd + '/Sourced/' + elem[0] + '/' + img[0])
+#                 except Exception as e:
+#                     print(e)
+#                     mb.showerror("Something went wrong while saving the image " + img[0] + " from the folder " + cwd + '/Sourcery/sourced_progress/pixiv/' + elem[0] + ". You have to recover the image and delete the folder manually.")
+#                     do_not_delete_tree = True
+#         try:
+#             if do_not_delete_tree:
+#                 rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + elem[0])
+#                 do_not_delete_tree = False
+#         except Exception as e:
+#             print(e)
         
-    chkbtn_vars_big_array.clear()
+#     chkbtn_vars_big_array.clear()
 
-    for tup in chkbtn_vars_array:
-        original_var = tup[0].get()
-        downloaded_var = tup [1].get()
+#     for tup in chkbtn_vars_array:
+#         original_var = tup[0].get()
+#         downloaded_var = tup [1].get()
 
-        if len(pixiv_images_array) > 0:
-            if original_var == 1:
-                if downloaded_var == 1:
-                    # if pixiv_images_array[0][5]:
-                    #     move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2] + '/' + pixiv_images_array[0][1], 
-                    #         cwd + '/Sourced/new_' + pixiv_images_array[0][1])
-                    #     rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2])
-                    # else:
+#         if len(pixiv_images_array) > 0:
+#             if original_var == 1:
+#                 if downloaded_var == 1:
+#                     # if pixiv_images_array[0][5]:
+#                     #     move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2] + '/' + pixiv_images_array[0][1], 
+#                     #         cwd + '/Sourced/new_' + pixiv_images_array[0][1])
+#                     #     rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2])
+#                     # else:
 
-                    # Move original and downloaded image from their respective folders to Sourced and rename them 
-                    move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][0], # war im else
-                            cwd + '/Sourced/new_' + pixiv_images_array[0][0])
-                    move(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3], 
-                        cwd + '/Sourced/old_' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3])
-                else:
-                    # Move original image to Sourced and delete downloaded image/directory
-                    move(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3], 
-                        cwd + '/Sourced/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3])
-                    if pixiv_images_array[0][5]:
-                        rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2])
-                    else:
-                        remove(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][0])
-            elif downloaded_var == 1:
-                    # if pixiv_images_array[0][9]:
-                    #     move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2] + '/' + pixiv_images_array[0][1], 
-                    #         cwd + '/Sourced/' + pixiv_images_array[0][1])
-                    #     rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2])
-                    # else:
+#                     # Move original and downloaded image from their respective folders to Sourced and rename them 
+#                     move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][0], # war im else
+#                             cwd + '/Sourced/new_' + pixiv_images_array[0][0])
+#                     move(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3], 
+#                         cwd + '/Sourced/old_' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3])
+#                 else:
+#                     # Move original image to Sourced and delete downloaded image/directory
+#                     move(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3], 
+#                         cwd + '/Sourced/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3])
+#                     if pixiv_images_array[0][5]:
+#                         rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2])
+#                     else:
+#                         remove(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][0])
+#             elif downloaded_var == 1:
+#                     # if pixiv_images_array[0][5]:
+#                     #     move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2] + '/' + pixiv_images_array[0][1], 
+#                     #         cwd + '/Sourced/' + pixiv_images_array[0][1])
+#                     #     rmtree(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][2])
+#                     # else:
 
-                    # Move downloaded image to Sourced and delete original image
-                    move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][0], # war im else
-                            cwd + '/Sourced/' + pixiv_images_array[0][0])
-                    remove(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3])
-            # Delete image from input
-            remove(cwd + '/Input/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3])
-            safe_to_show_array.remove(pixiv_images_array[0][2])
-            for widget in frame.winfo_children():
-                widget.grid_forget()
-            for a in range(len(pixiv_images_array[0])):
-                del pixiv_images_array[0][0]
-            #pixiv_images_array.pop(0)
-
-if __name__ == '__main__':
-    pass
-    #write_credentials(getcwd(), read_credentials(getcwd()))
+#                     # Move downloaded image to Sourced and delete original image
+#                     move(cwd + '/Sourcery/sourced_progress/pixiv/' + pixiv_images_array[0][0], # war im else
+#                             cwd + '/Sourced/' + pixiv_images_array[0][0])
+#                     remove(cwd + '/Sourcery/sourced_original/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3])
+#             # Delete image from input
+#             remove(cwd + '/Input/' + pixiv_images_array[0][2] + '.' + pixiv_images_array[0][3])
+#             safe_to_show_array.remove(pixiv_images_array[0][2])
+            
+#             for a in range(len(pixiv_images_array[0])):
+#                 del pixiv_images_array[0][0]
+#             #pixiv_images_array.pop(0)
+#     for widget in frame.winfo_children():
+#         widget.grid_forget()
 
 def open_input():
     global cwd
@@ -272,3 +353,7 @@ def open_sourced():
 def display_statistics():
     global cwd
     pass
+
+if __name__ == '__main__':
+    pass
+    #write_credentials(getcwd(), read_credentials(getcwd()))

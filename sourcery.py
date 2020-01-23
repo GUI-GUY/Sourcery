@@ -5,7 +5,10 @@ from saucenao_caller import get_response, decode_response
 from pixiv_handler import pixiv_authenticate, pixiv_download
 
 def do_sourcery(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv_username, pixiv_password, credentials_array, comm_stop_q, comm_error_q):
-    pixiv_authenticate(pixiv_username, pixiv_password, credentials_array)
+    if not pixiv_authenticate(pixiv_username, pixiv_password, credentials_array):
+        comm_error_q.put('Pixiv Authentication Failed.\nPlease check your login data.')
+        comm_img_q.put('Stopped')
+        return
     # For every input image a request goes out to saucenao and gets decoded
     for img in input_images_array:
         comm_img_q.put(img)
@@ -16,7 +19,11 @@ def do_sourcery(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv
             comm_img_q.put('Stopped')
             return
         res = get_response(img, cwd, saucenao_key)
-        if res[0] == 403:
+        if res[0] == 401:
+            # Exception while opening image!
+            comm_error_q.put(res[1])
+            continue
+        elif res[0] == 403:
             # Incorrect or Invalid API Key!
             comm_error_q.put(res[1])
             comm_img_q.put('Stopped')
