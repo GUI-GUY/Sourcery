@@ -1,6 +1,6 @@
 from os import listdir, path
 from PIL import ImageTk, Image
-from tkinter import IntVar
+from tkinter import IntVar, W
 from tkinter import messagebox as mb
 from tkinter.ttk import Label, Checkbutton, Button
 from functools import partial
@@ -73,7 +73,7 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
     original_lbl = Label(window, text = 'original', style='label.TLabel')
     original_wxh_lbl = Label(window, text = original_size, style='label.TLabel')
     original_type_lbl = Label(window, text = pixiv_images_array[index][3], style='label.TLabel')
-    cropped_name_lbl.place(x = round(width*0.43), y = 15)
+    #cropped_name_lbl.place(x = round(width*0.43), y = 15)
     original_lbl.place(x = round(width*0.43), y = 35)
     original_wxh_lbl.place(x = round(width*0.43), y = 55)
     original_type_lbl.place(x = round(width*0.43), y = 75)
@@ -114,9 +114,11 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
             downloaded_lbl = Label(frame2, text = "pixiv", style='label.TLabel')
             downloaded_wxh_lbl = Label(frame2, text = downloaded_size, style='label.TLabel')
             downloaded_type_lbl = Label(frame2, text = img[img.rfind(".")+1:], style='label.TLabel')
-            downloaded_lbl.grid(column = 0, row = t + 0)
-            downloaded_wxh_lbl.grid(column = 0, row = t + 1)
-            downloaded_type_lbl.grid(column = 0, row = t + 2)
+            downloaded_lbl.grid(column = 0, row = t + 0, sticky = W)
+            downloaded_wxh_lbl.grid(column = 0, row = t + 1, sticky = W)
+            downloaded_type_lbl.grid(column = 0, row = t + 2, sticky = W)
+
+            frame2.grid_rowconfigure(t + 3, weight = 1)
 
             big_ref_array.extend([downloaded_photoImage, downloaded_image, downloaded_chkbtn])
             t += 4
@@ -194,7 +196,10 @@ def display_view_results2(cwd, delete_dirs_array, frame, chkbtn_vars_array, pixi
         if len(sourced_original_array) == 0:
             if cwd + '/Sourcery/sourced_progress/pixiv/' + img not in delete_dirs_array:
                 delete_dirs_array.append(cwd + '/Sourcery/sourced_progress/pixiv/' + img)
-                safe_to_show_array.remove(cropped)
+                try:
+                    safe_to_show_array.remove(cropped)
+                except:
+                    pass
             continue
         
         if cropped not in safe_to_show_array:
@@ -282,23 +287,23 @@ def display_view_results_helper(frame, original_photoImage, downloaded_photoImag
     rst[int(t/3)][0][0].image = original_photoImage
     rst[int(t/3)][0][0].grid(column = 0, row = t+1)
     # original_lbl:
-    rst[int(t/3)][0][1].grid(column = 2, row = t+1)
+    rst[int(t/3)][0][1].grid(column = 2, row = t+1, sticky = W, padx = 10)
     # original_wxh_lbl:
     rst[int(t/3)][0][2].configure(text = str(original_size))
-    rst[int(t/3)][0][2].grid(column = 3, row = t+1)
+    rst[int(t/3)][0][2].grid(column = 3, row = t+1, sticky = W, padx = 10)
     # original_type_lbl:
     rst[int(t/3)][0][3].configure(text = suffix)
-    rst[int(t/3)][0][3].grid(column = 4, row = t+1)
+    rst[int(t/3)][0][3].grid(column = 4, row = t+1, sticky = W, padx = 10)
     # cropped_name_lbl:
     rst[int(t/3)][0][4].configure(text = cropped)
-    rst[int(t/3)][0][4].grid(column = 1, row = t, columnspan=3)
+    rst[int(t/3)][0][4].grid(column = 1, row = t, columnspan=3, sticky = W, padx = 10)
 
     # downloaded_chkbtn:
     rst[int(t/3)][1][0].configure(image=downloaded_photoImage, var=chkbtn_vars_array[int(t/3)][1])
     rst[int(t/3)][1][0].image = downloaded_photoImage
     rst[int(t/3)][1][0].grid(column = 0, row = t+2)
     # downloaded_lbl:
-    rst[int(t/3)][1][1].grid(column = 2, row = t+2)
+    rst[int(t/3)][1][1].grid(column = 2, row = t+2, sticky = W, padx = 10)
     # misc:
     if dir_flag:
         rst[int(t/3)][1][0].configure(state = 'disabled')
@@ -307,12 +312,12 @@ def display_view_results_helper(frame, original_photoImage, downloaded_photoImag
         rst[int(t/3)][1][3].configure(text = img[img.rfind(".")+1:])# downloaded_type_lbl
         rst[int(t/3)][1][0].configure(state = 'enabled')
     # downloaded_wxh_lbl:
-    rst[int(t/3)][1][2].grid(column = 3, row = t+2)
+    rst[int(t/3)][1][2].grid(column = 3, row = t+2, sticky = W, padx = 10)
     # downloaded_type_lbl:
-    rst[int(t/3)][1][3].grid(column = 4, row = t+2)
+    rst[int(t/3)][1][3].grid(column = 4, row = t+2, sticky = W, padx = 10)
     # big_selector_btn:
     big_selector_partial = partial(display_big_selector, int(t/3))
     rst[int(t/3)][1][4].configure(command=big_selector_partial)
-    rst[int(t/3)][1][4].grid(column = 5, row = t+2)
+    rst[int(t/3)][1][4].grid(column = 5, row = t+2, sticky = W, padx = 10)
 
     return rst[int(t/3)][0][4]

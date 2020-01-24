@@ -10,7 +10,7 @@ def pixiv_login(username, password, credentials_array):
         client.login(username, password)
         credentials_array[3] = client.refresh_token
     except Exception as e:
-        print('ERROR [0021] ' + str(e))
+        print('ERROR [0021] Pixiv login failed' + str(e))
         #mb.showerror("ERROR", 'Login failed')
         return False
     return True
@@ -20,7 +20,7 @@ def pixiv_authenticate(username, password, credentials_array):
     try:
         client.authenticate(credentials_array[3])
     except Exception as e:
-        print('ERROR [0020]\nPixiv authentication with refreshtoken failed - Attempting with login data')
+        print('ERROR [0020] Pixiv authentication with refreshtoken failed - Attempting with login data')
         return pixiv_login(username, password, credentials_array)
     return True
 
@@ -30,7 +30,7 @@ def pixiv_download(imgid, img_name_original):
         newname = img_name_original[:img_name_original.rfind('.')]
         illustration.download(directory=Path.cwd() / 'Sourcery/sourced_progress/pixiv', size=Size.ORIGINAL, filename=newname)
     except Exception as e:
-        print('ERROR [0018]\nID:' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
+        print('ERROR [0018]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
         #mb.showerror("ERROR", e)
 
 #pixiv_authenticate(username, password, credentials_array)

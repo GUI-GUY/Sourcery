@@ -17,6 +17,7 @@ def magic():
     """
     Starts second process which searches for images and downloads them.
     """
+    global process
     do_sourcery_btn.configure(state='disabled')
     if __name__ == '__main__':
         process = Process(target=do_sourcery, args=(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv_username, pixiv_password, credentials_array, comm_stop_q, comm_error_q, ))
@@ -34,17 +35,18 @@ def display_startpage():
     images_in_input_count_lbl.place(x = 350, y = y)
     currently_sourcing_lbl.place(x = 200, y = y + c * 2)
     currently_sourcing_img_lbl.place(x = 350, y = y + c * 2)
-    saucenao_requests_count_lbl.place(x = 350, y = y + c * 3)
-    elapsed_time_lbl.place(x = 200, y = y + c * 4)
-    eta_lbl.place(x = 200, y = y + c * 5)
+    remaining_searches_lbl.place(x = 200, y = y + c * 3)
+    saucenao_requests_count_lbl.place(x = 350, y = y + c * 3.3)
+    #elapsed_time_lbl.place(x = 200, y = y + c * 4)
+    #eta_lbl.place(x = 200, y = y + c * 5)
     error_lbl.place(x = 550, y = y + c * 2)
 
     open_input_btn.place(x = 20, y = y + c * 0)
     open_sourced_btn.place(x = 20, y = y + c * 1)
     #statistics_btn.place(x = 20, y = y + c * 2)
-    options_btn.place(x = 20, y = y + c * 3)
-    do_sourcery_btn.place(x = 380, y = 100)
-    stop_btn.place(x = 200, y = y + c * 6)
+    options_btn.place(x = 20, y = y + c * 2)
+    do_sourcery_btn.place(x = 550, y = 100)
+    stop_btn.place(x = 700, y = 100)
     view_results_btn.place(x = 350, y = y + c * 6)
     
     refresh_startpage()
@@ -145,7 +147,7 @@ def display_sourcery_options():
     c = 23
     x1 = 50
     x2 = 240
-    theme_lbl.place(x = x1, y = y)
+    theme_lbl.place(x = x1, y = y-5)
     dark_theme_btn.place(x = x1, y = y + c * 1)
     light_theme_btn .place(x = x1, y = y + c * 2)
     custom_theme_btn.place(x = x1, y = y + c * 3)
@@ -195,13 +197,15 @@ def display_provider_options():
     """
     forget_all_widgets()
     display_basic_options()
-
-    pixiv_login_lbl.place(x = 50, y = 100)
-    pixiv_user_lbl.place(x = 50, y = 130)
-    pixiv_user_filled_lbl.place(x = 120, y = 130)
-    pixiv_password_lbl.place(x = 50, y = 160)
-    pixiv_password_filled_lbl.place(x = 120, y = 160)
-    pixiv_login_change_btn.place(x = 50, y = 190)
+    y = 100
+    c = 23
+    pixiv_login_lbl.place(x = 50, y = y)
+    pixiv_user_lbl.place(x = 50, y = y + c * 1)
+    pixiv_user_filled_lbl.place(x = 120, y = y + c * 1)
+    pixiv_password_lbl.place(x = 50, y = y + c * 2)
+    pixiv_password_filled_lbl.place(x = 120, y = y + c * 2)
+    pixiv_login_change_btn.place(x = 50, y = y + c * 4)
+    pixiv_warning_lbl.place(x = 50, y = y + c * 3)
     
 def display_saucenao_options():
     """
@@ -210,19 +214,21 @@ def display_saucenao_options():
     forget_all_widgets()
     display_basic_options()
     saucenao_key_lbl.place(x = 50, y = 100)
-    saucenao_key_number_lbl.place(x = 150, y = 100)
+    saucenao_key_number_lbl.place(x = 180, y = 100)
     saucenao_key_change_btn.place(x = 550, y = 100)
     
 def pixiv_change_login():
     """
     Unlock login widget for pixiv, so that you can change your login data. 
     """
+    y = 100
+    c = 23
     pixiv_user_filled_lbl.place_forget()
     pixiv_password_filled_lbl.place_forget()
     pixiv_login_change_btn.place_forget()
-    pixiv_user_entry.place(x = 120, y = 130)
-    pixiv_password_entry.place(x = 120, y = 160)
-    pixiv_login_confirm_btn.place(x = 50, y = 190)
+    pixiv_user_entry.place(x = 120, y = y + c * 1)
+    pixiv_password_entry.place(x = 120, y = y + c * 2)
+    pixiv_login_confirm_btn.place(x = 50, y = y + c * 4)
     pixiv_user_entry.delete(0, len(pixiv_username))
     pixiv_password_entry.delete(0, len(pixiv_password))
     pixiv_user_entry.insert(0, pixiv_username)
@@ -234,12 +240,14 @@ def pixiv_set_login():
     """
     global pixiv_username
     global pixiv_password
+    y = 100
+    c = 23
     pixiv_user_entry.place_forget()
     pixiv_password_entry.place_forget()
     pixiv_login_confirm_btn.place_forget()
-    pixiv_user_filled_lbl.place(x = 120, y = 130)
-    pixiv_password_filled_lbl.place(x = 120, y = 160)
-    pixiv_login_change_btn.place(x = 50, y = 190)
+    pixiv_user_filled_lbl.place(x = 120, y = y + c * 1)
+    pixiv_password_filled_lbl.place(x = 120, y = y + c * 2)
+    pixiv_login_change_btn.place(x = 50, y = y + c * 4)
     pixiv_username = pixiv_user_entry.get()
     pixiv_password = pixiv_password_entry.get()
     pixiv_user_filled_lbl.configure(text=pixiv_username)
@@ -255,7 +263,7 @@ def saucenao_change_key():
     saucenao_key_change_btn.place_forget()
     saucenao_key_number_lbl.place_forget()
     saucenao_key_confirm_btn.place(x = 550, y = 100)
-    saucenao_key_entry.place(x = 150, y = 100)
+    saucenao_key_entry.place(x = 180, y = 100)
     saucenao_key_entry.delete(0, len(saucenao_key))
     saucenao_key_entry.insert(0, saucenao_key)
     
@@ -271,12 +279,13 @@ def saucenao_set_key():
     saucenao_key_entry.place_forget()
     saucenao_key_change_btn.place(x = 550, y = 100)
     saucenao_key_number_lbl.configure(text=saucenao_key)
-    saucenao_key_number_lbl.place(x = 150, y = 100)
+    saucenao_key_number_lbl.place(x = 180, y = 100)
 
 def stop():
     """
     Stop further search for images and halt the second process.
     """
+    global process
     if process.is_alive():
         comm_stop_q.put("Stopped")
         stop_btn.configure(state='disabled')
@@ -345,7 +354,7 @@ def refresh():
     else:
         for elem in chkbtn_vars_array:
             elem[0].set(0)
-            elem[1].set(0)
+            elem[1].set(1)
         display_view_results()
 
 def myfunction(event):
@@ -404,6 +413,8 @@ def on_mousewheel2(event):
 
 if __name__ == '__main__':
     freeze_support()
+    init_directories() # create all neccesary directories
+    init_configs() # creates all options files
     cwd = getcwd()
     window = Tk()
     window.title("Sourcery")
@@ -430,9 +441,10 @@ if __name__ == '__main__':
     images_in_input_count_lbl = Label(window, text="Number here", style="label.TLabel")
     currently_sourcing_lbl = Label(window, text="Currently Sourcing:", style="label.TLabel")
     currently_sourcing_img_lbl = Label(window, text="None", style="label.TLabel")
+    remaining_searches_lbl = Label(window, text="Remaining SauceNao\nsearches today:", style="label.TLabel")
     saucenao_requests_count_lbl = Label(window, text="???/200", style="label.TLabel")
-    elapsed_time_lbl = Label(window, text="Elapsed time:", style="label.TLabel")
-    eta_lbl = Label(window, text="ETA:", style="label.TLabel")
+    #elapsed_time_lbl = Label(window, text="Elapsed time:", style="label.TLabel")
+    #eta_lbl = Label(window, text="ETA:", style="label.TLabel")
     error_lbl = Label(window, text="Errors will be displayed here", style="label.TLabel")
 
     open_input_btn = Button(window, text="Open Input", command=open_input, style="button.TLabel")
@@ -462,6 +474,7 @@ if __name__ == '__main__':
     pixiv_password_entry = Entry(window, width=52, style="button.TLabel")
     pixiv_login_change_btn = Button(window, text="Change", command=pixiv_change_login, style="button.TLabel")
     pixiv_login_confirm_btn = Button(window, text="Confirm", command=pixiv_set_login, style="button.TLabel")
+    pixiv_warning_lbl = Label(window, width=50, text='THIS WILL BE SAVED IN PLAINTEXT!!!', style="label.TLabel")
 
     saucenao_key = credentials_array[0] # SauceNao API-Key
     saucenao_key_lbl = Label(window, text="SauceNao API-Key", style="label.TLabel")
@@ -566,7 +579,5 @@ if __name__ == '__main__':
     comm_img_q = Queue() # Queue for 'Currently Sourcing'
     comm_stop_q = Queue() # Queue for stop signal
     comm_error_q = Queue() # Queue for error messages
-    init_directories() # create all neccesary directories
-    init_configs() # creates all options files
     display_startpage()
     window.mainloop()

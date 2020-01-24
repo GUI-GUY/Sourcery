@@ -1,7 +1,7 @@
 beta 0.1
 + big Selector checkbuttons
 + big Selector back
-+ (untested) stop
++ stop
 + mousewheel scrolling
 + scrolling accuracy
 + write tutorial
@@ -13,13 +13,13 @@ beta 0.1
 + frame2 grid_forget
 + block sourcery button while processing
 + reset scrollbars
++ Big Selector in save
 + (untested) sourcery error stop
 ~ comments
-+ (untested) create theme and credentials
-beautify
-Fehlerbehandlung
-- (untested) Big Selector in save
-- (untested) rework save system
++ create theme and credentials
++ beautify
++ Fehlerbehandlung
++ rework save system
 Last Issue: 0023
 
 

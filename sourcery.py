@@ -3,12 +3,15 @@ from time import sleep
 from shutil import copy
 from saucenao_caller import get_response, decode_response
 from pixiv_handler import pixiv_authenticate, pixiv_download
+from file_operations import write_credentials
 
 def do_sourcery(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv_username, pixiv_password, credentials_array, comm_stop_q, comm_error_q):
     if not pixiv_authenticate(pixiv_username, pixiv_password, credentials_array):
         comm_error_q.put('Pixiv Authentication Failed.\nPlease check your login data.')
         comm_img_q.put('Stopped')
         return
+    else:
+        write_credentials(credentials_array)
     # For every input image a request goes out to saucenao and gets decoded
     for img in input_images_array:
         comm_img_q.put(img)
@@ -78,7 +81,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv
                 stop_signal = comm_stop_q.get()
                 if stop_signal != None:
                     comm_img_q.put(stop_signal)
-                    break
+                    return
             except:
                 pass
     comm_img_q.put("Finished")
