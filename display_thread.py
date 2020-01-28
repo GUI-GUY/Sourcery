@@ -4,18 +4,13 @@ from tkinter import IntVar, W
 from tkinter import messagebox as mb
 from tkinter.ttk import Label, Checkbutton, Button
 from functools import partial
-#from create_GUI import display_big_selector
-
-width = 0
-height = 0
+from global_variables import * #(potential problem with visibility?)
 
 # 5.2 Resize images to fit on screen
 def resize(image):
     """
     Resizes given image to a third of the screen width and to the screen height-320 and returns it.
     """
-    global width
-    global height
 
     oldwidth = image.width
     oldheight = image.height
@@ -32,7 +27,7 @@ def resize(image):
         image = image.resize(newsize, Image.ANTIALIAS)
     return image
 
-def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn_vars_array, display_view_results, chkbtn_vars_big_array, big_ref_array):
+def display_big_selector2(index, window, frame2, display_view_results):
     """
     Draws all widgets for given image:
     - Name of image
@@ -147,7 +142,7 @@ def display_big_selector2(index, cwd, window, frame2, pixiv_images_array, chkbtn
 
         big_ref_array.extend([downloaded_photoImage, downloaded_image, downloaded_chkbtn])
 
-def display_view_results2(cwd, delete_dirs_array, frame, chkbtn_vars_array, pixiv_images_array, width1, height1, display_big_selector, safe_to_show_array, results_12_tuple_widgets_array):
+def display_view_results2(frame, display_big_selector):
     """
     Draws all widgets for first dozen in pixiv images:
     - Name of image
@@ -160,10 +155,6 @@ def display_view_results2(cwd, delete_dirs_array, frame, chkbtn_vars_array, pixi
     - Back and save button to startpage
     - Refresh and save button
     """
-    global width
-    global height
-    width = width1
-    height = height1
     
     for b in range(len(pixiv_images_array)):
         for a in range(len(pixiv_images_array[0])):
@@ -205,7 +196,7 @@ def display_view_results2(cwd, delete_dirs_array, frame, chkbtn_vars_array, pixi
         if cropped not in safe_to_show_array:
             continue
 
-        original_image, downloaded_image, suffix, sub, dir_flag, continue_flag = image_opener(cwd, img, cropped, t, sourced_original_array, delete_dirs_array, safe_to_show_array, pixiv_sub_dir_array, chkbtn_vars_array)
+        original_image, downloaded_image, suffix, sub, dir_flag, continue_flag = image_opener(img, cropped, t, sourced_original_array, pixiv_sub_dir_array)
         if continue_flag:
             continue
 
@@ -219,14 +210,14 @@ def display_view_results2(cwd, delete_dirs_array, frame, chkbtn_vars_array, pixi
         downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
         downloaded_image.close()
 
-        cropped_name_lbl = display_view_results_helper(frame, original_photoImage, downloaded_photoImage, chkbtn_vars_array, t, img, cropped, suffix, original_size, downloaded_size, dir_flag, display_big_selector, results_12_tuple_widgets_array)
+        cropped_name_lbl = display_view_results_helper(frame, original_photoImage, downloaded_photoImage, t, img, cropped, suffix, original_size, downloaded_size, dir_flag, display_big_selector)
 
         pixiv_images_array.append([img, sub, cropped, suffix, cropped_name_lbl, dir_flag, pixiv_sub_dir_array]) # , original_image, original_photoImage, downloaded_image, downloaded_photoImage
         if t > 32:
             break
         t += 3
 
-def image_opener(cwd, img, cropped, t, sourced_original_array, delete_dirs_array, safe_to_show_array, pixiv_sub_dir_array, chkbtn_vars_array):
+def image_opener(img, cropped, t, sourced_original_array, pixiv_sub_dir_array):
     dir_flag = False
     suffix = ''
     sub = ''
@@ -278,8 +269,8 @@ def image_opener(cwd, img, cropped, t, sourced_original_array, delete_dirs_array
             return
     return original_image, downloaded_image, suffix, sub, dir_flag, False
         
-def display_view_results_helper(frame, original_photoImage, downloaded_photoImage, chkbtn_vars_array, t, img, cropped, suffix, original_size, downloaded_size, dir_flag, display_big_selector, rst):
-    # rst = results_12_tuple_widgets_array
+def display_view_results_helper(frame, original_photoImage, downloaded_photoImage, t, img, cropped, suffix, original_size, downloaded_size, dir_flag, display_big_selector):
+    rst = results_12_tuple_widgets_array
     # [([original_chkbtn, original_lbl, original_wxh_lbl, original_type_lbl, cropped_name_lbl], 
     # [downloaded_chkbtn, downloaded_lbl, downloaded_wxh_lbl, downloaded_type_lbl, big_selector_btn]), ([], []), ...]
     # original_chkbtn:

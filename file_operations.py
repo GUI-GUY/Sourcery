@@ -5,7 +5,6 @@ from tkinter import messagebox as mb
 cwd = getcwd()
 
 def init_directories():
-    global cwd
     try:
         makedirs(cwd + "/Input", 0o777, True)
         makedirs(cwd + "/Sourced", 0o777, True)
@@ -19,7 +18,6 @@ def init_directories():
         return
 
 def init_configs():
-    global cwd
     if not path.exists(cwd + '/Sourcery/theme'):
         write_theme('Dark Theme', ['blue', 'red', '#123456', 'orange', 'grey', 'purple', 'magenta'])
     if not path.exists(cwd + '/Sourcery/credentials'):
@@ -32,7 +30,6 @@ def read_theme():
     [0]background, [1]foreground, [2]button_background, [3]button_background_active, 
     [4]button_foreground_active, [5]button_background_pressed, [6]button_foreground_pressed
     """
-    global cwd
     try:
         f = open(cwd + '/Sourcery/theme')
     except Exception as e:
@@ -66,7 +63,6 @@ def read_theme():
     return colour_array, custom_array
 
 def write_theme(chosen_theme, custom_theme):
-    global cwd
     theme = """Current theme=""" + chosen_theme + """
 
 Dark Theme
@@ -137,7 +133,6 @@ def read_credentials():
     Order:\n
     [0]SauceNao API-Key, [1]Pixiv Username, [2]Pixiv Password, [3]Pixiv refreshtoken
     """
-    global cwd
     try:
         f = open(cwd + '/Sourcery/credentials')
     except Exception as e:
@@ -163,7 +158,6 @@ def read_credentials():
     return credentials_array
 
 def write_credentials(credentials_array):
-    global cwd
     creds = """SauceNao
 API-Key=""" + credentials_array[0] + """
 
@@ -185,7 +179,6 @@ END"""
     f.close()
 
 def save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_dirs_array, safe_to_show_array, frame, process):
-    global cwd
     downloaded_name_new = None
     original_name_new = None
     pixiv_dir = cwd + '/Sourcery/sourced_progress/pixiv/'
@@ -358,7 +351,6 @@ def save(chkbtn_vars_array, chkbtn_vars_big_array, pixiv_images_array, delete_di
 #         widget.grid_forget()
 
 def open_input():
-    global cwd
     try:
         startfile(cwd + "/Input")
     except Exception as e:
@@ -366,7 +358,6 @@ def open_input():
         #mb.showerror("ERROR", e)
 
 def open_sourced():
-    global cwd
     try:
         startfile(cwd + "/Sourced")
     except Exception as e:
@@ -374,7 +365,6 @@ def open_sourced():
         #mb.showerror("ERROR", e)
 
 def display_statistics():
-    global cwd
     pass
 
 if __name__ == '__main__':

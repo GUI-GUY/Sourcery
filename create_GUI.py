@@ -3,15 +3,12 @@ from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 #from tkinter import messagebox as mb
 #from tkinter.filedialog import askdirectory
 #from functools import partial
-#from PIL import ImageTk, Image
-from os import getcwd, listdir
+from os import listdir
 from multiprocessing import Process, freeze_support, Queue
-#import time
-#from shutil import copy, move
 from file_operations import init_directories, init_configs, read_theme, is_image, read_credentials, write_credentials, write_theme, save, open_input, open_sourced, display_statistics
 from sourcery import do_sourcery
 from display_thread import display_view_results2, display_big_selector2
-#from test import test
+from global_variables import * #(potential problem with visibility?)
 
 def magic():
     """
@@ -20,7 +17,7 @@ def magic():
     global process
     do_sourcery_btn.configure(state='disabled')
     if __name__ == '__main__':
-        process = Process(target=do_sourcery, args=(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, pixiv_username, pixiv_password, credentials_array, comm_stop_q, comm_error_q, ))
+        process = Process(target=do_sourcery, args=(cwd, input_images_array, credentials_array[0], comm_q, comm_img_q, comm_stop_q, comm_error_q, ))
         process.start()
 
 def display_startpage():
@@ -229,17 +226,15 @@ def pixiv_change_login():
     pixiv_user_entry.place(x = 120, y = y + c * 1)
     pixiv_password_entry.place(x = 120, y = y + c * 2)
     pixiv_login_confirm_btn.place(x = 50, y = y + c * 4)
-    pixiv_user_entry.delete(0, len(pixiv_username))
-    pixiv_password_entry.delete(0, len(pixiv_password))
-    pixiv_user_entry.insert(0, pixiv_username)
-    pixiv_password_entry.insert(0, pixiv_password)
+    pixiv_user_entry.delete(0, len(credentials_array[1]))
+    pixiv_password_entry.delete(0, len(credentials_array[2]))
+    pixiv_user_entry.insert(0, credentials_array[1])
+    pixiv_password_entry.insert(0, credentials_array[2])
 
 def pixiv_set_login():
     """
     Save pixiv login data and revert the widgets to being uneditable.
     """
-    global pixiv_username
-    global pixiv_password
     y = 100
     c = 23
     pixiv_user_entry.place_forget()
@@ -248,12 +243,10 @@ def pixiv_set_login():
     pixiv_user_filled_lbl.place(x = 120, y = y + c * 1)
     pixiv_password_filled_lbl.place(x = 120, y = y + c * 2)
     pixiv_login_change_btn.place(x = 50, y = y + c * 4)
-    pixiv_username = pixiv_user_entry.get()
-    pixiv_password = pixiv_password_entry.get()
-    pixiv_user_filled_lbl.configure(text=pixiv_username)
-    pixiv_password_filled_lbl.configure(text=pixiv_password)
-    credentials_array[1] = pixiv_username
-    credentials_array[2] = pixiv_password
+    credentials_array[1] = pixiv_user_entry.get()
+    credentials_array[2] = pixiv_password_entry.get()
+    pixiv_user_filled_lbl.configure(text=credentials_array[1])
+    pixiv_password_filled_lbl.configure(text=credentials_array[2])
     write_credentials(credentials_array)
 
 def saucenao_change_key():
@@ -264,21 +257,19 @@ def saucenao_change_key():
     saucenao_key_number_lbl.place_forget()
     saucenao_key_confirm_btn.place(x = 550, y = 100)
     saucenao_key_entry.place(x = 180, y = 100)
-    saucenao_key_entry.delete(0, len(saucenao_key))
-    saucenao_key_entry.insert(0, saucenao_key)
+    saucenao_key_entry.delete(0, len(credentials_array[0]))
+    saucenao_key_entry.insert(0, credentials_array[0])
     
 def saucenao_set_key():
     """
     Save SauceNao API-Key and revert the widget to being uneditable.
     """
-    global saucenao_key
-    saucenao_key = saucenao_key_entry.get()
-    credentials_array[0] = saucenao_key
+    credentials_array[0] = saucenao_key_entry.get()
     write_credentials(credentials_array)
     saucenao_key_confirm_btn.place_forget()
     saucenao_key_entry.place_forget()
     saucenao_key_change_btn.place(x = 550, y = 100)
-    saucenao_key_number_lbl.configure(text=saucenao_key)
+    saucenao_key_number_lbl.configure(text=credentials_array[0])
     saucenao_key_number_lbl.place(x = 180, y = 100)
 
 def stop():
@@ -295,7 +286,7 @@ def display_big_selector(index):
     forget_all_widgets()
     big_selector_frame.place(x = round(width*0.515), y = 20)
     big_selector_canvas.yview_moveto(0)
-    window.after(10, display_big_selector2, index, cwd, window, frame2, pixiv_images_array, chkbtn_vars_array, display_view_results, chkbtn_vars_big_array, big_ref_array)
+    window.after(10, display_big_selector2, index, window, frame2, display_view_results)
 
 def display_view_results():
     global esc_res
@@ -317,12 +308,9 @@ def display_view_results():
             big_ref_array[0].image = None
         except:
             pass
-        # big_ref_array.remove(x)
         del big_ref_array[0]
-    #print(big_ref_array)
-    # big_ref_array.clear()
 
-    window.after(10, display_view_results2, cwd, delete_dirs_array, frame, chkbtn_vars_array, pixiv_images_array, width, height, display_big_selector, safe_to_show_array, results_12_tuple_widgets_array)
+    window.after(10, display_view_results2, frame, display_big_selector)
 
 def save_and_back():
     """
@@ -413,9 +401,7 @@ def on_mousewheel2(event):
 
 if __name__ == '__main__':
     freeze_support()
-    init_directories() # create all neccesary directories
-    init_configs() # creates all options files
-    cwd = getcwd()
+    
     window = Tk()
     window.title("Sourcery")
     window.update_idletasks()
@@ -430,8 +416,6 @@ if __name__ == '__main__':
     #dateS =  time.strftime("20%y-%m-%d")
 
     # set style
-    colour_array = [] # For all current theme colours
-    custom_array = [] # Custom theme colours
     results_canvas = Canvas(window)
     enforce_style()
 
@@ -462,23 +446,19 @@ if __name__ == '__main__':
     saucenao_options_btn = Button(window, text="SauceNao", command=display_saucenao_options, style="button.TLabel")
     sourcery_options_btn = Button(window, text="Sourcery", command=display_sourcery_options, style="button.TLabel")
 
-    credentials_array = read_credentials() # [0]SauceNao API-Key, [1]Pixiv Username, [2]Pixiv Password, [3]Pixiv refreshtoken
-    pixiv_username = credentials_array[1]
-    pixiv_password = credentials_array[2]
     pixiv_login_lbl = Label(window, text="Pixiv Login", style="label.TLabel")
     pixiv_user_lbl = Label(window, text="Username", style="label.TLabel")
-    pixiv_user_filled_lbl = Label(window, width=50, text=pixiv_username, style="button.TLabel")
+    pixiv_user_filled_lbl = Label(window, width=50, text=credentials_array[1], style="button.TLabel")
     pixiv_user_entry = Entry(window, width=52, style="button.TLabel")
     pixiv_password_lbl = Label(window, text="Password", style="label.TLabel")
-    pixiv_password_filled_lbl = Label(window, width=50, text=pixiv_password, style="button.TLabel")
+    pixiv_password_filled_lbl = Label(window, width=50, text=credentials_array[2], style="button.TLabel")
     pixiv_password_entry = Entry(window, width=52, style="button.TLabel")
     pixiv_login_change_btn = Button(window, text="Change", command=pixiv_change_login, style="button.TLabel")
     pixiv_login_confirm_btn = Button(window, text="Confirm", command=pixiv_set_login, style="button.TLabel")
     pixiv_warning_lbl = Label(window, width=50, text='THIS WILL BE SAVED IN PLAINTEXT!!!', style="label.TLabel")
 
-    saucenao_key = credentials_array[0] # SauceNao API-Key
     saucenao_key_lbl = Label(window, text="SauceNao API-Key", style="label.TLabel")
-    saucenao_key_number_lbl = Label(window, width=50, text=saucenao_key, style="button.TLabel")
+    saucenao_key_number_lbl = Label(window, width=50, text=credentials_array[0], style="button.TLabel")
     saucenao_key_entry = Entry(window, width=52, style="button.TLabel")
     saucenao_key_change_btn = Button(window, text="Change", command=saucenao_change_key, style="button.TLabel")
     saucenao_key_confirm_btn = Button(window, text="Confirm", command=saucenao_set_key, style="button.TLabel")
@@ -542,10 +522,12 @@ if __name__ == '__main__':
     big_selector_canvas.create_window((0,0),window=frame2,anchor='nw')
     frame2.bind("<Configure>", myfunction2)
 
-    # global arrays
-    input_images_array = [] # For all images in Input folder
-    pixiv_images_array = [] # For all images in sourced_progress/pixiv folder
-    safe_to_show_array = [] # For all images that are fully downloaded
+    # results_canvas.bind_all("<MouseWheel>", on_mousewheel)
+    frame.bind('<Enter>', bound_to_mousewheel)
+    frame.bind('<Leave>', unbound_to_mousewheel)
+    frame2.bind('<Enter>', bound_to_mousewheel2)
+    frame2.bind('<Leave>', unbound_to_mousewheel2)
+    
     safe_to_show_array.extend(listdir(cwd + '/Sourcery/sourced_original/'))
     tt=0
     for img in safe_to_show_array:
@@ -553,11 +535,6 @@ if __name__ == '__main__':
         if pointdex != -1:
             safe_to_show_array[tt] = img[:pointdex] # deletes the suffix
         tt += 1
-    delete_dirs_array = [] # For empty directories or dirs where no original is present
-    chkbtn_vars_big_array = [] # [[imgname, (img, IntVar), (img, IntVar) ...]...]
-    chkbtn_vars_array = [] # 12x2 Checkbutton variables for the results screen
-    big_ref_array = [] # reference for all big selector widgets
-    results_12_tuple_widgets_array = [] # [([original_chkbtn, original_lbl, original_wxh_lbl, original_type_lbl, cropped_name_lbl], [downloaded_chkbtn, downloaded_lbl, downloaded_wxh_lbl, downloaded_type_lbl, big_selector_btn]), ([], []), ...]
     for i in range(12):
         results_12_tuple_widgets_array.append(([Checkbutton(frame, style="chkbtn.TCheckbutton"), Label(frame, text = "original", style='label.TLabel'), Label(frame, style='label.TLabel'), Label(frame, style='label.TLabel'), Label(frame, style='label.TLabel')], [Checkbutton(frame, style="chkbtn.TCheckbutton"), Label(frame, text = "pixiv", style='label.TLabel'), Label(frame, text = "More images", style='label.TLabel'), Label(frame, text = "More images", style='label.TLabel'), Button(frame, text='View in Big Selector', style='button.TLabel')]))
     for i in range(12):
@@ -565,12 +542,6 @@ if __name__ == '__main__':
         chkbtn_vars_array[i][0].set(0)
         chkbtn_vars_array[i][1].set(1)
 
-    # results_canvas.bind_all("<MouseWheel>", on_mousewheel)
-    frame.bind('<Enter>', bound_to_mousewheel)
-    frame.bind('<Leave>', unbound_to_mousewheel)
-    frame2.bind('<Enter>', bound_to_mousewheel2)
-    frame2.bind('<Leave>', unbound_to_mousewheel2)
-    
     currently_processing = ''
     esc_op = False # Escape variable for options
     esc_res = False # Escape variable for results

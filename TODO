@@ -24,6 +24,7 @@ Last Issue: 0023
 
 
 beta 0.2
++ added globalvariables module
 logfile + log on screen
 rename options
 minsim options
