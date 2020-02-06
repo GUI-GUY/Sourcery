@@ -3,7 +3,7 @@ from time import sleep
 from shutil import copy
 from saucenao_caller import get_response, decode_response
 from pixiv_handler import pixiv_authenticate, pixiv_download
-from file_operations import write_credentials
+#from file_operations import write_credentials
 
 def die(message, comm_error_q, comm_img_q):
     comm_error_q.put(message)
@@ -70,6 +70,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, comm_
             except:
                 pass
     comm_img_q.put("Finished")
+    exit()
             
 def process_img_data(img_data_array, img_name_original):
     if img_data_array[1] != 0:

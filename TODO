@@ -25,7 +25,8 @@ Last Issue: 0023
 
 beta 0.2
 + added globalvariables module
-logfile + log on screen
++ logfile
+log on screen
 rename options
 minsim options
 better pixiv login
@@ -41,6 +42,7 @@ in window tutorial
 no message boxes but labels
 Fehlerbehandlung
 checking a folder keeps it 100%
+Last Issue: 0024
 
 beta 0.3
 2nd service
@@ -64,3 +66,8 @@ All arrays: (+: no memory leaks 10.01.2020)
 
 comm_q = Queue() # Queue for 'Remaining searches'
 comm_img_q = Queue() # Queue for 'Currently Sourcing'
+
+Logfile contains:
++ Time
++ All Errors
++ Successful options change

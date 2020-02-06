@@ -5,7 +5,7 @@ from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 #from functools import partial
 from os import listdir
 from multiprocessing import Process, freeze_support, Queue
-from file_operations import init_directories, init_configs, read_theme, is_image, read_credentials, write_credentials, write_theme, save, open_input, open_sourced, display_statistics
+from file_operations import init_directories, init_configs, read_theme, is_image, read_credentials, write_credentials, write_theme, save, open_input, open_sourced, display_statistics, write_to_log
 from sourcery import do_sourcery
 from display_thread import display_view_results2, display_big_selector2
 from global_variables import * #(potential problem with visibility?)
@@ -91,7 +91,9 @@ def refresh_startpage():
         currently_sourcing_img_lbl.configure(text=answer2)
     if not comm_error_q.empty():
         try:
-            error_lbl.configure(text=comm_error_q.get())
+            e = comm_error_q.get()
+            error_lbl.configure(text=e)
+            write_to_log('Multiprocess Error: ' + e)
         except:
             pass
     if esc_op:
@@ -165,15 +167,21 @@ def display_sourcery_options():
     save_custom_theme_btn.place(x = x1, y = y + c * 11)
 
 def change_to_dark_theme():
-    write_theme("Dark Theme", custom_array)
+    global current_theme
+    current_theme = "Dark Theme"
+    write_theme(current_theme, custom_array)
     enforce_style()
 
 def change_to_light_theme():
-    write_theme("Light Theme", custom_array)
+    global current_theme
+    current_theme = "Light Theme"
+    write_theme(current_theme, custom_array)
     enforce_style()
 
 def change_to_custom_theme():
-    write_theme("Custom Theme", custom_array)
+    global current_theme
+    current_theme = "Custom Theme"
+    write_theme(current_theme, custom_array)
     enforce_style()
 
 def save_custom_theme():
@@ -185,7 +193,9 @@ def save_custom_theme():
     custom_array[4] = custom_button_foreground_active_entry.get()
     custom_array[5] = custom_button_background_pressed_entry.get()
     custom_array[6] = custom_button_foreground_pressed_entry.get()
-    change_to_custom_theme()
+    e = write_theme(current_theme, custom_array)
+    if e == None:
+        write_to_log('Saved custom theme successfully')
 
 def display_provider_options():
     """
@@ -247,7 +257,9 @@ def pixiv_set_login():
     credentials_array[2] = pixiv_password_entry.get()
     pixiv_user_filled_lbl.configure(text=credentials_array[1])
     pixiv_password_filled_lbl.configure(text=credentials_array[2])
-    write_credentials(credentials_array)
+    e = write_credentials(credentials_array)
+    if e == None:
+        write_to_log('Changed pixiv login data successfully')
 
 def saucenao_change_key():
     """
@@ -265,7 +277,9 @@ def saucenao_set_key():
     Save SauceNao API-Key and revert the widget to being uneditable.
     """
     credentials_array[0] = saucenao_key_entry.get()
-    write_credentials(credentials_array)
+    e = write_credentials(credentials_array)
+    if e == None:
+        write_to_log('Changed SauceNao API-Key successfully')
     saucenao_key_confirm_btn.place_forget()
     saucenao_key_entry.place_forget()
     saucenao_key_change_btn.place(x = 550, y = 100)
@@ -361,8 +375,8 @@ def enforce_style():
     """
     Changes style of all widgets to the currently selected theme.
     """
-    global colour_array, custom_array
-    colour_array, custom_array = read_theme()
+    global colour_array, custom_array, current_theme
+    colour_array, custom_array, current_theme = read_theme()
     window.configure(bg=colour_array[0])
     style = Style()
     style.configure("label.TLabel", foreground=colour_array[1], background=colour_array[0], font=("Arial Bold", 10))
@@ -483,6 +497,7 @@ if __name__ == '__main__':
     custom_button_foreground_pressed_entry = Entry(window, width=30, style="button.TLabel")
     save_custom_theme_btn = Button(window, text="Save Custom Theme", command=save_custom_theme, style="button.TLabel")
 
+    current_theme = 'Dark Theme'
     custom_background_entry.insert(0, custom_array[0])
     custom_foreground_entry.insert(0, custom_array[1])
     custom_button_background_entry.insert(0, custom_array[2])

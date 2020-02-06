@@ -1,7 +1,7 @@
 from pathlib import Path
 from pixivapi import Client, Size
 from global_variables import credentials_array
-from file_operations import write_credentials
+from file_operations import write_credentials, write_to_log
 #from tkinter import messagebox as #mb
 
 client = Client()
@@ -13,6 +13,7 @@ def pixiv_login():
         write_credentials(credentials_array)
     except Exception as e:
         print('ERROR [0021] Pixiv login failed' + str(e))
+        write_to_log('ERROR [0021] Pixiv login failed' + str(e))
         #mb.showerror("ERROR", 'Login failed')
         return False
     return True
@@ -23,6 +24,7 @@ def pixiv_authenticate():
         client.authenticate(credentials_array[3])
     except Exception as e:
         print('ERROR [0020] Pixiv authentication with refreshtoken failed - Attempting with login data')
+        write_to_log('ERROR [0020] Pixiv authentication with refreshtoken failed - Attempting with login data')
         return pixiv_login()
     return True
 
@@ -37,6 +39,7 @@ def pixiv_download(imgid, img_name_original):
         illustration.download(directory=Path.cwd() / 'Sourcery/sourced_progress/pixiv', size=Size.ORIGINAL, filename=newname)
     except Exception as e:
         print('ERROR [0018]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
+        write_to_log('ERROR [0018]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
         #mb.showerror("ERROR", e)
 
 
