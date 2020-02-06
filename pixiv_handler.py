@@ -10,7 +10,6 @@ def pixiv_login():
     try:
         client.login(credentials_array[1], credentials_array[2])
         credentials_array[3] = client.refresh_token
-        write_credentials(credentials_array)
     except Exception as e:
         print('ERROR [0021] Pixiv login failed' + str(e))
         write_to_log('ERROR [0021] Pixiv login failed' + str(e))
@@ -25,7 +24,10 @@ def pixiv_authenticate():
     except Exception as e:
         print('ERROR [0020] Pixiv authentication with refreshtoken failed - Attempting with login data')
         write_to_log('ERROR [0020] Pixiv authentication with refreshtoken failed - Attempting with login data')
-        return pixiv_login()
+        login = pixiv_login()
+        if login:
+            write_credentials(credentials_array)
+        return login 
     return True
 
 def pixiv_download(imgid, img_name_original):

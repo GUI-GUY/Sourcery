@@ -2,12 +2,13 @@ from tkinter import Tk, IntVar, Canvas, Scrollbar
 from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 #from tkinter import messagebox as mb
 #from tkinter.filedialog import askdirectory
-#from functools import partial
+from functools import partial
 from os import listdir
 from multiprocessing import Process, freeze_support, Queue
 from file_operations import init_directories, init_configs, read_theme, is_image, read_credentials, write_credentials, write_theme, save, open_input, open_sourced, display_statistics, write_to_log
 from sourcery import do_sourcery
 from display_thread import display_view_results2, display_big_selector2
+from pixiv_handler import pixiv_login
 from global_variables import * #(potential problem with visibility?)
 
 def magic():
@@ -236,12 +237,13 @@ def pixiv_change_login():
     pixiv_user_entry.place(x = 120, y = y + c * 1)
     pixiv_password_entry.place(x = 120, y = y + c * 2)
     pixiv_login_confirm_btn.place(x = 50, y = y + c * 4)
+    pixiv_login_confirm_nosave_btn.place(x = 180, y = y + c * 4)
     pixiv_user_entry.delete(0, len(credentials_array[1]))
     pixiv_password_entry.delete(0, len(credentials_array[2]))
     pixiv_user_entry.insert(0, credentials_array[1])
     pixiv_password_entry.insert(0, credentials_array[2])
 
-def pixiv_set_login():
+def pixiv_set_login(save):
     """
     Save pixiv login data and revert the widgets to being uneditable.
     """
@@ -250,16 +252,23 @@ def pixiv_set_login():
     pixiv_user_entry.place_forget()
     pixiv_password_entry.place_forget()
     pixiv_login_confirm_btn.place_forget()
+    pixiv_login_confirm_nosave_btn.place_forget()
     pixiv_user_filled_lbl.place(x = 120, y = y + c * 1)
     pixiv_password_filled_lbl.place(x = 120, y = y + c * 2)
     pixiv_login_change_btn.place(x = 50, y = y + c * 4)
     credentials_array[1] = pixiv_user_entry.get()
     credentials_array[2] = pixiv_password_entry.get()
-    pixiv_user_filled_lbl.configure(text=credentials_array[1])
-    pixiv_password_filled_lbl.configure(text=credentials_array[2])
-    e = write_credentials(credentials_array)
+    if save:
+        e = write_credentials(credentials_array)
+    else:
+        pixiv_login()
+        credentials_array[1] = ''
+        credentials_array[2] = ''
+        e = write_credentials(credentials_array)
     if e == None:
         write_to_log('Changed pixiv login data successfully')
+    pixiv_user_filled_lbl.configure(text=credentials_array[1])
+    pixiv_password_filled_lbl.configure(text=credentials_array[2])
 
 def saucenao_change_key():
     """
@@ -468,7 +477,8 @@ if __name__ == '__main__':
     pixiv_password_filled_lbl = Label(window, width=50, text=credentials_array[2], style="button.TLabel")
     pixiv_password_entry = Entry(window, width=52, style="button.TLabel")
     pixiv_login_change_btn = Button(window, text="Change", command=pixiv_change_login, style="button.TLabel")
-    pixiv_login_confirm_btn = Button(window, text="Confirm", command=pixiv_set_login, style="button.TLabel")
+    pixiv_login_confirm_btn = Button(window, text="Confirm & Save", command=partial(pixiv_set_login, True), style="button.TLabel")
+    pixiv_login_confirm_nosave_btn = Button(window, text="Confirm & Don't Save", command=partial(pixiv_set_login, False), style="button.TLabel")
     pixiv_warning_lbl = Label(window, width=50, text='THIS WILL BE SAVED IN PLAINTEXT!!!', style="label.TLabel")
 
     saucenao_key_lbl = Label(window, text="SauceNao API-Key", style="label.TLabel")
