@@ -3,7 +3,6 @@ from time import sleep
 from shutil import copy
 from saucenao_caller import get_response, decode_response
 from pixiv_handler import pixiv_authenticate, pixiv_download
-#from file_operations import write_credentials
 
 def die(message, comm_error_q, comm_img_q):
     comm_error_q.put(message)

@@ -73,7 +73,7 @@ def read_theme():
             assign = f.readline()
             custom_array.append(assign[assign.find('=')+1:-1])
     f.close()
-    return colour_array, custom_array, theme
+    return colour_array, custom_array, theme[0:-1]
 
 def write_theme(chosen_theme, custom_theme):
     theme = """Current theme=""" + chosen_theme + """
@@ -320,7 +320,6 @@ def write_to_log(message = ''):
             pass#TODO
         log.flush()
     
-
 def open_input():
     try:
         startfile(cwd + "/Input")

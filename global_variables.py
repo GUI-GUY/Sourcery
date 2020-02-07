@@ -6,6 +6,10 @@ init_directories() # create all neccesary directories
 init_configs() # creates all options files
 cwd = getcwd()
 
+esc_op = False
+current_theme = 'Dark Theme'
+width = 0
+height = 0
 # set style
 colour_array = [] # For all current theme colours
 custom_array = [] # Custom theme colours
