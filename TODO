@@ -24,6 +24,8 @@ Last Issue: 0023
 
 
 beta 0.2
++ options is now class
++ Files is now class
 + added globalvariables module
 + logfile
 log on screen
