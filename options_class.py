@@ -1,6 +1,6 @@
+from tkinter import IntVar
 from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 from functools import partial
-from file_operations import write_credentials, write_to_log, write_theme
 from pixiv_handler import pixiv_login
 import global_variables as gv
 
@@ -65,7 +65,7 @@ class SauceNaoOptions():
     def __init__(self, parent):
         self.par = parent
         self.saucenao_key_lbl = Label(parent, text="SauceNao API-Key", style="label.TLabel")
-        self.saucenao_key_number_lbl = Label(parent, width=50, text=gv.credentials_array[0], style="button.TLabel")
+        self.saucenao_key_number_lbl = Label(parent, width=50, text=gv.Files.Cred.saucenao_api_key, style="button.TLabel")
         self.saucenao_key_entry = Entry(parent, width=52, style="button.TLabel")
         self.saucenao_key_change_btn = Button(parent, text="Change", command=self.saucenao_change_key, style="button.TLabel")#
         self.saucenao_key_confirm_btn = Button(parent, text="Confirm", command=self.saucenao_set_key, style="button.TLabel")#
@@ -92,21 +92,21 @@ class SauceNaoOptions():
         self.saucenao_key_number_lbl.place_forget()
         self.saucenao_key_confirm_btn.place(x = 550, y = 100)
         self.saucenao_key_entry.place(x = 180, y = 100)
-        self.saucenao_key_entry.delete(0, len(gv.credentials_array[0]))
-        self.saucenao_key_entry.insert(0, gv.credentials_array[0])
+        self.saucenao_key_entry.delete(0, len(gv.Files.Cred.saucenao_api_key))
+        self.saucenao_key_entry.insert(0, gv.Files.Cred.saucenao_api_key)
         
     def saucenao_set_key(self):
         """
         Save SauceNao API-Key and revert the widget to being uneditable.
         """
-        gv.credentials_array[0] = self.saucenao_key_entry.get()
-        e = write_credentials(gv.credentials_array)
+        gv.Files.Cred.saucenao_api_key = self.saucenao_key_entry.get()
+        e = gv.Files.Log.write_credentials(gv.Files.Cred.saucenao_api_key)
         if e == None:
-            write_to_log('Changed SauceNao API-Key successfully')
+            gv.Files.Log.write_to_log('Changed SauceNao API-Key successfully')
         self.saucenao_key_confirm_btn.place_forget()
         self.saucenao_key_entry.place_forget()
         self.saucenao_key_change_btn.place(x = 550, y = 100)
-        self.saucenao_key_number_lbl.configure(text=gv.credentials_array[0])
+        self.saucenao_key_number_lbl.configure(text=gv.Files.Cred.saucenao_api_key)
         self.saucenao_key_number_lbl.place(x = 180, y = 100)
 
 class SourceryOptions():
@@ -134,13 +134,13 @@ class SourceryOptions():
         self.custom_button_foreground_pressed_entry = Entry(parent, width=30, style="button.TLabel")
         self.save_custom_theme_btn = Button(parent, text="Save Custom Theme", command=self.save_custom_theme, style="button.TLabel")
 
-        self.custom_background_entry.insert(0, gv.custom_array[0])
-        self.custom_foreground_entry.insert(0, gv.custom_array[1])
-        self.custom_button_background_entry.insert(0, gv.custom_array[2])
-        self.custom_button_background_active_entry.insert(0, gv.custom_array[3])
-        self.custom_button_foreground_active_entry.insert(0, gv.custom_array[4])
-        self.custom_button_background_pressed_entry.insert(0, gv.custom_array[5])
-        self.custom_button_foreground_pressed_entry.insert(0, gv.custom_array[6])
+        self.custom_background_entry.insert(0, gv.Files.Theme.custom_background)
+        self.custom_foreground_entry.insert(0, gv.Files.Theme.custom_foreground)
+        self.custom_button_background_entry.insert(0, gv.Files.Theme.custom_button_background)
+        self.custom_button_background_active_entry.insert(0, gv.Files.Theme.custom_button_background_active)
+        self.custom_button_foreground_active_entry.insert(0, gv.Files.Theme.custom_button_foreground_active)
+        self.custom_button_background_pressed_entry.insert(0, gv.Files.Theme.custom_button_background_pressed)
+        self.custom_button_foreground_pressed_entry.insert(0, gv.Files.Theme.custom_button_foreground_pressed)
 
     def display(self):
         """
@@ -173,30 +173,30 @@ class SourceryOptions():
 
     def change_to_dark_theme(self):
         gv.current_theme = "Dark Theme"
-        write_theme(gv.current_theme, gv.custom_array)
+        gv.Files.Theme.write_theme(gv.current_theme)
         self.en_s()
 
     def change_to_light_theme(self):
         gv.current_theme = "Light Theme"
-        write_theme(gv.current_theme, gv.custom_array)
+        gv.Files.Theme.write_theme(gv.current_theme)
         self.en_s()
 
     def change_to_custom_theme(self):
         gv.current_theme = "Custom Theme"
-        write_theme(gv.current_theme, gv.custom_array)
+        gv.Files.Theme.write_theme(gv.current_theme)
         self.en_s()
 
     def save_custom_theme(self):
-        gv.custom_array[0] = self.custom_background_entry.get()
-        gv.custom_array[1] = self.custom_foreground_entry.get()
-        gv.custom_array[2] = self.custom_button_background_entry.get()
-        gv.custom_array[3] = self.custom_button_background_active_entry.get()
-        gv.custom_array[4] = self.custom_button_foreground_active_entry.get()
-        gv.custom_array[5] = self.custom_button_background_pressed_entry.get()
-        gv.custom_array[6] = self.custom_button_foreground_pressed_entry.get()
-        e = write_theme(gv.current_theme, gv.custom_array)
+        gv.Files.Theme.custom_background = self.custom_background_entry.get()
+        gv.Files.Theme.custom_foreground = self.custom_foreground_entry.get()
+        gv.Files.Theme.custom_button_background = self.custom_button_background_entry.get()
+        gv.Files.Theme.custom_button_background_active = self.custom_button_background_active_entry.get()
+        gv.Files.Theme.custom_button_foreground_active = self.custom_button_foreground_active_entry.get()
+        gv.Files.Theme.custom_button_background_pressed = self.custom_button_background_pressed_entry.get()
+        gv.Files.Theme.custom_button_foreground_pressed = self.custom_button_foreground_pressed_entry.get()
+        e = gv.Files.Theme.write_theme(gv.current_theme)
         if e == None:
-            write_to_log('Saved custom theme successfully')
+            gv.Files.Log.write_to_log('Saved custom theme successfully')
 
 class ProviderOptions():
     """ProviderOptions"""
@@ -217,15 +217,18 @@ class PixivOptions():
         self.par = parent
         self.pixiv_login_lbl = Label(parent, text="Pixiv Login", style="label.TLabel")
         self.pixiv_user_lbl = Label(parent, text="Username", style="label.TLabel")
-        self.pixiv_user_filled_lbl = Label(parent, width=50, text=gv.credentials_array[1], style="button.TLabel")
+        self.pixiv_user_filled_lbl = Label(parent, width=50, text=gv.Files.Cred.pixiv_username, style="button.TLabel")
         self.pixiv_user_entry = Entry(parent, width=52, style="button.TLabel")
         self.pixiv_password_lbl = Label(parent, text="Password", style="label.TLabel")
-        self.pixiv_password_filled_lbl = Label(parent, width=50, text=gv.credentials_array[2], style="button.TLabel")
+        self.pixiv_password_filled_lbl = Label(parent, width=50, text=gv.Files.Cred.pixiv_password, style="button.TLabel")
         self.pixiv_password_entry = Entry(parent, width=52, style="button.TLabel")
         self.pixiv_login_change_btn = Button(parent, text="Change", command=self.pixiv_change_login, style="button.TLabel")
         self.pixiv_login_confirm_btn = Button(parent, text="Confirm & Save", command=partial(self.pixiv_set_login, True), style="button.TLabel")
         self.pixiv_login_confirm_nosave_btn = Button(parent, text="Confirm & Don't Save", command=partial(self.pixiv_set_login, False), style="button.TLabel")
         self.pixiv_warning_lbl = Label(parent, width=50, text='THIS WILL BE SAVED IN PLAINTEXT!!!', style="label.TLabel")
+        self.rename_var = IntVar(value=0)
+        self.rename_chkbtn = Checkbutton(parent, text='Rename images from pixiv to pixiv name', var=self.rename_var, style="chkbtn.TCheckbutton")
+        self.save_btn = Button(parent, text='Save', command=self.pixiv_save)
 
     def pixiv_change_login(self):
         """
@@ -240,10 +243,10 @@ class PixivOptions():
         self.pixiv_password_entry.place(x = 120, y = y + c * 2)
         self.pixiv_login_confirm_btn.place(x = 50, y = y + c * 4)
         self.pixiv_login_confirm_nosave_btn.place(x = 180, y = y + c * 4)
-        self.pixiv_user_entry.delete(0, len(gv.credentials_array[1]))
-        self.pixiv_password_entry.delete(0, len(gv.credentials_array[2]))
-        self.pixiv_user_entry.insert(0, gv.credentials_array[1])
-        self.pixiv_password_entry.insert(0, gv.credentials_array[2])
+        self.pixiv_user_entry.delete(0, len(gv.Files.Cred.pixiv_username))
+        self.pixiv_password_entry.delete(0, len(gv.Files.Cred.pixiv_password))
+        self.pixiv_user_entry.insert(0, gv.Files.Cred.pixiv_username)
+        self.pixiv_password_entry.insert(0, gv.Files.Cred.pixiv_password)
 
     def pixiv_set_login(self, save):
         """
@@ -258,19 +261,19 @@ class PixivOptions():
         self.pixiv_user_filled_lbl.place(x = 120, y = y + c * 1)
         self.pixiv_password_filled_lbl.place(x = 120, y = y + c * 2)
         self.pixiv_login_change_btn.place(x = 50, y = y + c * 4)
-        gv.credentials_array[1] = self.pixiv_user_entry.get()
-        gv.credentials_array[2] = self.pixiv_password_entry.get()
+        gv.Files.Cred.pixiv_username = self.pixiv_user_entry.get()
+        gv.Files.Cred.pixiv_password = self.pixiv_password_entry.get()
         if save:
-            e = write_credentials(gv.credentials_array)
+            e = gv.Files.Log.write_credentials()
         else:
             pixiv_login()
-            gv.credentials_array[1] = ''
-            gv.credentials_array[2] = ''
-            e = write_credentials(gv.credentials_array)
+            gv.Files.Cred.pixiv_username = ''
+            gv.Files.Cred.pixiv_password = ''
+            e = gv.Files.Log.write_credentials()
         if e == None:
-            write_to_log('Changed pixiv login data successfully')
-        self.pixiv_user_filled_lbl.configure(text=gv.credentials_array[1])
-        self.pixiv_password_filled_lbl.configure(text=gv.credentials_array[2])
+            gv.Files.Log.write_to_log('Changed pixiv login data successfully')
+        self.pixiv_user_filled_lbl.configure(text=gv.Files.Cred.pixiv_username)
+        self.pixiv_password_filled_lbl.configure(text=gv.Files.Cred.pixiv_password)
 
     def pixiv_display(self):
         y = 100
@@ -282,3 +285,8 @@ class PixivOptions():
         self.pixiv_password_filled_lbl.place(x = 120, y = y + c * 2)
         self.pixiv_login_change_btn.place(x = 50, y = y + c * 4)
         self.pixiv_warning_lbl.place(x = 50, y = y + c * 3)
+
+        self.rename_chkbtn.place(x = 50, y = y + c * 6)
+
+    def pixiv_save(self):
+        pass #TODO

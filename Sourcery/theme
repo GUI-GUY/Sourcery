@@ -19,12 +19,12 @@ button_background_pressed=#ddd
 button_foreground_pressed=black
 
 Custom Theme
-background=blue
-foreground=red
-button_background=#123456
-button_background_active=orange
-button_foreground_active=grey
-button_background_pressed=purple
-button_foreground_pressed=magenta
+background=#101010
+foreground=purple
+button_background=#999
+button_background_active=pink
+button_foreground_active=black
+button_background_pressed=#dddddd
+button_foreground_pressed=green
 
 END

@@ -5,7 +5,6 @@ from tkinter import messagebox as mb
 from tkinter.ttk import Label, Checkbutton, Button
 from functools import partial
 import global_variables as gv
-from file_operations import write_to_log
 
 # 5.2 Resize images to fit on screen
 def resize(image):
@@ -54,7 +53,7 @@ def display_big_selector2(index, window, frame2, display_view_results):
     except Exception as e:
         print("ERROR [0001] " + str(e))
         mb.showerror("ERROR [0001]", "ERROR CODE [0001]\nSomething went wrong while loading an image, please go back and try again.")
-        write_to_log("ERROR [0001] " + str(e))
+        gv.Files.Log.write_to_log("ERROR [0001] " + str(e))
         return
 
     original_size = original_image.size
@@ -98,7 +97,7 @@ def display_big_selector2(index, window, frame2, display_view_results):
             except Exception as e:
                 print("ERROR [0002] " + str(e))
                 mb.showerror("ERROR [0002]", "ERROR CODE [0002]\nSomething went wrong while loading an image, please go back and try again.")
-                write_to_log("ERROR [0002] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0002] " + str(e))
                 return
             
             downloaded_size = downloaded_image.size
@@ -126,7 +125,7 @@ def display_big_selector2(index, window, frame2, display_view_results):
         except Exception as e:
             print("ERROR [0003] " + str(e))
             mb.showerror("ERROR [0003]", "ERROR CODE [0003]\nSomething went wrong while loading an image, please go back and try again.")
-            write_to_log("ERROR [0003] " + str(e))
+            gv.Files.Log.write_to_log("ERROR [0003] " + str(e))
             return
         downloaded_size = downloaded_image.size
         downloaded_image = resize(downloaded_image)
@@ -172,7 +171,7 @@ def display_view_results2(frame, display_big_selector):
     except Exception as e:
         print("ERROR [0004] " + str(e))
         mb.showerror("ERROR [0004]", "ERROR CODE [0004]\nSomething went wrong while accessing a folder, please go back and try again.")
-        write_to_log("ERROR [0004] " + str(e))
+        gv.Files.Log.write_to_log("ERROR [0004] " + str(e))
         return        
     
     pixiv_sub_dir_array = []
@@ -242,7 +241,7 @@ def image_opener(img, cropped, t, sourced_original_array, pixiv_sub_dir_array):
         except Exception as e:
             print("ERROR [0005] " + str(e))
             mb.showerror("ERROR [0005]", "ERROR CODE [0005]\nSomething went wrong while loading an image, please go back and try again.")
-            write_to_log("ERROR [0005] " + str(e))
+            gv.Files.Log.write_to_log("ERROR [0005] " + str(e))
             return
     elif path.isdir(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + img):
         dir_flag = True
@@ -272,7 +271,7 @@ def image_opener(img, cropped, t, sourced_original_array, pixiv_sub_dir_array):
         except Exception as e:
             print("ERROR [0006] " + str(e))
             mb.showerror("ERROR [0006]", "ERROR CODE [0006]\nSomething went wrong while loading an image, please go back and try again.")
-            write_to_log("ERROR [0006] " + str(e))
+            gv.Files.Log.write_to_log("ERROR [0006] " + str(e))
             return
     return original_image, downloaded_image, suffix, sub, dir_flag, False
         

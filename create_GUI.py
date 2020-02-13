@@ -5,7 +5,7 @@ from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 #from functools import partial
 from os import listdir
 from multiprocessing import Process, freeze_support, Queue
-from file_operations import init_directories, init_configs, read_theme, is_image, read_credentials, write_credentials, write_theme, save, open_input, open_sourced, display_statistics, write_to_log
+from file_operations import is_image, save, open_input, open_sourced, display_statistics
 from sourcery import do_sourcery
 from display_thread import display_view_results2, display_big_selector2
 from pixiv_handler import pixiv_login
@@ -19,7 +19,7 @@ def magic():
     global process
     do_sourcery_btn.configure(state='disabled')
     if __name__ == '__main__':
-        process = Process(target=do_sourcery, args=(gv.cwd, gv.input_images_array, gv.credentials_array[0], comm_q, comm_img_q, comm_stop_q, comm_error_q, ))
+        process = Process(target=do_sourcery, args=(gv.cwd, gv.input_images_array, gv.Files.Cred.saucenao_api_key, comm_q, comm_img_q, comm_stop_q, comm_error_q, ))
         process.start()
 
 def display_startpage():
@@ -210,19 +210,19 @@ def enforce_style():
     """
     Changes style of all widgets to the currently selected theme.
     """
-    gv.colour_array, gv.custom_array, gv.current_theme = read_theme()
-    window.configure(bg=gv.colour_array[0])
+    #gv.Files.Theme.read_theme()
+    window.configure(bg=gv.Files.Theme.background)
     style = Style()
-    style.configure("label.TLabel", foreground=gv.colour_array[1], background=gv.colour_array[0], font=("Arial Bold", 10))
-    style.configure("button.TLabel", foreground=gv.colour_array[1], background=gv.colour_array[2], font=("Arial Bold", 10))
+    style.configure("label.TLabel", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
+    style.configure("button.TLabel", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.button_background, font=("Arial Bold", 10))
     style.map("button.TLabel",
-        foreground=[('pressed', gv.colour_array[6]), ('active', gv.colour_array[4])],
-        background=[('pressed', '!disabled', gv.colour_array[5]), ('active', gv.colour_array[3])]
+        foreground=[('pressed', gv.Files.Theme.button_foreground_pressed), ('active', gv.Files.Theme.button_foreground_active)],
+        background=[('pressed', '!disabled', gv.Files.Theme.button_background_pressed), ('active', gv.Files.Theme.button_background_active)]
     )
-    style.configure("frame.TFrame", foreground=gv.colour_array[1], background=gv.colour_array[0])
-    style.configure("chkbtn.TCheckbutton", foreground=gv.colour_array[1], background=gv.colour_array[0], borderwidth = 0, highlightthickness = 10, selectcolor=gv.colour_array[2], activebackground=gv.colour_array[2], activeforeground=gv.colour_array[2], disabledforeground=gv.colour_array[2], highlightcolor=gv.colour_array[2])
-    #style.configure("scroll.Vertical.TScrollbar", foreground=gv.colour_array[1], background=gv.colour_array[2], throughcolor=gv.colour_array[2], activebackground=gv.colour_array[2])
-    results_canvas.configure(background=gv.colour_array[0])
+    style.configure("frame.TFrame", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background)
+    style.configure("chkbtn.TCheckbutton", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, borderwidth = 0, highlightthickness = 10, selectcolor=gv.Files.Theme.button_background, activebackground=gv.Files.Theme.button_background, activeforeground=gv.Files.Theme.button_background, disabledforeground=gv.Files.Theme.button_background, highlightcolor=gv.Files.Theme.button_background, font=("Arial Bold", 10))
+    #style.configure("scroll.Vertical.TScrollbar", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.button_background, throughcolor=gv.Files.Theme.button_background, activebackground=gv.Files.Theme.button_background)
+    results_canvas.configure(background=gv.Files.Theme.background)
 
 def bound_to_mousewheel(event):
     results_canvas.bind_all("<MouseWheel>", on_mousewheel)
@@ -297,7 +297,7 @@ if __name__ == '__main__':
     results_lbl = Label(window, text="Results", font=("Arial Bold", 14), style="label.TLabel")
 
     results_frame = Frame(window, width=results_frame_width, height=results_frame_height, style="frame.TFrame")
-    results_canvas = Canvas(results_frame, width=results_frame_width, height=results_frame_height, background=gv.colour_array[0], highlightthickness=0)
+    results_canvas = Canvas(results_frame, width=results_frame_width, height=results_frame_height, background=gv.Files.Theme.background, highlightthickness=0)
     frame = Frame(results_canvas, width=results_frame_width, height=results_frame_height, style="frame.TFrame")
     results_scrollbar = Scrollbar(results_frame, orient="vertical", command=results_canvas.yview)
     results_canvas.configure(yscrollcommand=results_scrollbar.set)
@@ -312,7 +312,7 @@ if __name__ == '__main__':
 
     # widgets for big_selector
     big_selector_frame = Frame(window, width=big_selector_frame_width, height=big_selector_frame_width, style="frame.TFrame")
-    big_selector_canvas = Canvas(big_selector_frame, width=big_selector_frame_width, height=big_selector_frame_width, background=gv.colour_array[0], highlightthickness=0)
+    big_selector_canvas = Canvas(big_selector_frame, width=big_selector_frame_width, height=big_selector_frame_width, background=gv.Files.Theme.background, highlightthickness=0)
     frame2 = Frame(big_selector_canvas, width=big_selector_frame_width, height=big_selector_frame_width, style="frame.TFrame")
     big_selector_scrollbar = Scrollbar(big_selector_frame, orient="vertical", command=big_selector_canvas.yview)
     big_selector_canvas.configure(yscrollcommand=big_selector_scrollbar.set)

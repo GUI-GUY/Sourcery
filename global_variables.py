@@ -1,20 +1,21 @@
 from os import getcwd, listdir
-from file_operations import read_credentials, init_configs, init_directories
+from file_operations import Files#read_credentials, init_configs, init_directories
 # Every variable that can be "outmoduled" and appears in at least two modules
 
-init_directories() # create all neccesary directories
-init_configs() # creates all options files
+#init_directories() # create all neccesary directories
+#init_configs() # creates all options files
 cwd = getcwd()
+Files = Files()
 
 esc_op = False
 current_theme = 'Dark Theme'
 width = 0
 height = 0
 # set style
-colour_array = [] # For all current theme colours
-custom_array = [] # Custom theme colours
+#colour_array = [] # For all current theme colours
+#custom_array = [] # Custom theme colours
 
-credentials_array = read_credentials() # [0]SauceNao API-Key, [1]Pixiv Username, [2]Pixiv Password, [3]Pixiv refreshtoken
+#credentials_array = read_credentials() # [0]SauceNao API-Key, [1]Pixiv Username, [2]Pixiv Password, [3]Pixiv refreshtoken
 
 # global arrays
 input_images_array = [] # For all images in Input folder

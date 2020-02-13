@@ -9,8 +9,9 @@ from json import JSONDecoder
 from re import search
 #import time
 from collections import OrderedDict
+import global_variables as gv
 #from pixiv_handler import pixiv_download
-from file_operations import write_to_log
+#from file_operations import write_to_log
 # stdout = getwriter('utf8')(stdout.detach())
 # stderr = getwriter('utf8')(stderr.detach())
 
@@ -66,7 +67,7 @@ def get_response(image, cwd, api_key, minsim='80!'):
         image = Image.open(cwd + '/Sourcery/sourced_original/' + image)
     except Exception as e:
         print('ERROR [0019] ' + str(e))
-        write_to_log('ERROR [0019] ' + str(e))
+        gv.Files.Log.write_to_log('ERROR [0019] ' + str(e))
         #mb.showerror("ERROR CODE [0015]\nSomething went wrong while opening the image " + image)
         return [401, 'Something went wrong while opening the image ' + image]
     image = image.convert('RGB')
