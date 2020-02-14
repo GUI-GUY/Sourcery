@@ -100,7 +100,7 @@ class SauceNaoOptions():
         Save SauceNao API-Key and revert the widget to being uneditable.
         """
         gv.Files.Cred.saucenao_api_key = self.saucenao_key_entry.get()
-        e = gv.Files.Log.write_credentials(gv.Files.Cred.saucenao_api_key)
+        e = gv.Files.Cred.write_credentials(gv.Files.Cred.saucenao_api_key)
         if e == None:
             gv.Files.Log.write_to_log('Changed SauceNao API-Key successfully')
         self.saucenao_key_confirm_btn.place_forget()
@@ -172,18 +172,18 @@ class SourceryOptions():
         self.save_custom_theme_btn.place(x = x1, y = y + c * 11)
 
     def change_to_dark_theme(self):
-        gv.current_theme = "Dark Theme"
-        gv.Files.Theme.write_theme(gv.current_theme)
+        gv.Files.Theme.current_theme = "Dark Theme"
+        gv.Files.Theme.write_theme(gv.Files.Theme.current_theme)
         self.en_s()
 
     def change_to_light_theme(self):
-        gv.current_theme = "Light Theme"
-        gv.Files.Theme.write_theme(gv.current_theme)
+        gv.Files.Theme.current_theme = "Light Theme"
+        gv.Files.Theme.write_theme(gv.Files.Theme.current_theme)
         self.en_s()
 
     def change_to_custom_theme(self):
-        gv.current_theme = "Custom Theme"
-        gv.Files.Theme.write_theme(gv.current_theme)
+        gv.Files.Theme.current_theme = "Custom Theme"
+        gv.Files.Theme.write_theme(gv.Files.Theme.current_theme)
         self.en_s()
 
     def save_custom_theme(self):
@@ -194,7 +194,7 @@ class SourceryOptions():
         gv.Files.Theme.custom_button_foreground_active = self.custom_button_foreground_active_entry.get()
         gv.Files.Theme.custom_button_background_pressed = self.custom_button_background_pressed_entry.get()
         gv.Files.Theme.custom_button_foreground_pressed = self.custom_button_foreground_pressed_entry.get()
-        e = gv.Files.Theme.write_theme(gv.current_theme)
+        e = gv.Files.Theme.write_theme(gv.Files.Theme.current_theme)
         if e == None:
             gv.Files.Log.write_to_log('Saved custom theme successfully')
 
@@ -228,7 +228,7 @@ class PixivOptions():
         self.pixiv_warning_lbl = Label(parent, width=50, text='THIS WILL BE SAVED IN PLAINTEXT!!!', style="label.TLabel")
         self.rename_var = IntVar(value=0)
         self.rename_chkbtn = Checkbutton(parent, text='Rename images from pixiv to pixiv name', var=self.rename_var, style="chkbtn.TCheckbutton")
-        self.save_btn = Button(parent, text='Save', command=self.pixiv_save)
+        self.save_btn = Button(parent, text='Save', command=self.pixiv_save, style ="button.TLabel")
 
     def pixiv_change_login(self):
         """
@@ -264,12 +264,12 @@ class PixivOptions():
         gv.Files.Cred.pixiv_username = self.pixiv_user_entry.get()
         gv.Files.Cred.pixiv_password = self.pixiv_password_entry.get()
         if save:
-            e = gv.Files.Log.write_credentials()
+            e = gv.Files.Cred.write_credentials()
         else:
             pixiv_login()
             gv.Files.Cred.pixiv_username = ''
             gv.Files.Cred.pixiv_password = ''
-            e = gv.Files.Log.write_credentials()
+            e = gv.Files.Cred.write_credentials()
         if e == None:
             gv.Files.Log.write_to_log('Changed pixiv login data successfully')
         self.pixiv_user_filled_lbl.configure(text=gv.Files.Cred.pixiv_username)
@@ -287,6 +287,11 @@ class PixivOptions():
         self.pixiv_warning_lbl.place(x = 50, y = y + c * 3)
 
         self.rename_chkbtn.place(x = 50, y = y + c * 6)
+        self.save_btn.place(x = 50, y = y + c * 7)
 
     def pixiv_save(self):
-        pass #TODO
+        if self.rename_var.get() == 1:
+            gv.Files.Conf.rename_pixiv = 'True'
+        else:
+            gv.Files.Conf.rename_pixiv = 'False'
+        gv.Files.Conf.write_config()

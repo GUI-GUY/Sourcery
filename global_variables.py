@@ -1,4 +1,4 @@
-from os import getcwd, listdir
+from os import getcwd
 from Files import Files
 # Every variable that can be "outmoduled" and appears in at least two modules
 
@@ -6,7 +6,7 @@ cwd = getcwd()
 Files = Files()
 
 esc_op = False
-current_theme = 'Dark Theme'
+#current_theme = 'Dark Theme'
 width = 0
 height = 0
 

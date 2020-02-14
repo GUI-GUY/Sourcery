@@ -20,11 +20,11 @@ button_foreground_pressed=black
 
 Custom Theme
 background=#101010
-foreground=purple
-button_background=#999
-button_background_active=pink
+foreground=#434343
+button_background=purple
+button_background_active=yellow
 button_foreground_active=black
-button_background_pressed=#dddddd
+button_background_pressed=#111
 button_foreground_pressed=green
 
 END

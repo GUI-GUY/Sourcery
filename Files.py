@@ -7,11 +7,12 @@ cwd = getcwd()
 class Files():
     """PixivOptions"""
     def __init__(self):
+        self.create_files()
         self.Log = LogFile()
         self.Theme = ThemeFile(self.Log)
         self.Cred = CredFile(self.Log)
-        self.create_files()
-    
+        self.Conf = ConfigFile(self.Log)
+        
     def create_files(self):
         self.init_directories()
         self.init_configs()
@@ -26,26 +27,45 @@ class Files():
             # makedirs(cwd + "/Sourcery/sourced_progress/gelbooru", 0o777, True)
         except Exception as e:
             print("ERROR [0007] " + str(e))
-            self.Log.write_to_log("ERROR [0007] " + str(e))
+            #self.Log.write_to_log("ERROR [0007] " + str(e))
             mb.showerror("ERROR [0007]", "ERROR CODE [0007]\nSomething went wrong while creating directories, please restart Sourcery.")
-            return
 
-    def init_configs(self):
+    def init_configs(self):#TODO
         if not path.exists(cwd + '/Sourcery/theme'):
-            self.Log.write_theme('Dark Theme', ['blue', 'red', '#123456', 'orange', 'grey', 'purple', 'magenta'])
+            try:
+                theme = open(cwd + '/Sourcery/theme', 'x')
+                theme.close()
+            except Exception as e:
+                print("ERROR [0028] " + str(e))
+                #self.Log.write_to_log("ERROR [0028] " + str(e))
+                mb.showerror("ERROR [0028]", "ERROR CODE [0028]\nSomething went wrong while accessing a configuration file(log), please restart Sourcery.")
+            #self.Theme.write_theme('Dark Theme')# ['blue', 'red', '#123456', 'orange', 'grey', 'purple', 'magenta']
         if not path.exists(cwd + '/Sourcery/credentials'):
-            self.Log.write_credentials(['', '', '', ''])
+            try:
+                cred = open(cwd + '/Sourcery/credentials', 'x')
+                cred.close()
+            except Exception as e:
+                print("ERROR [0029] " + str(e))
+                #self.Log.write_to_log("ERROR [0029] " + str(e))
+                mb.showerror("ERROR [0029]", "ERROR CODE [0029]\nSomething went wrong while accessing a configuration file(log), please restart Sourcery.")
+            #self.Theme.write_credentials()
         if not path.exists(cwd + '/Sourcery/log'):
             try:
                 log = open(cwd + '/Sourcery/log', 'x')
-                
+                log.close()
             except Exception as e:
                 print("ERROR [0024] " + str(e))
-                self.Log.write_to_log("ERROR [0024] " + str(e))
+                #self.Log.write_to_log("ERROR [0024] " + str(e))
                 mb.showerror("ERROR [0024]", "ERROR CODE [0024]\nSomething went wrong while accessing a configuration file(log), please restart Sourcery.")
-            log.close()
-        self.Log.write_to_log()
-
+        if not path.exists(cwd + '/Sourcery/config'):
+            try:
+                config = open(cwd + '/Sourcery/config', 'x')
+                config.close()
+            except Exception as e:
+                print("ERROR [0027] " + str(e))
+                #self.Log.write_to_log("ERROR [0027] " + str(e))
+                mb.showerror("ERROR [0027]", "ERROR CODE [0027]\nSomething went wrong while accessing a configuration file(config), please restart Sourcery.")
+            
 class ThemeFile():
     """PixivOptions"""
     def __init__(self, log):
@@ -60,16 +80,17 @@ class ThemeFile():
         self.button_foreground_pressed = 'white'
         self.custom_background = '#101010'
         self.custom_foreground = '#434343'
-        self.custom_button_background = '#purple'
+        self.custom_button_background = 'purple'
         self.custom_button_background_active = 'yellow'
         self.custom_button_foreground_active = 'black'
         self.custom_button_background_pressed = '#111'
         self.custom_button_foreground_pressed = 'green'
-        self.read_theme()
+        if self.read_theme():
+            self.write_theme('Dark Theme')
     
     def read_theme(self):
         """
-        Sets colour values as strings for the currently chosen style and setx colour values for the custom style.
+        Sets colour values as strings for the currently chosen style and sets colour values for the custom style.
         """
         try:
             f = open(cwd + '/Sourcery/theme')
@@ -81,7 +102,11 @@ class ThemeFile():
                 f.close()
             except:
                 pass
-        self.current_theme = f.readline()
+        temp = f.readline()
+        if not temp.startswith('Current theme='):
+            f.close()
+            return True
+        self.current_theme = temp
         self.current_theme = self.current_theme[self.current_theme.find('=')+1:]
         ct = False
         if self.current_theme == 'Custom Theme\n':
@@ -136,6 +161,7 @@ class ThemeFile():
                     self.custom_button_foreground_pressed = assign[assign.find('=')+1:-1]
         self.current_theme = self.current_theme[0:-1]
         f.close()
+        return False
         
     def write_theme(self, chosen_theme):
         theme = ("Current theme=" + chosen_theme +
@@ -189,7 +215,8 @@ class CredFile():
         self.pixiv_username = ''
         self.pixiv_password = ''
         self.pixiv_refreshtoken = ''
-        self.read_credentials()
+        if self.read_credentials():
+            self.write_credentials()
 
     def read_credentials(self):
         """
@@ -203,6 +230,9 @@ class CredFile():
             mb.showerror("ERROR [0010]", "ERROR CODE [0010]\nSomething went wrong while accessing a configuration file(credentials), please try again.")
 
         creds = f.readline()
+        if creds != 'SauceNao\n':
+            f.close()
+            return True
         while creds != 'END':
             if creds == 'SauceNao\n':
                 creds = f.readline()
@@ -216,15 +246,16 @@ class CredFile():
                 self.pixiv_refreshtoken = creds[creds.find('=')+1:-1]
             creds = f.readline()
         f.close()
+        return False
 
     def write_credentials(self):
         creds = ("SauceNao"
-            "\nAPI-Key=" + self.saucenao_api_key +
-            "\n\nPixiv"
-            "\nUsername=""" + self.pixiv_username +
-            "\nPassword=""" + self.pixiv_password +
-            "\nrefreshtoken=""" + self.pixiv_refreshtoken +
-            "\n\nEND")
+                "\nAPI-Key=" + self.saucenao_api_key +
+                "\n\nPixiv"
+                "\nUsername=" + self.pixiv_username +
+                "\nPassword=" + self.pixiv_password +
+                "\nrefreshtoken=" + self.pixiv_refreshtoken +
+                "\n\nEND")
 
         try:
             f = open(cwd + '/Sourcery/credentials', 'w')
@@ -239,6 +270,7 @@ class CredFile():
                 pass
             return e
         f.close()
+        self.read_credentials()
         return None
 
 class LogFile():
@@ -263,3 +295,48 @@ class LogFile():
                 print(str(e))
                 pass#TODO
             self.log.flush()
+
+class ConfigFile():
+    def __init__(self, log):
+        self.Log = log
+        self.rename_pixiv = ''
+        self.minsim = ''
+        if self.read_config():
+            self.write_config()
+    
+    def read_config(self):
+        try:
+            f = open(cwd + '/Sourcery/credentials')
+        except Exception as e:
+            print("ERROR [0026] " + str(e))
+            self.Log.write_to_log("ERROR [0026] " + str(e))
+            mb.showerror("ERROR [0026]", "ERROR CODE [0026]\nSomething went wrong while accessing a configuration file(config), please try again.")
+        
+        temp = f.readline()
+        if not temp.startswith('rename_pixiv='):
+            f.close()
+            return True
+        while(temp != 'END\n'):
+            if temp.startswith('rename_pixiv='):
+                self.rename_pixiv = temp[temp.find('=')+1:-1]
+            if temp.startswith('minsim='):
+                self.minsim = temp[temp.find('=')+1:-1]
+            temp = f.readline()
+        f.close()
+        return False
+
+    def write_config(self):
+        conf = ("rename_pixiv=" + self.rename_pixiv +
+                "\nminsim=" + self.minsim +
+                "\n\nEND")
+
+        try:
+            f = open(cwd + '/Sourcery/config', 'w')
+            f.write(conf)
+        except Exception as e:
+            print("ERROR [0025] " + str(e))
+            self.Log.write_to_log("ERROR [0025] " + str(e))
+            mb.showerror("ERROR [0025]", "ERROR CODE [0025]\nSomething went wrong while accessing a configuration file(config), please try again.")
+
+        f.close()
+        self.read_config()

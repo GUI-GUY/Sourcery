@@ -94,7 +94,7 @@ def refresh_startpage():
         try:
             e = comm_error_q.get()
             error_lbl.configure(text=e)
-            write_to_log('Multiprocess Error: ' + e)
+            gv.Files.Log.write_to_log('Multiprocess Error: ' + e)
         except:
             pass
     if gv.esc_op:

@@ -24,7 +24,7 @@ Last Issue: 0023
 
 
 beta 0.2
-+ options is now class
++ Options is now class
 + Files is now class
 + added globalvariables module
 + logfile
@@ -32,7 +32,7 @@ log on screen
 rename options
 minsim options
 + better pixiv login
-more metadata(tags, source, illustrator)
+more metadata(tags, source, illustrator, uncensored)
 better big Selector
 previews widgets for custom theme
 theme errors(wrong colour etc.)
@@ -44,7 +44,7 @@ in window tutorial
 no message boxes but labels
 Fehlerbehandlung
 checking a folder keeps it 100%
-Last Issue: 0024
+Last Issue: 0029
 
 beta 0.3
 2nd service
