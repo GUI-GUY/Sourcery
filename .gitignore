@@ -15,5 +15,5 @@ test.py
 upload_file.py
 identify_images_v1.1.py
 dl.py
-credentials
+credentials*
 **.pyc

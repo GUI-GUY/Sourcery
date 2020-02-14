@@ -71,7 +71,7 @@ class SauceNaoOptions():
         self.saucenao_key_confirm_btn = Button(parent, text="Confirm", command=self.saucenao_set_key, style="button.TLabel")#
         self.saucenao_minsim_lbl = Label(parent, text="Minimum similarity", style="label.TLabel")
         self.saucenao_minsim_entry = Entry(parent, width=20, style="button.TLabel")
-        self.saucenao_minsim_confirm_btn = Button(parent, text="Save", command=saucenao_save, style="button.TLabel")
+        self.saucenao_minsim_confirm_btn = Button(parent, text="Save", command=self.saucenao_save, style="button.TLabel")
     
     def display(self):
         """

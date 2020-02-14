@@ -65,7 +65,7 @@ class Files():
                 print("ERROR [0027] " + str(e))
                 #self.Log.write_to_log("ERROR [0027] " + str(e))
                 mb.showerror("ERROR [0027]", "ERROR CODE [0027]\nSomething went wrong while accessing a configuration file(config), please restart Sourcery.")
-            
+
 class ThemeFile():
     """PixivOptions"""
     def __init__(self, log):
