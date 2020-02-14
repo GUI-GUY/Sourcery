@@ -10,7 +10,7 @@ def die(message, comm_error_q, comm_img_q):
     #mb.showerror('ERROR', message)
     exit()
 
-def do_sourcery(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, comm_stop_q, comm_error_q):
+def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q):
     if not pixiv_authenticate():
         die('Pixiv Authentication Failed.\nPlease check your login data.', comm_error_q, comm_img_q)
     # For every input image a request goes out to saucenao and gets decoded
@@ -20,7 +20,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, comm_q, comm_img_q, comm_
             copy(cwd + '/Input/' + img, cwd + '/Sourcery/sourced_original')
         except Exception as e:
             die(str(e), comm_error_q, comm_img_q)
-        res = get_response(img, cwd, saucenao_key)
+        res = get_response(img, cwd, saucenao_key, minsim)
         if res[0] == 401:
             # Exception while opening image!
             comm_error_q.put(res[1])

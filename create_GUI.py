@@ -19,7 +19,7 @@ def magic():
     global process
     do_sourcery_btn.configure(state='disabled')
     if __name__ == '__main__':
-        process = Process(target=do_sourcery, args=(gv.cwd, gv.input_images_array, gv.Files.Cred.saucenao_api_key, comm_q, comm_img_q, comm_stop_q, comm_error_q, ))
+        process = Process(target=do_sourcery, args=(gv.cwd, gv.input_images_array, gv.Files.Cred.saucenao_api_key, gv.Files.Conf.minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q, ))
         process.start()
 
 def display_startpage():

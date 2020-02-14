@@ -33,12 +33,15 @@ def pixiv_authenticate():
 def pixiv_download(imgid, img_name_original):
     try:
         illustration = client.fetch_illustration(imgid) # 75523989
-        dot = img_name_original.rfind('.')
-        if dot != -1:
-            newname = img_name_original[:dot]
+        if gv.Files.Conf.rename_pixiv == 'True':
+            dot = img_name_original.rfind('.')
+            if dot != -1:
+                newname = img_name_original[:dot]
+            else:
+                newname = img_name_original
+            illustration.download(directory=Path.cwd() / 'Sourcery/sourced_progress/pixiv', size=Size.ORIGINAL, filename=newname)
         else:
-            newname = img_name_original
-        illustration.download(directory=Path.cwd() / 'Sourcery/sourced_progress/pixiv', size=Size.ORIGINAL, filename=newname)
+            illustration.download(directory=Path.cwd() / 'Sourcery/sourced_progress/pixiv', size=Size.ORIGINAL)
     except Exception as e:
         print('ERROR [0018]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
         gv.Files.Log.write_to_log('ERROR [0018]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
@@ -46,5 +49,5 @@ def pixiv_download(imgid, img_name_original):
 
 
 if __name__ == '__main__':
-    pixiv_authenticate('', '', ['', '', '', ''])
+    #pixiv_authenticate('', '', ['', '', '', ''])
     pixiv_download(0, '')

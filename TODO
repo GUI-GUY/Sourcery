@@ -29,8 +29,8 @@ beta 0.2
 + added globalvariables module
 + logfile
 log on screen
-rename options
-minsim options
++ (u) rename options
++ (u) minsim options
 + better pixiv login
 more metadata(tags, source, illustrator, uncensored)
 better big Selector

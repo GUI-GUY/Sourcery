@@ -71,7 +71,7 @@ class SauceNaoOptions():
         self.saucenao_key_confirm_btn = Button(parent, text="Confirm", command=self.saucenao_set_key, style="button.TLabel")#
         self.saucenao_minsim_lbl = Label(parent, text="Minimum similarity", style="label.TLabel")
         self.saucenao_minsim_entry = Entry(parent, width=20, style="button.TLabel")
-        self.saucenao_minsim_confirm_btn = Button(parent, text="Save", style="button.TLabel")
+        self.saucenao_minsim_confirm_btn = Button(parent, text="Save", command=saucenao_save, style="button.TLabel")
     
     def display(self):
         """
@@ -108,6 +108,10 @@ class SauceNaoOptions():
         self.saucenao_key_change_btn.place(x = 550, y = 100)
         self.saucenao_key_number_lbl.configure(text=gv.Files.Cred.saucenao_api_key)
         self.saucenao_key_number_lbl.place(x = 180, y = 100)
+
+    def saucenao_save(self):
+        gv.Files.Conf.minsim = self.saucenao_minsim_entry.get()
+        gv.Files.Conf.write_config()
 
 class SourceryOptions():
     """SourceryOptions"""
