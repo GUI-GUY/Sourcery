@@ -4,12 +4,14 @@ from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 #from tkinter.filedialog import askdirectory
 #from functools import partial
 from os import listdir
-from multiprocessing import Process, freeze_support, Queue
+from multiprocessing import Process, freeze_support, Queue, Semaphore
 from file_operations import is_image, save, open_input, open_sourced, display_statistics
 from sourcery import do_sourcery
 from display_thread import display_view_results2, display_big_selector2
 from pixiv_handler import pixiv_login
 from options_class import Options
+from image_preloader import preload_main
+from ImageData import ImageData
 import global_variables as gv
 
 def magic():
@@ -19,8 +21,20 @@ def magic():
     global process
     do_sourcery_btn.configure(state='disabled')
     if __name__ == '__main__':
-        process = Process(target=do_sourcery, args=(gv.cwd, gv.input_images_array, gv.Files.Cred.saucenao_api_key, gv.Files.Conf.minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q, ))
+        process = Process(target=do_sourcery, args=(gv.cwd, gv.input_images_array, gv.Files.Cred.saucenao_api_key, gv.Files.Conf.minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, ))
         process.start()
+
+def image_preloader():
+    """
+    Starts multiple processes which preload images into memory to reduce loading times and increase accessibility
+    """
+    if __name__ == '__main__':
+        process0 = Process(target=preload_main, args=(sem, 0, gv.img_data_array, ))
+        process1 = Process(target=preload_main, args=(sem, 1, gv.img_data_array,))
+        process2 = Process(target=preload_main, args=(sem, 2, gv.img_data_array,))
+        process0.start()
+        process1.start()
+        process2.start()
 
 def display_startpage():
     """
@@ -97,6 +111,13 @@ def refresh_startpage():
             gv.Files.Log.write_to_log('Multiprocess Error: ' + e)
         except:
             pass
+    if not img_data_q.empty():
+        try:
+            a = img_data_q.get()
+            b = ImageData(a[0], a[1], a[2])
+            gv.img_data_array.append(b)
+        except:
+            pass
     if gv.esc_op:
         options_class.display_sourcery_options()
     elif esc_res:
@@ -159,7 +180,7 @@ def display_view_results():
             pass
         del gv.big_ref_array[0]
 
-    window.after(10, display_view_results2, frame, display_big_selector)
+    window.after(10, display_view_results2)
 
 def save_and_back():
     """
@@ -342,6 +363,7 @@ if __name__ == '__main__':
         gv.chkbtn_vars_array[i][0].set(0)
         gv.chkbtn_vars_array[i][1].set(1)
 
+    gv.frame = frame
     currently_processing = ''
     gv.esc_op = False # Escape variable for options
     esc_res = False # Escape variable for results
@@ -350,5 +372,8 @@ if __name__ == '__main__':
     comm_img_q = Queue() # Queue for 'Currently Sourcing'
     comm_stop_q = Queue() # Queue for stop signal
     comm_error_q = Queue() # Queue for error messages
+    img_data_q = Queue() # Queue for ImageData classes
+    sem = Semaphore(12)
+    #image_preloader()
     display_startpage()
     window.mainloop()

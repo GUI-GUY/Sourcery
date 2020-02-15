@@ -2,7 +2,8 @@
 from time import sleep
 from shutil import copy
 from saucenao_caller import get_response, decode_response
-from pixiv_handler import pixiv_authenticate, pixiv_download
+from pixiv_handler import pixiv_authenticate, pixiv_download, pixiv_fetch_illustration
+import global_variables as gv
 
 def die(message, comm_error_q, comm_img_q):
     comm_error_q.put(message)
@@ -10,7 +11,7 @@ def die(message, comm_error_q, comm_img_q):
     #mb.showerror('ERROR', message)
     exit()
 
-def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q):
+def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q):
     if not pixiv_authenticate():
         die('Pixiv Authentication Failed.\nPlease check your login data.', comm_error_q, comm_img_q)
     # For every input image a request goes out to saucenao and gets decoded
@@ -54,8 +55,9 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_
             sleep(10)
         elif res[0] == 200:
             comm_q.put(res[3])
-            img_data_array = decode_response(res[1])
-            process_img_data(img_data_array, img)
+            img_name_original, img_data_array, illustration = process_img_data(img, res)
+            if img_name_original != False:
+                img_data_q.put((img_name_original, img_data_array, illustration))
             if res[3] < 1:
                 die('Out of searches for today', comm_error_q, comm_img_q)
             if res[2] < 1:
@@ -71,6 +73,16 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_
     comm_img_q.put("Finished")
     exit()
             
-def process_img_data(img_data_array, img_name_original):
+def process_img_data(img_name_original, res):
+    """
+    Downloads the image from pixiv, creates an ImageData class and returns it or False on ERROR
+    """
+    img_data_array = decode_response(res[1])
     if img_data_array[1] != 0:
-        pixiv_download(img_data_array[1], img_name_original)
+        illustration = pixiv_fetch_illustration(img_name_original, img_data_array[1])
+        #ImgData = None#ImageData(img_name_original, img_data_array, illustration)
+        if illustration == False:
+            return False, None, None
+        if pixiv_download(img_name_original, img_data_array[1], illustration):
+            return img_name_original, img_data_array, illustration
+    return False, None, None

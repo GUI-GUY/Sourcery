@@ -30,9 +30,19 @@ def pixiv_authenticate():
         return login 
     return True
 
-def pixiv_download(imgid, img_name_original):
+def pixiv_fetch_illustration(img_name_original, imgid):
     try:
         illustration = client.fetch_illustration(imgid) # 75523989
+    except Exception as e:
+        print('ERROR [0030]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
+        gv.Files.Log.write_to_log('ERROR [0030]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
+        #mb.showerror("ERROR", e)
+        return False
+    return illustration
+
+def pixiv_download(img_name_original, imgid, illustration):
+    newname = None
+    try:
         if gv.Files.Conf.rename_pixiv == 'True':
             dot = img_name_original.rfind('.')
             if dot != -1:
@@ -46,6 +56,8 @@ def pixiv_download(imgid, img_name_original):
         print('ERROR [0018]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
         gv.Files.Log.write_to_log('ERROR [0018]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
         #mb.showerror("ERROR", e)
+        return False, None
+    return True, newname
 
 
 if __name__ == '__main__':

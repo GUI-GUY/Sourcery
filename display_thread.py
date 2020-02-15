@@ -145,7 +145,20 @@ def display_big_selector2(index, window, frame2, display_view_results):
 
         gv.big_ref_array.extend([downloaded_photoImage, downloaded_image, downloaded_chkbtn])
 
-def display_view_results2(frame, display_big_selector):
+def display_view_results2():
+    t = 0
+    #print("display")
+    #print(gv.img_data_array)
+    while t < 12*3:
+        if t/3 > len(gv.img_data_array)-1:
+            break
+        gv.img_data_array[int(t/3)].load()
+        gv.img_data_array[int(t/3)].process_results_imgs()
+        gv.img_data_array[int(t/3)].modify_widgets()
+        gv.img_data_array[int(t/3)].display_results(t)
+        t += 3
+
+def display_view_results3(frame, display_big_selector):
     """
     Draws all widgets for first dozen in pixiv images:
     - Name of image
@@ -159,12 +172,11 @@ def display_view_results2(frame, display_big_selector):
     - Refresh and save button
     """
     
-    for b in range(len(gv.pixiv_images_array)):
-        for a in range(len(gv.pixiv_images_array[0])):
-            del gv.pixiv_images_array[0][0]
-        del gv.pixiv_images_array[0]
+    # for b in range(len(gv.pixiv_images_array)):
+    #     for a in range(len(gv.pixiv_images_array[0])):
+    #         del gv.pixiv_images_array[0][0]
+    #     del gv.pixiv_images_array[0]
 
-    thumb_size = (70,70)
     try:
         pixiv_dir_array = listdir(gv.cwd + '/Sourcery/sourced_progress/pixiv')
         sourced_original_array = listdir(gv.cwd + '/Sourcery/sourced_original')
@@ -200,23 +212,23 @@ def display_view_results2(frame, display_big_selector):
         if cropped not in gv.safe_to_show_array:
             continue
 
-        original_image, downloaded_image, suffix, sub, dir_flag, continue_flag = image_opener(img, cropped, t, sourced_original_array, pixiv_sub_dir_array)
-        if continue_flag:
-            continue
+        # original_image, downloaded_image, suffix, sub, dir_flag, continue_flag = image_opener(img, cropped, t, sourced_original_array, pixiv_sub_dir_array)
+        # if continue_flag:
+        #     continue
 
-        original_size = original_image.size
-        original_image.thumbnail(thumb_size, resample=Image.ANTIALIAS)
-        original_photoImage = ImageTk.PhotoImage(original_image)
-        original_image.close()
+        # original_size = original_image.size
+        # original_image.thumbnail(thumb_size, resample=Image.ANTIALIAS)
+        # original_photoImage = ImageTk.PhotoImage(original_image)
+        # original_image.close()
 
-        downloaded_size = downloaded_image.size
-        downloaded_image.thumbnail(thumb_size, resample=Image.ANTIALIAS)
-        downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
-        downloaded_image.close()
+        # downloaded_size = downloaded_image.size
+        # downloaded_image.thumbnail(thumb_size, resample=Image.ANTIALIAS)
+        # downloaded_photoImage = ImageTk.PhotoImage(downloaded_image)
+        # downloaded_image.close()
 
-        cropped_name_lbl = display_view_results_helper(frame, original_photoImage, downloaded_photoImage, t, img, cropped, suffix, original_size, downloaded_size, dir_flag, display_big_selector)
+        # cropped_name_lbl = display_view_results_helper(frame, original_photoImage, downloaded_photoImage, t, img, cropped, suffix, original_size, downloaded_size, dir_flag, display_big_selector)
 
-        gv.pixiv_images_array.append([img, sub, cropped, suffix, cropped_name_lbl, dir_flag, pixiv_sub_dir_array]) # , original_image, original_photoImage, downloaded_image, downloaded_photoImage
+        # gv.pixiv_images_array.append([img, sub, cropped, suffix, cropped_name_lbl, dir_flag, pixiv_sub_dir_array]) # , original_image, original_photoImage, downloaded_image, downloaded_photoImage
         if t > 32:
             break
         t += 3

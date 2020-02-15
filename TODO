@@ -29,22 +29,23 @@ beta 0.2
 + added globalvariables module
 + logfile
 log on screen
-+ (u) rename options
+- + (u) rename options
 + (u) minsim options
 + better pixiv login
+preload next 12 images
 more metadata(tags, source, illustrator, uncensored)
 better big Selector
 previews widgets for custom theme
 theme errors(wrong colour etc.)
 next & prev in big Selector
 minileak in results
-better sync for stop
+better sync for stop-???
 scrolling accuracy?
 in window tutorial
 no message boxes but labels
 Fehlerbehandlung
 checking a folder keeps it 100%
-Last Issue: 0029
+Last Issue: 0031
 
 beta 0.3
 2nd service
