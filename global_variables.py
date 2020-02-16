@@ -6,6 +6,11 @@ cwd = getcwd()
 Files = Files()
 
 frame = None
+frame2 = None
+window = None
+big_selector_frame = None
+big_selector_canvas = None
+display_view_results = None
 
 esc_op = False
 #current_theme = 'Dark Theme'
@@ -15,7 +20,7 @@ height = 0
 # global arrays
 input_images_array = [] # For all images in Input folder
 #pixiv_images_array = [] # For all images in sourced_progress/pixiv folder
-safe_to_show_array = [] # For all images that are fully downloaded
+#safe_to_show_array = [] # For all images that are fully downloaded
 delete_dirs_array = [] # For empty directories or dirs where no original is present
 chkbtn_vars_big_array = [] # [[imgname, (img, IntVar), (img, IntVar) ...]...]
 chkbtn_vars_array = [] # 12x2 Checkbutton variables for the results screen

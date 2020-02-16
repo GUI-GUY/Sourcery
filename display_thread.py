@@ -154,7 +154,7 @@ def display_view_results2():
             break
         gv.img_data_array[int(t/3)].load()
         gv.img_data_array[int(t/3)].process_results_imgs()
-        gv.img_data_array[int(t/3)].modify_widgets()
+        gv.img_data_array[int(t/3)].modify_results_widgets()
         gv.img_data_array[int(t/3)].display_results(t)
         t += 3
 

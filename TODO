@@ -23,16 +23,16 @@ beta 0.1
 Last Issue: 0023
 
 
-beta 0.2
+beta 0.2 (Classified)
 + Options is now class
 + Files is now class
++ ImgData is now class
 + added globalvariables module
 + logfile
 log on screen
 - + (u) rename options
 + (u) minsim options
 + better pixiv login
-preload next 12 images
 more metadata(tags, source, illustrator, uncensored)
 better big Selector
 previews widgets for custom theme
@@ -53,6 +53,8 @@ service options
 png over jpg over high res options
 optimizations
 foreign folder support
+preload next 12 images
+options(images per page)
 
 All arrays: (+: no memory leaks 10.01.2020)
 + input_images_array = [] # For all images in Input folder

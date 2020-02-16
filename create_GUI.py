@@ -27,6 +27,7 @@ def magic():
 def image_preloader():
     """
     Starts multiple processes which preload images into memory to reduce loading times and increase accessibility
+    https://www.geeksforgeeks.org/multiprocessing-python-set-2/
     """
     if __name__ == '__main__':
         process0 = Process(target=preload_main, args=(sem, 0, gv.img_data_array, ))
@@ -92,8 +93,8 @@ def refresh_startpage():
             try:
                 answer2 = comm_img_q.get()
                 if answer2 != currently_processing:
-                    if currently_processing != '':
-                        gv.safe_to_show_array.append(currently_processing)
+                    # if currently_processing != '':
+                    #     gv.safe_to_show_array.append(currently_processing)
                     currently_processing = answer2
                     pointdex = currently_processing.rfind(".")
                 if pointdex != -1:
@@ -186,14 +187,14 @@ def save_and_back():
     """
     Save selected images from results page and go back to startpage.
     """
-    save(gv.chkbtn_vars_array, gv.chkbtn_vars_big_array, gv.pixiv_images_array, gv.delete_dirs_array, gv.safe_to_show_array, frame, process)
+    #save(gv.chkbtn_vars_array, gv.chkbtn_vars_big_array, gv.pixiv_images_array, gv.delete_dirs_array, gv.safe_to_show_array, frame, process)
     display_startpage()
 
 def save_and_refresh():
     """
     Save selected images from results page and show the next dozen.
     """
-    save(gv.chkbtn_vars_array, gv.chkbtn_vars_big_array, gv.pixiv_images_array, gv.delete_dirs_array, gv.safe_to_show_array, frame, process)
+    #save(gv.chkbtn_vars_array, gv.chkbtn_vars_big_array, gv.pixiv_images_array, gv.delete_dirs_array, gv.safe_to_show_array, frame, process)
     refresh()
 
 def refresh():
@@ -202,8 +203,8 @@ def refresh():
     if not comm_img_q.empty():
         answer2 = comm_img_q.get()
         if answer2 != currently_processing:
-            if currently_processing != '':
-                gv.safe_to_show_array.append(currently_processing)
+            # if currently_processing != '':
+            #     gv.safe_to_show_array.append(currently_processing)
             currently_processing = answer2
             pointdex = currently_processing.rfind(".")
             if pointdex != -1:
@@ -349,13 +350,13 @@ if __name__ == '__main__':
     frame2.bind('<Enter>', bound_to_mousewheel2)
     frame2.bind('<Leave>', unbound_to_mousewheel2)
     
-    gv.safe_to_show_array.extend(listdir(gv.cwd + '/Sourcery/sourced_original/'))
-    tt=0
-    for img in gv.safe_to_show_array:
-        pointdex = img.rfind(".")
-        if pointdex != -1:
-            gv.safe_to_show_array[tt] = img[:pointdex] # deletes the suffix
-        tt += 1
+    #gv.safe_to_show_array.extend(listdir(gv.cwd + '/Sourcery/sourced_original/'))
+    # tt=0
+    # for img in gv.safe_to_show_array:
+    #     pointdex = img.rfind(".")
+    #     if pointdex != -1:
+    #         gv.safe_to_show_array[tt] = img[:pointdex] # deletes the suffix
+    #     tt += 1
     for i in range(12):
         gv.results_12_tuple_widgets_array.append(([Checkbutton(frame, style="chkbtn.TCheckbutton"), Label(frame, text = "original", style='label.TLabel'), Label(frame, style='label.TLabel'), Label(frame, style='label.TLabel'), Label(frame, style='label.TLabel')], [Checkbutton(frame, style="chkbtn.TCheckbutton"), Label(frame, text = "pixiv", style='label.TLabel'), Label(frame, text = "More images", style='label.TLabel'), Label(frame, text = "More images", style='label.TLabel'), Button(frame, text='View in Big Selector', style='button.TLabel')]))
     for i in range(12):
@@ -364,6 +365,11 @@ if __name__ == '__main__':
         gv.chkbtn_vars_array[i][1].set(1)
 
     gv.frame = frame
+    gv.frame2 = frame2
+    gv.window = window
+    gv.big_selector_frame = big_selector_frame
+    gv.big_selector_canvas = big_selector_canvas
+    gv.display_view_results = display_view_results
     currently_processing = ''
     gv.esc_op = False # Escape variable for options
     esc_res = False # Escape variable for results
