@@ -55,9 +55,9 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_
             sleep(10)
         elif res[0] == 200:
             comm_q.put(res[3])
-            img_name_original, img_data_array, illustration = process_img_data(img, res)
+            img_name_original, new_name, img_data_array, illustration = process_img_data(img, res)
             if img_name_original != False:
-                img_data_q.put((img_name_original, img_data_array, illustration))
+                img_data_q.put((img_name_original, new_name, img_data_array, illustration))
             if res[3] < 1:
                 die('Out of searches for today', comm_error_q, comm_img_q)
             if res[2] < 1:
@@ -80,9 +80,9 @@ def process_img_data(img_name_original, res):
     img_data_array = decode_response(res[1])
     if img_data_array[1] != 0:
         illustration = pixiv_fetch_illustration(img_name_original, img_data_array[1])
-        #ImgData = None#ImageData(img_name_original, img_data_array, illustration)
         if illustration == False:
             return False, None, None
-        if pixiv_download(img_name_original, img_data_array[1], illustration):
-            return img_name_original, img_data_array, illustration
+        flag, new_name = pixiv_download(img_name_original, img_data_array[1], illustration)
+        if flag:
+            return img_name_original, new_name, img_data_array, illustration
     return False, None, None

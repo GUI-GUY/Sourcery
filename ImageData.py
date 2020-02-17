@@ -1,17 +1,18 @@
-from os import path, listdir
+from os import path, listdir, remove
+from shutil import move, rmtree
 from tkinter import IntVar, W
 from tkinter.ttk import Checkbutton, Label, Button
 from PIL import ImageTk, Image
 from tkinter import messagebox as mb
 from copy import deepcopy
-#from file_operations import is_image
+from file_operations import is_image
 import global_variables as gv
 
 class ImageData():
     """PixivOptions"""
-    def __init__(self, name, img_data_array, illust):
-        self.name_original = name
-        self.name_pixiv = str(illust.id)
+    def __init__(self, old_name, new_name, img_data_array, illust):
+        self.name_original = old_name
+        self.name_pixiv = new_name
         self.set_name_pixiv()
         # self.service = img_data_array[0]
         # self.illust_id = img_data_array[1]
@@ -34,8 +35,8 @@ class ImageData():
         self.original_wxh_lbl = Label(master=gv.frame, style='label.TLabel')
         self.original_type_lbl = Label(master=gv.frame, style='label.TLabel')
         self.original_cropped_lbl = Label(master=gv.frame, style='label.TLabel')
-        self.downloaded_var = IntVar(value=1)
-        self.downloaded_chkbtn = Checkbutton(master=gv.frame, var=self.downloaded_var, style="chkbtn.TCheckbutton")
+        self.downloaded_pixiv_var = IntVar(value=1)
+        self.downloaded_chkbtn = Checkbutton(master=gv.frame, var=self.downloaded_pixiv_var, style="chkbtn.TCheckbutton")
         self.downloaded_lbl = Label(master=gv.frame, text = "pixiv", style='label.TLabel')
         self.downloaded_wxh_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')
         self.downloaded_type_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')
@@ -44,7 +45,6 @@ class ImageData():
 
         self.original_SubImgData = None
         self.downloaded_SubImgData_pixiv = None
-
 
         self.load_init = False
         self.process_results_imgs_init = False
@@ -58,9 +58,10 @@ class ImageData():
         """
         dir = listdir(gv.cwd + '/Sourcery/sourced_progress/pixiv/')
         for elem in dir:
-            test = elem.rsplit('.', 1)
-            if self.name_pixiv == test[0]:
-                self.name_pixiv = elem
+            if is_image(elem):
+                test = elem.rsplit('.', 1)
+                if self.name_pixiv == test[0]:
+                    self.name_pixiv = elem
 
     def forget_all_widgets(self):
         for widget in gv.window.winfo_children():
@@ -77,10 +78,9 @@ class ImageData():
         """
         if self.load_init:
             return
-        original_image = Image.open(gv.cwd + '/Sourcery/sourced_original/' + self.name_original)
+        self.original_image = Image.open(self.path_original)
         if path.isfile(self.path_pixiv):
             try:
-                self.original_image = Image.open(self.path_original)
                 self.downloaded_image_pixiv = Image.open(self.path_pixiv)
             except Exception as e:
                 print("ERROR [0031] " + str(e))
@@ -92,11 +92,8 @@ class ImageData():
                 if len(self.sub_dir_array_pixiv) == 0:
                     if self.path_pixiv not in gv.delete_dirs_array:
                         gv.delete_dirs_array.append(self.path_pixiv)
-                #gv.chkbtn_vars_array[int(t/3)][0].set(1)
-                #gv.chkbtn_vars_array[int(t/3)][1].set(0)
-                self.original_image = Image.open(self.path_original)
                 for img in self.sub_dir_array_pixiv:
-                    self.sub_dir_img_array_pixiv.append(SubImageData(img, self.path_pixiv, 'pixiv', gv.frame2))#(Image.open(self.path_pixiv + '/' + img), img))
+                    self.sub_dir_img_array_pixiv.append(SubImageData(img, self.path_pixiv, 'pixiv', gv.frame2, master_folder=self.name_pixiv))#(Image.open(self.path_pixiv + '/' + img), img))
             except Exception as e:
                 print("ERROR [0032] " + str(e))
                 mb.showerror("ERROR [0032]", "ERROR CODE [0032]\nSomething went wrong while loading an image.")
@@ -209,7 +206,7 @@ class ImageData():
         self.original_SubImgData.load()
 
         if path.isfile(self.path_pixiv):
-            self.downloaded_SubImgData_pixiv = SubImageData(self.name_pixiv, self.path_pixiv, 'pixiv', gv.frame2, self.downloaded_image_pixiv, self.downloaded_var)#ImageTk.PhotoImage(self.downloaded_image_pixiv)
+            self.downloaded_SubImgData_pixiv = SubImageData(self.name_pixiv, self.path_pixiv, 'pixiv', gv.frame2, self.downloaded_image_pixiv, self.downloaded_pixiv_var)#ImageTk.PhotoImage(self.downloaded_image_pixiv)
             self.downloaded_SubImgData_pixiv.load()
         elif path.isdir(self.path_pixiv):
             for elem in self.sub_dir_img_array_pixiv:
@@ -229,8 +226,53 @@ class ImageData():
         self.modify_results_widgets_init = False
         self.modify_big_widgets_init = True
        
+    def save(self):
+        downloaded_name_new = None
+        original_name_new = None
+
+        if self.original_var.get() == 1:
+            if self.downloaded_pixiv_var.get() == 1:
+                downloaded_name_new = 'new_' + self.name_pixiv
+                original_name_new = 'old_' + self.name_original
+            else:
+                # Move original image to Sourced and delete downloaded image/directory
+                downloaded_name_new = None
+                original_name_new = self.name_original
+                if self.path_pixiv not in gv.delete_dirs_array:
+                    gv.delete_dirs_array.append(self.path_pixiv)
+                for elem in self.sub_dir_img_array_pixiv:
+                    elem.save()
+        elif self.downloaded_pixiv_var.get() == 1:
+            # Move downloaded image to Sourced and delete original image
+            downloaded_name_new = self.name_pixiv
+            original_name_new = None
+            if self.path_original not in gv.delete_dirs_array:
+                gv.delete_dirs_array.append(self.path_original)
+
+        if downloaded_name_new != None:
+            try:
+                move(self.path_pixiv, gv.cwd + '/Sourced/' + downloaded_name_new)
+            except Exception as e:
+                print("ERROR [0012] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0012] " + str(e))
+                mb.showerror("ERROR [0012]", "ERROR CODE [0012]\nSomething went wrong while moving the image " + self.path_pixiv)
+
+        if original_name_new != None:
+            try:
+                move(self.path_original, gv.cwd + '/Sourced/' + original_name_new)
+            except Exception as e:
+                print("ERROR [0013] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0013] " + str(e))
+                mb.showerror("ERROR [0013]", "ERROR CODE [0013]\nSomething went wrong while moving the image " + self.path_original)
+        try:
+            remove(gv.cwd + '/Input/' + self.name_original)
+        except Exception as e:
+            print("ERROR [0014] " + str(e))
+            gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
+            mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.cwd + '/Input/' + self.name_original)
+
 class SubImageData():
-    def __init__(self, name, path, service, parent, img=None, var=None):
+    def __init__(self, name, path, service, parent, img=None, var=None, master_folder=''):
         self.name = name
         self.path = path + '/' + name
         self.service = service
@@ -243,6 +285,7 @@ class SubImageData():
         self.lbl = None
         self.wxh_lbl = None
         self.type_lbl = None
+        self.folder = master_folder
 
         self.load_init = False
 
@@ -274,6 +317,19 @@ class SubImageData():
         self.lbl.place(x = round(gv.width*0.43), y = 35)
         self.wxh_lbl.place(x = round(gv.width*0.43), y = 55)
         self.type_lbl.place(x = round(gv.width*0.43), y = 75)
+
+    def save(self):
+        if self.var.get() == 1:
+            try:
+                move(self.path, gv.cwd + '/Sourced/' + folder + '/' + self.name)
+            except Exception as e:
+                print("ERROR [0032] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0032] " + str(e))
+                mb.showerror("ERROR [0032]", "ERROR CODE [0032]\nSomething went wrong while moving the image " + self.path_original)
+        else:
+            if self.path not in gv.delete_dirs_array:
+                gv.delete_dirs_array.append(self.path)
+
 
 def resize(image):
     """

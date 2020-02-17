@@ -1,8 +1,7 @@
 from pathlib import Path
 from pixivapi import Client, Size
 import global_variables as gv
-#from file_operations import write_credentials, write_to_log
-#from tkinter import messagebox as #mb
+#from tkinter import messagebox as mb
 
 client = Client()
 
@@ -41,25 +40,24 @@ def pixiv_fetch_illustration(img_name_original, imgid):
     return illustration
 
 def pixiv_download(img_name_original, imgid, illustration):
-    newname = None
     try:
         if gv.Files.Conf.rename_pixiv == 'True':
+            illustration.download(directory=Path.cwd() / 'Sourcery/sourced_progress/pixiv', size=Size.ORIGINAL)
+            new_name = str(illustration.id)
+        else:
             dot = img_name_original.rfind('.')
             if dot != -1:
-                newname = img_name_original[:dot]
+                new_name = img_name_original[:dot]
             else:
-                newname = img_name_original
-            illustration.download(directory=Path.cwd() / 'Sourcery/sourced_progress/pixiv', size=Size.ORIGINAL, filename=newname)
-        else:
-            illustration.download(directory=Path.cwd() / 'Sourcery/sourced_progress/pixiv', size=Size.ORIGINAL)
+                new_name = img_name_original
+            illustration.download(directory=Path.cwd() / 'Sourcery/sourced_progress/pixiv', size=Size.ORIGINAL, filename=new_name)
     except Exception as e:
         print('ERROR [0018]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
         gv.Files.Log.write_to_log('ERROR [0018]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
         #mb.showerror("ERROR", e)
         return False, None
-    return True, newname
+    return True, new_name
 
 
 if __name__ == '__main__':
-    #pixiv_authenticate('', '', ['', '', '', ''])
-    pixiv_download(0, '')
+    pass

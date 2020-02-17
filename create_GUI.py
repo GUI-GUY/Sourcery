@@ -3,15 +3,17 @@ from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 #from tkinter import messagebox as mb
 #from tkinter.filedialog import askdirectory
 #from functools import partial
-from os import listdir
+from os import listdir, path, remove
+from shutil import rmtree
 from multiprocessing import Process, freeze_support, Queue, Semaphore
 from file_operations import is_image, save, open_input, open_sourced, display_statistics
 from sourcery import do_sourcery
 from display_thread import display_view_results2, display_big_selector2
 from pixiv_handler import pixiv_login
-from options_class import Options
+from Options import Options
 from image_preloader import preload_main
 from ImageData import ImageData
+from ScollFrame import ScrollFrame
 import global_variables as gv
 
 def magic():
@@ -115,7 +117,7 @@ def refresh_startpage():
     if not img_data_q.empty():
         try:
             a = img_data_q.get()
-            b = ImageData(a[0], a[1], a[2])
+            b = ImageData(a[0], a[1], a[2], a[3])
             gv.img_data_array.append(b)
         except:
             pass
@@ -153,12 +155,6 @@ def stop():
         stop_btn.configure(state='disabled')
     #currently_sourcing_img_lbl.configure(text="Stopped")
 
-def display_big_selector(index):
-    forget_all_widgets()
-    big_selector_frame.place(x = round(width*0.515), y = 20)
-    big_selector_canvas.yview_moveto(0)
-    window.after(10, display_big_selector2, index, window, frame2, display_view_results)
-
 def display_view_results():
     global esc_res
     esc_res = False
@@ -167,66 +163,54 @@ def display_view_results():
     options_back_btn.place(x = 50, y = height-80)
     save_and_back_btn.place(x = 150, y = height-80)
     save_and_refresh_btn.place(x = 250, y = height-80)
-    results_frame.place(x = 50, y = 100)
+    results_ScrollFrame.display(x = 50, y = 100)
     results_canvas.yview_moveto(0)
 
-    for x in range(len(gv.big_ref_array)):
-        try:
-            gv.big_ref_array[0].place_forget()
-        except:
-            pass
-        try:
-            gv.big_ref_array[0].image = None
-        except:
-            pass
-        del gv.big_ref_array[0]
-
-    window.after(10, display_view_results2)
+    t = 0
+    while t < 12*3:
+        if t/3 > len(gv.img_data_array)-1:
+            break
+        gv.img_data_array[int(t/3)].load()
+        gv.img_data_array[int(t/3)].process_results_imgs()
+        gv.img_data_array[int(t/3)].modify_results_widgets()
+        gv.img_data_array[int(t/3)].display_results(t)
+        t += 3
 
 def save_and_back():
     """
     Save selected images from results page and go back to startpage.
     """
-    #save(gv.chkbtn_vars_array, gv.chkbtn_vars_big_array, gv.pixiv_images_array, gv.delete_dirs_array, gv.safe_to_show_array, frame, process)
+    save()
+    leftovers()
     display_startpage()
 
 def save_and_refresh():
     """
     Save selected images from results page and show the next dozen.
     """
-    #save(gv.chkbtn_vars_array, gv.chkbtn_vars_big_array, gv.pixiv_images_array, gv.delete_dirs_array, gv.safe_to_show_array, frame, process)
-    refresh()
+    save()
+    leftovers()
+    display_view_results()
 
-def refresh():
-    global currently_processing
-    # Get all images processed while on results screen and put them in gv.safe_to_show_array
-    if not comm_img_q.empty():
-        answer2 = comm_img_q.get()
-        if answer2 != currently_processing:
-            # if currently_processing != '':
-            #     gv.safe_to_show_array.append(currently_processing)
-            currently_processing = answer2
-            pointdex = currently_processing.rfind(".")
-            if pointdex != -1:
-                currently_processing = currently_processing[:pointdex] # deletes the suffix
-        window.after(1, refresh)
-    else:
-        for elem in gv.chkbtn_vars_array:
-            elem[0].set(0)
-            elem[1].set(1)
-        display_view_results()
+def leftovers():
+    # Delete leftovers
+    if not process.is_alive():
+        for img in listdir(gv.cwd + '/Sourcery/sourced_original'):
+            if gv.cwd + '/Sourcery/sourced_original' + img not in gv.delete_dirs_array:
+                gv.delete_dirs_array.append(gv.cwd + '/Sourcery/sourced_original' + img)
 
-def myfunction(event):
-    """
-    Setup scroll region for results screen.
-    """
-    results_canvas.configure(scrollregion=results_canvas.bbox("all"), width=results_frame_width, height=results_frame_height)
+    for element in gv.delete_dirs_array:
+        try:
+            if path.isdir(element):
+                rmtree(element)
+            elif path.isfile(element):
+                remove(element)
+        except Exception as e:
+            print('ERROR [0017] ' + str(e))
+            gv.Files.Log.write_to_log("ERROR [0017] " + str(e))
+            #mb.showerror("ERROR", "ERROR CODE [0017]\nSomething went wrong while removing the image " + element)
 
-def myfunction2(event):
-    """
-    Setup scroll region for big selector screen.
-    """
-    big_selector_canvas.configure(scrollregion=big_selector_canvas.bbox("all"), width=big_selector_frame_width, height=big_selector_frame_height)
+    gv.delete_dirs_array.clear()
 
 def enforce_style():
     """
@@ -246,29 +230,6 @@ def enforce_style():
     #style.configure("scroll.Vertical.TScrollbar", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.button_background, throughcolor=gv.Files.Theme.button_background, activebackground=gv.Files.Theme.button_background)
     results_canvas.configure(background=gv.Files.Theme.background)
 
-def bound_to_mousewheel(event):
-    results_canvas.bind_all("<MouseWheel>", on_mousewheel)
-    # # with Windows OS
-    # root.bind("<MouseWheel>", mouse_wheel)
-    # # with Linux OS
-    # root.bind("<Button-4>", mouse_wheel)
-    # root.bind("<Button-5>", mouse_wheel)  
-
-def unbound_to_mousewheel(event):
-    results_canvas.unbind_all("<MouseWheel>") 
-
-def on_mousewheel(event):
-    results_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
-
-def bound_to_mousewheel2(event):
-    big_selector_canvas.bind_all("<MouseWheel>", on_mousewheel2)   
-
-def unbound_to_mousewheel2(event):
-    big_selector_canvas.unbind_all("<MouseWheel>") 
-
-def on_mousewheel2(event):
-    big_selector_canvas.yview_scroll(int(-1*(event.delta/120)), "units")
-
 if __name__ == '__main__':
     freeze_support()
     
@@ -286,7 +247,10 @@ if __name__ == '__main__':
     #dateS =  time.strftime("20%y-%m-%d")
 
     # set style
-    results_canvas = Canvas(window)
+    results_ScrollFrame = ScrollFrame(window, results_frame_width, results_frame_height)
+    big_selector_ScrollFrame = ScrollFrame(window, big_selector_frame_width, big_selector_frame_height)
+    results_canvas = results_ScrollFrame.canvas
+    
     enforce_style()
 
     options_class = Options(window, display_startpage, enforce_style)
@@ -318,57 +282,14 @@ if __name__ == '__main__':
     # widgets for results
     results_lbl = Label(window, text="Results", font=("Arial Bold", 14), style="label.TLabel")
 
-    results_frame = Frame(window, width=results_frame_width, height=results_frame_height, style="frame.TFrame")
-    results_canvas = Canvas(results_frame, width=results_frame_width, height=results_frame_height, background=gv.Files.Theme.background, highlightthickness=0)
-    frame = Frame(results_canvas, width=results_frame_width, height=results_frame_height, style="frame.TFrame")
-    results_scrollbar = Scrollbar(results_frame, orient="vertical", command=results_canvas.yview)
-    results_canvas.configure(yscrollcommand=results_scrollbar.set)
-    #https://stackoverflow.com/questions/17355902/python-tkinter-binding-mousewheel-to-scrollbar
-    results_scrollbar.pack(side="right",fill="y")
-    results_canvas.pack(side="left")
-    results_canvas.create_window((0,0),window=frame,anchor='nw')
-    frame.bind("<Configure>", myfunction)
-
     save_and_back_btn = Button(window, text="Save & Back", command=save_and_back, style="button.TLabel")
     save_and_refresh_btn = Button(window, text="Save & Refresh", command=save_and_refresh, style="button.TLabel")
 
-    # widgets for big_selector
-    big_selector_frame = Frame(window, width=big_selector_frame_width, height=big_selector_frame_width, style="frame.TFrame")
-    big_selector_canvas = Canvas(big_selector_frame, width=big_selector_frame_width, height=big_selector_frame_width, background=gv.Files.Theme.background, highlightthickness=0)
-    frame2 = Frame(big_selector_canvas, width=big_selector_frame_width, height=big_selector_frame_width, style="frame.TFrame")
-    big_selector_scrollbar = Scrollbar(big_selector_frame, orient="vertical", command=big_selector_canvas.yview)
-    big_selector_canvas.configure(yscrollcommand=big_selector_scrollbar.set)
-
-    big_selector_scrollbar.pack(side="right",fill="y")
-    big_selector_canvas.pack(side="left")
-    big_selector_canvas.create_window((0,0),window=frame2,anchor='nw')
-    frame2.bind("<Configure>", myfunction2)
-
-    # results_canvas.bind_all("<MouseWheel>", on_mousewheel)
-    frame.bind('<Enter>', bound_to_mousewheel)
-    frame.bind('<Leave>', unbound_to_mousewheel)
-    frame2.bind('<Enter>', bound_to_mousewheel2)
-    frame2.bind('<Leave>', unbound_to_mousewheel2)
-    
-    #gv.safe_to_show_array.extend(listdir(gv.cwd + '/Sourcery/sourced_original/'))
-    # tt=0
-    # for img in gv.safe_to_show_array:
-    #     pointdex = img.rfind(".")
-    #     if pointdex != -1:
-    #         gv.safe_to_show_array[tt] = img[:pointdex] # deletes the suffix
-    #     tt += 1
-    for i in range(12):
-        gv.results_12_tuple_widgets_array.append(([Checkbutton(frame, style="chkbtn.TCheckbutton"), Label(frame, text = "original", style='label.TLabel'), Label(frame, style='label.TLabel'), Label(frame, style='label.TLabel'), Label(frame, style='label.TLabel')], [Checkbutton(frame, style="chkbtn.TCheckbutton"), Label(frame, text = "pixiv", style='label.TLabel'), Label(frame, text = "More images", style='label.TLabel'), Label(frame, text = "More images", style='label.TLabel'), Button(frame, text='View in Big Selector', style='button.TLabel')]))
-    for i in range(12):
-        gv.chkbtn_vars_array.append(((IntVar()), (IntVar())))
-        gv.chkbtn_vars_array[i][0].set(0)
-        gv.chkbtn_vars_array[i][1].set(1)
-
-    gv.frame = frame
-    gv.frame2 = frame2
+    gv.frame = results_ScrollFrame.frame
+    gv.frame2 = big_selector_ScrollFrame.frame
     gv.window = window
-    gv.big_selector_frame = big_selector_frame
-    gv.big_selector_canvas = big_selector_canvas
+    gv.big_selector_frame = big_selector_ScrollFrame.sub_frame
+    gv.big_selector_canvas = big_selector_ScrollFrame.canvas
     gv.display_view_results = display_view_results
     currently_processing = ''
     gv.esc_op = False # Escape variable for options
