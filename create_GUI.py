@@ -8,7 +8,6 @@ from shutil import rmtree
 from multiprocessing import Process, freeze_support, Queue, Semaphore
 from file_operations import is_image, save, open_input, open_sourced, display_statistics
 from sourcery import do_sourcery
-from display_thread import display_view_results2, display_big_selector2
 from pixiv_handler import pixiv_login
 from Options import Options
 from image_preloader import preload_main
@@ -164,7 +163,10 @@ def display_view_results():
     save_and_back_btn.place(x = 150, y = height-80)
     save_and_refresh_btn.place(x = 250, y = height-80)
     results_ScrollFrame.display(x = 50, y = 100)
-    results_canvas.yview_moveto(0)
+    info_ScrollFrame.display(x = width/2.3, y = 100)
+
+    for widget in gv.frame3.winfo_children():
+        widget.grid_forget()
 
     t = 0
     while t < 12*3:
@@ -193,11 +195,11 @@ def save_and_refresh():
     display_view_results()
 
 def leftovers():
-    # Delete leftovers
-    if not process.is_alive():
-        for img in listdir(gv.cwd + '/Sourcery/sourced_original'):
-            if gv.cwd + '/Sourcery/sourced_original' + img not in gv.delete_dirs_array:
-                gv.delete_dirs_array.append(gv.cwd + '/Sourcery/sourced_original' + img)
+    # # Delete leftovers
+    # if not process.is_alive():
+    #     for img in listdir(gv.cwd + '/Sourcery/sourced_original'):
+    #         if gv.cwd + '/Sourcery/sourced_original' + img not in gv.delete_dirs_array:
+    #             gv.delete_dirs_array.append(gv.cwd + '/Sourcery/sourced_original' + img)
 
     for element in gv.delete_dirs_array:
         try:
@@ -240,7 +242,9 @@ if __name__ == '__main__':
     height = gv.height = window.winfo_screenheight()
     width = gv.width = window.winfo_screenwidth()
     results_frame_height = height-200
-    results_frame_width = width-200
+    results_frame_width = width/3
+    info_frame_height = height-200
+    info_frame_width = width/2
     big_selector_frame_height = height-100 # height-620
     big_selector_frame_width = round(width*0.48) - 25 # width-620
     #window.geometry(str(width-500) + 'x' + str(height-500))
@@ -248,6 +252,7 @@ if __name__ == '__main__':
 
     # set style
     results_ScrollFrame = ScrollFrame(window, results_frame_width, results_frame_height)
+    info_ScrollFrame = ScrollFrame(window, info_frame_width, info_frame_height)
     big_selector_ScrollFrame = ScrollFrame(window, big_selector_frame_width, big_selector_frame_height)
     results_canvas = results_ScrollFrame.canvas
     
@@ -287,6 +292,7 @@ if __name__ == '__main__':
 
     gv.frame = results_ScrollFrame.frame
     gv.frame2 = big_selector_ScrollFrame.frame
+    gv.frame3 = info_ScrollFrame.frame
     gv.window = window
     gv.big_selector_frame = big_selector_ScrollFrame.sub_frame
     gv.big_selector_canvas = big_selector_ScrollFrame.canvas

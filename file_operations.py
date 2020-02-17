@@ -30,6 +30,8 @@ def save():
             break
         ImgData = gv.img_data_array.pop()
         ImgData.save()
+        #TODO
+        ImgData.self_destruct()
   
     for widget in gv.frame.winfo_children():
         widget.grid_forget()

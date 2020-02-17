@@ -14,6 +14,7 @@ class ImageData():
         self.name_original = old_name
         self.name_pixiv = new_name
         self.set_name_pixiv()
+        self.illust = illust
         # self.service = img_data_array[0]
         # self.illust_id = img_data_array[1]
         # self.member_id = img_data_array[2]
@@ -40,7 +41,13 @@ class ImageData():
         self.downloaded_lbl = Label(master=gv.frame, text = "pixiv", style='label.TLabel')
         self.downloaded_wxh_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')
         self.downloaded_type_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')
-        self.big_selector_btn = Button(master=gv.frame, text='View in Big Selector', style='button.TLabel')
+        self.big_selector_btn = Button(master=gv.frame, command=self.display_big_selector, text='View in Big Selector', style='button.TLabel')
+
+        self.info_btn = Button(master=gv.frame, command=self.display_info, text='More Info', style='button.TLabel')
+        
+        self.info_lbl = Label(master=gv.frame3, style='label.TLabel')
+        self.tags_pixiv_lbl = Label(master=gv.frame3, text = str(illust.tags), style='label.TLabel')
+
         self.back_btn = None
 
         self.original_SubImgData = None
@@ -110,12 +117,13 @@ class ImageData():
         IMPORTANT:\n
         Call load, process_results_imgs and modify_results_widgets in that order before
         """
-        self.original_chkbtn.grid(column = 0, row = t+1)
+        self.original_chkbtn.grid(column = 0, row = t+1, sticky = W)
         self.original_lbl.grid(column = 2, row = t+1, sticky = W, padx = 10)
         self.original_wxh_lbl.grid(column = 3, row = t+1, sticky = W, padx = 10)
         self.original_type_lbl.grid(column = 4, row = t+1, sticky = W, padx = 10)
+        self.info_btn.grid(column = 5, row = t+1, sticky = W, padx = 10)
         self.original_cropped_lbl.grid(column = 1, row = t, columnspan=3, sticky = W, padx = 10)
-        self.downloaded_chkbtn.grid(column = 0, row = t+2)
+        self.downloaded_chkbtn.grid(column = 0, row = t+2, sticky = W)
         self.downloaded_lbl.grid(column = 2, row = t+2, sticky = W, padx = 10)
         self.downloaded_wxh_lbl.grid(column = 3, row = t+2, sticky = W, padx = 10)
         self.downloaded_type_lbl.grid(column = 4, row = t+2, sticky = W, padx = 10)
@@ -161,16 +169,36 @@ class ImageData():
         self.downloaded_chkbtn.configure(image=self.downloaded_photoImage_pixiv_thumb)
         self.downloaded_chkbtn.image = self.downloaded_photoImage_pixiv_thumb
 
-        self.big_selector_btn.configure(command=self.display_big_selector)
         if path.isdir(self.path_pixiv):
-            self.downloaded_chkbtn.configure(state = 'disabled')
+            self.original_var.set(1)
+            self.downloaded_pixiv_var.set(0)
         else:
             self.downloaded_wxh_lbl.configure(text = str(self.downloaded_image_pixiv.size))
             self.downloaded_type_lbl.configure(text = self.name_pixiv[self.name_pixiv.rfind(".")+1:])
-            self.downloaded_chkbtn.configure(state = 'enabled')
+            
         
         #self.modify_big_widgets_init = False
         self.modify_results_widgets_init = True
+
+    def display_info(self):
+        for widget in gv.frame3.winfo_children():
+            widget.grid_forget()
+        info_txt = ('Provider: pixiv'
+                    '\nArtist: ' + str(self.illust.user.name) +
+                    '\nTitle: ' + str(self.illust.title) +
+                    '\nImage ID: ' + str(self.illust.id) +
+                    #'\nURL: ' + str(self.illust.image_urls) +
+                    '\nDate: ' + str(self.illust.create_date) +
+                    '\ncaption: ' + str(self.illust.caption) +
+                    '\nsanity: ' + str(self.illust.sanity_level) +
+                    #'\ntype: ' + str(self.illust.type) +
+                    #'\nseries: ' + str(self.illust.series) +
+                    '\nheight: ' + str(self.illust.height) +
+                    '\nwidth: ' + str(self.illust.width))
+        self.info_lbl.configure(text = info_txt)
+        self.info_lbl.grid(column = 0, row = 0, sticky = W)
+        self.tags_pixiv_lbl.grid(column = 0, row = 1, sticky = W)
+
 
     def display_big_selector(self):
         self.process_big_imgs()
@@ -270,6 +298,9 @@ class ImageData():
             print("ERROR [0014] " + str(e))
             gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
             mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.cwd + '/Input/' + self.name_original)
+
+    def self_destruct(self):
+        pass
 
 class SubImageData():
     def __init__(self, name, path, service, parent, img=None, var=None, master_folder=''):

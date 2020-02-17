@@ -81,8 +81,8 @@ def process_img_data(img_name_original, res):
     if img_data_array[1] != 0:
         illustration = pixiv_fetch_illustration(img_name_original, img_data_array[1])
         if illustration == False:
-            return False, None, None
+            return False, None, None, None
         flag, new_name = pixiv_download(img_name_original, img_data_array[1], illustration)
         if flag:
             return img_name_original, new_name, img_data_array, illustration
-    return False, None, None
+    return False, None, None, None

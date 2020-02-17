@@ -67,10 +67,11 @@ class SauceNaoOptions():
         self.saucenao_key_lbl = Label(parent, text="SauceNao API-Key", style="label.TLabel")
         self.saucenao_key_number_lbl = Label(parent, width=50, text=gv.Files.Cred.saucenao_api_key, style="button.TLabel")
         self.saucenao_key_entry = Entry(parent, width=52, style="button.TLabel")
-        self.saucenao_key_change_btn = Button(parent, text="Change", command=self.saucenao_change_key, style="button.TLabel")#
-        self.saucenao_key_confirm_btn = Button(parent, text="Confirm", command=self.saucenao_set_key, style="button.TLabel")#
+        self.saucenao_key_change_btn = Button(parent, text="Change", command=self.saucenao_change_key, style="button.TLabel")
+        self.saucenao_key_confirm_btn = Button(parent, text="Confirm", command=self.saucenao_set_key, style="button.TLabel")
         self.saucenao_minsim_lbl = Label(parent, text="Minimum similarity", style="label.TLabel")
         self.saucenao_minsim_entry = Entry(parent, width=20, style="button.TLabel")
+        self.saucenao_minsim_entry.insert(0, gv.Files.Conf.minsim)
         self.saucenao_minsim_confirm_btn = Button(parent, text="Save", command=self.saucenao_save, style="button.TLabel")
     
     def display(self):
@@ -230,7 +231,10 @@ class PixivOptions():
         self.pixiv_login_confirm_btn = Button(parent, text="Confirm & Save", command=partial(self.pixiv_set_login, True), style="button.TLabel")
         self.pixiv_login_confirm_nosave_btn = Button(parent, text="Confirm & Don't Save", command=partial(self.pixiv_set_login, False), style="button.TLabel")
         self.pixiv_warning_lbl = Label(parent, width=50, text='THIS WILL BE SAVED IN PLAINTEXT!!!', style="label.TLabel")
-        self.rename_var = IntVar(value=0)
+        if gv.Files.Conf.rename_pixiv == 'True':
+            self.rename_var = IntVar(value=1)
+        else:
+            self.rename_var = IntVar(value=0)
         self.rename_chkbtn = Checkbutton(parent, text='Rename images from pixiv to pixiv name', var=self.rename_var, style="chkbtn.TCheckbutton")
         self.save_btn = Button(parent, text='Save', command=self.pixiv_save, style ="button.TLabel")
 

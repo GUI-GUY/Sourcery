@@ -32,6 +32,7 @@ def pixiv_authenticate():
 def pixiv_fetch_illustration(img_name_original, imgid):
     try:
         illustration = client.fetch_illustration(imgid) # 75523989
+        #illustration.sanity_level
     except Exception as e:
         print('ERROR [0030]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
         gv.Files.Log.write_to_log('ERROR [0030]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')

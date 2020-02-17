@@ -233,7 +233,7 @@ class CredFile():
         if creds != 'SauceNao\n':
             f.close()
             return True
-        while creds != 'END':
+        while not creds.startswith('END'):
             if creds == 'SauceNao\n':
                 creds = f.readline()
                 self.saucenao_api_key = creds[creds.find('=')+1:-1]
@@ -299,14 +299,14 @@ class LogFile():
 class ConfigFile():
     def __init__(self, log):
         self.Log = log
-        self.rename_pixiv = ''
-        self.minsim = ''
+        self.rename_pixiv = 'False'
+        self.minsim = '80'
         if self.read_config():
             self.write_config()
     
     def read_config(self):
         try:
-            f = open(cwd + '/Sourcery/credentials')
+            f = open(cwd + '/Sourcery/config')
         except Exception as e:
             print("ERROR [0026] " + str(e))
             self.Log.write_to_log("ERROR [0026] " + str(e))
@@ -316,7 +316,7 @@ class ConfigFile():
         if not temp.startswith('rename_pixiv='):
             f.close()
             return True
-        while(temp != 'END\n'):
+        while (not temp.startswith('END')):
             if temp.startswith('rename_pixiv='):
                 self.rename_pixiv = temp[temp.find('=')+1:-1]
             if temp.startswith('minsim='):
@@ -326,10 +326,18 @@ class ConfigFile():
         return False
 
     def write_config(self):
+        try:
+            temp_num = int(self.minsim)
+            if temp_num < 0 or temp_num > 100:
+                mb.showerror('Invalid Value', 'Please insert a value between 0 and 100 into the Minimum similarity option')
+                self.minsim = '80'
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert a value between 0 and 100 into the Minimum similarity option')
+            self.minsim = '80'
+
         conf = ("rename_pixiv=" + self.rename_pixiv +
                 "\nminsim=" + self.minsim +
                 "\n\nEND")
-
         try:
             f = open(cwd + '/Sourcery/config', 'w')
             f.write(conf)

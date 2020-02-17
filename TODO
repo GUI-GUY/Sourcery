@@ -27,13 +27,14 @@ beta 0.2 (Classified)
 + Options is now class
 + Files is now class
 + ImgData is now class
++ ScrollFrame is now class
 + added globalvariables module
 + logfile
 log on screen
-- + (u) rename options
++ rename options
 + (u) minsim options
 + better pixiv login
-more metadata(tags, source, illustrator, uncensored)
+more metadata(tags, source, illustrator)
 better big Selector
 previews widgets for custom theme
 theme errors(wrong colour etc.)
@@ -44,7 +45,8 @@ scrolling accuracy?
 in window tutorial
 no message boxes but labels
 Fehlerbehandlung
-checking a folder keeps it 100%
++ checking a folder keeps it 100%
+ImageData.selfdestruct()
 Last Issue: 0031
 
 beta 0.3
@@ -54,6 +56,7 @@ png over jpg over high res options
 optimizations
 foreign folder support
 preload next 12 images
+more metadata(uncensored)
 options(images per page)
 
 All arrays: (+: no memory leaks 10.01.2020)

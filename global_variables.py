@@ -7,6 +7,7 @@ Files = Files()
 
 frame = None
 frame2 = None
+frame3 = None
 window = None
 big_selector_frame = None
 big_selector_canvas = None
