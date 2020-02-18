@@ -15,10 +15,10 @@ class ImageData():
         self.name_pixiv = new_name
         self.set_name_pixiv()
         self.illust = illust
-        # self.service = img_data_array[0]
+        self.service = img_data_array[0]
         # self.illust_id = img_data_array[1]
         # self.member_id = img_data_array[2]
-        # self.source_url = img_data_array[3]
+        self.source_url = img_data_array[3]
         self.path_original = gv.cwd + '/Sourcery/sourced_original/' + self.name_original
         self.path_pixiv = gv.cwd + '/Sourcery/sourced_progress/pixiv/' + self.name_pixiv
         self.original_image = None
@@ -48,7 +48,10 @@ class ImageData():
         self.info_lbl = Label(master=gv.frame3, style='label.TLabel')
         self.tags_pixiv_lbl = Label(master=gv.frame3, text = str(illust.tags), style='label.TLabel')
 
-        self.back_btn = None
+        self.back_btn = Button(gv.window, text = 'Back', command = self.display_view_results, style = 'button.TLabel')
+        self.next_btn = Button(gv.window, text = 'Next', style = 'button.TLabel')
+        self.prev_btn = Button(gv.window, text = 'Prev', style = 'button.TLabel')
+        self.index = None
 
         self.original_SubImgData = None
         self.downloaded_SubImgData_pixiv = None
@@ -75,9 +78,6 @@ class ImageData():
             widget.place_forget()
         for widget in gv.frame2.winfo_children():
             widget.grid_forget()
-        # forget = gv.frame2.winfo_children()
-        # for widget in range(len(forget)):
-        #     forget[0].grid_forget()
 
     def load(self):
         """
@@ -117,6 +117,7 @@ class ImageData():
         IMPORTANT:\n
         Call load, process_results_imgs and modify_results_widgets in that order before
         """
+        self.index = int(t/3)
         self.original_chkbtn.grid(column = 0, row = t+1, sticky = W)
         self.original_lbl.grid(column = 2, row = t+1, sticky = W, padx = 10)
         self.original_wxh_lbl.grid(column = 3, row = t+1, sticky = W, padx = 10)
@@ -183,30 +184,26 @@ class ImageData():
     def display_info(self):
         for widget in gv.frame3.winfo_children():
             widget.grid_forget()
-        info_txt = ('Provider: pixiv'
+        info_txt = ('Provider: ' + str(self.service) +
                     '\nArtist: ' + str(self.illust.user.name) +
                     '\nTitle: ' + str(self.illust.title) +
                     '\nImage ID: ' + str(self.illust.id) +
-                    #'\nURL: ' + str(self.illust.image_urls) +
+                    '\nURL: ' + str(self.source_url) +
                     '\nDate: ' + str(self.illust.create_date) +
                     '\ncaption: ' + str(self.illust.caption) +
                     '\nsanity: ' + str(self.illust.sanity_level) +
-                    #'\ntype: ' + str(self.illust.type) +
-                    #'\nseries: ' + str(self.illust.series) +
                     '\nheight: ' + str(self.illust.height) +
                     '\nwidth: ' + str(self.illust.width))
         self.info_lbl.configure(text = info_txt)
         self.info_lbl.grid(column = 0, row = 0, sticky = W)
         self.tags_pixiv_lbl.grid(column = 0, row = 1, sticky = W)
 
-
     def display_big_selector(self):
         self.process_big_imgs()
-        #self.modify_big_widgets()
+        self.modify_big_widgets()
         self.forget_all_widgets()
         gv.big_selector_frame.place(x = round(gv.width*0.515), y = 20)
         gv.big_selector_canvas.yview_moveto(0)
-        self.back_btn = Button(gv.window, text = 'Back', command = self.display_view_results, style = 'button.TLabel')
         self.back_btn.place(x = round(gv.width*0.43), y = 100)
 
         self.original_SubImgData.display_place()
@@ -242,7 +239,7 @@ class ImageData():
 
         self.process_big_imgs_init = True
 
-    def modify_big_widgets(self):#deprecated
+    def modify_big_widgets(self, t):
         """
         Fills widgets with information\n
         IMPORTANT:\n
@@ -251,7 +248,15 @@ class ImageData():
         if self.modify_big_widgets_init:
             return
 
-        self.modify_results_widgets_init = False
+        if self.index() > 0:
+            next_btn.configure(state='enabled', command = gv.img_data_array[self.index-1].display_big_selector)
+        else:
+            next_btn.configure(state='disabled', command=None)
+        if self.index < len(gv.img_data_array)-1:
+            prev_btn.configure(state='enabled', command = gv.img_data_array[self.index+1].display_big_selector)
+        else:
+            prev_btn.configure(state='disabled', command=None)
+
         self.modify_big_widgets_init = True
        
     def save(self):

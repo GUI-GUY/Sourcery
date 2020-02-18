@@ -1,4 +1,5 @@
 from tkinter import IntVar
+from tkinter import messagebox as mb
 from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 from functools import partial
 from pixiv_handler import pixiv_login
@@ -139,13 +140,13 @@ class SourceryOptions():
         self.custom_button_foreground_pressed_entry = Entry(parent, width=30, style="button.TLabel")
         self.save_custom_theme_btn = Button(parent, text="Save Custom Theme", command=self.save_custom_theme, style="button.TLabel")
 
-        self.custom_background_entry.insert(0, gv.Files.Theme.custom_background)
-        self.custom_foreground_entry.insert(0, gv.Files.Theme.custom_foreground)
-        self.custom_button_background_entry.insert(0, gv.Files.Theme.custom_button_background)
-        self.custom_button_background_active_entry.insert(0, gv.Files.Theme.custom_button_background_active)
-        self.custom_button_foreground_active_entry.insert(0, gv.Files.Theme.custom_button_foreground_active)
-        self.custom_button_background_pressed_entry.insert(0, gv.Files.Theme.custom_button_background_pressed)
-        self.custom_button_foreground_pressed_entry.insert(0, gv.Files.Theme.custom_button_foreground_pressed)
+        self.custom_background = gv.Files.Theme.custom_background
+        self.custom_foreground = gv.Files.Theme.custom_foreground
+        self.custom_button_background = gv.Files.Theme.custom_button_background
+        self.custom_button_background_active = gv.Files.Theme.custom_button_background_active
+        self.custom_button_foreground_active = gv.Files.Theme.custom_button_foreground_active
+        self.custom_button_background_pressed = gv.Files.Theme.custom_button_background_pressed
+        self.custom_button_foreground_pressed = gv.Files.Theme.custom_button_foreground_pressed
 
     def display(self):
         """
@@ -156,6 +157,9 @@ class SourceryOptions():
         c = 23
         x1 = 50
         x2 = 240
+        self.color_check()
+        self.color_insert()
+
         self.theme_lbl.place(x = x1, y = y-5)
         self.dark_theme_btn.place(x = x1, y = y + c * 1)
         self.light_theme_btn .place(x = x1, y = y + c * 2)
@@ -192,6 +196,15 @@ class SourceryOptions():
         self.en_s()
 
     def save_custom_theme(self):
+        self.custom_background = self.custom_background_entry.get()
+        self.custom_foreground = self.custom_foreground_entry.get()
+        self.custom_button_background = self.custom_button_background_entry.get()
+        self.custom_button_background_active = self.custom_button_background_active_entry.get()
+        self.custom_button_foreground_active = self.custom_button_foreground_active_entry.get()
+        self.custom_button_background_pressed = self.custom_button_background_pressed_entry.get()
+        self.custom_button_foreground_pressed = self.custom_button_foreground_pressed_entry.get()
+        self.color_check()
+        self.color_insert()
         gv.Files.Theme.custom_background = self.custom_background_entry.get()
         gv.Files.Theme.custom_foreground = self.custom_foreground_entry.get()
         gv.Files.Theme.custom_button_background = self.custom_button_background_entry.get()
@@ -202,6 +215,114 @@ class SourceryOptions():
         e = gv.Files.Theme.write_theme(gv.Files.Theme.current_theme)
         if e == None:
             gv.Files.Log.write_to_log('Saved custom theme successfully')
+    
+    def color_check(self):
+        if self.custom_background.startswith('#'):
+            try:
+                num = int(self.custom_background[1:], 16)
+                if num < 0 or num > 16777215:
+                    mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Background option')
+                    self.custom_background = '#101010'
+            except Exception as e:
+                mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Background option')
+                self.custom_background = '#101010'
+        elif self.custom_background not in gv.COLORS:
+            mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Background option')
+            self.custom_background = '#101010'
+
+        if self.custom_foreground.startswith('#'):
+            try:
+                num = int(self.custom_foreground[1:], 16)
+                if num < 0 or num > 16777215:
+                    mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Foreground option')
+                    self.custom_foreground = '#434343'
+            except Exception as e:
+                mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Foreground option')
+                self.custom_foreground = '#434343'
+        elif self.custom_foreground not in gv.COLORS:
+            mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Foreground option')
+            self.custom_foreground = '#434343'
+
+        if self.custom_button_background.startswith('#'):
+            try:
+                num = int(self.custom_button_background[1:], 16)
+                if num < 0 or num > 16777215:
+                    mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background option')
+                    self.custom_button_background = 'purple'
+            except Exception as e:
+                mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background option')
+                self.custom_button_background = 'purple'
+        elif self.custom_button_background not in gv.COLORS:
+            mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background option')
+            self.custom_button_background = 'purple'
+
+        if self.custom_button_background_active.startswith('#'):
+            try:
+                num = int(self.custom_button_background_active[1:], 16)
+                if num < 0 or num > 16777215:
+                    mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background Active option')
+                    self.custom_button_background_active = 'yellow'
+            except Exception as e:
+                mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background Active option')
+                self.custom_button_background_active = 'yellow'
+        elif self.custom_button_background_active not in gv.COLORS:
+            mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background Active option')
+            self.custom_button_background_active = 'yellow'
+
+        if self.custom_button_foreground_active.startswith('#'):
+            try:
+                num = int(self.custom_button_foreground_active[1:], 16)
+                if num < 0 or num > 16777215:
+                    mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Foreground Active option')
+                    self.custom_button_foreground_active = 'black'
+            except Exception as e:
+                mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Foreground Active option')
+                self.custom_button_foreground_active = 'black'
+        elif self.custom_button_foreground_active not in gv.COLORS:
+            mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Foreground Active option')
+            self.custom_button_foreground_active = 'black'
+
+        if self.custom_button_background_pressed.startswith('#'):
+            try:
+                num = int(self.custom_button_background_pressed[1:], 16)
+                if num < 0 or num > 16777215:
+                    mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background Pressed option')
+                    self.custom_button_background_pressed = '#111'
+            except Exception as e:
+                mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background Pressed option')
+                self.custom_button_background_pressed = '#111'
+        elif self.custom_button_background_pressed not in gv.COLORS:
+            mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background Pressed option')
+            self.custom_button_background_pressed = '#111'
+
+        if self.custom_button_foreground_pressed.startswith('#'):
+            try:
+                num = int(self.custom_button_foreground_pressed[1:], 16)
+                if num < 0 or num > 16777215:
+                    mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Foreground Pressed option')
+                    self.custom_button_foreground_pressed = 'green'
+            except Exception as e:
+                mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Foreground Pressed option')
+                self.custom_button_foreground_pressed = 'green'
+        elif self.custom_button_foreground_pressed not in gv.COLORS:
+            mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Foreground Pressed option')
+            self.custom_button_foreground_pressed = 'green'
+        
+    def color_insert(self):
+        self.custom_background_entry.delete(0, len(self.custom_background_entry.get()))
+        self.custom_background_entry.insert(0, self.custom_background)
+        self.custom_foreground_entry.delete(0, len(self.custom_foreground_entry.get()))
+        self.custom_foreground_entry.insert(0, self.custom_foreground)
+        self.custom_button_background_entry.delete(0, len(self.custom_button_background_entry.get()))
+        self.custom_button_background_entry.insert(0, self.custom_button_background)
+        self.custom_button_background_active_entry.delete(0, len(self.custom_button_background_active_entry.get()))
+        self.custom_button_background_active_entry.insert(0, self.custom_button_background_active)
+        self.custom_button_foreground_active_entry.delete(0, len(self.custom_button_foreground_active_entry.get()))
+        self.custom_button_foreground_active_entry.insert(0, self.custom_button_foreground_active)
+        self.custom_button_background_pressed_entry.delete(0, len(self.custom_button_background_pressed_entry.get()))
+        self.custom_button_background_pressed_entry.insert(0, self.custom_button_background_pressed)
+        self.custom_button_foreground_pressed_entry.delete(0, len(self.custom_button_foreground_pressed_entry.get()))
+        self.custom_button_foreground_pressed_entry.insert(0, self.custom_button_foreground_pressed)
 
 class ProviderOptions():
     """ProviderOptions"""
