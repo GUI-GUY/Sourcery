@@ -30,23 +30,21 @@ beta 0.2 (Classified)
 + ScrollFrame is now class
 + added globalvariables module
 + logfile
-log on screen
+log on screen where info is shown
 + rename options
 + (u) minsim options
 + better pixiv login
-more metadata(tags, source, illustrator)
++ more metadata(tags, source, illustrator)
 better Big Selector
 previews widgets for custom theme
 + theme errors(wrong colour etc.)
-+ (u) next & prev in big Selector
--- minileak in results
-better sync for stop-???
-scrolling accuracy?
++ next & prev in big Selector
 in window tutorial
 no message boxes but labels
 Fehlerbehandlung
 + checking a folder keeps it 100%
 ImageData.selfdestruct()
+results screen on start screen maybe
 Last Issue: 0031
 
 beta 0.3
@@ -60,6 +58,11 @@ more metadata(uncensored)
 options(images per page)
 save feedback message
 save in file 'oldname=newname + id' for recovery(no SauceNao searches needed)
+better checkbutton graphics
+preview/thumbnail scaling/options
+scrolling accuracy?
+better sync for stop-???
+-- minileak in results (does this still exist?)
 
 comm_q = Queue() # Queue for 'Remaining searches'
 comm_img_q = Queue() # Queue for 'Currently Sourcing'

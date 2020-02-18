@@ -136,7 +136,7 @@ def decode_response(results, EnableRename=False):
                 
             if index_id == 5 or index_id == 6:
                 #5->pixiv 6->pixiv historical
-                service_name='pixiv'
+                service_name='Pixiv'
                 member_id = results['results'][0]['data']['member_id']
                 illust_id = results['results'][0]['data']['pixiv_id']
                 source = results['results'][0]['data']['ext_urls']

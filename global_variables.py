@@ -25,7 +25,7 @@ img_data_array = [] # For all ImageData instances
 # MAX_ROWS = 36
 # FONT_SIZE = 10 # (pixels)
 
-COLORS = ['snow', 'ghost white', 'white smoke', 'gainsboro', 'floral white', 'old lace',
+COLORS = ['white', 'snow', 'ghost white', 'white smoke', 'gainsboro', 'floral white', 'old lace',
     'linen', 'antique white', 'papaya whip', 'blanched almond', 'bisque', 'peach puff',
     'navajo white', 'lemon chiffon', 'mint cream', 'azure', 'alice blue', 'lavender',
     'lavender blush', 'misty rose', 'dark slate gray', 'dim gray', 'slate gray',

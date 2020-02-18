@@ -79,11 +79,11 @@ class ThemeFile():
         self.button_background_pressed = '#111'
         self.button_foreground_pressed = 'white'
         self.custom_background = '#101010'
-        self.custom_foreground = '#434343'
+        self.custom_foreground = 'white'
         self.custom_button_background = 'purple'
         self.custom_button_background_active = 'yellow'
         self.custom_button_foreground_active = 'black'
-        self.custom_button_background_pressed = '#111'
+        self.custom_button_background_pressed = '#fff'
         self.custom_button_foreground_pressed = 'green'
         if self.read_theme():
             self.write_theme('Dark Theme')

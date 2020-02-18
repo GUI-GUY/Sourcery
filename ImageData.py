@@ -1,9 +1,10 @@
 from os import path, listdir, remove
 from shutil import move, rmtree
-from tkinter import IntVar, W
+from tkinter import IntVar, W, N
+from tkinter import messagebox as mb
 from tkinter.ttk import Checkbutton, Label, Button
 from PIL import ImageTk, Image
-from tkinter import messagebox as mb
+from webbrowser import open_new
 from copy import deepcopy
 from file_operations import is_image
 import global_variables as gv
@@ -26,10 +27,13 @@ class ImageData():
         self.sub_dir_array_pixiv = list()
         self.sub_dir_img_array_pixiv = list()
         self.thumb_size = (70,70)
+        self.preview_size = (200, 200)
         self.original_image_thumb = None
         self.original_photoImage_thumb = None
         self.downloaded_image_pixiv_thumb = None
         self.downloaded_photoImage_pixiv_thumb = None
+        self.downloaded_image_pixiv_preview = None
+        self.downloaded_photoImage_pixiv_preview = None
         self.original_var = IntVar(value=0)
         self.original_chkbtn = Checkbutton(master=gv.frame, var=self.original_var, style="chkbtn.TCheckbutton")
         self.original_lbl = Label(master=gv.frame, text = "original", style='label.TLabel')
@@ -39,14 +43,28 @@ class ImageData():
         self.downloaded_pixiv_var = IntVar(value=1)
         self.downloaded_chkbtn = Checkbutton(master=gv.frame, var=self.downloaded_pixiv_var, style="chkbtn.TCheckbutton")
         self.downloaded_lbl = Label(master=gv.frame, text = "pixiv", style='label.TLabel')
-        self.downloaded_wxh_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')
+        self.downloaded_wxh_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')#TODO how many instead of more
         self.downloaded_type_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')
         self.big_selector_btn = Button(master=gv.frame, command=self.display_big_selector, text='View in Big Selector', style='button.TLabel')
 
         self.info_btn = Button(master=gv.frame, command=self.display_info, text='More Info', style='button.TLabel')
         
-        self.info_lbl = Label(master=gv.frame3, style='label.TLabel')
-        self.tags_pixiv_lbl = Label(master=gv.frame3, text = str(illust.tags), style='label.TLabel')
+        self.info_img_lbl = Label(master=gv.frame3, style='label.TLabel')
+        self.info_provider_lbl = Label(master=gv.frame3, style='label.TLabel')
+        self.info_artist_lbl = Label(master=gv.frame3, style='label.TLabel')
+        self.info_title_lbl = Label(master=gv.frame3, style='label.TLabel')
+        #self.info_imageid_lbl = Label(master=gv.frame3, style='label.TLabel')
+        self.info_url_lbl = Label(master=gv.frame3, style='label.TLabel')
+        self.info_date_lbl = Label(master=gv.frame3, style='label.TLabel')
+        self.info_caption_lbl = Label(master=gv.frame3, style='label.TLabel')
+        self.info_wxh_lbl = Label(master=gv.frame3, style='label.TLabel')
+        self.tags_pixiv_lbl = Label(master=gv.frame3, style='label.TLabel')
+        self.tags_lbl_array = list()
+
+        self.tags_lbl_array.append((Label(master=gv.frame3, text = 'Original:', style='label.TLabel', font = ('Arial Bold', 11)), Label(master=gv.frame3, text = 'Translated:', style='label.TLabel', font = ('Arial Bold', 11))))
+        for tag in illust.tags:
+            #self.tags_array.append((tag['name'], tag['translated_name']))
+            self.tags_lbl_array.append((Label(master=gv.frame3, text = tag['name'], style='label.TLabel'), Label(master=gv.frame3, text = tag['translated_name'], style='label.TLabel')))
 
         self.back_btn = Button(gv.window, text = 'Back', command = self.display_view_results, style = 'button.TLabel')
         self.next_btn = Button(gv.window, text = 'Next', style = 'button.TLabel')
@@ -61,6 +79,7 @@ class ImageData():
         self.process_big_imgs_init = False
         self.modify_results_widgets_init = False
         self.modify_big_widgets_init = False
+        self.process_info_imgs_init = False
 
     def set_name_pixiv(self):
         """
@@ -184,19 +203,58 @@ class ImageData():
     def display_info(self):
         for widget in gv.frame3.winfo_children():
             widget.grid_forget()
-        info_txt = ('Provider: ' + str(self.service) +
-                    '\nArtist: ' + str(self.illust.user.name) +
-                    '\nTitle: ' + str(self.illust.title) +
-                    '\nImage ID: ' + str(self.illust.id) +
-                    '\nURL: ' + str(self.source_url) +
-                    '\nDate: ' + str(self.illust.create_date) +
-                    '\ncaption: ' + str(self.illust.caption) +
-                    '\nsanity: ' + str(self.illust.sanity_level) +
-                    '\nheight: ' + str(self.illust.height) +
-                    '\nwidth: ' + str(self.illust.width))
-        self.info_lbl.configure(text = info_txt)
-        self.info_lbl.grid(column = 0, row = 0, sticky = W)
-        self.tags_pixiv_lbl.grid(column = 0, row = 1, sticky = W)
+
+        self.process_info_imgs()
+        self.info_img_lbl.configure(image = self.downloaded_photoImage_pixiv_preview)
+        self.info_provider_lbl.configure(text = str(self.service), font = ('Arial Bold', 18))
+        self.info_artist_lbl.configure(text = 'by ' + str(self.illust.user.name))
+        self.info_title_lbl.configure(text = str(self.illust.title), font = ('Arial Bold', 13))
+        self.info_caption_lbl.configure(text = str(self.illust.caption))
+        #self.info_imageid_lbl.configure(text = 'Image ID: ' + str(self.illust.id))
+        self.info_url_lbl.configure(text = self.source_url[0], foreground='#2626ff', cursor='hand2', font=('Arial', 10))
+        self.info_url_lbl.bind("<Button-1>", self.hyperlink)
+        self.info_date_lbl.configure(text = 'Uploaded on: ' + str(self.illust.create_date), font = ('Arial', 10))
+        self.info_wxh_lbl.configure(text = 'Width x Height: ' + str(self.illust.width) + ' x ' + str(self.illust.height), font = ('Arial', 10))
+        self.tags_pixiv_lbl.configure(text = 'Tags', font=('Arial Bold', 15))
+        self.info_img_lbl.grid(column = 0, row = 1, rowspan = 9, sticky=W+N)
+        self.info_provider_lbl.grid(column = 0, row = 0, sticky = W)
+        self.info_title_lbl.grid(column = 1, row = 1, sticky = W, padx = 5)
+        self.info_caption_lbl.grid(column = 1, row = 2, sticky = W, padx = 5)
+        self.info_artist_lbl.grid(column = 1, row = 3, sticky = W, padx = 5)
+        #self.info_imageid_lbl.grid(column = 1, row = 4, sticky = W, padx = 5)
+        self.info_date_lbl.grid(column = 1, row = 5, sticky = W, padx = 5)
+        
+        self.info_wxh_lbl.grid(column = 1, row = 6, sticky = W, padx = 5)#TODO don't do this when more images
+        self.info_url_lbl.grid(column = 0, row = 10, columnspan = 3, sticky = W)
+        self.tags_pixiv_lbl.grid(column = 0, row = 11, sticky = W)
+        
+        t=0
+        for lbl in self.tags_lbl_array:
+            lbl[0].grid(column = 0, row = 12 + t, sticky = W)
+            lbl[1].grid(column = 1, row = 12 + t, sticky = W)
+            t += 1
+
+    def process_info_imgs(self):
+        """
+        Turns images into usable photoimages for tkinter\n
+        IMPORTANT:\n
+        Call load before
+        """
+        if self.process_info_imgs_init:
+            return
+
+        if path.isfile(self.path_pixiv):
+            self.downloaded_image_pixiv_preview = deepcopy(self.downloaded_image_pixiv)
+        elif path.isdir(self.path_pixiv):
+            self.downloaded_image_pixiv_preview = Image.open(self.path_pixiv + '/' + listdir(self.path_pixiv)[0])
+        self.downloaded_image_pixiv_preview.thumbnail(self.preview_size, resample=Image.ANTIALIAS)
+        self.downloaded_photoImage_pixiv_preview = ImageTk.PhotoImage(self.downloaded_image_pixiv_preview)
+        self.downloaded_image_pixiv_preview.close()
+
+        self.process_info_imgs_init = True
+
+    def hyperlink(self, event):
+        open_new(event.widget.cget("text"))
 
     def display_big_selector(self):
         self.process_big_imgs()
@@ -205,6 +263,8 @@ class ImageData():
         gv.big_selector_frame.place(x = round(gv.width*0.515), y = 20)
         gv.big_selector_canvas.yview_moveto(0)
         self.back_btn.place(x = round(gv.width*0.43), y = 100)
+        self.prev_btn.place(x = round(gv.width*0.43), y = 123)
+        self.next_btn.place(x = round(gv.width*0.43), y = 146)
 
         self.original_SubImgData.display_place()
 
@@ -239,7 +299,7 @@ class ImageData():
 
         self.process_big_imgs_init = True
 
-    def modify_big_widgets(self, t):
+    def modify_big_widgets(self):
         """
         Fills widgets with information\n
         IMPORTANT:\n
@@ -248,14 +308,14 @@ class ImageData():
         if self.modify_big_widgets_init:
             return
 
-        if self.index() > 0:
-            next_btn.configure(state='enabled', command = gv.img_data_array[self.index-1].display_big_selector)
+        if self.index > 0:
+            self.next_btn.configure(state='enabled', command = gv.img_data_array[self.index+1].display_big_selector)
         else:
-            next_btn.configure(state='disabled', command=None)
+            self.next_btn.configure(state='disabled', command=None)
         if self.index < len(gv.img_data_array)-1:
-            prev_btn.configure(state='enabled', command = gv.img_data_array[self.index+1].display_big_selector)
+            self.prev_btn.configure(state='enabled', command = gv.img_data_array[self.index-1].display_big_selector)
         else:
-            prev_btn.configure(state='disabled', command=None)
+            self.prev_btn.configure(state='disabled', command=None)
 
         self.modify_big_widgets_init = True
        
@@ -265,7 +325,7 @@ class ImageData():
 
         if self.original_var.get() == 1:
             if self.downloaded_pixiv_var.get() == 1:
-                downloaded_name_new = 'new_' + self.name_pixiv
+                downloaded_name_new = 'new_' + self.name_pixiv#TODO geht das mit renaming option?
                 original_name_new = 'old_' + self.name_original
             else:
                 # Move original image to Sourced and delete downloaded image/directory

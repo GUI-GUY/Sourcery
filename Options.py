@@ -235,13 +235,13 @@ class SourceryOptions():
                 num = int(self.custom_foreground[1:], 16)
                 if num < 0 or num > 16777215:
                     mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Foreground option')
-                    self.custom_foreground = '#434343'
+                    self.custom_foreground = 'white'
             except Exception as e:
                 mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Foreground option')
-                self.custom_foreground = '#434343'
+                self.custom_foreground = 'white'
         elif self.custom_foreground not in gv.COLORS:
             mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Foreground option')
-            self.custom_foreground = '#434343'
+            self.custom_foreground = 'white'
 
         if self.custom_button_background.startswith('#'):
             try:
@@ -287,13 +287,13 @@ class SourceryOptions():
                 num = int(self.custom_button_background_pressed[1:], 16)
                 if num < 0 or num > 16777215:
                     mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background Pressed option')
-                    self.custom_button_background_pressed = '#111'
+                    self.custom_button_background_pressed = '#fff'
             except Exception as e:
                 mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background Pressed option')
-                self.custom_button_background_pressed = '#111'
+                self.custom_button_background_pressed = '#fff'
         elif self.custom_button_background_pressed not in gv.COLORS:
             mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background Pressed option')
-            self.custom_button_background_pressed = '#111'
+            self.custom_button_background_pressed = '#fff'
 
         if self.custom_button_foreground_pressed.startswith('#'):
             try:

@@ -230,7 +230,9 @@ def enforce_style():
     style.configure("frame.TFrame", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background)
     style.configure("chkbtn.TCheckbutton", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, borderwidth = 0, highlightthickness = 10, selectcolor=gv.Files.Theme.button_background, activebackground=gv.Files.Theme.button_background, activeforeground=gv.Files.Theme.button_background, disabledforeground=gv.Files.Theme.button_background, highlightcolor=gv.Files.Theme.button_background, font=("Arial Bold", 10))
     #style.configure("scroll.Vertical.TScrollbar", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.button_background, throughcolor=gv.Files.Theme.button_background, activebackground=gv.Files.Theme.button_background)
-    results_canvas.configure(background=gv.Files.Theme.background)
+    results_ScrollFrame.canvas.configure(background=gv.Files.Theme.background)
+    info_ScrollFrame.canvas.configure(background=gv.Files.Theme.background)
+    big_selector_ScrollFrame.canvas.configure(background=gv.Files.Theme.background)
 
 if __name__ == '__main__':
     freeze_support()
@@ -254,7 +256,6 @@ if __name__ == '__main__':
     results_ScrollFrame = ScrollFrame(window, results_frame_width, results_frame_height)
     info_ScrollFrame = ScrollFrame(window, info_frame_width, info_frame_height)
     big_selector_ScrollFrame = ScrollFrame(window, big_selector_frame_width, big_selector_frame_height)
-    results_canvas = results_ScrollFrame.canvas
     
     enforce_style()
 
@@ -285,7 +286,7 @@ if __name__ == '__main__':
     options_back_btn = Button(window, text="Back", command=display_startpage, style="button.TLabel")
 
     # widgets for results
-    results_lbl = Label(window, text="Results", font=("Arial Bold", 14), style="label.TLabel")
+    results_lbl = Label(window, text="Results", font=("Arial Bold", 20), style="label.TLabel")
 
     save_and_back_btn = Button(window, text="Save & Back", command=save_and_back, style="button.TLabel")
     save_and_refresh_btn = Button(window, text="Save & Refresh", command=save_and_refresh, style="button.TLabel")
