@@ -128,7 +128,8 @@ class ImageData():
 
     def display_view_results(self):
         self.forget_all_widgets()
-        gv.display_view_results()
+        gv.display_startpage()
+        #gv.display_view_results()
 
     def display_results(self, t):
         """
@@ -308,11 +309,11 @@ class ImageData():
         if self.modify_big_widgets_init:
             return
 
-        if self.index > 0:
+        if self.index < len(gv.img_data_array)-1:
             self.next_btn.configure(state='enabled', command = gv.img_data_array[self.index+1].display_big_selector)
         else:
             self.next_btn.configure(state='disabled', command=None)
-        if self.index < len(gv.img_data_array)-1:
+        if self.index > 0:
             self.prev_btn.configure(state='enabled', command = gv.img_data_array[self.index-1].display_big_selector)
         else:
             self.prev_btn.configure(state='disabled', command=None)

@@ -12,6 +12,7 @@ window = None
 big_selector_frame = None
 big_selector_canvas = None
 display_view_results = None
+display_startpage = None
 
 esc_op = False
 width = 0

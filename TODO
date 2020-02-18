@@ -30,21 +30,22 @@ beta 0.2 (Classified)
 + ScrollFrame is now class
 + added globalvariables module
 + logfile
-log on screen where info is shown
 + rename options
 + (u) minsim options
 + better pixiv login
 + more metadata(tags, source, illustrator)
-better Big Selector
-previews widgets for custom theme
 + theme errors(wrong colour etc.)
 + next & prev in big Selector
++ checking a folder keeps it 100%
+~ results screen on start screen maybe
+log on screen where info is shown
+better Big Selector
+previews widgets for custom theme
 in window tutorial
 no message boxes but labels
 Fehlerbehandlung
-+ checking a folder keeps it 100%
 ImageData.selfdestruct()
-results screen on start screen maybe
+
 Last Issue: 0031
 
 beta 0.3
