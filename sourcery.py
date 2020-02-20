@@ -6,25 +6,29 @@ from pixiv_handler import pixiv_authenticate, pixiv_download, pixiv_fetch_illust
 import global_variables as gv
 
 def die(message, comm_error_q, comm_img_q):
-    comm_error_q.put(message)
+    comm_error_q.put('[Sourcery] ' + message)
     comm_img_q.put('Stopped')
     #mb.showerror('ERROR', message)
     exit()
 
 def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q):
-    if not pixiv_authenticate():
+    comm_error_q.put('[Sourcery] Attempting Pixiv login...')
+    if not pixiv_authenticate(comm_error_q):
         die('Pixiv Authentication Failed.\nPlease check your login data.', comm_error_q, comm_img_q)
+    comm_error_q.put('[Sourcery] Pixiv login successful')
     # For every input image a request goes out to saucenao and gets decoded
     for img in input_images_array:
         comm_img_q.put(img)
+        comm_error_q.put('[Sourcery] Sourcing: ' + img)
         try:
+            comm_error_q.put('[Sourcery] Moving image to working directory')
             copy(cwd + '/Input/' + img, cwd + '/Sourcery/sourced_original')
         except Exception as e:
             die(str(e), comm_error_q, comm_img_q)
-        res = get_response(img, cwd, saucenao_key, minsim)
+        res = get_response(img, cwd, saucenao_key, minsim, comm_error_q)
         if res[0] == 401:
             # Exception while opening image!
-            comm_error_q.put(res[1])
+            comm_error_q.put('[Sourcery] ' + res[1])
             continue
         elif res[0] == 403:
             # Incorrect or Invalid API Key!
@@ -45,17 +49,17 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_
             if res[3] < 1:
                 die(res[1] + ' + Out of searches for today', comm_error_q, comm_img_q)
             else:
-                comm_error_q.put(res[1])
+                comm_error_q.put('[Sourcery] ' + res[1])
             if res[2] < 1:
                 sleep(30)
         elif res[0] == 402:
             # General issue, api did not respond. Normal site took over for this error state.
             # Issue is unclear, so don't flood requests.
-            comm_error_q.put(res[1])
+            comm_error_q.put('[Sourcery] ' + res[1])
             sleep(10)
         elif res[0] == 200:
             comm_q.put(res[3])
-            img_name_original, new_name, img_data_array, illustration = process_img_data(img, res)
+            img_name_original, new_name, img_data_array, illustration = process_img_data(img, res, comm_error_q)
             if img_name_original != False:
                 img_data_q.put((img_name_original, new_name, img_data_array, illustration))
             if res[3] < 1:
@@ -73,16 +77,20 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_
     comm_img_q.put("Finished")
     exit()
             
-def process_img_data(img_name_original, res):
+def process_img_data(img_name_original, res, comm_error_q):
     """
     Downloads the image from pixiv, creates an ImageData class and returns it or False on ERROR
     """
     img_data_array = decode_response(res[1])
     if img_data_array[1] != 0:
-        illustration = pixiv_fetch_illustration(img_name_original, img_data_array[1])
+        comm_error_q.put('[Sourcery] Attempting to fetch illustration...')
+        illustration = pixiv_fetch_illustration(img_name_original, img_data_array[1], comm_error_q)
         if illustration == False:
             return False, None, None, None
-        flag, new_name = pixiv_download(img_name_original, img_data_array[1], illustration)
+        comm_error_q.put('[Sourcery] Fetched illustration successfully')
+        comm_error_q.put('[Sourcery] Attempting to download illustration...')
+        flag, new_name = pixiv_download(img_name_original, img_data_array[1], illustration, comm_error_q)
         if flag:
+            comm_error_q.put('[Sourcery] Downloaded illustration successfully')
             return img_name_original, new_name, img_data_array, illustration
     return False, None, None, None

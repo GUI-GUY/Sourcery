@@ -1,6 +1,8 @@
 from os import makedirs, path, getcwd
-from tkinter import messagebox as mb
+from tkinter import END, Text
+#from tkinter import messagebox as mb
 from time import strftime
+#import global_variables as gv
 
 cwd = getcwd()
 
@@ -97,7 +99,7 @@ class ThemeFile():
         except Exception as e:
             print("ERROR [0008] " + str(e))
             self.Log.write_to_log("ERROR [0008] " + str(e))
-            mb.showerror("ERROR [0008]", "ERROR CODE [0008]\nSomething went wrong while accessing a configuration file(theme), please restart Sourcery.")
+            #mb.showerror("ERROR [0008]", "ERROR CODE [0008]\nSomething went wrong while accessing a configuration file(theme), please restart Sourcery.")
             try:
                 f.close()
             except:
@@ -197,7 +199,7 @@ class ThemeFile():
         except Exception as e:
             print("ERROR [0009] " + str(e))
             self.Log.write_to_log("ERROR [0009] " + str(e))
-            mb.showerror("ERROR [0009]", "ERROR CODE [0009]\nSomething went wrong while accessing a configuration file(theme), please try again.")
+            #mb.showerror("ERROR [0009]", "ERROR CODE [0009]\nSomething went wrong while accessing a configuration file(theme), please try again.")
             try:
                 f.close()
             except:
@@ -277,12 +279,16 @@ class LogFile():
     """PixivOptions"""
     def __init__(self):
         self.log = -1
-        self.init_log()
+        self.log_text = None
+        #self.init_log()
 
     def init_log(self):
         try:
             self.log = open(cwd + '/Sourcery/log', 'a')
             self.log.write('\nSourcery started. Date:' + strftime("20%y|%m|%d") + ' Time:' + strftime("%H:%M:%S") + '\n')
+            self.log_text.configure(state='normal')
+            self.log_text.insert(END, '\nSourcery started. Date:' + strftime("20%y|%m|%d") + ' Time:' + strftime("%H:%M:%S") + '\n')
+            self.log_text.configure(state='disabled')
         except Exception as e:
             pass#TODO
     
@@ -291,10 +297,12 @@ class LogFile():
             try:
                 self.log.write('[' + strftime("%H:%M:%S") + '] ' + message + '\n')
                 self.log.flush()
+                self.log_text.configure(state='normal')
+                self.log_text.insert(END,'[' + strftime("%H:%M:%S") + '] ' + message + '\n')
+                self.log_text.configure(state='disabled')
             except Exception as e:
                 print(str(e))
                 pass#TODO
-            self.log.flush()
 
 class ConfigFile():
     def __init__(self, log):

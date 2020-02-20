@@ -1,4 +1,4 @@
-from tkinter import Tk, IntVar, Canvas, Scrollbar
+from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END
 from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 #from tkinter import messagebox as mb
 #from tkinter.filedialog import askdirectory
@@ -13,6 +13,7 @@ from Options import Options
 #from image_preloader import preload_main
 from ImageData import ImageData
 from ScollFrame import ScrollFrame
+from Files import Files
 import global_variables as gv
 import time
 
@@ -23,6 +24,7 @@ def magic():
     global process
     do_sourcery_btn.configure(state='disabled')
     if __name__ == '__main__':
+        gv.Files.Log.write_to_log('Starting second process for sourcing images')
         process = Process(target=do_sourcery, args=(gv.cwd, gv.input_images_array, gv.Files.Cred.saucenao_api_key, gv.Files.Conf.minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, ))
         process.start()
 
@@ -44,6 +46,7 @@ def display_startpage():
     """
     Draws the basic startpage widgets.
     """
+    Options.SouO.color_insert()
     forget_all_widgets()
     y = 100
     c = 23
@@ -68,10 +71,18 @@ def display_startpage():
     results_lbl.place(x = 400, y = 60)
     save_and_refresh_btn.place(x = 250, y = height-80)
     results_ScrollFrame.display(x = 400, y = 100)
-    info_ScrollFrame.display(x = (width/3)*1.85, y = 100)
+    display_info()
+
+    test_btn = Button(master=window, text='test', command=test)
+    test_btn.place(x = 800, y = 60)
+    display_info_btn.place(x = 600, y = 60)
+    display_logfile_btn.place(x = 700, y = 60)
 
     refresh_startpage()
     
+def test():
+    gv.Files.Log.write_to_log('this is a test')
+
 def refresh_startpage():
     """
     Updates these startpage widgets:
@@ -110,6 +121,7 @@ def refresh_startpage():
             except:
                 pass
         if answer2 == 'Stopped' or answer2 == 'Finished':
+            gv.Files.Log.write_to_log('Sourcing process was stopped or is finished')
             do_sourcery_btn.configure(state='enabled')
             stop_btn.configure(state='enabled')
         currently_sourcing_img_lbl.configure(text=answer2)
@@ -117,7 +129,7 @@ def refresh_startpage():
         try:
             e = comm_error_q.get()
             error_lbl.configure(text=e)
-            gv.Files.Log.write_to_log('Multiprocess Error: ' + e)
+            gv.Files.Log.write_to_log(e)
         except:
             pass
     if not img_data_q.empty():
@@ -135,9 +147,17 @@ def refresh_startpage():
         gv.img_data_array[int(img_data_counter/3)].display_results(img_data_counter)
         img_data_counter += 3
     if gv.esc_op:
-        options_class.display_sourcery_options()
+        Options.display_sourcery_options()
     else:
         window.after(100, refresh_startpage)
+
+def display_info():
+    gv.Files.Log.log_text.place_forget()
+    info_ScrollFrame.display(x = (width/3)*1.85, y = 100)
+
+def display_logfile():
+    info_ScrollFrame.sub_frame.place_forget()
+    gv.Files.Log.log_text.place(x = (width/3)*1.85, y = 100)
 
 def forget_all_widgets():
     for widget in window.winfo_children():
@@ -155,6 +175,7 @@ def stop():
     """
     global process
     if process.is_alive():
+        gv.Files.Log.write_to_log('Stopping sourcing process...')
         comm_stop_q.put("Stopped")
         stop_btn.configure(state='disabled')
     #currently_sourcing_img_lbl.configure(text="Stopped")
@@ -166,7 +187,9 @@ def save_and_refresh():
     for i in range(20):
         print(i)
         time.sleep(1)
+    gv.Files.Log.write_to_log('Saving selected images...')
     #save()#TODO race conditions, seems like there are none, further investigation required
+    gv.Files.Log.write_to_log('Saved images')
     #leftovers()
 
 def leftovers():
@@ -176,6 +199,7 @@ def leftovers():
     #         if gv.cwd + '/Sourcery/sourced_original' + img not in gv.delete_dirs_array:
     #             gv.delete_dirs_array.append(gv.cwd + '/Sourcery/sourced_original' + img)
 
+    gv.Files.Log.write_to_log('Deleting empty folders, leftovers etc. ...')
     for element in gv.delete_dirs_array:
         try:
             if path.isdir(element):
@@ -188,6 +212,7 @@ def leftovers():
             #mb.showerror("ERROR", "ERROR CODE [0017]\nSomething went wrong while removing the image " + element)
 
     gv.delete_dirs_array.clear()
+    gv.Files.Log.write_to_log('Deleted stuff')
 
 def enforce_style():
     """
@@ -204,6 +229,7 @@ def enforce_style():
     )
     style.configure("frame.TFrame", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background)
     style.configure("chkbtn.TCheckbutton", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, borderwidth = 0, highlightthickness = 10, selectcolor=gv.Files.Theme.button_background, activebackground=gv.Files.Theme.button_background, activeforeground=gv.Files.Theme.button_background, disabledforeground=gv.Files.Theme.button_background, highlightcolor=gv.Files.Theme.button_background, font=("Arial Bold", 10))
+    gv.Files.Log.log_text.configure(foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
     #style.configure("scroll.Vertical.TScrollbar", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.button_background, throughcolor=gv.Files.Theme.button_background, activebackground=gv.Files.Theme.button_background)
     results_ScrollFrame.canvas.configure(background=gv.Files.Theme.background)
     info_ScrollFrame.canvas.configure(background=gv.Files.Theme.background)
@@ -211,19 +237,19 @@ def enforce_style():
 
 if __name__ == '__main__':
     freeze_support()
-    
+
     window = Tk()
     window.title("Sourcery")
     window.update_idletasks()
     window.state('zoomed')
     height = gv.height = window.winfo_screenheight()
     width = gv.width = window.winfo_screenwidth()
-    results_frame_height = height-200
-    results_frame_width = width/3
-    info_frame_height = height-200
-    info_frame_width = width/3
-    big_selector_frame_height = height-100 # height-620
-    big_selector_frame_width = round(width*0.48) - 25 # width-620
+    results_frame_height = int(height-200)
+    results_frame_width = int(width/3)
+    info_frame_height = int(height-200)
+    info_frame_width = int(width/3)
+    big_selector_frame_height = int(height-100) # height-620
+    big_selector_frame_width = int(width*0.48) - 25 # width-620
     #window.geometry(str(width-500) + 'x' + str(height-500))
     #dateS =  time.strftime("20%y-%m-%d")
 
@@ -231,10 +257,14 @@ if __name__ == '__main__':
     results_ScrollFrame = ScrollFrame(window, results_frame_width, results_frame_height)
     info_ScrollFrame = ScrollFrame(window, info_frame_width, info_frame_height)
     big_selector_ScrollFrame = ScrollFrame(window, big_selector_frame_width, big_selector_frame_height)
-    
-    enforce_style()
 
-    options_class = Options(window, display_startpage, enforce_style)
+    gv.Files.Log.log_text = Text(master=window, height=int(info_frame_height/16), width=int(info_frame_width/7))
+    gv.Files.Log.init_log()
+    gv.Files.Log.write_to_log('Initialising variables...')
+
+    enforce_style()
+    
+    Options = Options(window, display_startpage, enforce_style)
 
     # widgets for start screen
     sourcery_lbl = Label(window, text="Sourcery", font=("Arial Bold", 50), style="label.TLabel")
@@ -255,6 +285,9 @@ if __name__ == '__main__':
     do_sourcery_btn = Button(window, text="Do Sourcery", command=magic, style="button.TLabel")
     stop_btn = Button(window, text="Stop", command=stop, style="button.TLabel")
     #view_results_btn = Button(window, text="View Results", command=escape_results, style="button.TLabel")
+    display_info_btn = Button(window, text="display_info", command=display_info, style="button.TLabel")
+    display_logfile_btn = Button(window, text="display_logfile", command=display_logfile, style="button.TLabel")
+    
 
     # widgets for options
     options_lbl = Label(window, text="Options", font=("Arial Bold", 20), style="label.TLabel")
@@ -274,6 +307,7 @@ if __name__ == '__main__':
     gv.window = window
     gv.big_selector_frame = big_selector_ScrollFrame.sub_frame
     gv.big_selector_canvas = big_selector_ScrollFrame.canvas
+    
     #gv.display_view_results = display_view_results
     gv.display_startpage = display_startpage
     currently_processing = ''
@@ -287,5 +321,6 @@ if __name__ == '__main__':
     img_data_q = Queue() # Queue for ImageData classes
     #sem = Semaphore(12)
     #image_preloader()
+    gv.Files.Log.write_to_log('Variables initialised')
     display_startpage()
     window.mainloop()

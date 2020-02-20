@@ -28,8 +28,11 @@ def save():
     for i in range(12):
         if len(gv.img_data_array) == 0:
             break
+        
         ImgData = gv.img_data_array.pop()
+        gv.Files.Log.write_to_log('Attempting to save image:' + ImgData.name_original + '/' + ImgData.name_pixiv + '...' )
         ImgData.save()
+        gv.Files.Log.write_to_log('Successfully saved image')
         #TODO
         ImgData.self_destruct()
   

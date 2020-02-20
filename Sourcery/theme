@@ -1,4 +1,4 @@
-Current theme=Dark Theme
+Current theme=Custom Theme
 
 Dark Theme
 background=#252525
@@ -19,12 +19,12 @@ button_background_pressed=#ddd
 button_foreground_pressed=black
 
 Custom Theme
-background=#101010
+background=#000001
 foreground=white
 button_background=purple
 button_background_active=yellow
 button_foreground_active=black
 button_background_pressed=#fff
-button_foreground_pressed=green
+button_foreground_pressed=blue
 
 END

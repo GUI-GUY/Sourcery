@@ -1,7 +1,7 @@
 from os import path, listdir, remove
 from shutil import move, rmtree
 from tkinter import IntVar, W, N
-from tkinter import messagebox as mb
+#from tkinter import messagebox as mb
 from tkinter.ttk import Checkbutton, Label, Button
 from PIL import ImageTk, Image
 from webbrowser import open_new
@@ -60,6 +60,7 @@ class ImageData():
         self.info_wxh_lbl = Label(master=gv.frame3, style='label.TLabel')
         self.tags_pixiv_lbl = Label(master=gv.frame3, style='label.TLabel')
         self.tags_lbl_array = list()
+        
 
         self.tags_lbl_array.append((Label(master=gv.frame3, text = 'Original:', style='label.TLabel', font = ('Arial Bold', 11)), Label(master=gv.frame3, text = 'Translated:', style='label.TLabel', font = ('Arial Bold', 11))))
         for tag in illust.tags:
@@ -110,7 +111,7 @@ class ImageData():
                 self.downloaded_image_pixiv = Image.open(self.path_pixiv)
             except Exception as e:
                 print("ERROR [0031] " + str(e))
-                mb.showerror("ERROR [0031]", "ERROR CODE [0031]\nSomething went wrong while loading an image.")
+                #mb.showerror("ERROR [0031]", "ERROR CODE [0031]\nSomething went wrong while loading an image.")
                 gv.Files.Log.write_to_log("ERROR [0031] " + str(e))
         elif path.isdir(self.path_pixiv):
             try:
@@ -122,7 +123,7 @@ class ImageData():
                     self.sub_dir_img_array_pixiv.append(SubImageData(img, self.path_pixiv, 'pixiv', gv.frame2, master_folder=self.name_pixiv))#(Image.open(self.path_pixiv + '/' + img), img))
             except Exception as e:
                 print("ERROR [0032] " + str(e))
-                mb.showerror("ERROR [0032]", "ERROR CODE [0032]\nSomething went wrong while loading an image.")
+                #mb.showerror("ERROR [0032]", "ERROR CODE [0032]\nSomething went wrong while loading an image.")
                 gv.Files.Log.write_to_log("ERROR [0032] " + str(e))
         self.load_init = True
 
@@ -349,7 +350,7 @@ class ImageData():
             except Exception as e:
                 print("ERROR [0012] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0012] " + str(e))
-                mb.showerror("ERROR [0012]", "ERROR CODE [0012]\nSomething went wrong while moving the image " + self.path_pixiv)
+                #mb.showerror("ERROR [0012]", "ERROR CODE [0012]\nSomething went wrong while moving the image " + self.path_pixiv)
 
         if original_name_new != None:
             try:
@@ -357,13 +358,13 @@ class ImageData():
             except Exception as e:
                 print("ERROR [0013] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0013] " + str(e))
-                mb.showerror("ERROR [0013]", "ERROR CODE [0013]\nSomething went wrong while moving the image " + self.path_original)
+                #mb.showerror("ERROR [0013]", "ERROR CODE [0013]\nSomething went wrong while moving the image " + self.path_original)
         try:
             remove(gv.cwd + '/Input/' + self.name_original)
         except Exception as e:
             print("ERROR [0014] " + str(e))
             gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
-            mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.cwd + '/Input/' + self.name_original)
+            #mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.cwd + '/Input/' + self.name_original)
 
     def self_destruct(self):
         pass
@@ -422,7 +423,7 @@ class SubImageData():
             except Exception as e:
                 print("ERROR [0032] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0032] " + str(e))
-                mb.showerror("ERROR [0032]", "ERROR CODE [0032]\nSomething went wrong while moving the image " + self.path_original)
+                #mb.showerror("ERROR [0032]", "ERROR CODE [0032]\nSomething went wrong while moving the image " + self.path_original)
         else:
             if self.path not in gv.delete_dirs_array:
                 gv.delete_dirs_array.append(self.path)

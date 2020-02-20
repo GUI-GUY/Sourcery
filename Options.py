@@ -1,5 +1,5 @@
 from tkinter import IntVar
-from tkinter import messagebox as mb
+#from tkinter import messagebox as mb
 from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 from functools import partial
 from pixiv_handler import pixiv_login
@@ -101,10 +101,13 @@ class SauceNaoOptions():
         """
         Save SauceNao API-Key and revert the widget to being uneditable.
         """
+        gv.Files.Log.write_to_log('Attempting to save SauceNao API-Key')
         gv.Files.Cred.saucenao_api_key = self.saucenao_key_entry.get()
         e = gv.Files.Cred.write_credentials(gv.Files.Cred.saucenao_api_key)
         if e == None:
-            gv.Files.Log.write_to_log('Changed SauceNao API-Key successfully')
+            gv.Files.Log.write_to_log('Saved SauceNao API-Key successfully')
+        else:
+            gv.Files.Log.write_to_log('Failed to save SauceNao API-Key')
         self.saucenao_key_confirm_btn.place_forget()
         self.saucenao_key_entry.place_forget()
         self.saucenao_key_change_btn.place(x = 550, y = 100)
@@ -112,8 +115,10 @@ class SauceNaoOptions():
         self.saucenao_key_number_lbl.place(x = 180, y = 100)
 
     def saucenao_save(self):
+        gv.Files.Log.write_to_log('Attempting to save SauceNAO options...')
         gv.Files.Conf.minsim = self.saucenao_minsim_entry.get()
         gv.Files.Conf.write_config()
+        gv.Files.Log.write_to_log('Saved SauceNao Options')
 
 class SourceryOptions():
     """SourceryOptions"""
@@ -148,6 +153,18 @@ class SourceryOptions():
         self.custom_button_background_pressed = gv.Files.Theme.custom_button_background_pressed
         self.custom_button_foreground_pressed = gv.Files.Theme.custom_button_foreground_pressed
 
+        self.style = Style()
+        self.preview_btn = Button(parent, text="Preview Button", style="preview.TLabel")
+        self.preview_lbl = Label(parent, text="Preview Label")
+
+        self.invalid_lbl_array = list()
+        self.old_one_invalid = False
+        self.save_custom_theme_btn_state = 'enabled'
+        for i in range(7):
+            self.invalid_lbl_array.append(Label(master=parent, text = 'Invalid!', style="label.TLabel"))
+
+        self.refresh_custom_preview_init = False
+
     def display(self):
         """
         Draw options for Sourcery Application:
@@ -157,7 +174,6 @@ class SourceryOptions():
         c = 23
         x1 = 50
         x2 = 240
-        self.color_check()
         self.color_insert()
 
         self.theme_lbl.place(x = x1, y = y-5)
@@ -179,6 +195,62 @@ class SourceryOptions():
         self.custom_button_background_pressed_entry.place(x = x2, y = y + c * 9)
         self.custom_button_foreground_pressed_entry.place(x = x2, y = y + c * 10)
         self.save_custom_theme_btn.place(x = x1, y = y + c * 11)
+        self.preview_lbl.place(x = x2, y = y + c * 2)
+        self.preview_btn.place(x = x2, y = y + c * 3)
+
+        if not self.refresh_custom_preview_init:
+            self.refresh_custom_preview_init = True
+            self.refresh_custom_preview()
+    
+    def refresh_custom_preview(self):
+        one_invalid = False
+
+        bg = self.custom_background_entry.get()
+        if self.color_check(bg, 0, 4):
+            one_invalid = True
+
+        fg = self.custom_foreground_entry.get()
+        if self.color_check(fg, 1, 5):
+            one_invalid = True
+
+        bbg = self.custom_button_background_entry.get()
+        if self.color_check(bbg, 2, 6):
+            one_invalid = True
+
+        bba = self.custom_button_background_active_entry.get()
+        if self.color_check(bba, 3, 7):
+            one_invalid = True
+
+        bfa = self.custom_button_foreground_active_entry.get()
+        if self.color_check(bfa, 4, 8):
+            one_invalid = True
+
+        bbp = self.custom_button_background_pressed_entry.get()
+        if self.color_check(bbp, 5, 9):
+            one_invalid = True
+
+        bfp = self.custom_button_foreground_pressed_entry.get()
+        if self.color_check(bfp, 6, 10):
+            one_invalid = True
+
+        if one_invalid != self.old_one_invalid:
+            self.old_one_invalid = one_invalid
+            if self.save_custom_theme_btn_state == 'disabled':
+                self.save_custom_theme_btn.configure(state='enabled')
+                self.save_custom_theme_btn_state = 'enabled'
+            else:
+                self.save_custom_theme_btn.configure(state='disabled')
+                self.save_custom_theme_btn_state = 'disabled'
+        try:
+            self.preview_lbl.configure(foreground=fg, background=bg, font=("Arial Bold", 10))
+            self.style.configure("preview.TLabel", foreground=fg, background=bbg, font=("Arial Bold", 10))
+            self.style.map("preview.TLabel", 
+                foreground=[('pressed', bfp), ('active', bfa)],
+                background=[('pressed', '!disabled', bbp), ('active', bba)])
+        except:
+            pass
+        #TODO'Please insert a value between #000000 and #ffffff or a valid color name into the Background option'
+        self.par.after(100, self.refresh_custom_preview)
 
     def change_to_dark_theme(self):
         gv.Files.Theme.current_theme = "Dark Theme"
@@ -196,6 +268,7 @@ class SourceryOptions():
         self.en_s()
 
     def save_custom_theme(self):
+        gv.Files.Log.write_to_log('Attempting to save Custom Theme...')
         self.custom_background = self.custom_background_entry.get()
         self.custom_foreground = self.custom_foreground_entry.get()
         self.custom_button_background = self.custom_button_background_entry.get()
@@ -203,7 +276,6 @@ class SourceryOptions():
         self.custom_button_foreground_active = self.custom_button_foreground_active_entry.get()
         self.custom_button_background_pressed = self.custom_button_background_pressed_entry.get()
         self.custom_button_foreground_pressed = self.custom_button_foreground_pressed_entry.get()
-        self.color_check()
         self.color_insert()
         gv.Files.Theme.custom_background = self.custom_background_entry.get()
         gv.Files.Theme.custom_foreground = self.custom_foreground_entry.get()
@@ -215,99 +287,29 @@ class SourceryOptions():
         e = gv.Files.Theme.write_theme(gv.Files.Theme.current_theme)
         if e == None:
             gv.Files.Log.write_to_log('Saved custom theme successfully')
-    
-    def color_check(self):
-        if self.custom_background.startswith('#'):
-            try:
-                num = int(self.custom_background[1:], 16)
-                if num < 0 or num > 16777215:
-                    mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Background option')
-                    self.custom_background = '#101010'
-            except Exception as e:
-                mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Background option')
-                self.custom_background = '#101010'
-        elif self.custom_background not in gv.COLORS:
-            mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Background option')
-            self.custom_background = '#101010'
+        else:
+            gv.Files.Log.write_to_log('Failed to save Custom Theme')
 
-        if self.custom_foreground.startswith('#'):
+    def color_check(self, color, index, offset):
+        y = 100
+        c = 23
+        if color.startswith('#') and (len(color) == 7 or len(color) == 4):
             try:
-                num = int(self.custom_foreground[1:], 16)
+                num = int(color[1:], 16)
                 if num < 0 or num > 16777215:
-                    mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Foreground option')
-                    self.custom_foreground = 'white'
-            except Exception as e:
-                mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Foreground option')
-                self.custom_foreground = 'white'
-        elif self.custom_foreground not in gv.COLORS:
-            mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Foreground option')
-            self.custom_foreground = 'white'
+                    self.invalid_lbl_array[index].place(x = 440, y = y + c * offset)
+                    return True
+                else:
+                    self.invalid_lbl_array[index].place_forget()
+            except:
+                self.invalid_lbl_array[index].place(x = 440, y = y + c * offset)
+                return True
+        elif color not in gv.COLORS:
+            self.invalid_lbl_array[index].place(x = 440, y = y + c * offset)
+            return True
+        else:
+            self.invalid_lbl_array[index].place_forget()
 
-        if self.custom_button_background.startswith('#'):
-            try:
-                num = int(self.custom_button_background[1:], 16)
-                if num < 0 or num > 16777215:
-                    mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background option')
-                    self.custom_button_background = 'purple'
-            except Exception as e:
-                mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background option')
-                self.custom_button_background = 'purple'
-        elif self.custom_button_background not in gv.COLORS:
-            mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background option')
-            self.custom_button_background = 'purple'
-
-        if self.custom_button_background_active.startswith('#'):
-            try:
-                num = int(self.custom_button_background_active[1:], 16)
-                if num < 0 or num > 16777215:
-                    mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background Active option')
-                    self.custom_button_background_active = 'yellow'
-            except Exception as e:
-                mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background Active option')
-                self.custom_button_background_active = 'yellow'
-        elif self.custom_button_background_active not in gv.COLORS:
-            mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background Active option')
-            self.custom_button_background_active = 'yellow'
-
-        if self.custom_button_foreground_active.startswith('#'):
-            try:
-                num = int(self.custom_button_foreground_active[1:], 16)
-                if num < 0 or num > 16777215:
-                    mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Foreground Active option')
-                    self.custom_button_foreground_active = 'black'
-            except Exception as e:
-                mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Foreground Active option')
-                self.custom_button_foreground_active = 'black'
-        elif self.custom_button_foreground_active not in gv.COLORS:
-            mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Foreground Active option')
-            self.custom_button_foreground_active = 'black'
-
-        if self.custom_button_background_pressed.startswith('#'):
-            try:
-                num = int(self.custom_button_background_pressed[1:], 16)
-                if num < 0 or num > 16777215:
-                    mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background Pressed option')
-                    self.custom_button_background_pressed = '#fff'
-            except Exception as e:
-                mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background Pressed option')
-                self.custom_button_background_pressed = '#fff'
-        elif self.custom_button_background_pressed not in gv.COLORS:
-            mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Background Pressed option')
-            self.custom_button_background_pressed = '#fff'
-
-        if self.custom_button_foreground_pressed.startswith('#'):
-            try:
-                num = int(self.custom_button_foreground_pressed[1:], 16)
-                if num < 0 or num > 16777215:
-                    mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Foreground Pressed option')
-                    self.custom_button_foreground_pressed = 'green'
-            except Exception as e:
-                mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Foreground Pressed option')
-                self.custom_button_foreground_pressed = 'green'
-        elif self.custom_button_foreground_pressed not in gv.COLORS:
-            mb.showerror('Invalid Value', 'Please insert a value between #000000 and #ffffff or a valid color name into the Button Foreground Pressed option')
-            self.custom_button_foreground_pressed = 'green'
-        
     def color_insert(self):
         self.custom_background_entry.delete(0, len(self.custom_background_entry.get()))
         self.custom_background_entry.insert(0, self.custom_background)
@@ -323,6 +325,7 @@ class SourceryOptions():
         self.custom_button_background_pressed_entry.insert(0, self.custom_button_background_pressed)
         self.custom_button_foreground_pressed_entry.delete(0, len(self.custom_button_foreground_pressed_entry.get()))
         self.custom_button_foreground_pressed_entry.insert(0, self.custom_button_foreground_pressed)
+        pass
 
 class ProviderOptions():
     """ProviderOptions"""
@@ -390,17 +393,20 @@ class PixivOptions():
         self.pixiv_user_filled_lbl.place(x = 120, y = y + c * 1)
         self.pixiv_password_filled_lbl.place(x = 120, y = y + c * 2)
         self.pixiv_login_change_btn.place(x = 50, y = y + c * 4)
+        
         gv.Files.Cred.pixiv_username = self.pixiv_user_entry.get()
         gv.Files.Cred.pixiv_password = self.pixiv_password_entry.get()
         if save:
+            gv.Files.Log.write_to_log('Attempting to save Pixiv Login Data...')
             e = gv.Files.Cred.write_credentials()
         else:
+            gv.Files.Log.write_to_log('Attempting to generate refreshtoken and save it...')
             pixiv_login()
             gv.Files.Cred.pixiv_username = ''
             gv.Files.Cred.pixiv_password = ''
             e = gv.Files.Cred.write_credentials()
         if e == None:
-            gv.Files.Log.write_to_log('Changed pixiv login data successfully')
+            gv.Files.Log.write_to_log('Saved pixiv login data successfully')
         self.pixiv_user_filled_lbl.configure(text=gv.Files.Cred.pixiv_username)
         self.pixiv_password_filled_lbl.configure(text=gv.Files.Cred.pixiv_password)
 
@@ -419,8 +425,10 @@ class PixivOptions():
         self.save_btn.place(x = 50, y = y + c * 7)
 
     def pixiv_save(self):
+        gv.Files.Log.write_to_log('Attempting to save Pixiv options...')
         if self.rename_var.get() == 1:
             gv.Files.Conf.rename_pixiv = 'True'
         else:
             gv.Files.Conf.rename_pixiv = 'False'
         gv.Files.Conf.write_config()
+        gv.Files.Log.write_to_log('Saved Pixiv options')

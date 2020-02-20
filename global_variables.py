@@ -1,4 +1,5 @@
 from os import getcwd
+from copy import copy
 from Files import Files
 # Every variable that can be "outmoduled" and appears in at least two modules
 
@@ -13,6 +14,7 @@ big_selector_frame = None
 big_selector_canvas = None
 display_view_results = None
 display_startpage = None
+log_text = None
 
 esc_op = False
 width = 0

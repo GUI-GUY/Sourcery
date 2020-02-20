@@ -60,14 +60,17 @@ if True:
 #generate appropriate bitmask
 db_bitmask = int(index_mangadex+index_madokami+index_pawoo+index_da+index_portalgraphics+index_bcycosplay+index_bcyillust+index_idolcomplex+index_e621+index_animepictures+index_sankaku+index_konachan+index_gelbooru+index_shows+index_movies+index_hanime+index_anime+index_medibang+index_2dmarket+index_hmisc+index_fakku+index_shutterstock+index_reserved+index_animeop+index_yandere+index_nijie+index_drawr+index_danbooru+index_seigaillust+index_anime+index_pixivhistorical+index_pixiv+index_ddbsamples+index_ddbobjects+index_hcg+index_hanime+index_hmags,2)
 
-def get_response(image, cwd, api_key, minsim):#minsim='80!'
+def get_response(image, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
     if api_key == None or api_key == '':
         return [403, 'Incorrect or Invalid API Key!\nGo to Options->SauceNao->SauceNao API-Key and insert a Key']
     try:
         image = Image.open(cwd + '/Sourcery/sourced_original/' + image)
     except Exception as e:
         print('ERROR [0019] ' + str(e))
-        gv.Files.Log.write_to_log('ERROR [0019] ' + str(e))
+        if comm_error_q != None:
+            comm_error_q.put('[Sourcery] ERROR [0019] ' + str(e))
+        else:
+            gv.Files.Log.write_to_log('ERROR [0019] ' + str(e))
         #mb.showerror("ERROR CODE [0015]\nSomething went wrong while opening the image " + image)
         return [401, 'Something went wrong while opening the image ' + image]
     image = image.convert('RGB')

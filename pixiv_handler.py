@@ -5,42 +5,51 @@ import global_variables as gv
 
 client = Client()
 
-def pixiv_login():
+def pixiv_login(comm_error_q=None):
     try:
         client.login(gv.Files.Cred.pixiv_username, gv.Files.Cred.pixiv_password)
         gv.Files.Cred.pixiv_refreshtoken = client.refresh_token
     except Exception as e:
         print('ERROR [0021] Pixiv login failed' + str(e))
-        gv.Files.Log.write_to_log('ERROR [0021] Pixiv login failed' + str(e))
+        if comm_error_q != None:
+            comm_error_q.put('[Sourcery] ERROR [0021] Pixiv login failed' + str(e))
+        else:
+            gv.Files.Log.write_to_log('ERROR [0021] Pixiv login failed' + str(e))
         #mb.showerror("ERROR", 'Login failed')
         return False
     return True
 
 
-def pixiv_authenticate():
+def pixiv_authenticate(comm_error_q=None):
     try:
         client.authenticate(gv.Files.Cred.pixiv_refreshtoken)
     except Exception as e:
         print('ERROR [0020] Pixiv authentication with refreshtoken failed - Attempting with login data')
-        gv.Files.Log.write_to_log('ERROR [0020] Pixiv authentication with refreshtoken failed - Attempting with login data')
-        login = pixiv_login()
+        if comm_error_q != None:
+            comm_error_q.put('[Sourcery] ERROR [0020] Pixiv authentication with refreshtoken failed - Attempting with login data')
+        else:
+            gv.Files.Log.write_to_log('ERROR [0020] Pixiv authentication with refreshtoken failed - Attempting with login data')
+        login = pixiv_login(comm_error_q)
         if login:
             gv.Files.Cred.write_credentials()
         return login 
     return True
 
-def pixiv_fetch_illustration(img_name_original, imgid):
+def pixiv_fetch_illustration(img_name_original, imgid, comm_error_q=None):
     try:
         illustration = client.fetch_illustration(imgid) # 75523989
         #illustration.sanity_level
     except Exception as e:
         print('ERROR [0030]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
-        gv.Files.Log.write_to_log('ERROR [0030]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
+        if comm_error_q != None:
+            comm_error_q.put('[Sourcery] ERROR [0030]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e))
+        else:
+            gv.Files.Log.write_to_log('ERROR [0030]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e))
         #mb.showerror("ERROR", e)
         return False
     return illustration
 
-def pixiv_download(img_name_original, imgid, illustration):
+def pixiv_download(img_name_original, imgid, illustration, comm_error_q=None):
     try:
         if gv.Files.Conf.rename_pixiv == 'True':
             illustration.download(directory=Path.cwd() / 'Sourcery/sourced_progress/pixiv', size=Size.ORIGINAL)
@@ -54,7 +63,10 @@ def pixiv_download(img_name_original, imgid, illustration):
             illustration.download(directory=Path.cwd() / 'Sourcery/sourced_progress/pixiv', size=Size.ORIGINAL, filename=new_name)
     except Exception as e:
         print('ERROR [0018]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
-        gv.Files.Log.write_to_log('ERROR [0018]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e) + '\n')
+        if comm_error_q != None:
+            comm_error_q.put('[Sourcery] ERROR [0018]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e))
+        else:
+            gv.Files.Log.write_to_log('ERROR [0018]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e))
         #mb.showerror("ERROR", e)
         return False, None
     return True, new_name
