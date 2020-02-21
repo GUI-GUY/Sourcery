@@ -36,6 +36,7 @@ def pixiv_authenticate(comm_error_q=None):
     return True
 
 def pixiv_fetch_illustration(img_name_original, imgid, comm_error_q=None):
+    #print('id' + imgid)
     try:
         illustration = client.fetch_illustration(imgid) # 75523989
         #illustration.sanity_level

@@ -42,12 +42,14 @@ beta 0.2 (Classified)
 + write more to log
 + results screen on start screen maybe
 + ImageData.selfdestruct()
++ (dev) save in file 'oldname=newname + id' for recovery(no SauceNao searches needed)
 ~ no message boxes but labels
+
 
 better Big Selector
 Fehlerbehandlung
 
-Last Issue: 0031
+Last Error: 0035
 
 beta 0.3
 2nd service
@@ -59,7 +61,6 @@ preload next 12 images
 more metadata(uncensored)
 options(images per page)
 save feedback message
-save in file 'oldname=newname + id' for recovery(no SauceNao searches needed)
 better checkbutton graphics
 preview/thumbnail scaling/options
 scrolling accuracy?
@@ -67,6 +68,12 @@ better sync for stop-???
 -- minileak in results (does this still exist?)
 change font option
 link to SauceNao/Pixiv data online
+Fehlerbehandlung
+
+beta 0.4
+3rd service
+Hydrus
+DCP
 
 comm_q = Queue() # Queue for 'Remaining searches'
 comm_img_q = Queue() # Queue for 'Currently Sourcing'

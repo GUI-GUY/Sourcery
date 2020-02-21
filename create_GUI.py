@@ -8,7 +8,7 @@ from shutil import rmtree
 from multiprocessing import Process, freeze_support, Queue#, Semaphore
 from file_operations import is_image, save, open_input, open_sourced, display_statistics
 from sourcery import do_sourcery
-from pixiv_handler import pixiv_login
+from pixiv_handler import pixiv_authenticate, pixiv_login, pixiv_fetch_illustration
 from Options import Options
 #from image_preloader import preload_main
 from ImageData import ImageData
@@ -23,6 +23,7 @@ def magic():
     """
     global process
     do_sourcery_btn.configure(state='disabled')
+    load_from_ref_btn.configure(state='disabled')
     if __name__ == '__main__':
         gv.Files.Log.write_to_log('Starting second process for sourcing images')
         process = Process(target=do_sourcery, args=(gv.cwd, gv.input_images_array, gv.Files.Cred.saucenao_api_key, gv.Files.Conf.minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, ))
@@ -59,7 +60,7 @@ def display_startpage():
     saucenao_requests_count_lbl.place(x = 170, y = y + c * 6.3)
     #elapsed_time_lbl.place(x = 200, y = y + c * 4)
     #eta_lbl.place(x = 200, y = y + c * 5)
-    error_lbl.place(x = 20, y = y + c * 11)
+    error_lbl.place(x = 20, y = y + c * 12)
 
     open_input_btn.place(x = 20, y = y + c * 0)
     open_sourced_btn.place(x = 20, y = y + c * 1)
@@ -67,6 +68,7 @@ def display_startpage():
     options_btn.place(x = 20, y = y + c * 2)
     do_sourcery_btn.place(x = 20, y = y + c * 8)
     stop_btn.place(x = 20, y = y + c * 9)
+    load_from_ref_btn.place(x = 20, y = y + c * 10)
     
     results_lbl.place(x = 400, y = 60)
     save_and_refresh_btn.place(x = 250, y = height-80)
@@ -123,6 +125,7 @@ def refresh_startpage():
         if answer2 == 'Stopped' or answer2 == 'Finished':
             gv.Files.Log.write_to_log('Sourcing process was stopped or is finished')
             do_sourcery_btn.configure(state='enabled')
+            load_from_ref_btn.configure(state='enabled')
             stop_btn.configure(state='enabled')
         currently_sourcing_img_lbl.configure(text=answer2)
     if not comm_error_q.empty():
@@ -150,6 +153,20 @@ def refresh_startpage():
         Options.display_sourcery_options()
     else:
         window.after(100, refresh_startpage)
+
+def load_from_ref():
+    refs = gv.Files.Ref.read_reference()
+    if refs:
+        pixiv_authenticate()
+        gv.Files.Log.write_to_log('Loading images from reference file...')
+        for ref in refs:
+            illust = pixiv_fetch_illustration(ref['old_name'], ref['id_pixiv'])
+            if not illust:
+                continue
+            gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], ['Pixiv', None, None, None], illust))
+        gv.Files.Log.write_to_log('Loaded images from reference file')
+    else:
+        gv.Files.Log.write_to_log('Reference file is empty')
 
 def display_info():
     gv.Files.Log.log_text.place_forget()
@@ -287,6 +304,7 @@ if __name__ == '__main__':
     #view_results_btn = Button(window, text="View Results", command=escape_results, style="button.TLabel")
     display_info_btn = Button(window, text="display_info", command=display_info, style="button.TLabel")
     display_logfile_btn = Button(window, text="display_logfile", command=display_logfile, style="button.TLabel")
+    load_from_ref_btn = Button(window, text="Load from Reference File", command=load_from_ref, style="button.TLabel")
     
 
     # widgets for options

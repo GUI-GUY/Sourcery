@@ -212,8 +212,11 @@ class ImageData():
         self.info_title_lbl.configure(text = str(self.illust.title), font = ('Arial Bold', 13))
         self.info_caption_lbl.configure(text = str(self.illust.caption))
         #self.info_imageid_lbl.configure(text = 'Image ID: ' + str(self.illust.id))
-        self.info_url_lbl.configure(text = self.source_url[0], foreground='#2626ff', cursor='hand2', font=('Arial', 10))
-        self.info_url_lbl.bind("<Button-1>", self.hyperlink)
+        if self.source_url != None:
+            self.info_url_lbl.configure(text = self.source_url[0], foreground='#2626ff', cursor='hand2', font=('Arial', 10))     
+            self.info_url_lbl.bind("<Button-1>", self.hyperlink)
+        else:
+            self.info_url_lbl.configure(text = 'No URL', font=('Arial', 10))
         self.info_date_lbl.configure(text = 'Uploaded on: ' + str(self.illust.create_date), font = ('Arial', 10))
         self.info_wxh_lbl.configure(text = 'Width x Height: ' + str(self.illust.width) + ' x ' + str(self.illust.height), font = ('Arial', 10))
         self.tags_pixiv_lbl.configure(text = 'Tags', font=('Arial Bold', 15))

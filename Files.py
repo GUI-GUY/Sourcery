@@ -1,7 +1,8 @@
 from os import makedirs, path, getcwd
 from tkinter import END, Text
-#from tkinter import messagebox as mb
+from tkinter import messagebox as mb
 from time import strftime
+from json import loads
 #import global_variables as gv
 
 cwd = getcwd()
@@ -14,6 +15,7 @@ class Files():
         self.Theme = ThemeFile(self.Log)
         self.Cred = CredFile(self.Log)
         self.Conf = ConfigFile(self.Log)
+        self.Ref = ReferenceFile(self.Log)
         
     def create_files(self):
         self.init_directories()
@@ -67,6 +69,14 @@ class Files():
                 print("ERROR [0027] " + str(e))
                 #self.Log.write_to_log("ERROR [0027] " + str(e))
                 mb.showerror("ERROR [0027]", "ERROR CODE [0027]\nSomething went wrong while accessing a configuration file(config), please restart Sourcery.")
+        if not path.exists(cwd + '/Sourcery/reference'):
+            try:
+                reference = open(cwd + '/Sourcery/reference', 'x')
+                reference.close()
+            except Exception as e:
+                print("ERROR [0032] " + str(e))
+                #self.Log.write_to_log("ERROR [0032] " + str(e))
+                mb.showerror("ERROR [0032]", "ERROR CODE [0032]\nSomething went wrong while accessing a configuration file(reference), please restart Sourcery.")
 
 class ThemeFile():
     """PixivOptions"""
@@ -356,3 +366,63 @@ class ConfigFile():
 
         f.close()
         self.read_config()
+
+class  ReferenceFile():
+    def __init__(self, log):
+        self.Log = log
+
+    def new_reference(self, old_name, new_name_pixiv, id_pixiv):
+        ref = ("{\"old_name\" : \"" + old_name +
+                "\", \"new_name_pixiv\" : \"" + new_name_pixiv +
+                "\", \"id_pixiv\" : " + str(id_pixiv) +
+                "}\n")
+        try:
+            f = open(cwd + '/Sourcery/reference', 'a')
+            f.write(ref)
+        except Exception as e:
+            print("ERROR [0033] " + str(e))
+            #self.Log.write_to_log("ERROR [0033] " + str(e))
+            #mb.showerror("ERROR [0033]", "ERROR CODE [0033]\nSomething went wrong while accessing a configuration file(reference).")
+
+        f.close()
+
+    def read_reference(self):
+        """
+        Returns a list of reference dicionaries.
+        """
+        try:
+            f = open(cwd + '/Sourcery/reference')
+        except Exception as e:
+            print("ERROR [0034] " + str(e))
+            #self.Log.write_to_log("ERROR [0034] " + str(e))
+            #mb.showerror("ERROR [0034]", "ERROR CODE [0034]\nSomething went wrong while accessing a configuration file(reference), please try again.")
+        
+        return_array = list()
+
+        temp = f.readline()
+        if not temp.startswith('{'):
+            f.close()
+            return False
+        while (temp.startswith('{')):
+            return_array.append(loads(temp[:-1]))
+            temp = f.readline()
+        f.close()
+        #print(str(return_array))
+        return return_array
+
+    def clean_reference(self):
+        try:
+            f = open(cwd + '/Sourcery/reference', 'w')
+        except Exception as e:
+            print("ERROR [0035] " + str(e))
+            #self.Log.write_to_log("ERROR [0035] " + str(e))
+            #mb.showerror("ERROR [0035]", "ERROR CODE [0035]\nSomething went wrong while accessing a configuration file(reference), please try again.")
+            return
+        f.close()
+
+if __name__ == "__main__":
+    Ref = ReferenceFile(None)
+    Ref.new_reference('a', 'b', 1)
+    Ref.new_reference('x', 'y', 2)
+    Ref.read_reference()
+    Ref.clean_reference()
