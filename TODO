@@ -41,11 +41,11 @@ beta 0.2 (Classified)
 + log on screen where info is shown
 + write more to log
 + results screen on start screen maybe
++ ImageData.selfdestruct()
 ~ no message boxes but labels
 
 better Big Selector
 Fehlerbehandlung
-ImageData.selfdestruct()
 
 Last Issue: 0031
 

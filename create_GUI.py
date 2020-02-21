@@ -184,13 +184,13 @@ def save_and_refresh():
     """
     Save selected images from results page and show the next dozen.
     """
-    for i in range(20):
-        print(i)
-        time.sleep(1)
+    # for i in range(20):
+    #     print(i)
+    #     time.sleep(1)
     gv.Files.Log.write_to_log('Saving selected images...')
-    #save()#TODO race conditions, seems like there are none, further investigation required
+    save()#TODO race conditions, seems like there are none, further investigation required
     gv.Files.Log.write_to_log('Saved images')
-    #leftovers()
+    leftovers()
 
 def leftovers():
     # # Delete leftovers

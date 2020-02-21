@@ -64,7 +64,6 @@ class ImageData():
 
         self.tags_lbl_array.append((Label(master=gv.frame3, text = 'Original:', style='label.TLabel', font = ('Arial Bold', 11)), Label(master=gv.frame3, text = 'Translated:', style='label.TLabel', font = ('Arial Bold', 11))))
         for tag in illust.tags:
-            #self.tags_array.append((tag['name'], tag['translated_name']))
             self.tags_lbl_array.append((Label(master=gv.frame3, text = tag['name'], style='label.TLabel'), Label(master=gv.frame3, text = tag['translated_name'], style='label.TLabel')))
 
         self.back_btn = Button(gv.window, text = 'Back', command = self.display_view_results, style = 'button.TLabel')
@@ -335,14 +334,21 @@ class ImageData():
                 original_name_new = self.name_original
                 if self.path_pixiv not in gv.delete_dirs_array:
                     gv.delete_dirs_array.append(self.path_pixiv)
-                for elem in self.sub_dir_img_array_pixiv:
-                    elem.save()
         elif self.downloaded_pixiv_var.get() == 1:
             # Move downloaded image to Sourced and delete original image
             downloaded_name_new = self.name_pixiv
             original_name_new = None
             if self.path_original not in gv.delete_dirs_array:
                 gv.delete_dirs_array.append(self.path_original)
+
+        if self.downloaded_pixiv_var.get() == 0:#TODO Prompt: "Are you sure you want to delete both versions of [image]"
+            for elem in self.sub_dir_img_array_pixiv:
+                elem.save()
+            if self.path_pixiv not in gv.delete_dirs_array:
+                gv.delete_dirs_array.append(self.path_pixiv)
+            if self.original_var.get() == 0:
+                if self.path_original not in gv.delete_dirs_array:
+                    gv.delete_dirs_array.append(self.path_original)
 
         if downloaded_name_new != None:
             try:
@@ -367,7 +373,18 @@ class ImageData():
             #mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.cwd + '/Input/' + self.name_original)
 
     def self_destruct(self):
-        pass
+        if self.original_SubImgData != None:
+            self.original_SubImgData.self_destruct()
+        if self.downloaded_SubImgData_pixiv != None:
+            self.downloaded_SubImgData_pixiv.self_destruct()
+        self.original_image.close()
+        if self.downloaded_image_pixiv != None:
+            self.downloaded_image_pixiv.close()
+        for img in self.sub_dir_img_array_pixiv:
+            img.self_destruct()
+        del self.original_photoImage_thumb
+        del self.downloaded_photoImage_pixiv_thumb
+        del self.downloaded_photoImage_pixiv_preview
 
 class SubImageData():
     def __init__(self, name, path, service, parent, img=None, var=None, master_folder=''):
@@ -378,7 +395,10 @@ class SubImageData():
         self.img_obj = img
         self.photoImg = None
         self.size = None
-        self.var = var
+        if var == None:
+            self.var = IntVar(value=0)
+        else:
+            self.var = var
         self.chkbtn = None
         self.lbl = None
         self.wxh_lbl = None
@@ -390,10 +410,14 @@ class SubImageData():
     def load(self):
         if self.load_init:
             return
+        flag = False
         if self.img_obj == None:
+            flag = True
             self.img_obj = Image.open(self.path)
         self.size = self.img_obj.size
         self.photoImg = ImageTk.PhotoImage(resize(self.img_obj))
+        if flag:
+            self.img_obj.close()
         if self.var == None:
             self.var = IntVar()
         self.chkbtn = Checkbutton(self.par, image=self.photoImg, var=self.var, style="chkbtn.TCheckbutton")
@@ -424,10 +448,9 @@ class SubImageData():
                 print("ERROR [0032] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0032] " + str(e))
                 #mb.showerror("ERROR [0032]", "ERROR CODE [0032]\nSomething went wrong while moving the image " + self.path_original)
-        else:
-            if self.path not in gv.delete_dirs_array:
-                gv.delete_dirs_array.append(self.path)
 
+    def self_destruct(self):
+        del self.photoImg
 
 def resize(image):
     """

@@ -35,7 +35,8 @@ def save():
         gv.Files.Log.write_to_log('Successfully saved image')
         #TODO
         ImgData.self_destruct()
-  
+        del ImgData
+
     for widget in gv.frame.winfo_children():
         widget.grid_forget()
 
