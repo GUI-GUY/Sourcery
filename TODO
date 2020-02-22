@@ -43,11 +43,11 @@ beta 0.2 (Classified)
 + results screen on start screen maybe
 + ImageData.selfdestruct()
 + (dev) save in file 'oldname=newname + id' for recovery(no SauceNao searches needed)
++ duplicates in results
++ better Big Selector
+
+scaling
 ~ no message boxes but labels
-
-
-better Big Selector
-duplicates in results
 Fehlerbehandlung
 
 Last Error: 0037

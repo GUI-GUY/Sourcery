@@ -41,16 +41,16 @@ class ImageData():
         self.downloaded_photoImage_pixiv_preview = None
         self.original_var = IntVar(value=0)
         self.original_chkbtn = Checkbutton(master=gv.frame, var=self.original_var, style="chkbtn.TCheckbutton")
-        self.original_lbl = Label(master=gv.frame, text = "original", style='label.TLabel')
+        self.original_lbl = Label(master=gv.frame, text = "Input", style='label.TLabel')
         self.original_wxh_lbl = Label(master=gv.frame, style='label.TLabel')
         self.original_type_lbl = Label(master=gv.frame, style='label.TLabel')
         self.original_cropped_lbl = Label(master=gv.frame, style='label.TLabel')
         self.downloaded_pixiv_var = IntVar(value=1)
         self.downloaded_chkbtn = Checkbutton(master=gv.frame, var=self.downloaded_pixiv_var, style="chkbtn.TCheckbutton")
-        self.downloaded_lbl = Label(master=gv.frame, text = "pixiv", style='label.TLabel')
+        self.downloaded_lbl = Label(master=gv.frame, text = "Pixiv", style='label.TLabel')
         self.downloaded_wxh_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')#TODO how many instead of more
         self.downloaded_type_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')
-        self.big_selector_btn = Button(master=gv.frame, command=self.display_big_selector, text='View in Big Selector', style='button.TLabel')
+        self.big_selector_btn = Button(master=gv.frame, command=self.display_big_selector, text='Big Selector', style='button.TLabel')
 
         self.info_btn = Button(master=gv.frame, command=self.display_info, text='More Info', style='button.TLabel')
         
@@ -73,7 +73,7 @@ class ImageData():
 
         self.back_btn = Button(gv.window, text = 'Back', command = self.display_view_results, style = 'button.TLabel')
         self.next_btn = Button(gv.window, text = 'Next', style = 'button.TLabel')
-        self.prev_btn = Button(gv.window, text = 'Prev', style = 'button.TLabel')
+        self.prev_btn = Button(gv.window, text = 'Previous', style = 'button.TLabel')
         self.index = None
 
         self.original_SubImgData = None
@@ -124,7 +124,7 @@ class ImageData():
                     if self.path_pixiv not in gv.delete_dirs_array:
                         gv.delete_dirs_array.append(self.path_pixiv)
                 for img in self.sub_dir_array_pixiv:
-                    self.sub_dir_img_array_pixiv.append(SubImageData(img, self.path_pixiv, 'pixiv', gv.window, gv.frame2, master_folder=self.name_pixiv, siblings=self.sub_dir_img_array_pixiv))#(Image.open(self.path_pixiv + '/' + img), img))
+                    self.sub_dir_img_array_pixiv.append(SubImageData(img, self.path_pixiv, 'Pixiv', gv.window, gv.frame2, master_folder=self.name_pixiv, siblings=self.sub_dir_img_array_pixiv))#(Image.open(self.path_pixiv + '/' + img), img))
             except Exception as e:
                 print("ERROR [0032] " + str(e))
                 #mb.showerror("ERROR [0032]", "ERROR CODE [0032]\nSomething went wrong while loading an image.")
@@ -147,13 +147,13 @@ class ImageData():
         self.original_lbl.grid(column = 2, row = t+1, sticky = W, padx = 10)
         self.original_wxh_lbl.grid(column = 3, row = t+1, sticky = W, padx = 10)
         self.original_type_lbl.grid(column = 4, row = t+1, sticky = W, padx = 10)
-        self.info_btn.grid(column = 5, row = t+1, sticky = W, padx = 10)
+        self.info_btn.grid(column = 5, row = t+2, sticky = W, padx = 10)
         self.original_cropped_lbl.grid(column = 1, row = t, columnspan=5, sticky = W, padx = 10)
         self.downloaded_chkbtn.grid(column = 0, row = t+2, sticky = W)
         self.downloaded_lbl.grid(column = 2, row = t+2, sticky = W, padx = 10)
         self.downloaded_wxh_lbl.grid(column = 3, row = t+2, sticky = W, padx = 10)
         self.downloaded_type_lbl.grid(column = 4, row = t+2, sticky = W, padx = 10)
-        self.big_selector_btn.grid(column = 5, row = t+2, sticky = W, padx = 10)
+        self.big_selector_btn.grid(column = 5, row = t+1, sticky = W, padx = 10)
 
     def process_results_imgs(self):
         """
@@ -269,11 +269,11 @@ class ImageData():
         self.process_big_imgs()
         self.modify_big_widgets()
         self.forget_all_widgets()
-        gv.big_selector_frame.place(x = round(gv.width*0.86), y = 20)
+        gv.big_selector_frame.place(x = round(gv.width*0.86), y = 90)
         gv.big_selector_canvas.yview_moveto(0)
-        self.back_btn.place(x = round(gv.width*0.43), y = 100)
-        self.prev_btn.place(x = round(gv.width*0.43), y = 123)
-        self.next_btn.place(x = round(gv.width*0.43), y = 146)
+        self.back_btn.place(x = round(gv.width*0.86), y = 40)
+        self.prev_btn.place(x = round(gv.width*0.90), y = 40)
+        self.next_btn.place(x = round(gv.width*0.94), y = 40)
 
         self.original_SubImgData.display_place()
 
@@ -296,11 +296,11 @@ class ImageData():
         if self.process_big_imgs_init:
             return
 
-        self.original_SubImgData = SubImageData(self.name_original, self.path_original, 'original', gv.window, None, self.original_image, self.original_var)#ImageTk.PhotoImage(resize(self.original_image))
+        self.original_SubImgData = SubImageData(self.name_original, self.path_original, 'Input', gv.window, None, self.original_image, self.original_var)#ImageTk.PhotoImage(resize(self.original_image))
         self.original_SubImgData.load()
 
         if path.isfile(self.path_pixiv):
-            self.downloaded_SubImgData_pixiv = SubImageData(self.name_pixiv, self.path_pixiv, 'pixiv', gv.window, gv.frame2, self.downloaded_image_pixiv, self.downloaded_pixiv_var)#ImageTk.PhotoImage(self.downloaded_image_pixiv)
+            self.downloaded_SubImgData_pixiv = SubImageData(self.name_pixiv, self.path_pixiv, 'Pixiv', gv.window, gv.frame2, self.downloaded_image_pixiv, self.downloaded_pixiv_var)#ImageTk.PhotoImage(self.downloaded_image_pixiv)
             self.downloaded_SubImgData_pixiv.load()
         elif path.isdir(self.path_pixiv):
             for elem in self.sub_dir_img_array_pixiv:
@@ -412,6 +412,7 @@ class SubImageData():
         self.chkbtn = None
         self.thumb_chkbtn = None
         self.lbl = None
+        self.lbl2 = None
         self.wxh_lbl = None
         self.type_lbl = None
         self.folder = master_folder
@@ -436,6 +437,7 @@ class SubImageData():
         self.chkbtn = Checkbutton(self.par, image=self.photoImg, var=self.var, style="chkbtn.TCheckbutton")
         self.chkbtn.image = self.photoImg
         self.lbl = Label(self.scrollpar, text=self.service, style='label.TLabel')
+        self.lbl2 = Label(self.par, text=self.service, style='label.TLabel')
         self.wxh_lbl = Label(self.scrollpar, text=self.size, style='label.TLabel')
         self.type_lbl = Label(self.scrollpar, text=self.name[self.name.rfind(".")+1:], style='label.TLabel')
         self.show_btn = Button(self.scrollpar, command=self.show, text='Show', style='button.TLabel')
@@ -461,15 +463,17 @@ class SubImageData():
         self.show_btn.grid(row=t+3, column=1, sticky=W)
     
     def display_place(self):
-        self.chkbtn.place(x = 15, y = 20)
-        self.lbl.place(x = round(gv.width*0.43), y = 35)
-        self.wxh_lbl.place(x = round(gv.width*0.43), y = 55)
-        self.type_lbl.place(x = round(gv.width*0.43), y = 75)
+        self.chkbtn.place(x = 15, y = 40)
+        self.lbl2.place(x = 32, y = 20)
+        self.lbl.place(x = round(gv.width*0.86), y = 63)
+        self.wxh_lbl.place(x = round(gv.width*0.90), y = 63)
+        self.type_lbl.place(x = round(gv.width*0.94), y = 63)
 
     def show(self):
         for sib in self.siblings_array:
             sib.forget()
-        self.chkbtn.place(x = round(gv.width*0.46), y = 20)
+        self.lbl2.place(x = round(gv.width*0.44), y = 20)
+        self.chkbtn.place(x = round(gv.width*0.43), y = 40)
 
     def forget(self):
         self.chkbtn.place_forget()

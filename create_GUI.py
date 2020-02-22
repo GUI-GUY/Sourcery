@@ -167,7 +167,7 @@ def load_from_ref():
             next_img = False
             for data in gv.img_data_array:
                 if ref['old_name'] == data.name_original:
-                    if ref['id_pixiv'] == illust.id:# Missing: rename option
+                    if ref['id_pixiv'] == illust.id:# TODO Missing: rename option
                         next_img = True
             if next_img:
                 gv.Files.Log.write_to_log('Image already loaded/sourced')
@@ -285,7 +285,7 @@ if __name__ == '__main__':
     results_frame_width = int(width/3)
     info_frame_height = int(height-200)
     info_frame_width = int(width/3)
-    big_selector_frame_height = int(height-100) # height-620
+    big_selector_frame_height = int(height-200) # height-620
     big_selector_frame_width = int(width*0.13) - 25 # width-620
     #window.geometry(str(width-500) + 'x' + str(height-500))
     #dateS =  time.strftime("20%y-%m-%d")
