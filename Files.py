@@ -371,11 +371,12 @@ class  ReferenceFile():
     def __init__(self, log):
         self.Log = log
 
-    def new_reference(self, old_name, new_name_pixiv, id_pixiv):
+    def new_reference(self, old_name, new_name_pixiv, id_pixiv, rename_option):
         ref = ("{\"old_name\" : \"" + old_name +
                 "\", \"new_name_pixiv\" : \"" + new_name_pixiv +
                 "\", \"id_pixiv\" : " + str(id_pixiv) +
-                "}\n")
+                ", \"rename_option\" : \"" + rename_option +
+                "\"}\n")
         try:
             f = open(cwd + '/Sourcery/reference', 'a')
             f.write(ref)

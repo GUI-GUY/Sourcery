@@ -11,7 +11,7 @@ def die(message, comm_error_q, comm_img_q):
     #mb.showerror('ERROR', message)
     exit()
 
-def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q):
+def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, duplicate_c_pipe):
     comm_error_q.put('[Sourcery] Attempting Pixiv login...')
     if not pixiv_authenticate(comm_error_q):
         die('Pixiv Authentication Failed.\nPlease check your login data.', comm_error_q, comm_img_q)
@@ -20,6 +20,13 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_
     for img in input_images_array:
         comm_img_q.put(img)
         comm_error_q.put('[Sourcery] Sourcing: ' + img)
+        # if an ImageData instance with the same original name, minsim and rename options already exists, skip
+        duplicate_c_pipe.send([img, minsim, gv.Files.Conf.rename_pixiv])
+        #print(gv.Files.Conf.rename_pixiv)
+        next_img = duplicate_c_pipe.recv()
+        if next_img:
+            comm_error_q.put('[Sourcery] Image has already been sourced')
+            continue
         try:
             comm_error_q.put('[Sourcery] Moving image to working directory')
             copy(cwd + '/Input/' + img, cwd + '/Sourcery/sourced_original')
@@ -62,7 +69,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_
             img_name_original, new_name, img_data_array, illustration = process_img_data(img, res, comm_error_q)
             if img_name_original != False:
                 img_data_q.put((img_name_original, new_name, img_data_array, illustration))
-                gv.Files.Ref.new_reference(img_name_original, new_name, img_data_array[1])
+                gv.Files.Ref.new_reference(img_name_original, new_name, img_data_array[1], gv.Files.Conf.rename_pixiv)
             if res[3] < 1:
                 die('Out of searches for today', comm_error_q, comm_img_q)
             if res[2] < 1:

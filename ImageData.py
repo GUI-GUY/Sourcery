@@ -20,6 +20,11 @@ class ImageData():
         # self.illust_id = img_data_array[1]
         # self.member_id = img_data_array[2]
         self.source_url = img_data_array[3]
+        self.minsim = img_data_array[4]
+        if old_name == new_name:
+            self.rename = False
+        else:
+            self.rename = True
         self.path_original = gv.cwd + '/Sourcery/sourced_original/' + self.name_original
         self.path_pixiv = gv.cwd + '/Sourcery/sourced_progress/pixiv/' + self.name_pixiv
         self.original_image = None
@@ -143,7 +148,7 @@ class ImageData():
         self.original_wxh_lbl.grid(column = 3, row = t+1, sticky = W, padx = 10)
         self.original_type_lbl.grid(column = 4, row = t+1, sticky = W, padx = 10)
         self.info_btn.grid(column = 5, row = t+1, sticky = W, padx = 10)
-        self.original_cropped_lbl.grid(column = 1, row = t, columnspan=3, sticky = W, padx = 10)
+        self.original_cropped_lbl.grid(column = 1, row = t, columnspan=5, sticky = W, padx = 10)
         self.downloaded_chkbtn.grid(column = 0, row = t+2, sticky = W)
         self.downloaded_lbl.grid(column = 2, row = t+2, sticky = W, padx = 10)
         self.downloaded_wxh_lbl.grid(column = 3, row = t+2, sticky = W, padx = 10)
@@ -185,7 +190,7 @@ class ImageData():
         self.original_chkbtn.image = self.original_photoImage_thumb
         self.original_wxh_lbl.configure(text = str(self.original_image.size))
         self.original_type_lbl.configure(text = self.name_original[self.name_original.rfind('.')+1:])
-        self.original_cropped_lbl.configure(text = self.name_original[:self.name_original.rfind('.')])
+        self.original_cropped_lbl.configure(text = self.name_original + ' -> ' + self.name_pixiv)
         
         self.downloaded_chkbtn.configure(image=self.downloaded_photoImage_pixiv_thumb)
         self.downloaded_chkbtn.image = self.downloaded_photoImage_pixiv_thumb

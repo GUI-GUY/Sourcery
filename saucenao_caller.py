@@ -190,7 +190,7 @@ def decode_response(results, EnableRename=False):
         #     #print('Out of searches for this 30 second period. Sleeping for 25 seconds...')
         #     time.sleep(25)
     
-            return [service_name, illust_id, member_id, source]
+            return [service_name, illust_id, member_id, source, results['header']['minimum_similarity']]
     return['', 0, -1, '']
     #print('All Done!')
 

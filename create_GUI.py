@@ -5,7 +5,7 @@ from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 #from functools import partial
 from os import listdir, path, remove
 from shutil import rmtree
-from multiprocessing import Process, freeze_support, Queue#, Semaphore
+from multiprocessing import Process, freeze_support, Queue, Pipe#, Semaphore
 from file_operations import is_image, save, open_input, open_sourced, display_statistics
 from sourcery import do_sourcery
 from pixiv_handler import pixiv_authenticate, pixiv_login, pixiv_fetch_illustration
@@ -26,8 +26,9 @@ def magic():
     load_from_ref_btn.configure(state='disabled')
     if __name__ == '__main__':
         gv.Files.Log.write_to_log('Starting second process for sourcing images')
-        process = Process(target=do_sourcery, args=(gv.cwd, gv.input_images_array, gv.Files.Cred.saucenao_api_key, gv.Files.Conf.minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, ))
+        process = Process(target=do_sourcery, args=(gv.cwd, gv.input_images_array, gv.Files.Cred.saucenao_api_key, gv.Files.Conf.minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, duplicate_c_pipe, ))
         process.start()
+        rename_option = gv.Files.Conf.rename_pixiv
 
 def image_preloader():
     # """
@@ -85,7 +86,7 @@ def display_startpage():
 def test():
     gv.Files.Log.write_to_log('this is a test')
 
-def refresh_startpage():
+def refresh_startpage(answer2=''):
     """
     Updates these startpage widgets:
     - Images in Input folder
@@ -114,20 +115,20 @@ def refresh_startpage():
             try:
                 answer2 = comm_img_q.get()
                 if answer2 != currently_processing:
-                    # if currently_processing != '':
-                    #     gv.safe_to_show_array.append(currently_processing)
                     currently_processing = answer2
-                    pointdex = currently_processing.rfind(".")
-                if pointdex != -1:
-                    currently_processing = currently_processing[:pointdex] # deletes the suffix
+                #     pointdex = currently_processing.rfind(".")
+                # if pointdex != -1:
+                #     currently_processing = currently_processing[:pointdex] # deletes the suffix
             except:
                 pass
-        if answer2 == 'Stopped' or answer2 == 'Finished':
+        currently_sourcing_img_lbl.configure(text=answer2)
+    if answer2 == 'Stopped' or answer2 == 'Finished':
+        if comm_error_q.empty():
             gv.Files.Log.write_to_log('Sourcing process was stopped or is finished')
             do_sourcery_btn.configure(state='enabled')
             load_from_ref_btn.configure(state='enabled')
             stop_btn.configure(state='enabled')
-        currently_sourcing_img_lbl.configure(text=answer2)
+            answer2 = ''
     if not comm_error_q.empty():
         try:
             e = comm_error_q.get()
@@ -152,7 +153,7 @@ def refresh_startpage():
     if gv.esc_op:
         Options.display_sourcery_options()
     else:
-        window.after(100, refresh_startpage)
+        window.after(100, refresh_startpage, answer2)
 
 def load_from_ref():
     refs = gv.Files.Ref.read_reference()
@@ -163,10 +164,29 @@ def load_from_ref():
             illust = pixiv_fetch_illustration(ref['old_name'], ref['id_pixiv'])
             if not illust:
                 continue
-            gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], ['Pixiv', None, None, None], illust))
+            next_img = False
+            for data in gv.img_data_array:
+                if ref['old_name'] == data.name_original:
+                    if ref['id_pixiv'] == illust.id:# Missing: rename option
+                        next_img = True
+            if next_img:
+                gv.Files.Log.write_to_log('Image already loaded/sourced')
+                continue
+            gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], ['Pixiv', None, None, None, 80], illust))# Minsim wrong, TODO what if image doesnt exist
         gv.Files.Log.write_to_log('Loaded images from reference file')
     else:
         gv.Files.Log.write_to_log('Reference file is empty')
+
+def duplicate_loop():
+    if duplicate_p_pipe.poll():
+        dup_list = duplicate_p_pipe.recv()
+        is_dup = False
+        for data in gv.img_data_array:
+            if dup_list[0] == data.name_original and dup_list[1] == str(data.minsim) and dup_list[2] == str(data.rename):
+                is_dup = True
+                break
+        duplicate_p_pipe.send(is_dup)
+    window.after(10, duplicate_loop)
 
 def display_info():
     gv.Files.Log.log_text.place_forget()
@@ -318,6 +338,7 @@ if __name__ == '__main__':
     save_and_refresh_btn = Button(window, text="Save selected images", command=save_and_refresh, style="button.TLabel")
 
     img_data_counter = 0
+    rename_option = False
 
     gv.frame = results_ScrollFrame.frame
     gv.frame2 = big_selector_ScrollFrame.frame
@@ -331,14 +352,17 @@ if __name__ == '__main__':
     currently_processing = ''
     gv.esc_op = False # Escape variable for options
     esc_res = False # Escape variable for results
+    loop_esc = True
     process = Process()
     comm_q = Queue() # Queue for 'Remaining searches'
     comm_img_q = Queue() # Queue for 'Currently Sourcing'
     comm_stop_q = Queue() # Queue for stop signal
     comm_error_q = Queue() # Queue for error messages
     img_data_q = Queue() # Queue for ImageData classes
+    duplicate_p_pipe, duplicate_c_pipe = Pipe()
     #sem = Semaphore(12)
     #image_preloader()
     gv.Files.Log.write_to_log('Variables initialised')
+    duplicate_loop()
     display_startpage()
     window.mainloop()
