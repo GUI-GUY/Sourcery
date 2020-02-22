@@ -74,9 +74,9 @@ class Files():
                 reference = open(cwd + '/Sourcery/reference', 'x')
                 reference.close()
             except Exception as e:
-                print("ERROR [0032] " + str(e))
-                #self.Log.write_to_log("ERROR [0032] " + str(e))
-                mb.showerror("ERROR [0032]", "ERROR CODE [0032]\nSomething went wrong while accessing a configuration file(reference), please restart Sourcery.")
+                print("ERROR [0036] " + str(e))
+                #self.Log.write_to_log("ERROR [0033] " + str(e))
+                mb.showerror("ERROR [0036]", "ERROR CODE [0036]\nSomething went wrong while accessing a configuration file(reference), please restart Sourcery.")
 
 class ThemeFile():
     """PixivOptions"""

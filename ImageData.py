@@ -119,7 +119,7 @@ class ImageData():
                     if self.path_pixiv not in gv.delete_dirs_array:
                         gv.delete_dirs_array.append(self.path_pixiv)
                 for img in self.sub_dir_array_pixiv:
-                    self.sub_dir_img_array_pixiv.append(SubImageData(img, self.path_pixiv, 'pixiv', gv.frame2, master_folder=self.name_pixiv))#(Image.open(self.path_pixiv + '/' + img), img))
+                    self.sub_dir_img_array_pixiv.append(SubImageData(img, self.path_pixiv, 'pixiv', gv.window, gv.frame2, master_folder=self.name_pixiv, siblings=self.sub_dir_img_array_pixiv))#(Image.open(self.path_pixiv + '/' + img), img))
             except Exception as e:
                 print("ERROR [0032] " + str(e))
                 #mb.showerror("ERROR [0032]", "ERROR CODE [0032]\nSomething went wrong while loading an image.")
@@ -264,7 +264,7 @@ class ImageData():
         self.process_big_imgs()
         self.modify_big_widgets()
         self.forget_all_widgets()
-        gv.big_selector_frame.place(x = round(gv.width*0.515), y = 20)
+        gv.big_selector_frame.place(x = round(gv.width*0.86), y = 20)
         gv.big_selector_canvas.yview_moveto(0)
         self.back_btn.place(x = round(gv.width*0.43), y = 100)
         self.prev_btn.place(x = round(gv.width*0.43), y = 123)
@@ -291,11 +291,11 @@ class ImageData():
         if self.process_big_imgs_init:
             return
 
-        self.original_SubImgData = SubImageData(self.name_original, self.path_original, 'original', gv.window, self.original_image, self.original_var)#ImageTk.PhotoImage(resize(self.original_image))
+        self.original_SubImgData = SubImageData(self.name_original, self.path_original, 'original', gv.window, None, self.original_image, self.original_var)#ImageTk.PhotoImage(resize(self.original_image))
         self.original_SubImgData.load()
 
         if path.isfile(self.path_pixiv):
-            self.downloaded_SubImgData_pixiv = SubImageData(self.name_pixiv, self.path_pixiv, 'pixiv', gv.frame2, self.downloaded_image_pixiv, self.downloaded_pixiv_var)#ImageTk.PhotoImage(self.downloaded_image_pixiv)
+            self.downloaded_SubImgData_pixiv = SubImageData(self.name_pixiv, self.path_pixiv, 'pixiv', gv.window, gv.frame2, self.downloaded_image_pixiv, self.downloaded_pixiv_var)#ImageTk.PhotoImage(self.downloaded_image_pixiv)
             self.downloaded_SubImgData_pixiv.load()
         elif path.isdir(self.path_pixiv):
             for elem in self.sub_dir_img_array_pixiv:
@@ -390,12 +390,14 @@ class ImageData():
         del self.downloaded_photoImage_pixiv_preview
 
 class SubImageData():
-    def __init__(self, name, path, service, parent, img=None, var=None, master_folder=''):
+    def __init__(self, name, path, service, parent, scrollparent, img=None, var=None, master_folder='', siblings=list()):
         self.name = name
         self.path = path + '/' + name
         self.service = service
         self.par = parent
+        self.scrollpar = scrollparent
         self.img_obj = img
+        self.photoImg_thumb = None
         self.photoImg = None
         self.size = None
         if var == None:
@@ -403,10 +405,14 @@ class SubImageData():
         else:
             self.var = var
         self.chkbtn = None
+        self.thumb_chkbtn = None
         self.lbl = None
         self.wxh_lbl = None
         self.type_lbl = None
         self.folder = master_folder
+        self.show_btn = None
+
+        self.siblings_array = siblings
 
         self.load_init = False
 
@@ -419,23 +425,35 @@ class SubImageData():
             self.img_obj = Image.open(self.path)
         self.size = self.img_obj.size
         self.photoImg = ImageTk.PhotoImage(resize(self.img_obj))
-        if flag:
-            self.img_obj.close()
+        
         if self.var == None:
             self.var = IntVar()
         self.chkbtn = Checkbutton(self.par, image=self.photoImg, var=self.var, style="chkbtn.TCheckbutton")
         self.chkbtn.image = self.photoImg
-        self.lbl = Label(self.par, text=self.service, style='label.TLabel')
-        self.wxh_lbl = Label(self.par, text=self.size, style='label.TLabel')
-        self.type_lbl = Label(self.par, text=self.name[self.name.rfind(".")+1:], style='label.TLabel')
+        self.lbl = Label(self.scrollpar, text=self.service, style='label.TLabel')
+        self.wxh_lbl = Label(self.scrollpar, text=self.size, style='label.TLabel')
+        self.type_lbl = Label(self.scrollpar, text=self.name[self.name.rfind(".")+1:], style='label.TLabel')
+        self.show_btn = Button(self.scrollpar, command=self.show, text='Show', style='button.TLabel')
+
+        if self.scrollpar != None:
+            img_obj_thumb = deepcopy(self.img_obj)
+            img_obj_thumb.thumbnail((70, 70), resample=Image.ANTIALIAS)
+            self.photoImg_thumb = ImageTk.PhotoImage(img_obj_thumb)
+            self.thumb_chkbtn = Checkbutton(self.scrollpar, image=self.photoImg_thumb, var=self.var, style="chkbtn.TCheckbutton")
+            self.thumb_chkbtn.image = self.photoImg_thumb
+            img_obj_thumb.close()
+
+        if flag:
+            self.img_obj.close()
 
         self.load_init = True
     
     def display_grid(self, t):
-        self.chkbtn.grid(row=t, column=1, rowspan=4)
-        self.lbl.grid(row=t+0, column=0)
-        self.wxh_lbl.grid(row=t+1, column=0)
-        self.type_lbl.grid(row=t+2, column=0)
+        self.thumb_chkbtn.grid(row=t, column=0, rowspan=4)
+        self.lbl.grid(row=t+0, column=1, sticky=W)
+        self.wxh_lbl.grid(row=t+1, column=1, sticky=W)
+        self.type_lbl.grid(row=t+2, column=1, sticky=W)
+        self.show_btn.grid(row=t+3, column=1, sticky=W)
     
     def display_place(self):
         self.chkbtn.place(x = 15, y = 20)
@@ -443,14 +461,22 @@ class SubImageData():
         self.wxh_lbl.place(x = round(gv.width*0.43), y = 55)
         self.type_lbl.place(x = round(gv.width*0.43), y = 75)
 
+    def show(self):
+        for sib in self.siblings_array:
+            sib.forget()
+        self.chkbtn.place(x = round(gv.width*0.46), y = 20)
+
+    def forget(self):
+        self.chkbtn.place_forget()
+
     def save(self):
         if self.var.get() == 1:
             try:
                 move(self.path, gv.cwd + '/Sourced/' + folder + '/' + self.name)
             except Exception as e:
-                print("ERROR [0032] " + str(e))
-                gv.Files.Log.write_to_log("ERROR [0032] " + str(e))
-                #mb.showerror("ERROR [0032]", "ERROR CODE [0032]\nSomething went wrong while moving the image " + self.path_original)
+                print("ERROR [0037] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0037] " + str(e))
+                #mb.showerror("ERROR [0037]", "ERROR CODE [0037]\nSomething went wrong while moving the image " + self.path_original)
 
     def self_destruct(self):
         del self.photoImg

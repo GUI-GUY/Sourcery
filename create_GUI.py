@@ -242,7 +242,7 @@ def enforce_style():
     style.configure("button.TLabel", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.button_background, font=("Arial Bold", 10))
     style.map("button.TLabel",
         foreground=[('pressed', gv.Files.Theme.button_foreground_pressed), ('active', gv.Files.Theme.button_foreground_active)],
-        background=[('pressed', '!disabled', gv.Files.Theme.button_background_pressed), ('active', gv.Files.Theme.button_background_active)]
+        background=[('pressed', '!disabled', gv.Files.Theme.button_background_pressed), ('disabled', 'lime green'), ('active', gv.Files.Theme.button_background_active)]
     )
     style.configure("frame.TFrame", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background)
     style.configure("chkbtn.TCheckbutton", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, borderwidth = 0, highlightthickness = 10, selectcolor=gv.Files.Theme.button_background, activebackground=gv.Files.Theme.button_background, activeforeground=gv.Files.Theme.button_background, disabledforeground=gv.Files.Theme.button_background, highlightcolor=gv.Files.Theme.button_background, font=("Arial Bold", 10))
@@ -266,7 +266,7 @@ if __name__ == '__main__':
     info_frame_height = int(height-200)
     info_frame_width = int(width/3)
     big_selector_frame_height = int(height-100) # height-620
-    big_selector_frame_width = int(width*0.48) - 25 # width-620
+    big_selector_frame_width = int(width*0.13) - 25 # width-620
     #window.geometry(str(width-500) + 'x' + str(height-500))
     #dateS =  time.strftime("20%y-%m-%d")
 
