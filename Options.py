@@ -1,9 +1,11 @@
-from tkinter import IntVar
+from tkinter import IntVar, E, W
 #from tkinter import messagebox as mb
 from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 from functools import partial
 from pixiv_handler import pixiv_login
+from ScrollFrame import ScrollFrame
 import global_variables as gv
+
 
 class Options():
     """Options"""
@@ -143,7 +145,12 @@ class SourceryOptions():
         self.custom_button_foreground_active_entry = Entry(parent, width=30, style="button.TLabel")
         self.custom_button_background_pressed_entry = Entry(parent, width=30, style="button.TLabel")
         self.custom_button_foreground_pressed_entry = Entry(parent, width=30, style="button.TLabel")
+        self.please_insert_lbl = Label(parent, text='Please insert values between #000000 and #ffffff or valid color names', style="label.TLabel")
         self.save_custom_theme_btn = Button(parent, text="Save Custom Theme", command=self.save_custom_theme, style="button.TLabel")
+        self.color_widget_list = list()
+        self.color_scrollpar = ScrollFrame(parent, gv.width*0.65, gv.height*0.8)
+        for col in gv.COLORS:
+            self.color_widget_list.append(Label(self.color_scrollpar.frame, text=col, background=col, font=('Arial Bold', 10)))
 
         self.custom_background = gv.Files.Theme.custom_background
         self.custom_foreground = gv.Files.Theme.custom_foreground
@@ -194,9 +201,20 @@ class SourceryOptions():
         self.custom_button_foreground_active_entry.place(x = x2, y = y + c * 8)
         self.custom_button_background_pressed_entry.place(x = x2, y = y + c * 9)
         self.custom_button_foreground_pressed_entry.place(x = x2, y = y + c * 10)
-        self.save_custom_theme_btn.place(x = x1, y = y + c * 11)
+        self.please_insert_lbl.place(x = x1, y = y + c * 11)
+        self.save_custom_theme_btn.place(x = x1, y = y + c * 12)
         self.preview_lbl.place(x = x2, y = y + c * 2)
         self.preview_btn.place(x = x2, y = y + c * 3)
+
+        #self.color_scrollpar.sub_frame.place(x = 500, y = y-50)
+        a = 0
+        b = 0
+        for col in self.color_widget_list:
+            if a > 48:
+                a = 0
+                b += 1
+            col.grid(row = a, column = b, sticky=E+W)
+            a += 1
 
         if not self.refresh_custom_preview_init:
             self.refresh_custom_preview_init = True
@@ -249,7 +267,7 @@ class SourceryOptions():
                 background=[('pressed', '!disabled', bbp), ('active', bba)])
         except:
             pass
-        #TODO'Please insert a value between #000000 and #ffffff or a valid color name into the Background option'
+        
         self.par.after(100, self.refresh_custom_preview)
 
     def change_to_dark_theme(self):

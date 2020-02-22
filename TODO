@@ -47,6 +47,7 @@ beta 0.2 (Classified)
 + better Big Selector
 
 scaling
+big selector text green/red/white if better/worse/same res/datatype
 ~ no message boxes but labels
 Fehlerbehandlung
 
@@ -56,7 +57,7 @@ beta 0.3
 multiprocessing -> window.after???(probably not)
 2nd service
 service options
-png over jpg over high res over uncensored options (weight system)
+png over jpg over high res over uncensored options (weight system?)
 optimizations
 foreign folder support
 preload next 12 images
@@ -76,11 +77,3 @@ beta 0.4
 3rd service
 Hydrus
 DCP
-
-comm_q = Queue() # Queue for 'Remaining searches'
-comm_img_q = Queue() # Queue for 'Currently Sourcing'
-
-Logfile contains:
-+ Time
-+ All Errors
-- + Successful options change

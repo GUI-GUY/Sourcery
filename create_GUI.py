@@ -12,7 +12,7 @@ from pixiv_handler import pixiv_authenticate, pixiv_login, pixiv_fetch_illustrat
 from Options import Options
 #from image_preloader import preload_main
 from ImageData import ImageData
-from ScollFrame import ScrollFrame
+from ScrollFrame import ScrollFrame
 from Files import Files
 import global_variables as gv
 import time
