@@ -1,11 +1,12 @@
 from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END
-from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
+from tkinter.ttk import Label, Button, Style, Entry, Frame
 #from tkinter import messagebox as mb
 #from tkinter.filedialog import askdirectory
 #from functools import partial
 from os import listdir, path, remove
 from shutil import rmtree
 from multiprocessing import Process, freeze_support, Queue, Pipe#, Semaphore
+from copy import copy
 from file_operations import is_image, save, open_input, open_sourced, display_statistics
 from sourcery import do_sourcery
 from pixiv_handler import pixiv_authenticate, pixiv_login, pixiv_fetch_illustration
@@ -72,7 +73,8 @@ def display_startpage():
     load_from_ref_btn.place(x = 20, y = y + c * 10)
     
     results_lbl.place(x = 400, y = 60)
-    save_and_refresh_btn.place(x = 250, y = height-80)
+    save_locked_btn.place(x = 250, y = height-80)
+    lock_save_btn.place(x = 450, y = height-80)
     results_ScrollFrame.display(x = 400, y = 100)
     display_info()
 
@@ -81,12 +83,13 @@ def display_startpage():
     display_info_btn.place(x = 600, y = 60)
     display_logfile_btn.place(x = 700, y = 60)
 
-    refresh_startpage()
+    refresh_startpage(1, '')
     
 def test():
+    print(gv.img_data_array)
     gv.Files.Log.write_to_log('this is a test')
 
-def refresh_startpage(answer2=''):
+def refresh_startpage(change, answer2):
     """
     Updates these startpage widgets:
     - Images in Input folder
@@ -100,6 +103,16 @@ def refresh_startpage(answer2=''):
         if (not is_image(img)):
             gv.input_images_array.remove(img)
     images_in_input_count_lbl.configure(text=str(len(gv.input_images_array)))
+
+
+    # if process.is_alive():
+    #     if lock_save_btn.cget('state') != 'enabled':
+    #         lock_save_btn.configure(state='enabled')
+    #     if not locked and save_locked_btn.cget('state') != 'disabled':
+    #         save_locked_btn.configure(state='disabled')
+    # elif save_locked_btn.cget('state') != 'enabled' and lock_save_btn.cget('state') != 'disabled':
+    #     save_locked_btn.configure(state='enabled')
+    #     lock_save_btn.configure(state='disabled')
 
     answer1 = 201
     if not comm_q.empty():
@@ -116,9 +129,6 @@ def refresh_startpage(answer2=''):
                 answer2 = comm_img_q.get()
                 if answer2 != currently_processing:
                     currently_processing = answer2
-                #     pointdex = currently_processing.rfind(".")
-                # if pointdex != -1:
-                #     currently_processing = currently_processing[:pointdex] # deletes the suffix
             except:
                 pass
         currently_sourcing_img_lbl.configure(text=answer2)
@@ -143,17 +153,48 @@ def refresh_startpage(answer2=''):
             gv.img_data_array.append(b)
         except:
             pass
+    
+    # Kucke ob freie plätze gefolgt von besetzten
+    # wenn ja, rücke auf (erniedrige den index aller datas welche größer sind und platziere sie erneut)
+    # Kucke ob es datas gibt welche keinen index haben
+    # wenn eine gefunden, 
+    # packe es in frühesten freien platz
 
-    if img_data_counter < 12*3 and not img_data_counter/3 > len(gv.img_data_array)-1:
-        gv.img_data_array[int(img_data_counter/3)].load()
-        gv.img_data_array[int(img_data_counter/3)].process_results_imgs()
-        gv.img_data_array[int(img_data_counter/3)].modify_results_widgets()
-        gv.img_data_array[int(img_data_counter/3)].display_results(img_data_counter)
-        img_data_counter += 3
+    mem = False
+    c = 0
+    i = 0
+    if (True in gv.free_space) and (False in gv.free_space):
+        for space in gv.free_space:
+            if space and not mem:
+                mem = True
+                c = i
+            if not space and mem:
+                x = 0
+                for data in gv.img_data_array:
+                    if data.index > c:
+                        gv.free_space[data.index] = True
+                        data.display_results((c+x)*3)
+                        gv.free_space[c+x] = False
+                    x += 1
+                break
+            i += 1
+    if (True in gv.free_space):
+        for data in gv.img_data_array:
+            if data.index == None:
+                x = 0
+                for space in gv.free_space:
+                    if space:
+                        data.load()
+                        data.process_results_imgs()
+                        data.modify_results_widgets()
+                        data.display_results(x*3)
+                        gv.free_space[x] = False
+                        break
+                    x += 1
     if gv.esc_op:
         Options.display_sourcery_options()
     else:
-        window.after(100, refresh_startpage, answer2)
+        window.after(100, refresh_startpage, change, answer2)
 
 def load_from_ref():
     refs = gv.Files.Ref.read_reference()
@@ -172,7 +213,7 @@ def load_from_ref():
             if next_img:
                 gv.Files.Log.write_to_log('Image already loaded/sourced')
                 continue
-            gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], ['Pixiv', None, None, None, 80], illust))# Minsim wrong, TODO what if image doesnt exist
+            gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], ['Pixiv', None, None, None, ref['minsim']], illust))# TODO what if image doesnt exist
         gv.Files.Log.write_to_log('Loaded images from reference file')
     else:
         gv.Files.Log.write_to_log('Reference file is empty')
@@ -217,17 +258,27 @@ def stop():
         stop_btn.configure(state='disabled')
     #currently_sourcing_img_lbl.configure(text="Stopped")
 
-def save_and_refresh():
+def lock_save():
     """
-    Save selected images from results page and show the next dozen.
+    Locks in selected images to save
     """
-    # for i in range(20):
-    #     print(i)
-    #     time.sleep(1)
+    data_list = copy(gv.img_data_array)
+    for data in data_list:
+        if data.index != None:
+            data.lock()
+    save_locked_btn.configure(state='enabled')
+    
+def save_locked():
+    """
+    Save locked images from results page
+    """
     gv.Files.Log.write_to_log('Saving selected images...')
-    save()#TODO race conditions, seems like there are none, further investigation required
-    gv.Files.Log.write_to_log('Saved images')
+    if save():
+        gv.Files.Log.write_to_log('Saved images')
+    else:
+        gv.Files.Log.write_to_log('Cancelled saving images')
     leftovers()
+    save_locked_btn.configure(state='disabled')
 
 def leftovers():
     # # Delete leftovers
@@ -334,8 +385,8 @@ if __name__ == '__main__':
     # widgets for results
     results_lbl = Label(window, text="Results", font=("Arial Bold", 20), style="label.TLabel")
 
-    #save_and_back_btn = Button(window, text="Save & Back", command=save_and_back, style="button.TLabel")
-    save_and_refresh_btn = Button(window, text="Save selected images", command=save_and_refresh, style="button.TLabel")
+    lock_save_btn = Button(window, text="Lock selected", command=lock_save, style="button.TLabel")
+    save_locked_btn = Button(window, text="Save selected images", command=save_locked, state = 'disabled', style="button.TLabel")
 
     img_data_counter = 0
     rename_option = False
@@ -346,7 +397,8 @@ if __name__ == '__main__':
     gv.window = window
     gv.big_selector_frame = big_selector_ScrollFrame.sub_frame
     gv.big_selector_canvas = big_selector_ScrollFrame.canvas
-    
+    for i in range(12):
+        gv.free_space.append(True)
     #gv.display_view_results = display_view_results
     gv.display_startpage = display_startpage
     currently_processing = ''

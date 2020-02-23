@@ -24,6 +24,7 @@ height = 0
 input_images_array = [] # For all images in Input folder
 delete_dirs_array = [] # For empty directories or dirs where no original is present
 img_data_array = [] # For all ImageData instances
+free_space = list()
 
 
 COLORS = ['white', 'snow', 'ghost white', 'white smoke', 'gainsboro', 'floral white', 'old lace',

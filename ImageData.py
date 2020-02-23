@@ -1,7 +1,7 @@
 from os import path, listdir, remove
 from shutil import move, rmtree
 from tkinter import IntVar, W, N
-#from tkinter import messagebox as mb
+from tkinter import messagebox as mb
 from tkinter.ttk import Checkbutton, Label, Button
 from PIL import ImageTk, Image
 from webbrowser import open_new
@@ -48,8 +48,11 @@ class ImageData():
         self.downloaded_pixiv_var = IntVar(value=1)
         self.downloaded_chkbtn = Checkbutton(master=gv.frame, var=self.downloaded_pixiv_var, style="chkbtn.TCheckbutton")
         self.downloaded_lbl = Label(master=gv.frame, text = "Pixiv", style='label.TLabel')
-        self.downloaded_wxh_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')#TODO how many instead of more
-        self.downloaded_type_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')
+        try:
+            self.downloaded_wxh_lbl = Label(master=gv.frame, text = str(len(listdir(self.path_pixiv))) + " images", style='label.TLabel')
+        except:
+            self.downloaded_wxh_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')
+        self.downloaded_type_lbl = Label(master=gv.frame, style='label.TLabel')
         self.big_selector_btn = Button(master=gv.frame, command=self.display_big_selector, text='Big Selector', style='button.TLabel')
 
         self.info_btn = Button(master=gv.frame, command=self.display_info, text='More Info', style='button.TLabel')
@@ -83,8 +86,9 @@ class ImageData():
         self.process_results_imgs_init = False
         self.process_big_imgs_init = False
         self.modify_results_widgets_init = False
-        self.modify_big_widgets_init = False
+        #self.modify_big_widgets_init = False
         self.process_info_imgs_init = False
+        self.locked = False
 
     def set_name_pixiv(self):
         """
@@ -206,6 +210,11 @@ class ImageData():
         #self.modify_big_widgets_init = False
         self.modify_results_widgets_init = True
 
+    def lock(self):
+        self.locked = True
+        self.original_cropped_lbl.configure(background = 'green')
+        #self.downloaded_chkbtn.configure(background = 'green')
+
     def display_info(self):
         for widget in gv.frame3.winfo_children():
             widget.grid_forget()
@@ -233,7 +242,8 @@ class ImageData():
         #self.info_imageid_lbl.grid(column = 1, row = 4, sticky = W, padx = 5)
         self.info_date_lbl.grid(column = 1, row = 5, sticky = W, padx = 5)
         
-        self.info_wxh_lbl.grid(column = 1, row = 6, sticky = W, padx = 5)#TODO don't do this when more images
+        if len(self.sub_dir_array_pixiv) < 1:
+            self.info_wxh_lbl.grid(column = 1, row = 6, sticky = W, padx = 5)
         self.info_url_lbl.grid(column = 0, row = 10, columnspan = 3, sticky = W)
         self.tags_pixiv_lbl.grid(column = 0, row = 11, sticky = W)
         
@@ -314,28 +324,48 @@ class ImageData():
         IMPORTANT:\n
         Call load and process_big_imgs in that order before
         """
-        if self.modify_big_widgets_init:
-            return
-
-        if self.index < len(gv.img_data_array)-1:
-            self.next_btn.configure(state='enabled', command = gv.img_data_array[self.index+1].display_big_selector)
-        else:
+        flag_next = False
+        flag_prev = False
+        for data in gv.img_data_array:
+            if data.index-1 == self.index:
+                self.next_btn.configure(state='enabled', command = data.display_big_selector)
+                flag_next = True
+            if data.index+1 == self.index:
+                self.prev_btn.configure(state='enabled', command = data.display_big_selector)
+                flag_prev = True
+        if not flag_next:
             self.next_btn.configure(state='disabled', command=None)
-        if self.index > 0:
-            self.prev_btn.configure(state='enabled', command = gv.img_data_array[self.index-1].display_big_selector)
-        else:
+        if not flag_prev:
             self.prev_btn.configure(state='disabled', command=None)
-
-        self.modify_big_widgets_init = True
        
+    def delete_both(self):
+        """
+        Returns False if user wants to delete both images (input and downloaded) otherwise True
+        """
+        flag = False
+        if self.original_var.get() == 0 and self.downloaded_pixiv_var.get() == 0:
+            for img in self.sub_dir_img_array_pixiv:
+                if img.var.get() == 1:
+                    flag = True
+                    break
+            if not flag and not mb.askyesno('Delete both?', 'Do you really want to delete both images:\n' + self.name_original + '\n' + self.name_pixiv):
+                return True
+        return False
+
     def save(self):
+
+        # if not self.locked or not self.load_init:
+        #     self.locked = False
+        #     self.original_cropped_lbl.configure(background = gv.Files.Theme.background)
+        #     return False
+
         downloaded_name_new = None
         original_name_new = None
 
         if self.original_var.get() == 1:
             if self.downloaded_pixiv_var.get() == 1:
-                downloaded_name_new = 'new_' + self.name_pixiv#TODO geht das mit renaming option?
-                original_name_new = 'old_' + self.name_original
+                downloaded_name_new = 'new_' + self.name_pixiv
+                original_name_new = 'old_' + self.name_pixiv
             else:
                 # Move original image to Sourced and delete downloaded image/directory
                 downloaded_name_new = None
@@ -349,7 +379,7 @@ class ImageData():
             if self.path_original not in gv.delete_dirs_array:
                 gv.delete_dirs_array.append(self.path_original)
 
-        if self.downloaded_pixiv_var.get() == 0:#TODO Prompt: "Are you sure you want to delete both versions of [image]"
+        if self.downloaded_pixiv_var.get() == 0:
             for elem in self.sub_dir_img_array_pixiv:
                 elem.save()
             if self.path_pixiv not in gv.delete_dirs_array:
@@ -380,6 +410,21 @@ class ImageData():
             gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
             #mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.cwd + '/Input/' + self.name_original)
 
+        return True
+
+    def forget_results(self):
+        self.original_chkbtn.grid_forget()
+        self.original_lbl.grid_forget()
+        self.original_wxh_lbl.grid_forget()
+        self.original_type_lbl.grid_forget()
+        self.info_btn.grid_forget()
+        self.original_cropped_lbl.grid_forget()
+        self.downloaded_chkbtn.grid_forget()
+        self.downloaded_lbl.grid_forget()
+        self.downloaded_wxh_lbl.grid_forget()
+        self.downloaded_type_lbl.grid_forget()
+        self.big_selector_btn.grid_forget()
+
     def self_destruct(self):
         if self.original_SubImgData != None:
             self.original_SubImgData.self_destruct()
@@ -393,6 +438,9 @@ class ImageData():
         del self.original_photoImage_thumb
         del self.downloaded_photoImage_pixiv_thumb
         del self.downloaded_photoImage_pixiv_preview
+
+        self.downloaded_chkbtn.image = None
+        self.original_chkbtn.image = None
 
 class SubImageData():
     def __init__(self, name, path, service, parent, scrollparent, img=None, var=None, master_folder='', siblings=list()):
@@ -489,6 +537,11 @@ class SubImageData():
 
     def self_destruct(self):
         del self.photoImg
+        del self.photoImg_thumb
+        if self.chkbtn != None:
+            self.chkbtn.image = None
+        if self.thumb_chkbtn != None:
+            self.thumb_chkbtn.image = None
 
 def resize(image):
     """

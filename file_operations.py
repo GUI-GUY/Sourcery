@@ -25,20 +25,27 @@ def is_image(img):
     return False
 
 def save():
-    for i in range(12):
-        if len(gv.img_data_array) == 0:
+    if len(gv.img_data_array) == 0:
+        return False
+    
+    remove_later_list = list()
+    for data in gv.img_data_array:
+        if gv.img_data_array.index(data) > 12:
             break
-        
-        ImgData = gv.img_data_array.pop()
-        gv.Files.Log.write_to_log('Attempting to save image:' + ImgData.name_original + '/' + ImgData.name_pixiv + '...' )
-        ImgData.save()
-        gv.Files.Log.write_to_log('Successfully saved image')
-        #TODO
-        ImgData.self_destruct()
-        del ImgData
-
-    for widget in gv.frame.winfo_children():
-        widget.grid_forget()
+        if data.locked:
+            if data.delete_both():
+                continue
+            gv.Files.Log.write_to_log('Attempting to save image:' + data.name_original + '/' + data.name_pixiv + '...' )
+            if not data.save():
+                continue
+            gv.Files.Log.write_to_log('Successfully saved image')
+            data.forget_results()
+            data.self_destruct()
+            remove_later_list.append(data)
+    for data in remove_later_list:
+        gv.img_data_array.remove(data)
+    remove_later_list.clear()
+    return True
 
 def open_input():
     try:

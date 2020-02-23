@@ -34,7 +34,7 @@ class Files():
             #self.Log.write_to_log("ERROR [0007] " + str(e))
             mb.showerror("ERROR [0007]", "ERROR CODE [0007]\nSomething went wrong while creating directories, please restart Sourcery.")
 
-    def init_configs(self):#TODO
+    def init_configs(self):
         if not path.exists(cwd + '/Sourcery/theme'):
             try:
                 theme = open(cwd + '/Sourcery/theme', 'x')
@@ -75,7 +75,7 @@ class Files():
                 reference.close()
             except Exception as e:
                 print("ERROR [0036] " + str(e))
-                #self.Log.write_to_log("ERROR [0033] " + str(e))
+                #self.Log.write_to_log("ERROR [0036] " + str(e))
                 mb.showerror("ERROR [0036]", "ERROR CODE [0036]\nSomething went wrong while accessing a configuration file(reference), please restart Sourcery.")
 
 class ThemeFile():
@@ -300,7 +300,9 @@ class LogFile():
             self.log_text.insert(END, '\nSourcery started. Date:' + strftime("20%y|%m|%d") + ' Time:' + strftime("%H:%M:%S") + '\n')
             self.log_text.configure(state='disabled')
         except Exception as e:
-            pass#TODO
+            print("ERROR [0038] " + str(e))
+            #self.Log.write_to_log("ERROR [0038] " + str(e))
+            mb.showerror("ERROR [0038]", "ERROR CODE [0038]\nSomething went wrong while accessing a configuration file(log), please restart Sourcery.")
     
     def write_to_log(self, message = ''):
         if message != '':
@@ -311,8 +313,9 @@ class LogFile():
                 self.log_text.insert(END,'[' + strftime("%H:%M:%S") + '] ' + message + '\n')
                 self.log_text.configure(state='disabled')
             except Exception as e:
-                print(str(e))
-                pass#TODO
+                print("ERROR [0036] " + str(e))
+                #self.Log.write_to_log("ERROR [0033] " + str(e))
+                mb.showerror("ERROR [0036]", "ERROR CODE [0036]\nSomething went wrong while accessing a configuration file(log), please restart Sourcery as soon as possible.")
 
 class ConfigFile():
     def __init__(self, log):
@@ -371,12 +374,13 @@ class  ReferenceFile():
     def __init__(self, log):
         self.Log = log
 
-    def new_reference(self, old_name, new_name_pixiv, id_pixiv, rename_option):
+    def new_reference(self, old_name, new_name_pixiv, id_pixiv, rename_option, minsim):
         ref = ("{\"old_name\" : \"" + old_name +
                 "\", \"new_name_pixiv\" : \"" + new_name_pixiv +
                 "\", \"id_pixiv\" : " + str(id_pixiv) +
                 ", \"rename_option\" : \"" + rename_option +
-                "\"}\n")
+                "\", \"minsim\" : " + str(minsim) +
+                "}\n")
         try:
             f = open(cwd + '/Sourcery/reference', 'a')
             f.write(ref)

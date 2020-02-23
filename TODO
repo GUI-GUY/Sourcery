@@ -46,12 +46,12 @@ beta 0.2 (Classified)
 + duplicates in results
 + better Big Selector
 
+clean reference after saving
 scaling
-big selector text green/red/white if better/worse/same res/datatype
 ~ no message boxes but labels
 Fehlerbehandlung
 
-Last Error: 0037
+Last Error: 0038
 
 beta 0.3
 multiprocessing -> window.after???(probably not)
@@ -71,6 +71,7 @@ better sync for stop-???
 -- minileak in results (does this still exist?)
 change font option
 link to SauceNao/Pixiv data online
+big selector text green/red/white if better/worse/same res/datatype?
 Fehlerbehandlung
 
 beta 0.4
