@@ -86,7 +86,6 @@ class ImageData():
         self.process_results_imgs_init = False
         self.process_big_imgs_init = False
         self.modify_results_widgets_init = False
-        #self.modify_big_widgets_init = False
         self.process_info_imgs_init = False
         self.locked = False
 
@@ -112,8 +111,14 @@ class ImageData():
         Loads images into memory
         """
         if self.load_init:
-            return
-        self.original_image = Image.open(self.path_original)
+            return True
+        try:
+            self.original_image = Image.open(self.path_original)
+        except Exception as e:
+                print("ERROR [0039] " + str(e))
+                #mb.showerror("ERROR [0039]", "ERROR CODE [0039]\nSomething went wrong while loading an image.")
+                gv.Files.Log.write_to_log("ERROR [0039] " + str(e))
+                return False
         if path.isfile(self.path_pixiv):
             try:
                 self.downloaded_image_pixiv = Image.open(self.path_pixiv)
@@ -121,6 +126,7 @@ class ImageData():
                 print("ERROR [0031] " + str(e))
                 #mb.showerror("ERROR [0031]", "ERROR CODE [0031]\nSomething went wrong while loading an image.")
                 gv.Files.Log.write_to_log("ERROR [0031] " + str(e))
+                return False
         elif path.isdir(self.path_pixiv):
             try:
                 self.sub_dir_array_pixiv.extend(listdir(self.path_pixiv))
@@ -133,7 +139,9 @@ class ImageData():
                 print("ERROR [0032] " + str(e))
                 #mb.showerror("ERROR [0032]", "ERROR CODE [0032]\nSomething went wrong while loading an image.")
                 gv.Files.Log.write_to_log("ERROR [0032] " + str(e))
+                return False
         self.load_init = True
+        return True
 
     def display_view_results(self):
         self.forget_all_widgets()
@@ -213,7 +221,6 @@ class ImageData():
     def lock(self):
         self.locked = True
         self.original_cropped_lbl.configure(background = 'green')
-        #self.downloaded_chkbtn.configure(background = 'green')
 
     def display_info(self):
         for widget in gv.frame3.winfo_children():
@@ -354,11 +361,6 @@ class ImageData():
 
     def save(self):
 
-        # if not self.locked or not self.load_init:
-        #     self.locked = False
-        #     self.original_cropped_lbl.configure(background = gv.Files.Theme.background)
-        #     return False
-
         downloaded_name_new = None
         original_name_new = None
 
@@ -430,7 +432,8 @@ class ImageData():
             self.original_SubImgData.self_destruct()
         if self.downloaded_SubImgData_pixiv != None:
             self.downloaded_SubImgData_pixiv.self_destruct()
-        self.original_image.close()
+        if self.original_image != None:
+            self.original_image.close()
         if self.downloaded_image_pixiv != None:
             self.downloaded_image_pixiv.close()
         for img in self.sub_dir_img_array_pixiv:

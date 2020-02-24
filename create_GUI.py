@@ -29,7 +29,6 @@ def magic():
         gv.Files.Log.write_to_log('Starting second process for sourcing images')
         process = Process(target=do_sourcery, args=(gv.cwd, gv.input_images_array, gv.Files.Cred.saucenao_api_key, gv.Files.Conf.minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, duplicate_c_pipe, ))
         process.start()
-        rename_option = gv.Files.Conf.rename_pixiv
 
 def image_preloader():
     # """
@@ -97,7 +96,6 @@ def refresh_startpage(change, answer2):
     - Current image that is being processed
     """
     global currently_processing
-    global img_data_counter
     gv.input_images_array = listdir(gv.cwd + "/Input")
     for img in gv.input_images_array:
         if (not is_image(img)):
@@ -184,12 +182,17 @@ def refresh_startpage(change, answer2):
                 x = 0
                 for space in gv.free_space:
                     if space:
-                        data.load()
-                        data.process_results_imgs()
-                        data.modify_results_widgets()
-                        data.display_results(x*3)
-                        gv.free_space[x] = False
-                        break
+                        if not data.load():
+                            data.self_destruct()
+                            gv.img_data_array.remove(data)
+                            gv.Files.Log.write_to_log('Problem while loading images, deleted class')
+                            break
+                        else:
+                            data.process_results_imgs()
+                            data.modify_results_widgets()
+                            data.display_results(x*3)
+                            gv.free_space[x] = False
+                            break
                     x += 1
     if gv.esc_op:
         Options.display_sourcery_options()
@@ -207,9 +210,8 @@ def load_from_ref():
                 continue
             next_img = False
             for data in gv.img_data_array:
-                if ref['old_name'] == data.name_original:
-                    if ref['id_pixiv'] == illust.id:# TODO Missing: rename option
-                        next_img = True
+                if ref['old_name'] == data.name_original and ref['id_pixiv'] == illust.id and ref['rename_option'] == data.rename:
+                    next_img = True
             if next_img:
                 gv.Files.Log.write_to_log('Image already loaded/sourced')
                 continue
@@ -377,19 +379,10 @@ if __name__ == '__main__':
     display_logfile_btn = Button(window, text="display_logfile", command=display_logfile, style="button.TLabel")
     load_from_ref_btn = Button(window, text="Load from Reference File", command=load_from_ref, style="button.TLabel")
     
-
-    # widgets for options
-    options_lbl = Label(window, text="Options", font=("Arial Bold", 20), style="label.TLabel")
-    options_back_btn = Button(window, text="Back", command=display_startpage, style="button.TLabel")
-
     # widgets for results
     results_lbl = Label(window, text="Results", font=("Arial Bold", 20), style="label.TLabel")
-
     lock_save_btn = Button(window, text="Lock selected", command=lock_save, style="button.TLabel")
     save_locked_btn = Button(window, text="Save selected images", command=save_locked, state = 'disabled', style="button.TLabel")
-
-    img_data_counter = 0
-    rename_option = False
 
     gv.frame = results_ScrollFrame.frame
     gv.frame2 = big_selector_ScrollFrame.frame
