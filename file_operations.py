@@ -58,7 +58,7 @@ def open_input():
         
 def open_sourced():
     try:
-        startfile(gv.cwd + "/Sourced")
+        startfile(gv.cwd + "/Output")
     except Exception as e:
         print('ERROR [0023] ' + str(e))
         gv.Files.Log.write_to_log('ERROR [0023] ' + str(e))

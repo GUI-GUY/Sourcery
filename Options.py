@@ -105,7 +105,7 @@ class SauceNaoOptions():
         """
         gv.Files.Log.write_to_log('Attempting to save SauceNao API-Key')
         gv.Files.Cred.saucenao_api_key = self.saucenao_key_entry.get()
-        e = gv.Files.Cred.write_credentials(gv.Files.Cred.saucenao_api_key)
+        e = gv.Files.Cred.write_credentials()
         if e == None:
             gv.Files.Log.write_to_log('Saved SauceNao API-Key successfully')
         else:

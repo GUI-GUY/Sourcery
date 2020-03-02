@@ -6,7 +6,7 @@ from Files import Files
 cwd = getcwd()
 Files = Files()
 
-frame = None
+frame = None #TODO what is this
 frame2 = None
 frame3 = None
 window = None
