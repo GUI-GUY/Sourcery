@@ -5,6 +5,7 @@ from tkinter.ttk import Label, Button, Style, Entry, Frame
 #from functools import partial
 from os import listdir, path, remove
 from shutil import rmtree
+from distutils.util import strtobool
 from multiprocessing import Process, freeze_support, Queue, Pipe#, Semaphore
 from copy import copy
 from file_operations import is_image, save, open_input, open_sourced, display_statistics
@@ -50,37 +51,38 @@ def display_startpage():
     """
     Options.SouO.color_insert()
     forget_all_widgets()
-    y = 100
+    x = int(height/160*2)
+    y = int(height/9)
     c = 23
-    sourcery_lbl.place(x = 20, y = 10)
-    images_in_input_lbl.place(x = 20, y = y + c * 4)
-    images_in_input_count_lbl.place(x = 170, y = y + c * 4)
-    currently_sourcing_lbl.place(x = 20, y = y + c * 5)
-    currently_sourcing_img_lbl.place(x = 170, y = y + c * 5)
-    remaining_searches_lbl.place(x = 20, y = y + c * 6)
-    saucenao_requests_count_lbl.place(x = 170, y = y + c * 6.3)
+    sourcery_lbl.place(x = x, y = int(height/160))
+    images_in_input_lbl.place(x = x, y = y + c * 4)
+    images_in_input_count_lbl.place(x = x + 150, y = y + c * 4)
+    currently_sourcing_lbl.place(x = x, y = y + c * 5)
+    currently_sourcing_img_lbl.place(x = x + 150, y = y + c * 5)
+    remaining_searches_lbl.place(x = x, y = y + c * 6)
+    saucenao_requests_count_lbl.place(x = x + 150, y = y + c * 6.3)
     #elapsed_time_lbl.place(x = 200, y = y + c * 4)
     #eta_lbl.place(x = 200, y = y + c * 5)
-    error_lbl.place(x = 20, y = y + c * 12)
+    error_lbl.place(x = x, y = y + c * 12)
 
-    open_input_btn.place(x = 20, y = y + c * 0)
-    open_sourced_btn.place(x = 20, y = y + c * 1)
-    #statistics_btn.place(x = 20, y = y + c * 2)
-    options_btn.place(x = 20, y = y + c * 2)
-    do_sourcery_btn.place(x = 20, y = y + c * 8)
-    stop_btn.place(x = 20, y = y + c * 9)
-    load_from_ref_btn.place(x = 20, y = y + c * 10)
+    open_input_btn.place(x = x, y = y + c * 0)
+    open_sourced_btn.place(x = x, y = y + c * 1)
+    #statistics_btn.place(x = x, y = y + c * 2)
+    options_btn.place(x = x, y = y + c * 2)
+    do_sourcery_btn.place(x = x, y = y + c * 8)
+    stop_btn.place(x = x, y = y + c * 9)
+    load_from_ref_btn.place(x = x, y = y + c * 10)
     
-    results_lbl.place(x = 400, y = 60)
-    save_locked_btn.place(x = 250, y = height-80)
-    lock_save_btn.place(x = 450, y = height-80)
-    results_ScrollFrame.display(x = 400, y = 100)
+    results_lbl.place(x = int(width/16*4), y = int(height/90*6))
+    save_locked_btn.place(x = int(width*0.48), y = int(height*0.9))
+    lock_save_btn.place(x = int(width*0.4), y = int(height*0.9))
+    results_ScrollFrame.display(x = int(width/16*4), y = int(height/9))
     display_info()
 
     test_btn = Button(master=window, text='test', command=test)
     test_btn.place(x = 800, y = 60)
-    display_info_btn.place(x = 600, y = 60)
-    display_logfile_btn.place(x = 700, y = 60)
+    display_info_btn.place(x = int(width*0.7), y = int(height/90*6))
+    display_logfile_btn.place(x = int(width*0.8), y = int(height/90*6))
 
     refresh_startpage(1, '')
     
@@ -96,21 +98,16 @@ def refresh_startpage(change, answer2):
     - Current image that is being processed
     """
     global currently_processing
-    gv.input_images_array = listdir(gv.cwd + "/Input")
+    try:
+        gv.input_images_array = listdir(gv.cwd + "/Input")
+    except Exception as e:
+        print('ERROR [0040] ' + str(e))
+        gv.Files.Log.write_to_log('ERROR [0040] ' + str(e))
+        #mb.showerror("ERROR [0040]", "ERROR CODE [0040]\nSomething went wrong while accessing a the 'Input' folder, please restart Sourcery.")
     for img in gv.input_images_array:
         if (not is_image(img)):
             gv.input_images_array.remove(img)
     images_in_input_count_lbl.configure(text=str(len(gv.input_images_array)))
-
-
-    # if process.is_alive():
-    #     if lock_save_btn.cget('state') != 'enabled':
-    #         lock_save_btn.configure(state='enabled')
-    #     if not locked and save_locked_btn.cget('state') != 'disabled':
-    #         save_locked_btn.configure(state='disabled')
-    # elif save_locked_btn.cget('state') != 'enabled' and lock_save_btn.cget('state') != 'disabled':
-    #     save_locked_btn.configure(state='enabled')
-    #     lock_save_btn.configure(state='disabled')
 
     answer1 = 201
     if not comm_q.empty():
@@ -210,12 +207,13 @@ def load_from_ref():
                 continue
             next_img = False
             for data in gv.img_data_array:
-                if ref['old_name'] == data.name_original and ref['id_pixiv'] == illust.id and ref['rename_option'] == data.rename:
+                if ref['old_name'] == data.name_original and ref['id_pixiv'] == illust.id and strtobool(ref['rename_option']) == data.rename:
                     next_img = True
+                    break
             if next_img:
-                gv.Files.Log.write_to_log('Image already loaded/sourced')
+                gv.Files.Log.write_to_log('Image already sourced')
                 continue
-            gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], ['Pixiv', None, None, None, ref['minsim']], illust))# TODO what if image doesnt exist
+            gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], ['Pixiv', None, None, None, ref['minsim']], illust))
         gv.Files.Log.write_to_log('Loaded images from reference file')
     else:
         gv.Files.Log.write_to_log('Reference file is empty')
@@ -237,7 +235,7 @@ def display_info():
 
 def display_logfile():
     info_ScrollFrame.sub_frame.place_forget()
-    gv.Files.Log.log_text.place(x = (width/3)*1.85, y = 100)
+    gv.Files.Log.log_text.place(x = (width/3)*1.85, y = int(height/9))
 
 def forget_all_widgets():
     for widget in window.winfo_children():
@@ -334,12 +332,12 @@ if __name__ == '__main__':
     window.state('zoomed')
     height = gv.height = window.winfo_screenheight()
     width = gv.width = window.winfo_screenwidth()
-    results_frame_height = int(height-200)
+    results_frame_height = int(height*7/9)
     results_frame_width = int(width/3)
-    info_frame_height = int(height-200)
+    info_frame_height = int(height*7/9)
     info_frame_width = int(width/3)
-    big_selector_frame_height = int(height-200) # height-620
-    big_selector_frame_width = int(width*0.13) - 25 # width-620
+    big_selector_frame_height = int(height*7/9) # height-620
+    big_selector_frame_width = int(width*0.12) # width-620
     #window.geometry(str(width-500) + 'x' + str(height-500))
     #dateS =  time.strftime("20%y-%m-%d")
 
