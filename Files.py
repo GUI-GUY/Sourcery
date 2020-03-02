@@ -24,7 +24,7 @@ class Files():
     def init_directories(self):
         try:
             makedirs(cwd + "/Input", 0o777, True)
-            makedirs(cwd + "/Sourced", 0o777, True)
+            makedirs(cwd + "/Output", 0o777, True)
             makedirs(cwd + "/Sourcery/sourced_original", 0o777, True)
             makedirs(cwd + "/Sourcery/sourced_progress/pixiv", 0o777, True)
             # makedirs(cwd + "/Sourcery/sourced_progress/danbooru", 0o777, True)

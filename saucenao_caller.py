@@ -170,9 +170,9 @@ def decode_response(results, EnableRename=False):
                 
             # try:
             #     if member_id >= 0:
-            #         newfname = os.path.join(cwd + '/Sourced/', service_name+'_'+str(member_id)+'_'+str(illust_id)+page_string+'.'+fname.split(".")[-1].lower())
+            #         newfname = os.path.join(cwd + '/Output/', service_name+'_'+str(member_id)+'_'+str(illust_id)+page_string+'.'+fname.split(".")[-1].lower())
             #     else:
-            #         newfname = os.path.join(cwd + '/Sourced/', service_name+'_'+str(illust_id)+page_string+'.'+fname.split(".")[-1].lower())
+            #         newfname = os.path.join(cwd + '/Output/', service_name+'_'+str(illust_id)+page_string+'.'+fname.split(".")[-1].lower())
             #     print('New Name: '+newfname)
             #     if EnableRename:
             #         os.rename(fname, newfname)

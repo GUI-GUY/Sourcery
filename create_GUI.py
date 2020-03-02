@@ -71,7 +71,7 @@ def display_startpage():
     options_btn.place(x = x, y = y + c * 2)
     do_sourcery_btn.place(x = x, y = y + c * 8)
     stop_btn.place(x = x, y = y + c * 9)
-    load_from_ref_btn.place(x = x, y = y + c * 10)
+    #load_from_ref_btn.place(x = x, y = y + c * 10)
     
     results_lbl.place(x = int(width/16*4), y = int(height/90*6))
     save_locked_btn.place(x = int(width*0.48), y = int(height*0.9))
@@ -80,7 +80,7 @@ def display_startpage():
     display_info()
 
     test_btn = Button(master=window, text='test', command=test)
-    test_btn.place(x = 800, y = 60)
+    #test_btn.place(x = 800, y = 60)
     display_info_btn.place(x = int(width*0.7), y = int(height/90*6))
     display_logfile_btn.place(x = int(width*0.8), y = int(height/90*6))
 
@@ -313,7 +313,7 @@ def enforce_style():
     style.configure("button.TLabel", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.button_background, font=("Arial Bold", 10))
     style.map("button.TLabel",
         foreground=[('pressed', gv.Files.Theme.button_foreground_pressed), ('active', gv.Files.Theme.button_foreground_active)],
-        background=[('pressed', '!disabled', gv.Files.Theme.button_background_pressed), ('disabled', 'lime green'), ('active', gv.Files.Theme.button_background_active)]
+        background=[('pressed', '!disabled', gv.Files.Theme.button_background_pressed), ('disabled', 'black'), ('active', gv.Files.Theme.button_background_active)]
     )
     style.configure("frame.TFrame", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background)
     style.configure("chkbtn.TCheckbutton", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, borderwidth = 0, highlightthickness = 10, selectcolor=gv.Files.Theme.button_background, activebackground=gv.Files.Theme.button_background, activeforeground=gv.Files.Theme.button_background, disabledforeground=gv.Files.Theme.button_background, highlightcolor=gv.Files.Theme.button_background, font=("Arial Bold", 10))
@@ -356,7 +356,7 @@ if __name__ == '__main__':
 
     # widgets for start screen
     sourcery_lbl = Label(window, text="Sourcery", font=("Arial Bold", 50), style="label.TLabel")
-    images_in_input_lbl = Label(window, text="Images in input", style="label.TLabel")
+    images_in_input_lbl = Label(window, text="Images in Input folder:", style="label.TLabel")
     images_in_input_count_lbl = Label(window, text="Number here", style="label.TLabel")
     currently_sourcing_lbl = Label(window, text="Currently Sourcing:", style="label.TLabel")
     currently_sourcing_img_lbl = Label(window, text="None", style="label.TLabel")
@@ -364,17 +364,17 @@ if __name__ == '__main__':
     saucenao_requests_count_lbl = Label(window, text="???/200", style="label.TLabel")
     #elapsed_time_lbl = Label(window, text="Elapsed time:", style="label.TLabel")
     #eta_lbl = Label(window, text="ETA:", style="label.TLabel")
-    error_lbl = Label(window, text="Errors will be displayed here", style="label.TLabel")
+    error_lbl = Label(window, text="", style="label.TLabel")
 
     open_input_btn = Button(window, text="Open Input", command=open_input, style="button.TLabel")
-    open_sourced_btn = Button(window, text="Open Sourced", command=open_sourced, style="button.TLabel")
+    open_sourced_btn = Button(window, text="Open Output", command=open_sourced, style="button.TLabel")
     #statistics_btn = Button(window, text="Statistics", command=display_statistics, style="button.TLabel")
     options_btn = Button(window, text="Options", command=escape_options, style="button.TLabel")
-    do_sourcery_btn = Button(window, text="Do Sourcery", command=magic, style="button.TLabel")
+    do_sourcery_btn = Button(window, text="Get Sources", command=magic, style="button.TLabel")
     stop_btn = Button(window, text="Stop", command=stop, style="button.TLabel")
     #view_results_btn = Button(window, text="View Results", command=escape_results, style="button.TLabel")
-    display_info_btn = Button(window, text="display_info", command=display_info, style="button.TLabel")
-    display_logfile_btn = Button(window, text="display_logfile", command=display_logfile, style="button.TLabel")
+    display_info_btn = Button(window, text="Image Info", command=display_info, style="button.TLabel")
+    display_logfile_btn = Button(window, text="Log", command=display_logfile, style="button.TLabel")
     load_from_ref_btn = Button(window, text="Load from Reference File", command=load_from_ref, style="button.TLabel")
     
     # widgets for results

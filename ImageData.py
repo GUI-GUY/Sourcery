@@ -226,7 +226,12 @@ class ImageData():
             self.downloaded_wxh_lbl.configure(text = str(self.downloaded_image_pixiv.size))
             self.downloaded_type_lbl.configure(text = self.name_pixiv[self.name_pixiv.rfind(".")+1:])
             
-        
+        gv.frame.columnconfigure(0, weight=1)
+        gv.frame.columnconfigure(1, weight=1)
+        gv.frame.columnconfigure(2, weight=1)
+        gv.frame.columnconfigure(3, weight=1)
+        gv.frame.columnconfigure(4, weight=1)
+        gv.frame.columnconfigure(5, weight=2)
         #self.modify_big_widgets_init = False
         self.modify_results_widgets_init = True
 
@@ -410,7 +415,7 @@ class ImageData():
 
         if downloaded_name_new != None:
             try:
-                move(self.path_pixiv, gv.cwd + '/Sourced/' + downloaded_name_new)
+                move(self.path_pixiv, gv.cwd + '/Output/' + downloaded_name_new)
             except Exception as e:
                 print("ERROR [0012] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0012] " + str(e))
@@ -418,7 +423,7 @@ class ImageData():
 
         if original_name_new != None:
             try:
-                move(self.path_original, gv.cwd + '/Sourced/' + original_name_new)
+                move(self.path_original, gv.cwd + '/Output/' + original_name_new)
             except Exception as e:
                 print("ERROR [0013] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0013] " + str(e))
@@ -556,7 +561,7 @@ class SubImageData():
     def save(self):
         if self.var.get() == 1:
             try:
-                move(self.path, gv.cwd + '/Sourced/' + folder + '/' + self.name)
+                move(self.path, gv.cwd + '/Output/' + folder + '/' + self.name)
             except Exception as e:
                 print("ERROR [0037] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0037] " + str(e))
