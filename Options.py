@@ -51,13 +51,13 @@ class Options():
         Draws options widgets that are shown on all options pages.
         """
         gv.esc_op = False
-        self.options_lbl.place(x = 50, y = 10)
+        self.options_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90))
 
-        self.sourcery_options_btn.place(x = 50, y = 50)
-        self.provider_options_btn.place(x = 150, y = 50)
-        self.saucenao_options_btn.place(x = 250, y = 50)
+        self.sourcery_options_btn.place(x = int(gv.width/160*5), y = int(gv.height/90*5))
+        self.provider_options_btn.place(x = int(gv.width/160*15), y = int(gv.height/90*5))
+        self.saucenao_options_btn.place(x = int(gv.width/160*25), y = int(gv.height/90*5))
 
-        self.options_back_btn.place(x = 50, y = 500)
+        self.options_back_btn.place(x = int(gv.width/160*5), y = int(gv.height/90*50))
 
     def forget_all_widgets(self):
         for widget in self.par.winfo_children():
@@ -81,12 +81,12 @@ class SauceNaoOptions():
         """
         Draw options (API-Key, minsim) for SauceNao:
         """
-        self.saucenao_key_lbl.place(x = 50, y = 100)
-        self.saucenao_key_number_lbl.place(x = 180, y = 100)
-        self.saucenao_key_change_btn.place(x = 550, y = 100)
-        self.saucenao_minsim_lbl.place(x = 50, y = 123)
-        self.saucenao_minsim_entry.place(x = 180, y = 123)
-        self.saucenao_minsim_confirm_btn.place(x = 550, y = 123)
+        self.saucenao_key_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90*10))
+        self.saucenao_key_number_lbl.place(x = int(gv.width/160*18), y = int(gv.height/90*10))
+        self.saucenao_key_change_btn.place(x = int(gv.width/160*55), y = int(gv.height/90*10))
+        self.saucenao_minsim_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90*12.3))
+        self.saucenao_minsim_entry.place(x = int(gv.width/160*18), y = int(gv.height/90*12.3))
+        self.saucenao_minsim_confirm_btn.place(x = int(gv.width/160*55), y = int(gv.height/90*12.3))
     
     def saucenao_change_key(self):
         """
@@ -94,8 +94,8 @@ class SauceNaoOptions():
         """
         self.saucenao_key_change_btn.place_forget()
         self.saucenao_key_number_lbl.place_forget()
-        self.saucenao_key_confirm_btn.place(x = 550, y = 100)
-        self.saucenao_key_entry.place(x = 180, y = 100)
+        self.saucenao_key_confirm_btn.place(x = int(gv.width/160*55), y = int(gv.height/90*10))
+        self.saucenao_key_entry.place(x = int(gv.width/160*18), y = int(gv.height/90*10))
         self.saucenao_key_entry.delete(0, len(gv.Files.Cred.saucenao_api_key))
         self.saucenao_key_entry.insert(0, gv.Files.Cred.saucenao_api_key)
         
@@ -112,9 +112,9 @@ class SauceNaoOptions():
             gv.Files.Log.write_to_log('Failed to save SauceNao API-Key')
         self.saucenao_key_confirm_btn.place_forget()
         self.saucenao_key_entry.place_forget()
-        self.saucenao_key_change_btn.place(x = 550, y = 100)
+        self.saucenao_key_change_btn.place(x = int(gv.width/160*55), y = int(gv.height/90*10))
         self.saucenao_key_number_lbl.configure(text=gv.Files.Cred.saucenao_api_key)
-        self.saucenao_key_number_lbl.place(x = 180, y = 100)
+        self.saucenao_key_number_lbl.place(x = int(gv.width/160*18), y = int(gv.height/90*10))
 
     def saucenao_save(self):
         gv.Files.Log.write_to_log('Attempting to save SauceNAO options...')
@@ -149,8 +149,8 @@ class SourceryOptions():
         self.save_custom_theme_btn = Button(parent, text="Save Custom Theme", command=self.save_custom_theme, style="button.TLabel")
         self.color_widget_list = list()
         self.color_scrollpar = ScrollFrame(parent, gv.width*0.65, gv.height*0.8)
-        for col in gv.COLORS:
-            self.color_widget_list.append(Label(self.color_scrollpar.frame, text=col, background=col, font=('Arial Bold', 10)))
+        # for col in gv.COLORS:
+        #     self.color_widget_list.append(Label(self.color_scrollpar.frame, text=col, background=col, font=('Arial Bold', 10)))
 
         self.custom_background = gv.Files.Theme.custom_background
         self.custom_foreground = gv.Files.Theme.custom_foreground
@@ -177,10 +177,10 @@ class SourceryOptions():
         Draw options for Sourcery Application:
         - Themes
         """
-        y = 100
+        y = int(gv.height/90*10)
         c = 23
-        x1 = 50
-        x2 = 240
+        x1 = int(gv.width/160*5)
+        x2 = int(gv.width/160*24)
         self.color_insert()
 
         self.theme_lbl.place(x = x1, y = y-5)
@@ -309,21 +309,21 @@ class SourceryOptions():
             gv.Files.Log.write_to_log('Failed to save Custom Theme')
 
     def color_check(self, color, index, offset):
-        y = 100
+        y = int(gv.height/90*10)
         c = 23
         if color.startswith('#') and (len(color) == 7 or len(color) == 4):
             try:
                 num = int(color[1:], 16)
                 if num < 0 or num > 16777215:
-                    self.invalid_lbl_array[index].place(x = 440, y = y + c * offset)
+                    self.invalid_lbl_array[index].place(x = int(gv.width/160*44), y = y + c * offset)
                     return True
                 else:
                     self.invalid_lbl_array[index].place_forget()
             except:
-                self.invalid_lbl_array[index].place(x = 440, y = y + c * offset)
+                self.invalid_lbl_array[index].place(x = int(gv.width/160*44), y = y + c * offset)
                 return True
         elif color not in gv.COLORS:
-            self.invalid_lbl_array[index].place(x = 440, y = y + c * offset)
+            self.invalid_lbl_array[index].place(x = int(gv.width/160*44), y = y + c * offset)
             return True
         else:
             self.invalid_lbl_array[index].place_forget()
@@ -384,15 +384,15 @@ class PixivOptions():
         """
         Unlock login widget for pixiv, so that you can change your login data. 
         """
-        y = 100
+        y = int(gv.height/90*10)
         c = 23
         self.pixiv_user_filled_lbl.place_forget()
         self.pixiv_password_filled_lbl.place_forget()
         self.pixiv_login_change_btn.place_forget()
-        self.pixiv_user_entry.place(x = 120, y = y + c * 1)
-        self.pixiv_password_entry.place(x = 120, y = y + c * 2)
-        self.pixiv_login_confirm_btn.place(x = 50, y = y + c * 4)
-        self.pixiv_login_confirm_nosave_btn.place(x = 180, y = y + c * 4)
+        self.pixiv_user_entry.place(x = int(gv.width/160*12), y = y + c * 1)
+        self.pixiv_password_entry.place(x = int(gv.width/160*12), y = y + c * 2)
+        self.pixiv_login_confirm_btn.place(x = int(gv.width/160*5), y = y + c * 4)
+        self.pixiv_login_confirm_nosave_btn.place(x = int(gv.width/160*18), y = y + c * 4)
         self.pixiv_user_entry.delete(0, len(gv.Files.Cred.pixiv_username))
         self.pixiv_password_entry.delete(0, len(gv.Files.Cred.pixiv_password))
         self.pixiv_user_entry.insert(0, gv.Files.Cred.pixiv_username)
@@ -402,15 +402,15 @@ class PixivOptions():
         """
         Save pixiv login data and revert the widgets to being uneditable.
         """
-        y = 100
+        y = int(gv.height/90*10)
         c = 23
         self.pixiv_user_entry.place_forget()
         self.pixiv_password_entry.place_forget()
         self.pixiv_login_confirm_btn.place_forget()
         self.pixiv_login_confirm_nosave_btn.place_forget()
-        self.pixiv_user_filled_lbl.place(x = 120, y = y + c * 1)
-        self.pixiv_password_filled_lbl.place(x = 120, y = y + c * 2)
-        self.pixiv_login_change_btn.place(x = 50, y = y + c * 4)
+        self.pixiv_user_filled_lbl.place(x = int(gv.width/160*12), y = y + c * 1)
+        self.pixiv_password_filled_lbl.place(x = int(gv.width/160*12), y = y + c * 2)
+        self.pixiv_login_change_btn.place(x = int(gv.width/160*5), y = y + c * 4)
         
         gv.Files.Cred.pixiv_username = self.pixiv_user_entry.get()
         gv.Files.Cred.pixiv_password = self.pixiv_password_entry.get()
@@ -429,18 +429,18 @@ class PixivOptions():
         self.pixiv_password_filled_lbl.configure(text=gv.Files.Cred.pixiv_password)
 
     def pixiv_display(self):
-        y = 100
+        y = int(gv.height/90*10)
         c = 23
-        self.pixiv_login_lbl.place(x = 50, y = y)
-        self.pixiv_user_lbl.place(x = 50, y = y + c * 1)
-        self.pixiv_user_filled_lbl.place(x = 120, y = y + c * 1)
-        self.pixiv_password_lbl.place(x = 50, y = y + c * 2)
-        self.pixiv_password_filled_lbl.place(x = 120, y = y + c * 2)
-        self.pixiv_login_change_btn.place(x = 50, y = y + c * 4)
-        self.pixiv_warning_lbl.place(x = 50, y = y + c * 3)
+        self.pixiv_login_lbl.place(x = int(gv.width/160*5), y = y)
+        self.pixiv_user_lbl.place(x = int(gv.width/160*5), y = y + c * 1)
+        self.pixiv_user_filled_lbl.place(x = int(gv.width/160*12), y = y + c * 1)
+        self.pixiv_password_lbl.place(x = int(gv.width/160*5), y = y + c * 2)
+        self.pixiv_password_filled_lbl.place(x = int(gv.width/160*12), y = y + c * 2)
+        self.pixiv_login_change_btn.place(x = int(gv.width/160*5), y = y + c * 4)
+        self.pixiv_warning_lbl.place(x = int(gv.width/160*5), y = y + c * 3)
 
-        self.rename_chkbtn.place(x = 50, y = y + c * 6)
-        self.save_btn.place(x = 50, y = y + c * 7)
+        self.rename_chkbtn.place(x = int(gv.width/160*5), y = y + c * 6)
+        self.save_btn.place(x = int(gv.width/160*5), y = y + c * 7)
 
     def pixiv_save(self):
         gv.Files.Log.write_to_log('Attempting to save Pixiv options...')

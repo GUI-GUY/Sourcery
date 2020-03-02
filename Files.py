@@ -109,11 +109,12 @@ class ThemeFile():
         except Exception as e:
             print("ERROR [0008] " + str(e))
             self.Log.write_to_log("ERROR [0008] " + str(e))
-            #mb.showerror("ERROR [0008]", "ERROR CODE [0008]\nSomething went wrong while accessing a configuration file(theme), please restart Sourcery.")
+            mb.showerror("ERROR [0008]", "ERROR CODE [0008]\nSomething went wrong while accessing a configuration file(theme), please restart Sourcery.")
             try:
                 f.close()
             except:
                 pass
+            return False
         temp = f.readline()
         if not temp.startswith('Current theme='):
             f.close()
@@ -209,7 +210,7 @@ class ThemeFile():
         except Exception as e:
             print("ERROR [0009] " + str(e))
             self.Log.write_to_log("ERROR [0009] " + str(e))
-            #mb.showerror("ERROR [0009]", "ERROR CODE [0009]\nSomething went wrong while accessing a configuration file(theme), please try again.")
+            mb.showerror("ERROR [0009]", "ERROR CODE [0009]\nSomething went wrong while accessing a configuration file(theme), please try again or restart Sourcery.")
             try:
                 f.close()
             except:
@@ -240,7 +241,7 @@ class CredFile():
             print("ERROR [0010] " + str(e))
             self.Log.write_to_log("ERROR [0010] " + str(e))
             mb.showerror("ERROR [0010]", "ERROR CODE [0010]\nSomething went wrong while accessing a configuration file(credentials), please try again.")
-
+            return False
         creds = f.readline()
         if creds != 'SauceNao\n':
             f.close()
@@ -268,7 +269,6 @@ class CredFile():
                 "\nPassword=" + self.pixiv_password +
                 "\nrefreshtoken=" + self.pixiv_refreshtoken +
                 "\n\nEND")
-
         try:
             f = open(cwd + '/Sourcery/credentials', 'w')
             f.write(creds)
@@ -331,8 +331,8 @@ class ConfigFile():
         except Exception as e:
             print("ERROR [0026] " + str(e))
             self.Log.write_to_log("ERROR [0026] " + str(e))
-            mb.showerror("ERROR [0026]", "ERROR CODE [0026]\nSomething went wrong while accessing a configuration file(config), please try again.")
-        
+            mb.showerror("ERROR [0026]", "ERROR CODE [0026]\nSomething went wrong while accessing a configuration file(config), please try again or restart Sourcery.")
+            return False
         temp = f.readline()
         if not temp.startswith('rename_pixiv='):
             f.close()
@@ -365,8 +365,8 @@ class ConfigFile():
         except Exception as e:
             print("ERROR [0025] " + str(e))
             self.Log.write_to_log("ERROR [0025] " + str(e))
-            mb.showerror("ERROR [0025]", "ERROR CODE [0025]\nSomething went wrong while accessing a configuration file(config), please try again.")
-
+            mb.showerror("ERROR [0025]", "ERROR CODE [0025]\nSomething went wrong while accessing a configuration file(config), please try again or restart Sourcery.")
+            return
         f.close()
         self.read_config()
 
@@ -388,7 +388,7 @@ class  ReferenceFile():
             print("ERROR [0033] " + str(e))
             #self.Log.write_to_log("ERROR [0033] " + str(e))
             #mb.showerror("ERROR [0033]", "ERROR CODE [0033]\nSomething went wrong while accessing a configuration file(reference).")
-
+            return
         f.close()
 
     def read_reference(self):
@@ -401,7 +401,7 @@ class  ReferenceFile():
             print("ERROR [0034] " + str(e))
             #self.Log.write_to_log("ERROR [0034] " + str(e))
             #mb.showerror("ERROR [0034]", "ERROR CODE [0034]\nSomething went wrong while accessing a configuration file(reference), please try again.")
-        
+            return False
         return_array = list()
 
         temp = f.readline()

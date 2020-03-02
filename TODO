@@ -45,15 +45,15 @@ beta 0.2 (Classified)
 + (dev) save in file 'oldname=newname + id' for recovery(no SauceNao searches needed)
 + duplicates in results
 + better Big Selector
++ clean reference after saving
+~ scaling
++ Fehlerbehandlung
 
-clean reference after saving
-scaling
-~ no message boxes but labels
-Fehlerbehandlung
-
-Last Error: 0039
+Last Error: 0044
 
 beta 0.3
+options loop makes program laggy
+gv.esc_op
 multiprocessing -> window.after???(probably not)
 2nd service
 service options

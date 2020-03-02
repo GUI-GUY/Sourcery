@@ -93,7 +93,13 @@ class ImageData():
         """
         Sets correct name for pixiv
         """
-        dir = listdir(gv.cwd + '/Sourcery/sourced_progress/pixiv/')
+        try:
+            dir = listdir(gv.cwd + '/Sourcery/sourced_progress/pixiv/')
+        except Exception as e:
+            print("ERROR [0041] " + str(e))
+            gv.Files.Log.write_to_log("ERROR [0041] " + str(e))
+            mb.showerror("ERROR [0041]", "ERROR CODE [0041]\nSomething went wrong while accessing the 'Sourcery/sourced_progress/pixiv' folder, please restart Sourcery.")
+            return    
         for elem in dir:
             if is_image(elem):
                 test = elem.rsplit('.', 1)
@@ -183,7 +189,13 @@ class ImageData():
         if path.isfile(self.path_pixiv):
             self.downloaded_image_pixiv_thumb = deepcopy(self.downloaded_image_pixiv)
         elif path.isdir(self.path_pixiv):
-            self.downloaded_image_pixiv_thumb = Image.open(self.path_pixiv + '/' + listdir(self.path_pixiv)[0])
+            try:
+                self.downloaded_image_pixiv_thumb = Image.open(self.path_pixiv + '/' + listdir(self.path_pixiv)[0])
+            except Exception as e:
+                print("ERROR [0042] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0042] " + str(e))
+                mb.showerror("ERROR [0042]", "ERROR CODE [0042]\nSomething went wrong while accessing an image, please restart Sourcery.")
+                return
         self.downloaded_image_pixiv_thumb.thumbnail(self.thumb_size, resample=Image.ANTIALIAS)
         self.downloaded_photoImage_pixiv_thumb = ImageTk.PhotoImage(self.downloaded_image_pixiv_thumb)
         self.downloaded_image_pixiv_thumb.close()
@@ -272,7 +284,13 @@ class ImageData():
         if path.isfile(self.path_pixiv):
             self.downloaded_image_pixiv_preview = deepcopy(self.downloaded_image_pixiv)
         elif path.isdir(self.path_pixiv):
-            self.downloaded_image_pixiv_preview = Image.open(self.path_pixiv + '/' + listdir(self.path_pixiv)[0])
+            try:
+                self.downloaded_image_pixiv_preview = Image.open(self.path_pixiv + '/' + listdir(self.path_pixiv)[0])
+            except Exception as e:
+                print("ERROR [0043] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0043] " + str(e))
+                mb.showerror("ERROR [0043]", "ERROR CODE [0043]\nSomething went wrong while accessing an image, please restart Sourcery.")
+                return
         self.downloaded_image_pixiv_preview.thumbnail(self.preview_size, resample=Image.ANTIALIAS)
         self.downloaded_photoImage_pixiv_preview = ImageTk.PhotoImage(self.downloaded_image_pixiv_preview)
         self.downloaded_image_pixiv_preview.close()
@@ -286,11 +304,11 @@ class ImageData():
         self.process_big_imgs()
         self.modify_big_widgets()
         self.forget_all_widgets()
-        gv.big_selector_frame.place(x = round(gv.width*0.86), y = 90)
+        gv.big_selector_frame.place(x = round(gv.width*0.86), y = int(gv.height/90*9))
         gv.big_selector_canvas.yview_moveto(0)
-        self.back_btn.place(x = round(gv.width*0.86), y = 40)
-        self.prev_btn.place(x = round(gv.width*0.90), y = 40)
-        self.next_btn.place(x = round(gv.width*0.94), y = 40)
+        self.back_btn.place(x = round(gv.width*0.86), y = int(gv.height/90*4))
+        self.prev_btn.place(x = round(gv.width*0.90), y = int(gv.height/90*4))
+        self.next_btn.place(x = round(gv.width*0.94), y = int(gv.height/90*4))
 
         self.original_SubImgData.display_place()
 
@@ -479,7 +497,13 @@ class SubImageData():
         flag = False
         if self.img_obj == None:
             flag = True
-            self.img_obj = Image.open(self.path)
+            try:
+                self.img_obj = Image.open(self.path)
+            except Exception as e:
+                print("ERROR [0044] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0044] " + str(e))
+                mb.showerror("ERROR [0044]", "ERROR CODE [0044]\nSomething went wrong while accessing an image, please restart Sourcery.")
+                return
         self.size = self.img_obj.size
         self.photoImg = ImageTk.PhotoImage(resize(self.img_obj))
         
@@ -514,17 +538,17 @@ class SubImageData():
         self.show_btn.grid(row=t+3, column=1, sticky=W)
     
     def display_place(self):
-        self.chkbtn.place(x = 15, y = 40)
-        self.lbl2.place(x = 32, y = 20)
-        self.lbl.place(x = round(gv.width*0.86), y = 63)
-        self.wxh_lbl.place(x = round(gv.width*0.90), y = 63)
-        self.type_lbl.place(x = round(gv.width*0.94), y = 63)
+        self.chkbtn.place(x = int(gv.width/160*1.5), y = int(gv.height/90*4))
+        self.lbl2.place(x = int(gv.width/160*3.2), y = int(gv.height/90*2))
+        self.lbl.place(x = int(gv.width*0.86), y = int(gv.height/90*6.3))
+        self.wxh_lbl.place(x = int(gv.width*0.90), y = int(gv.height/90*6.3))
+        self.type_lbl.place(x = int(gv.width*0.94), y = int(gv.height/90*6.3))
 
     def show(self):
         for sib in self.siblings_array:
             sib.forget()
-        self.lbl2.place(x = round(gv.width*0.44), y = 20)
-        self.chkbtn.place(x = round(gv.width*0.43), y = 40)
+        self.lbl2.place(x = int(gv.width*0.44), y = int(gv.height/90*2))
+        self.chkbtn.place(x = int(gv.width*0.43), y = int(gv.height/90*4))
 
     def forget(self):
         self.chkbtn.place_forget()
@@ -557,13 +581,13 @@ def resize(image):
     new_image = deepcopy(image)
 
     if oldwidth > gv.width/3:
-        newwidth = round(gv.width*0.4)
-        newheight = round(newwidth/(oldwidth/oldheight))
+        newwidth = int(gv.width*0.4)
+        newheight = int(newwidth/(oldwidth/oldheight))
         newsize = newwidth, newheight
         new_image = image.resize(newsize, Image.ANTIALIAS)
-    if new_image.height > gv.height-120:
-        newheight = gv.height - 120
-        newwidth = round(newheight/(oldheight/oldwidth))
+    if new_image.height > gv.height*0.87:
+        newheight = int(gv.height*0.87)
+        newwidth = int(newheight/(oldheight/oldwidth))
         newsize = newwidth, newheight
         new_image = new_image.resize(newsize, Image.ANTIALIAS)
     return new_image
