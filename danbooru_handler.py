@@ -1,68 +1,36 @@
-#!/usr/bin/python
-#coding:utf-8
-
 import os # path manipulation
 import urllib
 import requests
 from webbrowser import open_new
 import global_variables as gv
 
-status = 'not done yet'
-
 # https://github.com/uncountablecat/danbooru-grabber
-# change this to your danbooru folder
-# it might look something like this: '/users/YourUserName/DanbooruPics'
 # make sure the folder already exists!
 danbooru_folder = 'D:\All_Files\python\GitHub\Sourcery\Sourcery\dan'
 
-# generate tag argument to be used in url and folder creation
-
 
 # request json, get urls of pictures and download them
-def grabber(tag_argv,page_num):
-    r = requests.get('https://danbooru.donmai.us/posts.json?tags='+tag_argv+'&page='+str(page_num))
-    streams = r.json()
+def grabber(id, folder):
+    if id == '':
+        id = 1
+    if folder == '':
+        folder = 'explicits'
+    r = requests.get('https://danbooru.donmai.us/posts/' + str(id) + '.json')
+    stream = r.json()
     #print(streams)
-    # check if all pages have been visited
-    print(streams)
-    tag_argv = 'explicits'
+
     # check if directory already exists
-    if (os.path.exists(danbooru_folder + '/' + tag_argv) == False):
-        os.mkdir(danbooru_folder + '/' + tag_argv)
+    if (os.path.exists(danbooru_folder + '/' + folder) == False):
+        os.mkdir(danbooru_folder + '/' + folder)
 
-    url = []
-    for post in streams:
-        if 'file_url' in post:
-            url.append(post['file_url'])
-
-    print(url)
-    # download
-    for address in url:
-        #open_new(address)
-        urllib.request.urlretrieve(address, danbooru_folder + '/' + tag_argv + '/' + address.split('/')[-1])
-
-
-def main():
-    # page_num = input('Enter the number of pages you want to download. To download all, simply enter a super large number:')
-    # taginput = input('Enter tags,separated by space:') 
-
-    page_num = 3
-    taginput = 'uncensored flat_chest'
-    n = 1
-    while n <= int(page_num) and status == 'not done yet':
-        tagList = taginput.split(' ')
-        tag_argv = generate_tag_argv(tagList)
-        grabber(tag_argv,n)
-        n = n + 1
-
-    print('Download successful!')
-    u2 = u'どうぞ、召し上がってください！'
-    print(u2)
+    if 'file_url' in stream:
+        urllib.request.urlretrieve(stream['file_url'], danbooru_folder + '/' + folder + '/' + stream['file_url'].split('/')[-1])
+    urllib.request.urlretrieve('https://i.pximg.net/img-original/img/2018/11/16/00/00/01/71671760_p0.png', danbooru_folder + '/' + folder + '/' + stream['file_url'].split('/')[-1])
 
 
 if __name__ == '__main__':
-    main()
-
+    grabber(input('ID:'), input('Folder name:'))
+    print('Download successful!')
 
 # [{'id': 3810771, 
 # 'created_at': '2020-03-06T04:51:23.187-05:00', 
