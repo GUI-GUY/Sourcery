@@ -17,3 +17,4 @@ identify_images_v1.1.py
 dl.py
 credentials*
 **.pyc
+danbooru_experiment.py

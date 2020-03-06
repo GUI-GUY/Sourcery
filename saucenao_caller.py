@@ -28,10 +28,10 @@ if True:
     index_pixivhistorical='0'
     index_reserved='0'
     index_seigaillust='0'
-    index_danbooru='0'
+    index_danbooru='1'#TODO danbooru
     index_drawr='0'
     index_nijie='0'
-    index_yandere='0'
+    index_yandere='0'#TODO danbooru
     index_animeop='0'
     index_reserved='0'
     index_shutterstock='0'
@@ -44,7 +44,7 @@ if True:
     index_movies='0'
     index_shows='0'
     index_gelbooru='0'
-    index_konachan='0'
+    index_konachan='0'#TODO danbooru
     index_sankaku='0'
     index_animepictures='0'
     index_e621='0'

@@ -1,13 +1,18 @@
+
+# __version__ = '0.1'
+# __author__ = 'Cardinal Biggles'
+
+from os import listdir, path, remove
+from copy import copy
+import time
 from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END
 from tkinter.ttk import Label, Button, Style, Entry, Frame
 #from tkinter import messagebox as mb
 #from tkinter.filedialog import askdirectory
 #from functools import partial
-from os import listdir, path, remove
 from shutil import rmtree
 from distutils.util import strtobool
 from multiprocessing import Process, freeze_support, Queue, Pipe#, Semaphore
-from copy import copy
 from file_operations import is_image, save, open_input, open_sourced, display_statistics
 from sourcery import do_sourcery
 from pixiv_handler import pixiv_authenticate, pixiv_login, pixiv_fetch_illustration
@@ -17,7 +22,6 @@ from ImageData import ImageData
 from ScrollFrame import ScrollFrame
 from Files import Files
 import global_variables as gv
-import time
 
 def magic():
     """
@@ -49,7 +53,7 @@ def display_startpage():
     """
     Draws the basic startpage widgets.
     """
-    Options.SouO.color_insert()
+    Options_Class.SouO.color_insert()
     forget_all_widgets()
     x = int(height/160*2)
     y = int(height/9)
@@ -79,7 +83,7 @@ def display_startpage():
     results_ScrollFrame.display(x = int(width/16*4), y = int(height/9))
     display_info()
 
-    test_btn = Button(master=window, text='test', command=test)
+    #test_btn = Button(master=window, text='test', command=test)
     #test_btn.place(x = 800, y = 60)
     display_info_btn.place(x = int(width*0.7), y = int(height/90*6))
     display_logfile_btn.place(x = int(width*0.8), y = int(height/90*6))
@@ -192,7 +196,7 @@ def refresh_startpage(change, answer2):
                             break
                     x += 1
     if gv.esc_op:
-        Options.display_sourcery_options()
+        Options_Class.display_sourcery_options()
     else:
         window.after(100, refresh_startpage, change, answer2)
 
@@ -352,7 +356,7 @@ if __name__ == '__main__':
 
     enforce_style()
     
-    Options = Options(window, display_startpage, enforce_style)
+    Options_Class = Options(window, display_startpage, enforce_style)
 
     # widgets for start screen
     sourcery_lbl = Label(window, text="Sourcery", font=("Arial Bold", 50), style="label.TLabel")
