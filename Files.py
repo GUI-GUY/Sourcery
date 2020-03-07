@@ -27,7 +27,7 @@ class Files():
             makedirs(cwd + "/Output", 0o777, True)
             makedirs(cwd + "/Sourcery/sourced_original", 0o777, True)
             makedirs(cwd + "/Sourcery/sourced_progress/pixiv", 0o777, True)
-            # makedirs(cwd + "/Sourcery/sourced_progress/danbooru", 0o777, True)
+            makedirs(cwd + "/Sourcery/sourced_progress/danbooru", 0o777, True)
             # makedirs(cwd + "/Sourcery/sourced_progress/gelbooru", 0o777, True)
         except Exception as e:
             print("ERROR [0007] " + str(e))

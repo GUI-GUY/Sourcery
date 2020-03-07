@@ -1,7 +1,7 @@
-import os # path manipulation
-import urllib
-import requests
-from webbrowser import open_new
+from os import getcwd # path manipulation
+from urllib.request import urlretrieve
+from requests import get
+#from webbrowser import open_new
 import global_variables as gv
 
 # https://github.com/uncountablecat/danbooru-grabber
@@ -10,26 +10,28 @@ danbooru_folder = 'D:\All_Files\python\GitHub\Sourcery\Sourcery\dan'
 
 
 # request json, get urls of pictures and download them
-def grabber(id, folder):
-    if id == '':
-        id = 1
-    if folder == '':
-        folder = 'explicits'
-    r = requests.get('https://danbooru.donmai.us/posts/' + str(id) + '.json')
-    stream = r.json()
-    #print(streams)
+def danbooru_fetch_illustration(imgid, comm_error_q=None):
+    r = get('https://danbooru.donmai.us/posts/' + str(imgid) + '.json')
+    illustration = r.json()
+    return illustration # TODO
 
-    # check if directory already exists
-    if (os.path.exists(danbooru_folder + '/' + folder) == False):
-        os.mkdir(danbooru_folder + '/' + folder)
-
-    if 'file_url' in stream:
-        urllib.request.urlretrieve(stream['file_url'], danbooru_folder + '/' + folder + '/' + stream['file_url'].split('/')[-1])
-    urllib.request.urlretrieve('https://i.pximg.net/img-original/img/2018/11/16/00/00/01/71671760_p0.png', danbooru_folder + '/' + folder + '/' + stream['file_url'].split('/')[-1])
+def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None):
+    if 'file_url' in illustration:
+        if gv.Files.Conf.rename_pixiv == 'True':
+            urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + illustration['file_url'].split('/')[-1])
+        else:
+            dot = img_name_original.rfind('.')
+            if dot != -1:
+                new_name = img_name_original[:dot]
+            else:
+                new_name = img_name_original
+            urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + new_name + '.' + illustration['file_ext'])
+    return # TODO
+    #urlretrieve('https://i.pximg.net/img-original/img/2018/11/16/00/00/01/71671760_p0.png', danbooru_folder + '/' + folder + '/' + stream['file_url'].split('/')[-1])
 
 
 if __name__ == '__main__':
-    grabber(input('ID:'), input('Folder name:'))
+    danbooru_fetch_illustration(1)
     print('Download successful!')
 
 # [{'id': 3810771, 

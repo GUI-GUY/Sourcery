@@ -108,13 +108,13 @@ def get_response(image, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
             #General issue, api did not respond. Normal site took over for this error state.
             #Issue is unclear, so don't flood requests.
             return [402, 'Bad image, or API failure.']
-
+    #print(results)
     return [200, results, results['header']['short_remaining'], results['header']['long_remaining']]
 
 def decode_response(results, EnableRename=False):
     """
-    Returns a list:\n
-    [0]service - pixiv or '' if failure\n
+    Returns a list of dictionaries with:\n
+    [0]service - pixiv/danbooru or '' if failure\n
     [1]illust_id - 0 if failure\n
     [2]member_id - negative if failure\n
     [3]source_url - '' if failure\n
@@ -134,16 +134,29 @@ def decode_response(results, EnableRename=False):
             page_string = ''
             page_match = search('(_p[\d]+)\.', results['results'][0]['header']['thumbnail'])
             source = ''
+            ret_dict = list()
             if page_match:
                 page_string = page_match.group(1)
-                
+            
+            if index_id != 5 and index_id != 6 and index_id != 9:
+                ret_dict.append({"service_name": service_name, "member_id": member_id, "illust_id": illust_id, "source": source})
+
             if index_id == 5 or index_id == 6:
                 #5->pixiv 6->pixiv historical
                 service_name='Pixiv'
                 member_id = results['results'][0]['data']['member_id']
                 illust_id = results['results'][0]['data']['pixiv_id']
                 source = results['results'][0]['data']['ext_urls']
+                ret_dict.append({"service_name": service_name, "member_id": member_id, "illust_id": illust_id, "source": source})
                 # print(source)
+            if index_id == 9:
+                #9->danbooru
+                print(results)
+                service_name='Danbooru'
+                #member_id = results['results'][0]['data']['member_id']
+                illust_id = results['results'][0]['data']['danbooru_id']
+                source = results['results'][0]['data']['ext_urls']
+                ret_dict.append({"service_name": service_name, "illust_id": illust_id, "source": source})
             # elif index_id == 8:
             #     #8->nico nico seiga
             #     service_name='seiga'
@@ -190,8 +203,8 @@ def decode_response(results, EnableRename=False):
         #     #print('Out of searches for this 30 second period. Sleeping for 25 seconds...')
         #     time.sleep(25)
     
-            return [service_name, illust_id, member_id, source, results['header']['minimum_similarity']]
-    return['', 0, -1, '']
+            return ret_dict# [service_name, illust_id, member_id, source, results['header']['minimum_similarity']]
+    return[{"service_name": '', "member_id": 0, "illust_id": -1, "source": ''}]
     #print('All Done!')
 
     # OrderedDict([('header', 

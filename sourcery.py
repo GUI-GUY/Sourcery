@@ -3,6 +3,7 @@ from time import sleep
 from shutil import copy
 from saucenao_caller import get_response, decode_response
 from pixiv_handler import pixiv_authenticate, pixiv_download, pixiv_fetch_illustration
+from danbooru_handler import danbooru_download, danbooru_fetch_illustration
 import global_variables as gv
 
 def die(message, comm_error_q, comm_img_q):
@@ -66,10 +67,10 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_
             sleep(10)
         elif res[0] == 200:
             comm_q.put(res[3])
-            img_name_original, new_name, img_data_array, illustration = process_img_data(img, res, comm_error_q)
-            if img_name_original != False:
-                img_data_q.put((img_name_original, new_name, img_data_array, illustration))
-                gv.Files.Ref.new_reference(img_name_original, new_name, img_data_array[1], gv.Files.Conf.rename_pixiv, minsim)
+            img_name_original, new_name, img_data_array, pixiv_illustration, danbooru_illustration = process_img_data(img, res, comm_error_q)
+            #if img_name_original != False:
+            img_data_q.put((img_name_original, new_name, img_data_array, pixiv_illustration, danbooru_illustration))
+                #gv.Files.Ref.new_reference(img_name_original, new_name, img_data_array[0]['illust_id'], gv.Files.Conf.rename_pixiv, minsim)# TODO
             if res[3] < 1:
                 die('Out of searches for today', comm_error_q, comm_img_q)
             if res[2] < 1:
@@ -90,15 +91,23 @@ def process_img_data(img_name_original, res, comm_error_q):
     Downloads the image from pixiv, creates an ImageData class and returns it or False on ERROR
     """
     img_data_array = decode_response(res[1])
-    if img_data_array[1] != 0:
-        comm_error_q.put('[Sourcery] Attempting to fetch illustration...')
-        illustration = pixiv_fetch_illustration(img_name_original, img_data_array[1], comm_error_q)
-        if illustration == False:
-            return False, None, None, None
-        comm_error_q.put('[Sourcery] Fetched illustration successfully')
-        comm_error_q.put('[Sourcery] Attempting to download illustration...')
-        flag, new_name = pixiv_download(img_name_original, img_data_array[1], illustration, comm_error_q)
-        if flag:
-            comm_error_q.put('[Sourcery] Downloaded illustration successfully')
-            return img_name_original, new_name, img_data_array, illustration
-    return False, None, None, None
+    pixiv_illustration = None
+    danbooru_illustration = None
+    new_name = img_name_original
+    flag = None
+    for source in img_data_array:
+        print(source)
+        if source['illust_id'] != 0:
+            comm_error_q.put('[Sourcery] Attempting to fetch illustration...')
+            if source['service_name'] == 'Pixiv':
+                pixiv_illustration = pixiv_fetch_illustration(img_name_original, source['illust_id'], comm_error_q)
+                # if pixiv_illustration == False:
+                #     return False, None, None, None, None
+                flag, new_name = pixiv_download(img_name_original, source['illust_id'], pixiv_illustration, comm_error_q)
+            if source['service_name'] == 'Danbooru':
+                danbooru_illustration = danbooru_fetch_illustration(source['illust_id'], comm_error_q)
+                danbooru_download(img_name_original, source['illust_id'], danbooru_illustration, comm_error_q)
+        # comm_error_q.put('[Sourcery] Fetched illustration successfully')
+        comm_error_q.put('[Sourcery] Downloaded illustration successfully')
+    return img_name_original, new_name, img_data_array, pixiv_illustration, danbooru_illustration
+    return False, None, None, None, None # TODO

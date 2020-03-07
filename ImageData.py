@@ -11,16 +11,15 @@ import global_variables as gv
 
 class ImageData():
     """PixivOptions"""
-    def __init__(self, old_name, new_name, img_data_array, illust):
+    def __init__(self, old_name, new_name, img_data_array, pixiv_illust, danbooru_illust):
         self.name_original = old_name
         self.name_pixiv = new_name
         self.set_name_pixiv()
-        self.illust = illust
-        self.service = img_data_array[0]
-        # self.illust_id = img_data_array[1]
-        # self.member_id = img_data_array[2]
-        self.source_url = img_data_array[3]
-        self.minsim = img_data_array[4]
+        self.name_danb = new_name
+        self.illust = pixiv_illust
+        self.pixiv_dict = img_data_array[0]
+        self.danb_dict = danbooru_illust # TODO
+        #self.minsim = img_data_array[4]
         if old_name == new_name:
             self.rename = False
         else:
@@ -29,14 +28,14 @@ class ImageData():
         self.path_pixiv = gv.cwd + '/Sourcery/sourced_progress/pixiv/' + self.name_pixiv
         self.original_image = None
         self.downloaded_image_pixiv = None
-        self.sub_dir_array_pixiv = list()
-        self.sub_dir_img_array_pixiv = list()
+        # self.sub_dir_array_pixiv = list()
+        # self.sub_dir_img_array_pixiv = list()
         self.thumb_size = (70,70)
         self.preview_size = (200, 200)
         self.original_image_thumb = None
         self.original_photoImage_thumb = None
-        self.downloaded_image_pixiv_thumb = None
-        self.downloaded_photoImage_pixiv_thumb = None
+        # self.downloaded_image_pixiv_thumb = None
+        # self.downloaded_photoImage_pixiv_thumb = None
         self.downloaded_image_pixiv_preview = None
         self.downloaded_photoImage_pixiv_preview = None
         self.original_var = IntVar(value=0)
@@ -45,14 +44,18 @@ class ImageData():
         self.original_wxh_lbl = Label(master=gv.frame, style='label.TLabel')
         self.original_type_lbl = Label(master=gv.frame, style='label.TLabel')
         self.original_cropped_lbl = Label(master=gv.frame, style='label.TLabel')
-        self.downloaded_pixiv_var = IntVar(value=1)
-        self.downloaded_chkbtn = Checkbutton(master=gv.frame, var=self.downloaded_pixiv_var, style="chkbtn.TCheckbutton")
-        self.downloaded_lbl = Label(master=gv.frame, text = "Pixiv", style='label.TLabel')
-        try:
-            self.downloaded_wxh_lbl = Label(master=gv.frame, text = str(len(listdir(self.path_pixiv))) + " images", style='label.TLabel')
-        except:
-            self.downloaded_wxh_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')
-        self.downloaded_type_lbl = Label(master=gv.frame, style='label.TLabel')
+        # self.downloaded_pixiv_var = IntVar(value=1)
+        # self.downloaded_chkbtn = Checkbutton(master=gv.frame, var=self.downloaded_pixiv_var, style="chkbtn.TCheckbutton")
+        # self.downloaded_lbl = Label(master=gv.frame, text = "Pixiv", style='label.TLabel')
+        # try:
+        #     self.downloaded_wxh_lbl = Label(master=gv.frame, text = str(len(listdir(self.path_pixiv))) + " images", style='label.TLabel')
+        # except:
+        #     self.downloaded_wxh_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')
+        # self.downloaded_type_lbl = Label(master=gv.frame, style='label.TLabel')
+
+        self.pixiv = ProviderImageData('Pixiv', new_name, gv.cwd + '/Sourcery/sourced_progress/pixiv/' + self.name_pixiv, self.thumb_size)
+        self.danb = ProviderImageData('Danbooru', new_name, gv.cwd + '/Sourcery/sourced_progress/danbooru/' + self.name_danb, self.thumb_size)
+
         self.big_selector_btn = Button(master=gv.frame, command=self.display_big_selector, text='Big Selector', style='button.TLabel')
 
         self.info_btn = Button(master=gv.frame, command=self.display_info, text='More Info', style='button.TLabel')
@@ -71,8 +74,9 @@ class ImageData():
         
 
         self.tags_lbl_array.append((Label(master=gv.frame3, text = 'Original:', style='label.TLabel', font = ('Arial Bold', 11)), Label(master=gv.frame3, text = 'Translated:', style='label.TLabel', font = ('Arial Bold', 11))))
-        for tag in illust.tags:
-            self.tags_lbl_array.append((Label(master=gv.frame3, text = tag['name'], style='label.TLabel'), Label(master=gv.frame3, text = tag['translated_name'], style='label.TLabel')))
+        if pixiv_illust != None:
+            for tag in pixiv_illust.tags:
+                self.tags_lbl_array.append((Label(master=gv.frame3, text = tag['name'], style='label.TLabel'), Label(master=gv.frame3, text = tag['translated_name'], style='label.TLabel')))
 
         self.back_btn = Button(gv.window, text = 'Back', command = self.display_view_results, style = 'button.TLabel')
         self.next_btn = Button(gv.window, text = 'Next', style = 'button.TLabel')
@@ -125,53 +129,36 @@ class ImageData():
                 #mb.showerror("ERROR [0039]", "ERROR CODE [0039]\nSomething went wrong while loading an image.")
                 gv.Files.Log.write_to_log("ERROR [0039] " + str(e))
                 return False
-        if path.isfile(self.path_pixiv):
-            try:
-                self.downloaded_image_pixiv = Image.open(self.path_pixiv)
-            except Exception as e:
-                print("ERROR [0031] " + str(e))
-                #mb.showerror("ERROR [0031]", "ERROR CODE [0031]\nSomething went wrong while loading an image.")
-                gv.Files.Log.write_to_log("ERROR [0031] " + str(e))
-                return False
-        elif path.isdir(self.path_pixiv):
-            try:
-                self.sub_dir_array_pixiv.extend(listdir(self.path_pixiv))
-                if len(self.sub_dir_array_pixiv) == 0:
-                    if self.path_pixiv not in gv.delete_dirs_array:
-                        gv.delete_dirs_array.append(self.path_pixiv)
-                for img in self.sub_dir_array_pixiv:
-                    self.sub_dir_img_array_pixiv.append(SubImageData(img, self.path_pixiv, 'Pixiv', gv.window, gv.frame2, master_folder=self.name_pixiv, siblings=self.sub_dir_img_array_pixiv))#(Image.open(self.path_pixiv + '/' + img), img))
-            except Exception as e:
-                print("ERROR [0032] " + str(e))
-                #mb.showerror("ERROR [0032]", "ERROR CODE [0032]\nSomething went wrong while loading an image.")
-                gv.Files.Log.write_to_log("ERROR [0032] " + str(e))
-                return False
+        # if path.isfile(self.path_pixiv):
+        #     try:
+        #         self.downloaded_image_pixiv = Image.open(self.path_pixiv)
+        #     except Exception as e:
+        #         print("ERROR [0031] " + str(e))
+        #         #mb.showerror("ERROR [0031]", "ERROR CODE [0031]\nSomething went wrong while loading an image.")
+        #         gv.Files.Log.write_to_log("ERROR [0031] " + str(e))
+        #         return False
+        # elif path.isdir(self.path_pixiv):
+        #     try:
+        #         self.sub_dir_array_pixiv.extend(listdir(self.path_pixiv))
+        #         if len(self.sub_dir_array_pixiv) == 0:
+        #             if self.path_pixiv not in gv.delete_dirs_array:
+        #                 gv.delete_dirs_array.append(self.path_pixiv)
+        #         for img in self.sub_dir_array_pixiv:
+        #             self.sub_dir_img_array_pixiv.append(SubImageData(img, self.path_pixiv, 'Pixiv', gv.window, gv.frame2, master_folder=self.name_pixiv, siblings=self.sub_dir_img_array_pixiv))#(Image.open(self.path_pixiv + '/' + img), img))
+        #     except Exception as e:
+        #         print("ERROR [0032] " + str(e))
+        #         #mb.showerror("ERROR [0032]", "ERROR CODE [0032]\nSomething went wrong while loading an image.")
+        #         gv.Files.Log.write_to_log("ERROR [0032] " + str(e))
+        #         return False
+
+        if self.illust != None:
+            self.pixiv.load()
+
+        if self.danb_dict != None:
+            if self.danb.load() == False:
+                pass # TODO
         self.load_init = True
         return True
-
-    def display_view_results(self):
-        self.forget_all_widgets()
-        gv.display_startpage()
-        #gv.display_view_results()
-
-    def display_results(self, t):
-        """
-        Displays all widgets corresponding to this image\n
-        IMPORTANT:\n
-        Call load, process_results_imgs and modify_results_widgets in that order before
-        """
-        self.index = int(t/3)
-        self.original_chkbtn.grid(column = 0, row = t+1, sticky = W)
-        self.original_lbl.grid(column = 2, row = t+1, sticky = W, padx = 10)
-        self.original_wxh_lbl.grid(column = 3, row = t+1, sticky = W, padx = 10)
-        self.original_type_lbl.grid(column = 4, row = t+1, sticky = W, padx = 10)
-        self.info_btn.grid(column = 5, row = t+2, sticky = W, padx = 10)
-        self.original_cropped_lbl.grid(column = 1, row = t, columnspan=5, sticky = W, padx = 10)
-        self.downloaded_chkbtn.grid(column = 0, row = t+2, sticky = W)
-        self.downloaded_lbl.grid(column = 2, row = t+2, sticky = W, padx = 10)
-        self.downloaded_wxh_lbl.grid(column = 3, row = t+2, sticky = W, padx = 10)
-        self.downloaded_type_lbl.grid(column = 4, row = t+2, sticky = W, padx = 10)
-        self.big_selector_btn.grid(column = 5, row = t+1, sticky = W, padx = 10)
 
     def process_results_imgs(self):
         """
@@ -186,20 +173,24 @@ class ImageData():
         self.original_photoImage_thumb = ImageTk.PhotoImage(self.original_image_thumb)
         self.original_image_thumb.close()
 
-        if path.isfile(self.path_pixiv):
-            self.downloaded_image_pixiv_thumb = deepcopy(self.downloaded_image_pixiv)
-        elif path.isdir(self.path_pixiv):
-            try:
-                self.downloaded_image_pixiv_thumb = Image.open(self.path_pixiv + '/' + listdir(self.path_pixiv)[0])
-            except Exception as e:
-                print("ERROR [0042] " + str(e))
-                gv.Files.Log.write_to_log("ERROR [0042] " + str(e))
-                mb.showerror("ERROR [0042]", "ERROR CODE [0042]\nSomething went wrong while accessing an image, please restart Sourcery.")
-                return
-        self.downloaded_image_pixiv_thumb.thumbnail(self.thumb_size, resample=Image.ANTIALIAS)
-        self.downloaded_photoImage_pixiv_thumb = ImageTk.PhotoImage(self.downloaded_image_pixiv_thumb)
-        self.downloaded_image_pixiv_thumb.close()
-
+        # if path.isfile(self.path_pixiv):
+        #     self.downloaded_image_pixiv_thumb = deepcopy(self.downloaded_image_pixiv)
+        # elif path.isdir(self.path_pixiv):
+        #     try:
+        #         self.downloaded_image_pixiv_thumb = Image.open(self.path_pixiv + '/' + listdir(self.path_pixiv)[0])
+        #     except Exception as e:
+        #         print("ERROR [0042] " + str(e))
+        #         gv.Files.Log.write_to_log("ERROR [0042] " + str(e))
+        #         mb.showerror("ERROR [0042]", "ERROR CODE [0042]\nSomething went wrong while accessing an image, please restart Sourcery.")
+        #         return
+        # self.downloaded_image_pixiv_thumb.thumbnail(self.thumb_size, resample=Image.ANTIALIAS)
+        # self.downloaded_photoImage_pixiv_thumb = ImageTk.PhotoImage(self.downloaded_image_pixiv_thumb)
+        # self.downloaded_image_pixiv_thumb.close()
+        if self.illust != None:
+            self.pixiv.process_results_imgs()
+        
+        if self.danb_dict != None:
+            self.danb.process_results_imgs()
         self.process_results_imgs_init = True
 
     def modify_results_widgets(self):
@@ -216,16 +207,22 @@ class ImageData():
         self.original_type_lbl.configure(text = self.name_original[self.name_original.rfind('.')+1:])
         self.original_cropped_lbl.configure(text = self.name_original + ' -> ' + self.name_pixiv)
         
-        self.downloaded_chkbtn.configure(image=self.downloaded_photoImage_pixiv_thumb)
-        self.downloaded_chkbtn.image = self.downloaded_photoImage_pixiv_thumb
+        # self.downloaded_chkbtn.configure(image=self.downloaded_photoImage_pixiv_thumb)
+        # self.downloaded_chkbtn.image = self.downloaded_photoImage_pixiv_thumb
 
-        if path.isdir(self.path_pixiv):
-            self.original_var.set(1)
-            self.downloaded_pixiv_var.set(0)
-        else:
-            self.downloaded_wxh_lbl.configure(text = str(self.downloaded_image_pixiv.size))
-            self.downloaded_type_lbl.configure(text = self.name_pixiv[self.name_pixiv.rfind(".")+1:])
-            
+        # if path.isdir(self.path_pixiv):
+        #     self.original_var.set(1) TODO
+        #     self.downloaded_pixiv_var.set(0)
+        # else:
+        #     self.downloaded_wxh_lbl.configure(text = str(self.downloaded_image_pixiv.size))
+        #     self.downloaded_type_lbl.configure(text = self.name_pixiv[self.name_pixiv.rfind(".")+1:])
+
+        if self.illust != None:
+            self.pixiv.modify_results_widgets()
+
+        if self.danb_dict != None:    
+            self.danb.modify_results_widgets()
+
         gv.frame.columnconfigure(0, weight=1)
         gv.frame.columnconfigure(1, weight=1)
         gv.frame.columnconfigure(2, weight=1)
@@ -234,6 +231,36 @@ class ImageData():
         gv.frame.columnconfigure(5, weight=2)
         #self.modify_big_widgets_init = False
         self.modify_results_widgets_init = True
+
+    def display_view_results(self):
+        self.forget_all_widgets()
+        gv.display_startpage()
+        #gv.display_view_results()
+
+    def display_results(self, t):
+        """
+        Displays all widgets corresponding to this image\n
+        IMPORTANT:\n
+        Call load, process_results_imgs and modify_results_widgets in that order before
+        """
+        self.index = int(t/4)
+        self.original_chkbtn.grid(column = 0, row = t+1, sticky = W)
+        self.original_lbl.grid(column = 2, row = t+1, sticky = W, padx = 10)
+        self.original_wxh_lbl.grid(column = 3, row = t+1, sticky = W, padx = 10)
+        self.original_type_lbl.grid(column = 4, row = t+1, sticky = W, padx = 10)
+        self.info_btn.grid(column = 5, row = t+2, sticky = W, padx = 10)
+        self.original_cropped_lbl.grid(column = 1, row = t, columnspan=5, sticky = W, padx = 10)
+        # self.downloaded_chkbtn.grid(column = 0, row = t+2, sticky = W)
+        # self.downloaded_lbl.grid(column = 2, row = t+2, sticky = W, padx = 10)
+        # self.downloaded_wxh_lbl.grid(column = 3, row = t+2, sticky = W, padx = 10)
+        # self.downloaded_type_lbl.grid(column = 4, row = t+2, sticky = W, padx = 10)
+        self.big_selector_btn.grid(column = 5, row = t+1, sticky = W, padx = 10)
+
+        if self.illust != None:
+            self.pixiv.display_results(t)
+
+        if self.danb_dict != None:
+            self.danb.display_results(t)
 
     def lock(self):
         self.locked = True
@@ -467,6 +494,116 @@ class ImageData():
 
         self.downloaded_chkbtn.image = None
         self.original_chkbtn.image = None
+
+class ProviderImageData():
+    def __init__(self, name, service, path, thumb_size):
+        self.name = name
+        self.path = path
+        self.thumb_size = thumb_size
+        self.downloaded_image = None
+        self.downloaded_image_thumb = None
+        self.downloaded_photoImage_thumb = None
+        self.sub_dir_array = list()
+        self.downloaded_var = IntVar(value=1)
+        self.downloaded_chkbtn = Checkbutton(master = gv.frame, var=self.downloaded_var, style="chkbtn.TCheckbutton")
+        self.downloaded_lbl = Label(master=gv.frame, text = service, style='label.TLabel')
+        try:
+            self.downloaded_wxh_lbl = Label(master=gv.frame, text = str(len(listdir(self.path))) + " images", style='label.TLabel')
+        except:
+            self.downloaded_wxh_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')
+        self.downloaded_type_lbl = Label(master=gv.frame, style='label.TLabel')
+
+        self.load_init = False
+        self.process_results_imgs_init = False
+        self.modify_results_widgets_init = False
+
+
+    def load(self):
+
+        if self.load_init:
+            return
+
+        if path.isfile(self.path):
+            try:
+                self.downloaded_image = Image.open(self.path)
+            except Exception as e:
+                print("ERROR [0045] " + str(e))
+                #mb.showerror("ERROR [0045]", "ERROR CODE [0045]\nSomething went wrong while loading an image.")
+                gv.Files.Log.write_to_log("ERROR [0045] " + str(e))
+                return False
+        elif path.isdir(self.path):
+            try:
+                self.sub_dir_array.extend(listdir(self.path))
+                if len(self.sub_dir_array) == 0:
+                    if self.path not in gv.delete_dirs_array:
+                        gv.delete_dirs_array.append(self.path)
+                # for img in self.sub_dir_array_pixiv:
+                #     self.sub_dir_img_array_pixiv.append(SubImageData(img, self.path, 'Pixiv', gv.window, gv.frame2, master_folder=self.name_pixiv, siblings=self.sub_dir_img_array_pixiv))#(Image.open(self.path + '/' + img), img))
+            except Exception as e:
+                print("ERROR [0046] " + str(e))
+                #mb.showerror("ERROR [0046]", "ERROR CODE [0046]\nSomething went wrong while loading an image.")
+                gv.Files.Log.write_to_log("ERROR [0046] " + str(e))
+                return False
+        
+        self.load_init = True
+
+    def process_results_imgs(self):
+        """
+        Turns images into usable photoimages for tkinter\n
+        IMPORTANT:\n
+        Call load before
+        """
+        if self.process_results_imgs_init:
+            return
+
+        if path.isfile(self.path):
+            self.downloaded_image_thumb = deepcopy(self.downloaded_image)
+        elif path.isdir(self.path):
+            try:
+                self.downloaded_image_thumb = Image.open(self.path + '/' + listdir(self.path)[0])
+            except Exception as e:
+                print("ERROR [0047] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0047] " + str(e))
+                mb.showerror("ERROR [0047]", "ERROR CODE [0047]\nSomething went wrong while accessing an image, please restart Sourcery.")
+                return
+        self.downloaded_image_thumb.thumbnail(self.thumb_size, resample=Image.ANTIALIAS)
+        self.downloaded_photoImage_thumb = ImageTk.PhotoImage(self.downloaded_image_thumb)
+        self.downloaded_image_thumb.close()
+
+        self.process_results_imgs_init = True
+    
+    def modify_results_widgets(self):
+        """
+        Fills widgets with information\n
+        IMPORTANT:\n
+        Call load and process_results_imgs in that order before
+        """
+        if self.modify_results_widgets_init:
+            return
+
+        self.downloaded_chkbtn.configure(image=self.downloaded_photoImage_thumb)
+        self.downloaded_chkbtn.image = self.downloaded_photoImage_thumb
+
+        if path.isdir(self.path):
+            self.downloaded_var.set(0)
+        else:
+            self.downloaded_wxh_lbl.configure(text = str(self.downloaded_image.size))
+            self.downloaded_type_lbl.configure(text = self.name[self.name.rfind(".")+1:])
+        
+        #self.modify_big_widgets_init = False
+        self.modify_results_widgets_init = True
+            
+    def display_results(self, t):
+        """
+        Displays all widgets corresponding to this image\n
+        IMPORTANT:\n
+        Call load, process_results_imgs and modify_results_widgets in that order before
+        """
+        self.index = int(t/4)
+        self.downloaded_chkbtn.grid(column = 0, row = t+3, sticky = W)
+        self.downloaded_lbl.grid(column = 2, row = t+3, sticky = W, padx = 10)
+        self.downloaded_wxh_lbl.grid(column = 3, row = t+3, sticky = W, padx = 10)
+        self.downloaded_type_lbl.grid(column = 4, row = t+3, sticky = W, padx = 10)
 
 class SubImageData():
     def __init__(self, name, path, service, parent, scrollparent, img=None, var=None, master_folder='', siblings=list()):

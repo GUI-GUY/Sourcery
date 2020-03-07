@@ -75,7 +75,7 @@ def display_startpage():
     options_btn.place(x = x, y = y + c * 2)
     do_sourcery_btn.place(x = x, y = y + c * 8)
     stop_btn.place(x = x, y = y + c * 9)
-    #load_from_ref_btn.place(x = x, y = y + c * 10)
+    load_from_ref_btn.place(x = x, y = y + c * 10)
     
     results_lbl.place(x = int(width/16*4), y = int(height/90*6))
     save_locked_btn.place(x = int(width*0.48), y = int(height*0.9))
@@ -83,8 +83,8 @@ def display_startpage():
     results_ScrollFrame.display(x = int(width/16*4), y = int(height/9))
     display_info()
 
-    #test_btn = Button(master=window, text='test', command=test)
-    #test_btn.place(x = 800, y = 60)
+    test_btn = Button(master=window, text='test', command=test)
+    test_btn.place(x = 800, y = 60)
     display_info_btn.place(x = int(width*0.7), y = int(height/90*6))
     display_logfile_btn.place(x = int(width*0.8), y = int(height/90*6))
 
@@ -148,10 +148,12 @@ def refresh_startpage(change, answer2):
     if not img_data_q.empty():
         try:
             a = img_data_q.get()
-            b = ImageData(a[0], a[1], a[2], a[3])
+            print(a)
+            b = ImageData(a[0], a[1], a[2], a[3], a[4])
             gv.img_data_array.append(b)
-        except:
-            pass
+            print(b)
+        except Exception as e:
+            print(e)
     
     # Kucke ob freie plätze gefolgt von besetzten
     # wenn ja, rücke auf (erniedrige den index aller datas welche größer sind und platziere sie erneut)
@@ -172,7 +174,7 @@ def refresh_startpage(change, answer2):
                 for data in gv.img_data_array:
                     if data.index > c:
                         gv.free_space[data.index] = True
-                        data.display_results((c+x)*3)
+                        data.display_results((c+x)*4)
                         gv.free_space[c+x] = False
                     x += 1
                 break
@@ -191,7 +193,7 @@ def refresh_startpage(change, answer2):
                         else:
                             data.process_results_imgs()
                             data.modify_results_widgets()
-                            data.display_results(x*3)
+                            data.display_results(x*4)
                             gv.free_space[x] = False
                             break
                     x += 1
@@ -217,7 +219,7 @@ def load_from_ref():
             if next_img:
                 gv.Files.Log.write_to_log('Image already sourced')
                 continue
-            gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], ['Pixiv', None, None, None, ref['minsim']], illust))
+            gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], ['Pixiv', None, None, None, ref['minsim']], illust, None))
         gv.Files.Log.write_to_log('Loaded images from reference file')
     else:
         gv.Files.Log.write_to_log('Reference file is empty')
