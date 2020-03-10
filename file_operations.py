@@ -33,7 +33,7 @@ def save():
         if gv.img_data_array.index(data) > 12:
             break
         if data.locked:
-            if data.delete_both():
+            if not data.delete_both():
                 continue
             gv.Files.Log.write_to_log('Attempting to save image:' + data.name_original + '/' + data.name_pixiv + '...' )
             if not data.save():

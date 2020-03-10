@@ -109,7 +109,6 @@ class ImageData():
             return None
         return {"artist": illust['tag_string_artist'], "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['image_width'], "height": illust['image_height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source']}
 
-
     def forget_all_widgets(self):
         for widget in gv.window.winfo_children():
             widget.place_forget()
@@ -239,9 +238,6 @@ class ImageData():
         if self.danb_dict != None:
             self.danb.display_info(t)
 
-    def hyperlink(self, event):
-        open_new(event.widget.cget("text"))
-
     def display_big_selector(self):
         self.process_big_imgs()
         self.modify_big_widgets()
@@ -300,23 +296,24 @@ class ImageData():
        
     def delete_both(self):
         """
-        Returns False if user wants to delete both images (input and downloaded) otherwise True
+        Returns True if user wants to delete both images (input and downloaded) or if at least one image is checked to save, otherwise False
         """
-        flag = False
-        if self.original_var.get() == 0 and self.downloaded_pixiv_var.get() == 0:
-            for img in self.sub_dir_img_array_pixiv:
-                if img.var.get() == 1:
-                    flag = True
-                    break
-            if not flag and not mb.askyesno('Delete both?', 'Do you really want to delete both images:\n' + self.name_original + '\n' + self.name_pixiv):
-                return True
-        return False
+        if self.original_var.get() == 0 and self.pixiv.delete_both() and self.danb.delete_both():
+            return mb.askyesno('Delete both?', 'Do you really want to delete both images:\n' + self.name_original + '\n' + self.name_pixiv)
+        return True
 
     def save(self):
-
-        downloaded_name_new = None
+        pass
+        #downloaded_name_new = None
         original_name_new = None
 
+        if self.original_var.get() == 0:
+            original_name_new = None
+            if self.path_original not in gv.delete_dirs_array:
+                gv.delete_dirs_array.append(self.path_original)
+
+        # new code above old code below
+        
         if self.original_var.get() == 1:
             if self.downloaded_pixiv_var.get() == 1:
                 downloaded_name_new = 'new_' + self.name_pixiv
@@ -374,29 +371,22 @@ class ImageData():
         self.original_type_lbl.grid_forget()
         self.info_btn.grid_forget()
         self.original_cropped_lbl.grid_forget()
-        self.downloaded_chkbtn.grid_forget()
-        self.downloaded_lbl.grid_forget()
-        self.downloaded_wxh_lbl.grid_forget()
-        self.downloaded_type_lbl.grid_forget()
         self.big_selector_btn.grid_forget()
+
+        self.pixiv.forget_results()
+        self.danb.forget_results()
 
     def self_destruct(self):
         if self.original_SubImgData != None:
             self.original_SubImgData.self_destruct()
-        if self.downloaded_SubImgData_pixiv != None:
-            self.downloaded_SubImgData_pixiv.self_destruct()
         if self.original_image != None:
             self.original_image.close()
-        if self.downloaded_image_pixiv != None:
-            self.downloaded_image_pixiv.close()
-        for img in self.sub_dir_img_array_pixiv:
-            img.self_destruct()
         del self.original_photoImage_thumb
-        del self.downloaded_photoImage_pixiv_thumb
-        del self.downloaded_photoImage_pixiv_preview
 
-        self.downloaded_chkbtn.image = None
         self.original_chkbtn.image = None
+
+        self.pixiv.self_destruct()
+        self.danb.self_destruct()
 
 class ProviderImageData():
     def __init__(self, service, name, path, thumb_size, preview_size, dictionary):
@@ -413,7 +403,7 @@ class ProviderImageData():
         self.downloaded_image_preview = None
         self.sub_dir_array = list()
         self.sub_dir_img_array = list()
-        self.downloaded_var = IntVar(value=1)
+        self.downloaded_var = IntVar(value=0)
         self.downloaded_chkbtn = Checkbutton(master = gv.frame, var=self.downloaded_var, style="chkbtn.TCheckbutton")
         self.downloaded_lbl = Label(master=gv.frame, text = service, style='label.TLabel')
         try:
@@ -515,9 +505,8 @@ class ProviderImageData():
         self.downloaded_chkbtn.configure(image=self.downloaded_photoImage_thumb)
         self.downloaded_chkbtn.image = self.downloaded_photoImage_thumb
 
-        if path.isdir(self.path):
-            self.downloaded_var.set(0)
-        else:
+        if not path.isdir(self.path):
+            self.downloaded_var.set(1)
             self.downloaded_wxh_lbl.configure(text = str(self.downloaded_image.size))
             self.downloaded_type_lbl.configure(text = self.name[self.name.rfind(".")+1:])
         
@@ -598,13 +587,16 @@ class ProviderImageData():
 
         self.process_info_imgs_init = True
 
+    def hyperlink(self, event):
+        open_new(event.widget.cget("text"))
+
     def display_big_selector(self):
 
         if path.isfile(self.path):
             self.downloaded_SubImgData.display_grid(0)
             gv.frame2.grid_rowconfigure(3, weight = 1)
         elif path.isdir(self.path):
-            t = 0
+            t = 0 # TODO
             for elem in self.sub_dir_img_array:
                 elem.display_grid(t)
                 gv.frame2.grid_rowconfigure(t + 3, weight = 1)
@@ -627,6 +619,36 @@ class ProviderImageData():
                 elem.load()
 
         self.process_big_imgs_init = True
+
+    def delete_both(self):
+        """
+        Returns True if self.downloaded_var is 0 and self.sub_dir_img_array[...].var is 0, otherwise False\n
+        Returns True if user has not checked any images in this class to save, otherwise False
+        """
+        if self.downloaded_var.get() == 0:
+            for img in self.sub_dir_img_array:
+                if img.var.get() == 1:
+                    return False
+            return True
+        return False
+
+    def forget_results(self):
+        self.downloaded_chkbtn.grid_forget()
+        self.downloaded_lbl.grid_forget()
+        self.downloaded_wxh_lbl.grid_forget()
+        self.downloaded_type_lbl.grid_forget()
+
+    def self_destruct(self):
+        if self.downloaded_SubImgData != None:
+            self.downloaded_SubImgData.self_destruct()
+        if self.downloaded_image != None:
+            self.downloaded_image.close()
+        for img in self.sub_dir_img_array:
+            img.self_destruct()
+        del self.downloaded_photoImage_thumb
+        del self.downloaded_photoImage_preview
+
+        self.downloaded_chkbtn.image = None
 
 class SubImageData():
     def __init__(self, name, path, service, parent, scrollparent, img=None, var=None, master_folder='', siblings=list()):
