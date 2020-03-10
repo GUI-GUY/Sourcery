@@ -219,7 +219,8 @@ def load_from_ref():
             if next_img:
                 gv.Files.Log.write_to_log('Image already sourced')
                 continue
-            gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], ['Pixiv', None, None, None, ref['minsim']], illust, None))
+            # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
+            gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], [{"service_name": 'Pixiv', "illust_id": 'None', "source": 'None', "???": 'None', "minsim": ref['minsim']}], illust, None))
         gv.Files.Log.write_to_log('Loaded images from reference file')
     else:
         gv.Files.Log.write_to_log('Reference file is empty')

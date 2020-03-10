@@ -90,12 +90,12 @@ def process_img_data(img_name_original, res, comm_error_q):
     """
     Downloads the image from pixiv, creates an ImageData class and returns it or False on ERROR
     """
-    img_data_array = decode_response(res[1])
+    dict_list = decode_response(res[1])
     pixiv_illustration = None
     danbooru_illustration = None
     new_name = img_name_original
     flag = None
-    for source in img_data_array:
+    for source in dict_list:
         print(source)
         if source['illust_id'] != 0:
             comm_error_q.put('[Sourcery] Attempting to fetch illustration...')
@@ -109,5 +109,5 @@ def process_img_data(img_name_original, res, comm_error_q):
                 danbooru_download(img_name_original, source['illust_id'], danbooru_illustration, comm_error_q)
         # comm_error_q.put('[Sourcery] Fetched illustration successfully')
         comm_error_q.put('[Sourcery] Downloaded illustration successfully')
-    return img_name_original, new_name, img_data_array, pixiv_illustration, danbooru_illustration
+    return img_name_original, new_name, dict_list, pixiv_illustration, danbooru_illustration
     return False, None, None, None, None # TODO
