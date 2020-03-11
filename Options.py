@@ -160,6 +160,11 @@ class SourceryOptions():
         self.custom_button_background_pressed = gv.Files.Theme.custom_button_background_pressed
         self.custom_button_foreground_pressed = gv.Files.Theme.custom_button_foreground_pressed
 
+        self.images_per_page_lbl = Label(parent, text="Images per page", font=("Arial Bold", 10), style="label.TLabel")
+        self.images_per_page_entry = Entry(parent, width=30, style="button.TLabel")
+        self.images_per_page_entry.insert(0, gv.Files.Conf.imgpp)
+        self.sourcery_confirm_btn = Button(parent, text="Save", command=self.sourcery_save, style="button.TLabel")
+
         self.style = Style()
         self.preview_btn = Button(parent, text="Preview Button", style="preview.TLabel")
         self.preview_lbl = Label(parent, text="Preview Label")
@@ -183,6 +188,7 @@ class SourceryOptions():
         x2 = int(gv.width/160*24)
         self.color_insert()
 
+        
         self.theme_lbl.place(x = x1, y = y-5)
         self.dark_theme_btn.place(x = x1, y = y + c * 1)
         self.light_theme_btn .place(x = x1, y = y + c * 2)
@@ -205,6 +211,10 @@ class SourceryOptions():
         self.save_custom_theme_btn.place(x = x1, y = y + c * 12)
         self.preview_lbl.place(x = x2, y = y + c * 2)
         self.preview_btn.place(x = x2, y = y + c * 3)
+
+        self.images_per_page_lbl.place(x = x1, y = y + c * 15)
+        self.images_per_page_entry.place(x = x2, y = y + c * 15)
+        self.sourcery_confirm_btn.place(x = x1, y = y + c * 16)
 
         #self.color_scrollpar.sub_frame.place(x = 500, y = y-50)
         a = 0
@@ -344,6 +354,12 @@ class SourceryOptions():
         self.custom_button_foreground_pressed_entry.delete(0, len(self.custom_button_foreground_pressed_entry.get()))
         self.custom_button_foreground_pressed_entry.insert(0, self.custom_button_foreground_pressed)
         pass
+
+    def sourcery_save(self):
+        gv.Files.Log.write_to_log('Attempting to save Sourcery options...')
+        gv.Files.Conf.imgpp = self.images_per_page_entry.get()
+        gv.Files.Conf.write_config()
+        gv.Files.Log.write_to_log('Saved Sourcery Options')
 
 class ProviderOptions():
     """ProviderOptions"""

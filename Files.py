@@ -322,6 +322,7 @@ class ConfigFile():
         self.Log = log
         self.rename_pixiv = 'False'
         self.minsim = '80'
+        self.imgpp = '12'
         if self.read_config():
             self.write_config()
     
@@ -342,6 +343,8 @@ class ConfigFile():
                 self.rename_pixiv = temp[temp.find('=')+1:-1]
             if temp.startswith('minsim='):
                 self.minsim = temp[temp.find('=')+1:-1]
+            if temp.startswith('imagesperpage='):
+                self.imgpp = temp[temp.find('=')+1:-1]
             temp = f.readline()
         f.close()
         return False
@@ -355,9 +358,18 @@ class ConfigFile():
         except Exception as e:
             mb.showerror('Invalid Value', 'Please insert a value between 0 and 100 into the Minimum similarity option')
             self.minsim = '80'
+        try:
+            temp_num = int(self.imgpp)
+            if temp_num < 0 or temp_num > 1000:
+                mb.showerror('Invalid Value', 'Please insert a value between 0 and 1000 into the Images per page option')
+                self.imgpp = '12'
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert a value between 0 and 1000 into the Images per page option')
+            self.imgpp = '12'
 
         conf = ("rename_pixiv=" + self.rename_pixiv +
                 "\nminsim=" + self.minsim +
+                "\nimagesperpage=" + self.imgpp +
                 "\n\nEND")
         try:
             f = open(cwd + '/Sourcery/config', 'w')

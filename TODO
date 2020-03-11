@@ -55,22 +55,21 @@ beta 0.3
 options loop makes program laggy
 gv.esc_op
 multiprocessing -> window.after???(probably not)
-2nd service
+~ 2nd service
 service options
 png over jpg over high res over uncensored options (weight system?)
 optimizations
 foreign folder support
 preload next 12 images
 more metadata(uncensored)
-options(images per page)
++ options(images per page)
 save feedback message
 better checkbutton graphics
 preview/thumbnail scaling/options
 scrolling accuracy?
 better sync for stop-???
 -- minileak in results (does this still exist?)
-change font option
-link to SauceNao/Pixiv data online
+link to SauceNao/Pixiv login data online
 big selector text green/red/white if better/worse/same res/datatype?
 pximg.net
 multiple SauceNao accounts support? if it works
@@ -78,7 +77,7 @@ tkinter color picker
 queue images instead of 'get source' button?
 https://www.pixiv.net/setting_user.php
 minilog clips into results
-show info panel on 'more info' click
++ show info panel on 'more info' click
 on save clear info panel
 Fehlerbehandlung
 
@@ -88,3 +87,4 @@ Hydrus
 DCP
 Keyboard support
 direct replace if sim is over X%
+change font option (maybe not)

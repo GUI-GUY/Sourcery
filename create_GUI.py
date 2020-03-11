@@ -174,7 +174,7 @@ def refresh_startpage(change, answer2):
                 for data in gv.img_data_array:
                     if data.index > c:
                         gv.free_space[data.index] = True
-                        data.display_results((c+x)*4)
+                        data.display_results((c+x)*3)
                         gv.free_space[c+x] = False
                     x += 1
                 break
@@ -193,7 +193,7 @@ def refresh_startpage(change, answer2):
                         else:
                             data.process_results_imgs()
                             data.modify_results_widgets()
-                            data.display_results(x*4)
+                            data.display_results(x*3)
                             gv.free_space[x] = False
                             break
                     x += 1
@@ -351,6 +351,7 @@ if __name__ == '__main__':
     # set style
     results_ScrollFrame = ScrollFrame(window, results_frame_width, results_frame_height)
     info_ScrollFrame = ScrollFrame(window, info_frame_width, info_frame_height)
+    gv.info_ScrollFrame = info_ScrollFrame
     big_selector_ScrollFrame = ScrollFrame(window, big_selector_frame_width, big_selector_frame_height)
 
     gv.Files.Log.log_text = Text(master=window, height=int(info_frame_height/16), width=int(info_frame_width/7))
@@ -395,7 +396,7 @@ if __name__ == '__main__':
     gv.window = window
     gv.big_selector_frame = big_selector_ScrollFrame.sub_frame
     gv.big_selector_canvas = big_selector_ScrollFrame.canvas
-    for i in range(12):
+    for i in range(int(gv.Files.Conf.imgpp)):
         gv.free_space.append(True)
     #gv.display_view_results = display_view_results
     gv.display_startpage = display_startpage

@@ -15,6 +15,7 @@ big_selector_canvas = None
 display_view_results = None
 display_startpage = None
 log_text = None
+info_ScrollFrame = None
 
 esc_op = False
 width = 0

@@ -16,7 +16,6 @@ class ImageData():
         self.name_pixiv = new_name
         self.set_name_pixiv()
         self.name_danb = new_name
-        #self.pixiv_illust = pixiv_illust
         self.pixiv_dict = self.pixiv_clean_dict(pixiv_illust, dict_list) # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
         self.danb_dict = self.danbooru_clean_dict(danbooru_illust, dict_list)
         #self.minsim = dict_list[4]
@@ -28,14 +27,10 @@ class ImageData():
         self.path_pixiv = gv.cwd + '/Sourcery/sourced_progress/pixiv/' + self.name_pixiv
         self.original_image = None
         self.downloaded_image_pixiv = None
-        # self.sub_dir_array_pixiv = list()
-        # self.sub_dir_img_array_pixiv = list()
         self.thumb_size = (70,70)
         self.preview_size = (200, 200)
         self.original_image_thumb = None
         self.original_photoImage_thumb = None
-        # self.downloaded_image_pixiv_thumb = None
-        # self.downloaded_photoImage_pixiv_thumb = None
         self.downloaded_image_pixiv_preview = None
         self.downloaded_photoImage_pixiv_preview = None
         self.original_var = IntVar(value=0)
@@ -44,14 +39,6 @@ class ImageData():
         self.original_wxh_lbl = Label(master=gv.frame, style='label.TLabel')
         self.original_type_lbl = Label(master=gv.frame, style='label.TLabel')
         self.original_cropped_lbl = Label(master=gv.frame, style='label.TLabel')
-        # self.downloaded_pixiv_var = IntVar(value=1)
-        # self.downloaded_chkbtn = Checkbutton(master=gv.frame, var=self.downloaded_pixiv_var, style="chkbtn.TCheckbutton")
-        # self.downloaded_lbl = Label(master=gv.frame, text = "Pixiv", style='label.TLabel')
-        # try:
-        #     self.downloaded_wxh_lbl = Label(master=gv.frame, text = str(len(listdir(self.path_pixiv))) + " images", style='label.TLabel')
-        # except:
-        #     self.downloaded_wxh_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')
-        # self.downloaded_type_lbl = Label(master=gv.frame, style='label.TLabel')
 
         self.pixiv = ProviderImageData('Pixiv', new_name, gv.cwd + '/Sourcery/sourced_progress/pixiv/' + self.name_pixiv, self.thumb_size, self.preview_size, self.pixiv_dict)
         self.danb = ProviderImageData('Danbooru', new_name, gv.cwd + '/Sourcery/sourced_progress/danbooru/' + self.name_danb, self.thumb_size, self.preview_size, self.danb_dict)
@@ -171,16 +158,6 @@ class ImageData():
         self.original_wxh_lbl.configure(text = str(self.original_image.size))
         self.original_type_lbl.configure(text = self.name_original[self.name_original.rfind('.')+1:])
         self.original_cropped_lbl.configure(text = self.name_original + ' -> ' + self.name_pixiv)
-        
-        # self.downloaded_chkbtn.configure(image=self.downloaded_photoImage_pixiv_thumb)
-        # self.downloaded_chkbtn.image = self.downloaded_photoImage_pixiv_thumb
-
-        # if path.isdir(self.path_pixiv):
-        #     self.original_var.set(1) TODO
-        #     self.downloaded_pixiv_var.set(0)
-        # else:
-        #     self.downloaded_wxh_lbl.configure(text = str(self.downloaded_image_pixiv.size))
-        #     self.downloaded_type_lbl.configure(text = self.name_pixiv[self.name_pixiv.rfind(".")+1:])
 
         if self.pixiv_dict != None:
             self.pixiv.modify_results_widgets()
@@ -230,6 +207,9 @@ class ImageData():
     def display_info(self):
         for widget in gv.frame3.winfo_children():
             widget.grid_forget()
+        
+        gv.Files.Log.log_text.place_forget()
+        gv.info_ScrollFrame.display(x = (gv.width/3)*1.85, y = 100)
 
         t = 0
         if self.pixiv_dict != None:
@@ -303,7 +283,7 @@ class ImageData():
         return True
 
     def save(self):
-        pass
+        pass # TODO
         #downloaded_name_new = None
         original_name_new = None
 
@@ -519,11 +499,11 @@ class ProviderImageData():
         IMPORTANT:\n
         Call load, process_results_imgs and modify_results_widgets in that order before
         """
-        self.index = int(t/4)
-        self.downloaded_chkbtn.grid(column = 0, row = t+3, sticky = W)
-        self.downloaded_lbl.grid(column = 2, row = t+3, sticky = W, padx = 10)
-        self.downloaded_wxh_lbl.grid(column = 3, row = t+3, sticky = W, padx = 10)
-        self.downloaded_type_lbl.grid(column = 4, row = t+3, sticky = W, padx = 10)
+        self.index = int(t/3)
+        self.downloaded_chkbtn.grid(column = 0, row = t+2, sticky = W)
+        self.downloaded_lbl.grid(column = 2, row = t+2, sticky = W, padx = 10)
+        self.downloaded_wxh_lbl.grid(column = 3, row = t+2, sticky = W, padx = 10)
+        self.downloaded_type_lbl.grid(column = 4, row = t+2, sticky = W, padx = 10)
 
     def display_info(self, t):
 

@@ -30,7 +30,7 @@ def save():
     
     remove_later_list = list()
     for data in gv.img_data_array:
-        if gv.img_data_array.index(data) > 12:
+        if gv.img_data_array.index(data) > int(gv.Files.Conf.imgpp):
             break
         if data.locked:
             if not data.delete_both():
