@@ -2,6 +2,7 @@ from tkinter import IntVar, E, W
 #from tkinter import messagebox as mb
 from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 from functools import partial
+from webbrowser import open_new
 from pixiv_handler import pixiv_login
 from ScrollFrame import ScrollFrame
 import global_variables as gv
@@ -76,6 +77,11 @@ class SauceNaoOptions():
         self.saucenao_minsim_entry = Entry(parent, width=20, style="button.TLabel")
         self.saucenao_minsim_entry.insert(0, gv.Files.Conf.minsim)
         self.saucenao_minsim_confirm_btn = Button(parent, text="Save", command=self.saucenao_save, style="button.TLabel")
+
+        self.saucenao_address_1 = Label(parent, text="Your API-Key can be found here:", style="label.TLabel")
+        self.saucenao_address_2 = Label(parent, text="https://saucenao.com/user.php?page=search-api", style="label.TLabel")
+        self.saucenao_address_2.configure(foreground='#2626ff', cursor='hand2', font=('Arial', 10))
+        self.saucenao_address_2.bind("<Button-1>", self.hyperlink)
     
     def display(self):
         """
@@ -87,6 +93,8 @@ class SauceNaoOptions():
         self.saucenao_minsim_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90*12.3))
         self.saucenao_minsim_entry.place(x = int(gv.width/160*18), y = int(gv.height/90*12.3))
         self.saucenao_minsim_confirm_btn.place(x = int(gv.width/160*55), y = int(gv.height/90*12.3))
+        self.saucenao_address_1.place(x = int(gv.width/160*5), y = int(gv.height/90*15.6))
+        self.saucenao_address_2.place(x = int(gv.width/160*5), y = int(gv.height/90*17.9))
     
     def saucenao_change_key(self):
         """
@@ -121,6 +129,9 @@ class SauceNaoOptions():
         gv.Files.Conf.minsim = self.saucenao_minsim_entry.get()
         gv.Files.Conf.write_config()
         gv.Files.Log.write_to_log('Saved SauceNao Options')
+
+    def hyperlink(self, event):
+        open_new(event.widget.cget("text"))
 
 class SourceryOptions():
     """SourceryOptions"""
@@ -396,6 +407,11 @@ class PixivOptions():
         self.rename_chkbtn = Checkbutton(parent, text='Rename images from pixiv to pixiv name', var=self.rename_var, style="chkbtn.TCheckbutton")
         self.save_btn = Button(parent, text='Save', command=self.pixiv_save, style ="button.TLabel")
 
+        self.pixiv_address_1 = Label(parent, text="Your Login Data can be found here:", style="label.TLabel")
+        self.pixiv_address_2 = Label(parent, text="https://www.pixiv.net/setting_user.php", style="label.TLabel")
+        self.pixiv_address_2.configure(foreground='#2626ff', cursor='hand2', font=('Arial', 10))
+        self.pixiv_address_2.bind("<Button-1>", self.hyperlink)
+
     def pixiv_change_login(self):
         """
         Unlock login widget for pixiv, so that you can change your login data. 
@@ -454,9 +470,11 @@ class PixivOptions():
         self.pixiv_password_filled_lbl.place(x = int(gv.width/160*12), y = y + c * 2)
         self.pixiv_login_change_btn.place(x = int(gv.width/160*5), y = y + c * 4)
         self.pixiv_warning_lbl.place(x = int(gv.width/160*5), y = y + c * 3)
+        self.pixiv_address_1.place(x = int(gv.width/160*5), y = y + c * 5)
+        self.pixiv_address_2.place(x = int(gv.width/160*5), y = y + c * 6)
 
-        self.rename_chkbtn.place(x = int(gv.width/160*5), y = y + c * 6)
-        self.save_btn.place(x = int(gv.width/160*5), y = y + c * 7)
+        self.rename_chkbtn.place(x = int(gv.width/160*5), y = y + c * 7)
+        self.save_btn.place(x = int(gv.width/160*5), y = y + c * 8)
 
     def pixiv_save(self):
         gv.Files.Log.write_to_log('Attempting to save Pixiv options...')
@@ -466,3 +484,7 @@ class PixivOptions():
             gv.Files.Conf.rename_pixiv = 'False'
         gv.Files.Conf.write_config()
         gv.Files.Log.write_to_log('Saved Pixiv options')
+
+    
+    def hyperlink(self, event):
+        open_new(event.widget.cget("text"))
