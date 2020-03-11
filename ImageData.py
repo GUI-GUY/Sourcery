@@ -11,20 +11,21 @@ import global_variables as gv
 
 class ImageData():
     """PixivOptions"""
-    def __init__(self, old_name, new_name, dict_list, pixiv_illust, danbooru_illust):
+    def __init__(self, old_name, pixiv_name, danb_name, dict_list, pixiv_illust, danbooru_illust):
         self.name_original = old_name
-        self.name_pixiv = new_name
+        self.name_pixiv = pixiv_name
         self.set_name_pixiv()
-        self.name_danb = new_name
+        self.name_danb = danb_name
         self.pixiv_dict = self.pixiv_clean_dict(pixiv_illust, dict_list) # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
         self.danb_dict = self.danbooru_clean_dict(danbooru_illust, dict_list)
         #self.minsim = dict_list[4]
-        if old_name == new_name:
+        if old_name == pixiv_name: # TODO
             self.rename = False
         else:
             self.rename = True
         self.path_original = gv.cwd + '/Sourcery/sourced_original/' + self.name_original
         self.path_pixiv = gv.cwd + '/Sourcery/sourced_progress/pixiv/' + self.name_pixiv
+        self.path_danb = gv.cwd + '/Sourcery/sourced_progress/danbooru/' + self.name_danb
         self.original_image = None
         self.downloaded_image_pixiv = None
         self.thumb_size = (70,70)
@@ -40,8 +41,9 @@ class ImageData():
         self.original_type_lbl = Label(master=gv.frame, style='label.TLabel')
         self.original_cropped_lbl = Label(master=gv.frame, style='label.TLabel')
 
-        self.pixiv = ProviderImageData('Pixiv', new_name, gv.cwd + '/Sourcery/sourced_progress/pixiv/' + self.name_pixiv, self.thumb_size, self.preview_size, self.pixiv_dict)
-        self.danb = ProviderImageData('Danbooru', new_name, gv.cwd + '/Sourcery/sourced_progress/danbooru/' + self.name_danb, self.thumb_size, self.preview_size, self.danb_dict)
+        self.siblings_array = list()
+        self.pixiv = ProviderImageData('Pixiv', self.name_pixiv, self.path_pixiv, self.thumb_size, self.preview_size, self.pixiv_dict, self.siblings_array)
+        self.danb = ProviderImageData('Danbooru', self.name_danb, self.path_danb, self.thumb_size, self.preview_size, self.danb_dict, self.siblings_array)
 
         self.big_selector_btn = Button(master=gv.frame, command=self.display_big_selector, text='Big Selector', style='button.TLabel')
         self.info_btn = Button(master=gv.frame, command=self.display_info, text='More Info', style='button.TLabel')        
@@ -198,7 +200,7 @@ class ImageData():
             self.pixiv.display_results(t)
 
         if self.danb_dict != None:
-            self.danb.display_results(t)
+            self.danb.display_results(t+1)
 
     def lock(self):
         self.locked = True
@@ -214,7 +216,7 @@ class ImageData():
         t = 0
         if self.pixiv_dict != None:
             self.pixiv.display_info(t)
-            t += 1
+            t += 10
         if self.danb_dict != None:
             self.danb.display_info(t)
 
@@ -228,11 +230,11 @@ class ImageData():
         self.prev_btn.place(x = round(gv.width*0.90), y = int(gv.height/90*4))
         self.next_btn.place(x = round(gv.width*0.94), y = int(gv.height/90*4))
 
+        t = 0
         if self.pixiv_dict != None:
-            self.pixiv.display_big_selector()
-
+            t = self.pixiv.display_big_selector(t)
         if self.danb_dict != None:
-            self.danb.display_big_selector()
+            self.danb.display_big_selector(t)
 
         self.original_SubImgData.display_place()
 
@@ -369,13 +371,14 @@ class ImageData():
         self.danb.self_destruct()
 
 class ProviderImageData():
-    def __init__(self, service, name, path, thumb_size, preview_size, dictionary):
+    def __init__(self, service, name, path, thumb_size, preview_size, dictionary, siblings_array):
         self.service = service
         self.name = name
         self.path = path
         self.thumb_size = thumb_size
         self.preview_size = preview_size
         self.dict = dictionary
+        self.siblings_array = siblings_array
         self.downloaded_image = None
         self.downloaded_image_thumb = None
         self.downloaded_photoImage_thumb = None
@@ -439,7 +442,8 @@ class ProviderImageData():
                     if self.path not in gv.delete_dirs_array:
                         gv.delete_dirs_array.append(self.path)
                 for img in self.sub_dir_array:
-                    self.sub_dir_img_array.append(SubImageData(img, self.path, self.service, gv.window, gv.frame2, master_folder=self.name, siblings=self.sub_dir_img_array))#(Image.open(self.path + '/' + img), img))
+                    self.sub_dir_img_array.append(SubImageData(img, self.path, self.service, gv.window, gv.frame2, master_folder=self.name, siblings=self.siblings_array))#(Image.open(self.path + '/' + img), img))
+                self.siblings_array.extend(self.sub_dir_img_array)
             except Exception as e:
                 print("ERROR [0046] " + str(e))
                 #mb.showerror("ERROR [0046]", "ERROR CODE [0046]\nSomething went wrong while loading an image.")
@@ -523,13 +527,13 @@ class ProviderImageData():
         self.info_wxh_lbl.configure(text = 'Width x Height: ' + str(self.dict['width']) + ' x ' + str(self.dict['height']), font = ('Arial', 10))
         self.tags_pixiv_lbl.configure(text = 'Tags', font=('Arial Bold', 15))
 
-        self.info_img_lbl.grid(column = 0, row = 1, rowspan = 9, sticky=W+N)
-        self.info_provider_lbl.grid(column = 0, row = 0, sticky = W)
-        self.info_title_lbl.grid(column = 1, row = 1, sticky = W, padx = 5)
-        self.info_caption_lbl.grid(column = 1, row = 2, sticky = W, padx = 5)
-        self.info_artist_lbl.grid(column = 1, row = 3, sticky = W, padx = 5)
-        #self.info_imageid_lbl.grid(column = 1, row = 4, sticky = W, padx = 5)
-        self.info_date_lbl.grid(column = 1, row = 5, sticky = W, padx = 5)
+        self.info_img_lbl.grid(column = 0, row = t + 1, rowspan = 9, sticky=W+N)
+        self.info_provider_lbl.grid(column = 0, row = t + 0, sticky = W)
+        self.info_title_lbl.grid(column = 1, row = t + 1, sticky = W, padx = 5)
+        self.info_caption_lbl.grid(column = 1, row = t + 2, sticky = W, padx = 5)
+        self.info_artist_lbl.grid(column = 1, row = t + 3, sticky = W, padx = 5)
+        #self.info_imageid_lbl.grid(column = 1, row = t + 4, sticky = W, padx = 5)
+        self.info_date_lbl.grid(column = 1, row = t + 5, sticky = W, padx = 5)
         
         # if len(self.sub_dir_array_pixiv) < 1:#
         #     self.info_wxh_lbl.grid(column = 1, row = 6, sticky = W, padx = 5)
@@ -570,17 +574,18 @@ class ProviderImageData():
     def hyperlink(self, event):
         open_new(event.widget.cget("text"))
 
-    def display_big_selector(self):
+    def display_big_selector(self, t):
 
         if path.isfile(self.path):
-            self.downloaded_SubImgData.display_grid(0)
+            self.downloaded_SubImgData.display_grid(t)
             gv.frame2.grid_rowconfigure(3, weight = 1)
+            return t + 4
         elif path.isdir(self.path):
-            t = 0 # TODO
             for elem in self.sub_dir_img_array:
                 elem.display_grid(t)
                 gv.frame2.grid_rowconfigure(t + 3, weight = 1)
                 t += 4
+            return t
 
     def process_big_imgs(self):
         """
@@ -592,8 +597,9 @@ class ProviderImageData():
             return
 
         if path.isfile(self.path):
-            self.downloaded_SubImgData = SubImageData(self.name, self.path, self.service, gv.window, gv.frame2, self.downloaded_image, self.downloaded_var)#ImageTk.PhotoImage(self.downloaded_image_pixiv)
+            self.downloaded_SubImgData = SubImageData(self.name, self.path, self.service, gv.window, gv.frame2, self.downloaded_image, self.downloaded_var, siblings=self.siblings_array)#ImageTk.PhotoImage(self.downloaded_image_pixiv)
             self.downloaded_SubImgData.load()
+            self.siblings_array.append(self.downloaded_SubImgData)
         elif path.isdir(self.path):
             for elem in self.sub_dir_img_array:
                 elem.load()
@@ -718,6 +724,7 @@ class SubImageData():
         self.chkbtn.place(x = int(gv.width*0.43), y = int(gv.height/90*4))
 
     def forget(self):
+        self.lbl2.place_forget()
         self.chkbtn.place_forget()
 
     def save(self):

@@ -19,6 +19,7 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None)
     if 'file_url' in illustration:
         if gv.Files.Conf.rename_pixiv == 'True':
             urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + illustration['file_url'].split('/')[-1])
+            new_name = illustration['file_url'].split('/')[-1]
         else:
             dot = img_name_original.rfind('.')
             if dot != -1:
@@ -26,7 +27,7 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None)
             else:
                 new_name = img_name_original
             urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + new_name + '.' + illustration['file_ext'])
-    return # TODO
+    return new_name# TODO
     #urlretrieve('https://i.pximg.net/img-original/img/2018/11/16/00/00/01/71671760_p0.png', danbooru_folder + '/' + folder + '/' + stream['file_url'].split('/')[-1])
 
 

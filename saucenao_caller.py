@@ -59,6 +59,7 @@ if True:
 
 #generate appropriate bitmask
 db_bitmask = int(index_mangadex+index_madokami+index_pawoo+index_da+index_portalgraphics+index_bcycosplay+index_bcyillust+index_idolcomplex+index_e621+index_animepictures+index_sankaku+index_konachan+index_gelbooru+index_shows+index_movies+index_hanime+index_anime+index_medibang+index_2dmarket+index_hmisc+index_fakku+index_shutterstock+index_reserved+index_animeop+index_yandere+index_nijie+index_drawr+index_danbooru+index_seigaillust+index_anime+index_pixivhistorical+index_pixiv+index_ddbsamples+index_ddbobjects+index_hcg+index_hanime+index_hmags,2)
+db_count = int(index_mangadex)+int(index_madokami)+int(index_pawoo)+int(index_da)+int(index_portalgraphics)+int(index_bcycosplay)+int(index_bcyillust)+int(index_idolcomplex)+int(index_e621)+int(index_animepictures)+int(index_sankaku)+int(index_konachan)+int(index_gelbooru)+int(index_shows)+int(index_movies)+int(index_hanime)+int(index_anime)+int(index_medibang)+int(index_2dmarket)+int(index_hmisc)+int(index_fakku)+int(index_shutterstock)+int(index_reserved)+int(index_animeop)+int(index_yandere)+int(index_nijie)+int(index_drawr)+int(index_danbooru)+int(index_seigaillust)+int(index_anime)+int(index_pixivhistorical)+int(index_pixiv)+int(index_ddbsamples)+int(index_ddbobjects)+int(index_hcg)+int(index_hanime)+int(index_hmags)
 
 def get_response(image, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
     if api_key == None or api_key == '':
@@ -78,7 +79,7 @@ def get_response(image, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
     imageData = BytesIO()
     image.save(imageData,format='PNG')
     
-    url = 'http://saucenao.com/search.php?output_type=2&numres=1&minsim='+minsim+'&dbmask='+str(db_bitmask)+'&api_key='+api_key
+    url = 'http://saucenao.com/search.php?output_type=2&minsim='+minsim+'&dbmask='+str(db_bitmask)+'&api_key='+api_key+'&numres='+str(db_count)
     files = {'file': ("image.png", imageData.getvalue())}
     imageData.close()
     
@@ -130,68 +131,69 @@ def decode_response(results, EnableRename=False):
             service_name = ''
             illust_id = 0
             member_id = -1
-            index_id = results['results'][0]['header']['index_id']
-            page_string = ''
-            page_match = search('(_p[\d]+)\.', results['results'][0]['header']['thumbnail'])
+            
+            # index_id = results['results'][0]['header']['index_id']
+            # page_string = ''
+            # page_match = search('(_p[\d]+)\.', results['results'][0]['header']['thumbnail'])
+            # if page_match:
+            #     page_string = page_match.group(1)
             source = ''
             ret_dict = list()
-            if page_match:
-                page_string = page_match.group(1)
             
-            if index_id != 5 and index_id != 6 and index_id != 9:
-                ret_dict.append({"service_name": service_name, "member_id": member_id, "illust_id": illust_id, "source": source})
-
-            if index_id == 5 or index_id == 6:
-                #5->pixiv 6->pixiv historical
-                service_name='Pixiv'
-                member_id = results['results'][0]['data']['member_id']
-                illust_id = results['results'][0]['data']['pixiv_id']
-                source = results['results'][0]['data']['ext_urls']
-                ret_dict.append({"service_name": service_name, "member_id": member_id, "illust_id": illust_id, "source": source})
-                # print(source)
-            if index_id == 9:
-                #9->danbooru
-                print(results)
-                service_name='Danbooru'
-                #member_id = results['results'][0]['data']['member_id']
-                illust_id = results['results'][0]['data']['danbooru_id']
-                source = results['results'][0]['data']['ext_urls']
-                ret_dict.append({"service_name": service_name, "illust_id": illust_id, "source": source})
-            # elif index_id == 8:
-            #     #8->nico nico seiga
-            #     service_name='seiga'
-            #     member_id = results['results'][0]['data']['member_id']
-            #     illust_id = results['results'][0]['data']['seiga_id']
-            # elif index_id == 10:
-            #     #10->drawr
-            #     service_name='drawr'
-            #     member_id = results['results'][0]['data']['member_id']
-            #     illust_id = results['results'][0]['data']['drawr_id']								
-            # elif index_id == 11:
-            #     #11->nijie
-            #     service_name='nijie'
-            #     member_id = results['results'][0]['data']['member_id']
-            #     illust_id = results['results'][0]['data']['nijie_id']
-            # elif index_id == 34:
-            #     #34->da
-            #     service_name='da'
-            #     illust_id = results['results'][0]['data']['da_id']
-            # else:
-            #     #unknown
-            #     #print('Unhandled Index! Exiting...')
-            #     #sys.exit(2)
-                
-            # try:
-            #     if member_id >= 0:
-            #         newfname = os.path.join(cwd + '/Output/', service_name+'_'+str(member_id)+'_'+str(illust_id)+page_string+'.'+fname.split(".")[-1].lower())
-            #     else:
-            #         newfname = os.path.join(cwd + '/Output/', service_name+'_'+str(illust_id)+page_string+'.'+fname.split(".")[-1].lower())
-            #     print('New Name: '+newfname)
-            #     if EnableRename:
-            #         os.rename(fname, newfname)
-            # except Exception as e:
-            #     print(str(e))
-            #     sys.exit(3)
+            for elem in results['results']:
+                if elem['header']['index_id'] == 5 or elem['header']['index_id'] == 6:
+                    #5->pixiv 6->pixiv historical
+                    service_name='Pixiv'
+                    member_id = elem['data']['member_id']
+                    illust_id = elem['data']['pixiv_id']
+                    source = elem['data']['ext_urls']
+                    ret_dict.append({"service_name": service_name, "member_id": member_id, "illust_id": illust_id, "source": source})
+                    # print(source)
+                elif elem['header']['index_id'] == 9:
+                    #9->danbooru
+                    # print(results)
+                    service_name='Danbooru'
+                    #member_id = elem['data']['member_id']
+                    illust_id = elem['data']['danbooru_id']
+                    source = elem['data']['ext_urls']
+                    ret_dict.append({"service_name": service_name, "illust_id": illust_id, "source": source})
+                else:
+                    ret_dict.append({"service_name": service_name, "member_id": member_id, "illust_id": illust_id, "source": source})
+                # elif index_id == 8:
+                #     #8->nico nico seiga
+                #     service_name='seiga'
+                #     member_id = results['results'][0]['data']['member_id']
+                #     illust_id = results['results'][0]['data']['seiga_id']
+                # elif index_id == 10:
+                #     #10->drawr
+                #     service_name='drawr'
+                #     member_id = results['results'][0]['data']['member_id']
+                #     illust_id = results['results'][0]['data']['drawr_id']								
+                # elif index_id == 11:
+                #     #11->nijie
+                #     service_name='nijie'
+                #     member_id = results['results'][0]['data']['member_id']
+                #     illust_id = results['results'][0]['data']['nijie_id']
+                # elif index_id == 34:
+                #     #34->da
+                #     service_name='da'
+                #     illust_id = results['results'][0]['data']['da_id']
+                # else:
+                #     #unknown
+                #     #print('Unhandled Index! Exiting...')
+                #     #sys.exit(2)
+                    
+                # try:
+                #     if member_id >= 0:
+                #         newfname = os.path.join(cwd + '/Output/', service_name+'_'+str(member_id)+'_'+str(illust_id)+page_string+'.'+fname.split(".")[-1].lower())
+                #     else:
+                #         newfname = os.path.join(cwd + '/Output/', service_name+'_'+str(illust_id)+page_string+'.'+fname.split(".")[-1].lower())
+                #     print('New Name: '+newfname)
+                #     if EnableRename:
+                #         os.rename(fname, newfname)
+                # except Exception as e:
+                #     print(str(e))
+                #     sys.exit(3)
             
         # else:
         #     print('miss... '+str(results['results'][0]['header']['similarity']))
@@ -290,3 +292,48 @@ def decode_response(results, EnableRename=False):
     #   ('pixiv_id', 19455311), 
     #   ('member_name', 'ke-ta'), 
     #   ('member_id', 3104565)]))])])])
+
+# OrderedDict([('header', OrderedDict([('user_id', '32608'), ('account_type', '1'), ('short_limit', '6'), ('long_limit', '200'), ('long_remaining', 193), ('short_remaining', 5), ('status', 0), ('results_requested', 2), 
+# ('index', 
+# OrderedDict(
+#     [('5', OrderedDict([('status', 0), ('parent_id', 5), ('id', 5), ('results', 2)])), 
+#     ('51', OrderedDict([('status', 0), ('parent_id', 5), ('id', 51), ('results', 2)])), 
+#     ('52', OrderedDict([('status', 0), ('parent_id', 5), ('id', 52), ('results', 2)])), 
+#     ('53', OrderedDict([('status', 0), ('parent_id', 5), ('id', 53), ('results', 2)])), 
+#     ('9', OrderedDict([('status', 0), ('parent_id', 9), ('id', 9), ('results', 2)]))])), 
+#     ('search_depth', '128'), 
+#     ('minimum_similarity', 35.33), 
+#     ('query_image_display', 'userdata/Vgd1ZzlH4.png.png'), 
+#     ('query_image', 'Vgd1ZzlH4.png'), ('results_returned', 2)])), 
+    
+#     ('results', 
+#     [OrderedDict(
+#         [('header', OrderedDict(
+#             [('similarity', '95.50'), 
+#             ('thumbnail', 'https://img1.saucenao.com/res/pixiv/7690/76900548_p0_master1200.jpg?auth=AKizfJXBfY--Hayju-eldw&exp=1583964983'), 
+#             ('index_id', 5), 
+#             ('index_name', 'Index #5: Pixiv Images - 76900548_p0_master1200.jpg')])), 
+#             ('data', Or548_p0_master1200.jpg')])),
+#             ('data', OrderedDict(
+#                 [('ext_urls', ['https://www.pixiv.net/member_illust.php?mode=medium&illust_id=76900548']), 
+#                 ('title', 'FGO-ド0548), 
+#                 ('member_name', 'ミツ'), 
+#                 ('membeアを開けないで！！'), 
+#                 ('pixiv_id', 76900548), 
+#                 ('member_name', 'ミツ'), 
+#                 ('member_id', 3433634)]))]), 
+#     OrderedDict(
+#         [('header', OrderedDict(
+#             [('similarity', '92.9e421c6ce77_0.jpg'), 
+#             ('index_id', 9), ('7'), 
+#             ('thumbnail', 'https://img3.saucenao.com/booru/7/c/7c74656676876eac14c979e421c6ce77_0.jpg'), 
+#             ('index_id', 9), 
+#             ('index_name', 'Index #9: Danbooru - 7c7464859']), 
+#             ('danbooru_id', 3634859), 
+#             ('cr56676876eac14c979e421c6ce77_0.jpg')])), 
+#             ('data', OrderedDict([('ext_urls', ['https://danbooru.donmai.us/post/show/3634859']), 
+#             ('danbooru_id', 3634859), 
+#             ('cre (fate), bradamante (fate/grand order),ator', 'wei yu'), 
+#             ('material', 'fate/grand order, fate (series), pixiv'), 
+#             ('characters', 'artoria pendragon (all), bb (fate) (all), bb (swimsuit mooncancer) ri (fate/grand order), nitocris (fate/g(fate), bradamante (fate/grand order), caster, caster (fate/zero), fergus mac roich (fate/grand order), hildr (fate/grand order), jack the ripper (fate/apocrmo (fate) (all), tamamo no mae (fate), ypha), jekyll and hyde (fate), mata hari (fate/grand order), nitocris (fate/grand order), ortlinde (fate/grand order), osakabe-hime (fate/grand order), penthesilea (fate/grand order), santa alter, shuten douji (fate/grand order), tamamo (fate) (all), tamamo no mae (fate), thrud (fate/grand order), valkyrie (fate/grand order)'), 
+#             ('source', 'https://i.pximg.net/img-original/img/2019/09/22/01/08/22/76900548')]))])])])

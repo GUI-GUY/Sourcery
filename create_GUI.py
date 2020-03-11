@@ -148,10 +148,10 @@ def refresh_startpage(change, answer2):
     if not img_data_q.empty():
         try:
             a = img_data_q.get()
-            print(a)
-            b = ImageData(a[0], a[1], a[2], a[3], a[4])
+            #print(a)
+            b = ImageData(a[0], a[1], a[2], a[3], a[4], a[5])
             gv.img_data_array.append(b)
-            print(b)
+            #print(b)
         except Exception as e:
             print(e)
     
