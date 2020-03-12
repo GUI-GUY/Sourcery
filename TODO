@@ -63,10 +63,11 @@ png over jpg over high res over uncensored options (weight system?)
 foreign folder support
 preview/thumbnail scaling/options
 + tkinter color picker
+tag own images as uncensored
 
 PERFORMANCE
 optimizations
-options loop makes program laggy
++ options loop makes program laggy
 -- minileak in results (does this still exist?)
 scrolling accuracy?
 better sync for stop-???
@@ -77,6 +78,7 @@ preload next x images
 UI
 + show info panel on 'more info' click
 + link to SauceNao/Pixiv login data online(https://www.pixiv.net/setting_user.php)
+tags
 more metadata(uncensored)
 save: feedback message
 better checkbutton graphics
@@ -85,6 +87,7 @@ minilog clips into results
 on save clear info panel
 ~ scaling
 + remaining searches/search limit
+make canvas for startpage updated widgets
 
 MISC
 multiple SauceNao accounts support? if it works
