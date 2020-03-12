@@ -19,7 +19,7 @@ button_background_pressed=#ddd
 button_foreground_pressed=black
 
 Custom Theme
-background=#000001
+background=#1f1f1f
 foreground=white
 button_background=purple
 button_background_active=yellow

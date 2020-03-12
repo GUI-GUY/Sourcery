@@ -1,4 +1,4 @@
-from tkinter import IntVar, E, W
+from tkinter import IntVar, E, W, colorchooser
 #from tkinter import messagebox as mb
 from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 from functools import partial
@@ -149,44 +149,23 @@ class SourceryOptions():
         self.custom_button_foreground_active_lbl = Label(parent, text="Button Foreground Active", style="label.TLabel")
         self.custom_button_background_pressed_lbl = Label(parent, text="Button Background Pressed", style="label.TLabel")
         self.custom_button_foreground_pressed_lbl = Label(parent, text="Button Foreground Pressed", style="label.TLabel")
-        self.custom_background_entry = Entry(parent, width=30, style="button.TLabel")
-        self.custom_foreground_entry = Entry(parent, width=30, style="button.TLabel")
-        self.custom_button_background_entry = Entry(parent, width=30, style="button.TLabel")
-        self.custom_button_background_active_entry = Entry(parent, width=30, style="button.TLabel")
-        self.custom_button_foreground_active_entry = Entry(parent, width=30, style="button.TLabel")
-        self.custom_button_background_pressed_entry = Entry(parent, width=30, style="button.TLabel")
-        self.custom_button_foreground_pressed_entry = Entry(parent, width=30, style="button.TLabel")
-        self.please_insert_lbl = Label(parent, text='Please insert values between #000000 and #ffffff or valid color names', style="label.TLabel")
-        self.save_custom_theme_btn = Button(parent, text="Save Custom Theme", command=self.save_custom_theme, style="button.TLabel")
-        self.color_widget_list = list()
-        self.color_scrollpar = ScrollFrame(parent, gv.width*0.65, gv.height*0.8)
-        # for col in gv.COLORS:
-        #     self.color_widget_list.append(Label(self.color_scrollpar.frame, text=col, background=col, font=('Arial Bold', 10)))
 
-        self.custom_background = gv.Files.Theme.custom_background
-        self.custom_foreground = gv.Files.Theme.custom_foreground
-        self.custom_button_background = gv.Files.Theme.custom_button_background
-        self.custom_button_background_active = gv.Files.Theme.custom_button_background_active
-        self.custom_button_foreground_active = gv.Files.Theme.custom_button_foreground_active
-        self.custom_button_background_pressed = gv.Files.Theme.custom_button_background_pressed
-        self.custom_button_foreground_pressed = gv.Files.Theme.custom_button_foreground_pressed
+        rel = 'raised'
+        self.custom_background_color_lbl = Label(parent, width=10, relief=rel, style="label.TLabel")
+        self.custom_foreground_color_lbl = Label(parent, width=10, relief=rel, style="label.TLabel")
+        self.custom_button_background_color_lbl = Label(parent, width=10, relief=rel, style="label.TLabel")
+        self.custom_button_background_active_color_lbl = Label(parent, width=10, relief=rel, style="label.TLabel")
+        self.custom_button_foreground_active_color_lbl = Label(parent, width=10, relief=rel, style="label.TLabel")
+        self.custom_button_background_pressed_color_lbl = Label(parent, width=10, relief=rel, style="label.TLabel")
+        self.custom_button_foreground_pressed_color_lbl = Label(parent, width=10, relief=rel, style="label.TLabel")
+        self.color_bind()
+
+        self.save_custom_theme_btn = Button(parent, text="Save Custom Theme", command=self.save_custom_theme, style="button.TLabel")
 
         self.images_per_page_lbl = Label(parent, text="Images per page", font=("Arial Bold", 10), style="label.TLabel")
         self.images_per_page_entry = Entry(parent, width=30, style="button.TLabel")
         self.images_per_page_entry.insert(0, gv.Files.Conf.imgpp)
         self.sourcery_confirm_btn = Button(parent, text="Save", command=self.sourcery_save, style="button.TLabel")
-
-        self.style = Style()
-        self.preview_btn = Button(parent, text="Preview Button", style="preview.TLabel")
-        self.preview_lbl = Label(parent, text="Preview Label")
-
-        self.invalid_lbl_array = list()
-        self.old_one_invalid = False
-        self.save_custom_theme_btn_state = 'enabled'
-        for i in range(7):
-            self.invalid_lbl_array.append(Label(master=parent, text = 'Invalid!', style="label.TLabel"))
-
-        self.refresh_custom_preview_init = False
 
     def display(self):
         """
@@ -199,7 +178,6 @@ class SourceryOptions():
         x2 = int(gv.width/160*24)
         self.color_insert()
 
-        
         self.theme_lbl.place(x = x1, y = y-5)
         self.dark_theme_btn.place(x = x1, y = y + c * 1)
         self.light_theme_btn .place(x = x1, y = y + c * 2)
@@ -211,85 +189,19 @@ class SourceryOptions():
         self.custom_button_foreground_active_lbl.place(x = x1, y = y + c * 8)
         self.custom_button_background_pressed_lbl.place(x = x1, y = y + c * 9)
         self.custom_button_foreground_pressed_lbl.place(x = x1, y = y + c * 10)
-        self.custom_background_entry.place(x = x2, y = y + c * 4)
-        self.custom_foreground_entry.place(x = x2, y = y + c * 5)
-        self.custom_button_background_entry.place(x = x2, y = y + c * 6)
-        self.custom_button_background_active_entry.place(x = x2, y = y + c * 7)
-        self.custom_button_foreground_active_entry.place(x = x2, y = y + c * 8)
-        self.custom_button_background_pressed_entry.place(x = x2, y = y + c * 9)
-        self.custom_button_foreground_pressed_entry.place(x = x2, y = y + c * 10)
-        self.please_insert_lbl.place(x = x1, y = y + c * 11)
+        self.custom_background_color_lbl.place(x = x2, y = y + c * 4)
+        self.custom_foreground_color_lbl.place(x = x2, y = y + c * 5)
+        self.custom_button_background_color_lbl.place(x = x2, y = y + c * 6)
+        self.custom_button_background_active_color_lbl.place(x = x2, y = y + c * 7)
+        self.custom_button_foreground_active_color_lbl.place(x = x2, y = y + c * 8)
+        self.custom_button_background_pressed_color_lbl.place(x = x2, y = y + c * 9)
+        self.custom_button_foreground_pressed_color_lbl.place(x = x2, y = y + c * 10)
+
         self.save_custom_theme_btn.place(x = x1, y = y + c * 12)
-        self.preview_lbl.place(x = x2, y = y + c * 2)
-        self.preview_btn.place(x = x2, y = y + c * 3)
 
         self.images_per_page_lbl.place(x = x1, y = y + c * 15)
         self.images_per_page_entry.place(x = x2, y = y + c * 15)
         self.sourcery_confirm_btn.place(x = x1, y = y + c * 16)
-
-        #self.color_scrollpar.sub_frame.place(x = 500, y = y-50)
-        a = 0
-        b = 0
-        for col in self.color_widget_list:
-            if a > 48:
-                a = 0
-                b += 1
-            col.grid(row = a, column = b, sticky=E+W)
-            a += 1
-
-        if not self.refresh_custom_preview_init:
-            self.refresh_custom_preview_init = True
-            self.refresh_custom_preview()
-    
-    def refresh_custom_preview(self):
-        one_invalid = False
-
-        bg = self.custom_background_entry.get()
-        if self.color_check(bg, 0, 4):
-            one_invalid = True
-
-        fg = self.custom_foreground_entry.get()
-        if self.color_check(fg, 1, 5):
-            one_invalid = True
-
-        bbg = self.custom_button_background_entry.get()
-        if self.color_check(bbg, 2, 6):
-            one_invalid = True
-
-        bba = self.custom_button_background_active_entry.get()
-        if self.color_check(bba, 3, 7):
-            one_invalid = True
-
-        bfa = self.custom_button_foreground_active_entry.get()
-        if self.color_check(bfa, 4, 8):
-            one_invalid = True
-
-        bbp = self.custom_button_background_pressed_entry.get()
-        if self.color_check(bbp, 5, 9):
-            one_invalid = True
-
-        bfp = self.custom_button_foreground_pressed_entry.get()
-        if self.color_check(bfp, 6, 10):
-            one_invalid = True
-
-        if one_invalid != self.old_one_invalid:
-            self.old_one_invalid = one_invalid
-            if self.save_custom_theme_btn_state == 'disabled':
-                self.save_custom_theme_btn.configure(state='enabled')
-                self.save_custom_theme_btn_state = 'enabled'
-            else:
-                self.save_custom_theme_btn.configure(state='disabled')
-                self.save_custom_theme_btn_state = 'disabled'
-        try:
-            self.preview_lbl.configure(foreground=fg, background=bg, font=("Arial Bold", 10))
-            self.style.configure("preview.TLabel", foreground=fg, background=bbg, font=("Arial Bold", 10))
-            self.style.map("preview.TLabel", 
-                foreground=[('pressed', bfp), ('active', bfa)],
-                background=[('pressed', '!disabled', bbp), ('active', bba)])
-        except:
-            pass
-        
-        self.par.after(100, self.refresh_custom_preview)
 
     def change_to_dark_theme(self):
         gv.Files.Theme.current_theme = "Dark Theme"
@@ -308,63 +220,55 @@ class SourceryOptions():
 
     def save_custom_theme(self):
         gv.Files.Log.write_to_log('Attempting to save Custom Theme...')
-        self.custom_background = self.custom_background_entry.get()
-        self.custom_foreground = self.custom_foreground_entry.get()
-        self.custom_button_background = self.custom_button_background_entry.get()
-        self.custom_button_background_active = self.custom_button_background_active_entry.get()
-        self.custom_button_foreground_active = self.custom_button_foreground_active_entry.get()
-        self.custom_button_background_pressed = self.custom_button_background_pressed_entry.get()
-        self.custom_button_foreground_pressed = self.custom_button_foreground_pressed_entry.get()
-        self.color_insert()
-        gv.Files.Theme.custom_background = self.custom_background_entry.get()
-        gv.Files.Theme.custom_foreground = self.custom_foreground_entry.get()
-        gv.Files.Theme.custom_button_background = self.custom_button_background_entry.get()
-        gv.Files.Theme.custom_button_background_active = self.custom_button_background_active_entry.get()
-        gv.Files.Theme.custom_button_foreground_active = self.custom_button_foreground_active_entry.get()
-        gv.Files.Theme.custom_button_background_pressed = self.custom_button_background_pressed_entry.get()
-        gv.Files.Theme.custom_button_foreground_pressed = self.custom_button_foreground_pressed_entry.get()
+        gv.Files.Theme.custom_background = str(self.custom_background_color_lbl.cget('background'))
+        gv.Files.Theme.custom_foreground = str(self.custom_foreground_color_lbl.cget('background'))
+        gv.Files.Theme.custom_button_background = str(self.custom_button_background_color_lbl.cget('background'))
+        gv.Files.Theme.custom_button_background_active = str(self.custom_button_background_active_color_lbl.cget('background'))
+        gv.Files.Theme.custom_button_foreground_active = str(self.custom_button_foreground_active_color_lbl.cget('background'))
+        gv.Files.Theme.custom_button_background_pressed = str(self.custom_button_background_pressed_color_lbl.cget('background'))
+        gv.Files.Theme.custom_button_foreground_pressed = str(self.custom_button_foreground_pressed_color_lbl.cget('background'))
         e = gv.Files.Theme.write_theme(gv.Files.Theme.current_theme)
         if e == None:
             gv.Files.Log.write_to_log('Saved custom theme successfully')
+            if gv.Files.Theme.current_theme == 'Custom Theme':
+                self.change_to_custom_theme()
         else:
             gv.Files.Log.write_to_log('Failed to save Custom Theme')
 
-    def color_check(self, color, index, offset):
-        y = int(gv.height/90*10)
-        c = 23
-        if color.startswith('#') and (len(color) == 7 or len(color) == 4):
-            try:
-                num = int(color[1:], 16)
-                if num < 0 or num > 16777215:
-                    self.invalid_lbl_array[index].place(x = int(gv.width/160*44), y = y + c * offset)
-                    return True
-                else:
-                    self.invalid_lbl_array[index].place_forget()
-            except:
-                self.invalid_lbl_array[index].place(x = int(gv.width/160*44), y = y + c * offset)
-                return True
-        elif color not in gv.COLORS:
-            self.invalid_lbl_array[index].place(x = int(gv.width/160*44), y = y + c * offset)
-            return True
-        else:
-            self.invalid_lbl_array[index].place_forget()
-
     def color_insert(self):
-        self.custom_background_entry.delete(0, len(self.custom_background_entry.get()))
-        self.custom_background_entry.insert(0, self.custom_background)
-        self.custom_foreground_entry.delete(0, len(self.custom_foreground_entry.get()))
-        self.custom_foreground_entry.insert(0, self.custom_foreground)
-        self.custom_button_background_entry.delete(0, len(self.custom_button_background_entry.get()))
-        self.custom_button_background_entry.insert(0, self.custom_button_background)
-        self.custom_button_background_active_entry.delete(0, len(self.custom_button_background_active_entry.get()))
-        self.custom_button_background_active_entry.insert(0, self.custom_button_background_active)
-        self.custom_button_foreground_active_entry.delete(0, len(self.custom_button_foreground_active_entry.get()))
-        self.custom_button_foreground_active_entry.insert(0, self.custom_button_foreground_active)
-        self.custom_button_background_pressed_entry.delete(0, len(self.custom_button_background_pressed_entry.get()))
-        self.custom_button_background_pressed_entry.insert(0, self.custom_button_background_pressed)
-        self.custom_button_foreground_pressed_entry.delete(0, len(self.custom_button_foreground_pressed_entry.get()))
-        self.custom_button_foreground_pressed_entry.insert(0, self.custom_button_foreground_pressed)
-        pass
+        self.custom_background_color_lbl.configure(background = gv.Files.Theme.custom_background, cursor='hand2')
+        self.custom_foreground_color_lbl.configure(background = gv.Files.Theme.custom_foreground, cursor='hand2')
+        self.custom_button_background_color_lbl.configure(background = gv.Files.Theme.custom_button_background, cursor='hand2')
+        self.custom_button_background_active_color_lbl.configure(background = gv.Files.Theme.custom_button_background_active, cursor='hand2')
+        self.custom_button_foreground_active_color_lbl.configure(background = gv.Files.Theme.custom_button_foreground_active, cursor='hand2')
+        self.custom_button_background_pressed_color_lbl.configure(background = gv.Files.Theme.custom_button_background_pressed, cursor='hand2')
+        self.custom_button_foreground_pressed_color_lbl.configure(background = gv.Files.Theme.custom_button_foreground_pressed, cursor='hand2')
+    
+    def color_bind(self):
+        c_bg_c_par = partial(self.color_choose, self.custom_background_color_lbl)
+        self.custom_background_color_lbl.bind("<Button-1>", c_bg_c_par)
+
+        c_fg_c_par = partial(self.color_choose, self.custom_foreground_color_lbl)
+        self.custom_foreground_color_lbl.bind("<Button-1>", c_fg_c_par)
+
+        c_bbg_c_par = partial(self.color_choose, self.custom_button_background_color_lbl)
+        self.custom_button_background_color_lbl.bind("<Button-1>", c_bbg_c_par)
+
+        c_bbg_a_c_par = partial(self.color_choose, self.custom_button_background_active_color_lbl)
+        self.custom_button_background_active_color_lbl.bind("<Button-1>", c_bbg_a_c_par)
+
+        c_bfg_a_c_par = partial(self.color_choose, self.custom_button_foreground_active_color_lbl)
+        self.custom_button_foreground_active_color_lbl.bind("<Button-1>", c_bfg_a_c_par)
+
+        c_bbg_p_c_par = partial(self.color_choose, self.custom_button_background_pressed_color_lbl)
+        self.custom_button_background_pressed_color_lbl.bind("<Button-1>", c_bbg_p_c_par)
+
+        c_bfg_p_c_par = partial(self.color_choose, self.custom_button_foreground_pressed_color_lbl)
+        self.custom_button_foreground_pressed_color_lbl.bind("<Button-1>", c_bfg_p_c_par)
+
+    def color_choose(self, lbl, event):
+        color = colorchooser.askcolor()
+        lbl.configure(background = color[1])
 
     def sourcery_save(self):
         gv.Files.Log.write_to_log('Attempting to save Sourcery options...')

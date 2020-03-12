@@ -51,34 +51,45 @@ beta 0.2 (Classified)
 
 
 beta 0.3
-+ options(images per page)
-+ show info panel on 'more info' click
-+ link to SauceNao/Pixiv login data online(https://www.pixiv.net/setting_user.php)
 
 ~ 2nd service
 
-options loop makes program laggy
+OPTIONS
++ options(images per page)
 gv.esc_op
-service options
+provider options
+SauceNao options
 png over jpg over high res over uncensored options (weight system?)
-optimizations
 foreign folder support
-preload next x images
-more metadata(uncensored)
-save feedback message
-better checkbutton graphics
 preview/thumbnail scaling/options
+tkinter color picker
+
+PERFORMANCE
+optimizations
+options loop makes program laggy
+-- minileak in results (does this still exist?)
 scrolling accuracy?
 better sync for stop-???
--- minileak in results (does this still exist?)
-big selector text green/red/white if better/worse/same res/datatype?
-pximg.net (with referer)
-multiple SauceNao accounts support? if it works
-tkinter color picker
 queue images instead of 'get source' button?
+self_destruct->unload
+preload next x images
+
+UI
++ show info panel on 'more info' click
++ link to SauceNao/Pixiv login data online(https://www.pixiv.net/setting_user.php)
+more metadata(uncensored)
+save: feedback message
+better checkbutton graphics
+big selector text green/red/white if better/worse/same res/datatype?
 minilog clips into results
 on save clear info panel
-self_destruct->unload
+~ scaling
+
+MISC
+multiple SauceNao accounts support? if it works
+pximg.net (with referer)
+all TODOs
+~ comments
 Fehlerbehandlung
 
 Last Error: 0047
