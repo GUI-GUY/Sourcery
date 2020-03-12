@@ -70,7 +70,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_
             img_name_original, pixiv_name, danb_name, img_data_array, pixiv_illustration, danbooru_illustration = process_img_data(img, res, comm_error_q)
             #if img_name_original != False:
             img_data_q.put((img_name_original, pixiv_name, danb_name, img_data_array, pixiv_illustration, danbooru_illustration))
-                #gv.Files.Ref.new_reference(img_name_original, new_name, img_data_array[0]['illust_id'], gv.Files.Conf.rename_pixiv, minsim)# TODO
+            gv.Files.Ref.new_reference(img_name_original, pixiv_name, pixiv_illustration.id, danb_name, danbooru_illustration['id'], gv.Files.Conf.rename_pixiv, minsim)# TODO
             if res[3] < 1:
                 die('Out of searches for today', comm_error_q, comm_img_q)
             if res[2] < 1:

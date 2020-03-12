@@ -386,10 +386,12 @@ class  ReferenceFile():
     def __init__(self, log):
         self.Log = log
 
-    def new_reference(self, old_name, new_name_pixiv, id_pixiv, rename_option, minsim):
+    def new_reference(self, old_name, new_name_pixiv, id_pixiv, new_name_danb, id_danb, rename_option, minsim):
         ref = ("{\"old_name\" : \"" + old_name +
                 "\", \"new_name_pixiv\" : \"" + new_name_pixiv +
                 "\", \"id_pixiv\" : " + str(id_pixiv) +
+                ", \"new_name_danb\" : \"" + new_name_danb +
+                "\", \"id_danb\" : " + str(id_danb) +
                 ", \"rename_option\" : \"" + rename_option +
                 "\", \"minsim\" : " + str(minsim) +
                 "}\n")

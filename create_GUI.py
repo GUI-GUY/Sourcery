@@ -16,6 +16,7 @@ from multiprocessing import Process, freeze_support, Queue, Pipe#, Semaphore
 from file_operations import is_image, save, open_input, open_sourced, display_statistics
 from sourcery import do_sourcery
 from pixiv_handler import pixiv_authenticate, pixiv_login, pixiv_fetch_illustration
+from danbooru_handler import danbooru_fetch_illustration
 from Options import Options
 #from image_preloader import preload_main
 from ImageData import ImageData
@@ -171,10 +172,11 @@ def refresh_startpage(change, answer2):
                 c = i
             if not space and mem:
                 x = 0
+                t = c * 4
                 for data in gv.img_data_array:
                     if data.index > c:
                         gv.free_space[data.index] = True
-                        data.display_results((c+x)*3)
+                        t = data.display_results(t)
                         gv.free_space[c+x] = False
                     x += 1
                 break
@@ -193,7 +195,7 @@ def refresh_startpage(change, answer2):
                         else:
                             data.process_results_imgs()
                             data.modify_results_widgets()
-                            data.display_results(x*3)
+                            data.display_results(x*4)
                             gv.free_space[x] = False
                             break
                     x += 1
@@ -208,19 +210,20 @@ def load_from_ref():
         pixiv_authenticate()
         gv.Files.Log.write_to_log('Loading images from reference file...')
         for ref in refs:
-            illust = pixiv_fetch_illustration(ref['old_name'], ref['id_pixiv'])
-            if not illust:
-                continue
-            next_img = False
-            for data in gv.img_data_array:
-                if ref['old_name'] == data.name_original and ref['id_pixiv'] == illust.id and strtobool(ref['rename_option']) == data.rename:
-                    next_img = True
-                    break
-            if next_img:
-                gv.Files.Log.write_to_log('Image already sourced')
-                continue
+            pixiv_illust = pixiv_fetch_illustration(ref['old_name'], ref['id_pixiv'])
+            danb_illust = danbooru_fetch_illustration(ref['id_danb'])
+            # if not pixiv_illust:
+            #     continue
+            # next_img = False
+            # for data in gv.img_data_array: #TODO duplicates
+            #     if ref['old_name'] == data.name_original and ref['id_pixiv'] == pixiv_illust.id and strtobool(ref['rename_option']) == data.rename:
+            #         next_img = True
+            #         break
+            # if next_img:
+            #     gv.Files.Log.write_to_log('Image already sourced')
+            #     continue
             # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
-            gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], [{"service_name": 'Pixiv', "illust_id": 'None', "source": 'None', "???": 'None', "minsim": ref['minsim']}], illust, None))
+            gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], ref['new_name_danb'], [{"service_name": 'Pixiv', "illust_id": 'None', "source": 'None', "???": 'None', "minsim": ref['minsim']}, {"service_name": 'Danbooru', "illust_id": 'None', "source": 'None', "???": 'None', "minsim": ref['minsim']}], pixiv_illust, danb_illust))
         gv.Files.Log.write_to_log('Loaded images from reference file')
     else:
         gv.Files.Log.write_to_log('Reference file is empty')
