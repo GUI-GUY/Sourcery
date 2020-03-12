@@ -388,7 +388,6 @@ class PixivOptions():
             gv.Files.Conf.rename_pixiv = 'False'
         gv.Files.Conf.write_config()
         gv.Files.Log.write_to_log('Saved Pixiv options')
-
     
     def hyperlink(self, event):
         open_new(event.widget.cget("text"))

@@ -62,7 +62,7 @@ SauceNao options
 png over jpg over high res over uncensored options (weight system?)
 foreign folder support
 preview/thumbnail scaling/options
-tkinter color picker
++ tkinter color picker
 
 PERFORMANCE
 optimizations
@@ -84,6 +84,7 @@ big selector text green/red/white if better/worse/same res/datatype?
 minilog clips into results
 on save clear info panel
 ~ scaling
++ remaining searches/search limit
 
 MISC
 multiple SauceNao accounts support? if it works
@@ -101,3 +102,5 @@ DCP
 Keyboard support
 direct replace if sim is over X%
 change font option (maybe not)
+statistics
+elapsed time / ETA

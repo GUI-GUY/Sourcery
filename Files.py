@@ -382,7 +382,7 @@ class ConfigFile():
         f.close()
         self.read_config()
 
-class  ReferenceFile():
+class ReferenceFile():
     def __init__(self, log):
         self.Log = log
 

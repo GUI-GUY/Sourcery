@@ -118,7 +118,7 @@ def refresh_startpage(change, answer2):
     if not comm_q.empty():
         try:
             answer1 = comm_q.get()
-            saucenao_requests_count_lbl.configure(text=str(answer1) + "/200")
+            saucenao_requests_count_lbl.configure(text=str(answer1[0]) + "/" + str(answer1[1]))
         except:
             pass
     if not comm_img_q.empty():
@@ -405,8 +405,6 @@ if __name__ == '__main__':
     gv.display_startpage = display_startpage
     currently_processing = ''
     gv.esc_op = False # Escape variable for options
-    esc_res = False # Escape variable for results
-    loop_esc = True
     process = Process()
     comm_q = Queue() # Queue for 'Remaining searches'
     comm_img_q = Queue() # Queue for 'Currently Sourcing'

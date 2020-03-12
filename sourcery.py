@@ -48,12 +48,12 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_
             # One or more indexes are having an issue.
             # This search is considered partially successful, even if all indexes failed, so is still counted against your limit.
             # The error may be transient, but because we don't want to waste searches, allow time for recovery.
-            comm_q.put(res[3])
+            comm_q.put((res[3], res[4]))
             die(res[1] + '\nSauceNao gave a response but there was a problem on their end.\nStopped further processing of images to give the server time to recover.\nTry again in a few minutes.', comm_error_q, comm_img_q)
         elif res[0] == 41:
             # Problem with search as submitted, bad image, or impossible request.
             # Issue is unclear, so don't flood requests.
-            comm_q.put(res[3])
+            comm_q.put((res[3], res[4]))
             if res[3] < 1:
                 die(res[1] + ' + Out of searches for today', comm_error_q, comm_img_q)
             else:
@@ -66,7 +66,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_
             comm_error_q.put('[Sourcery] ' + res[1])
             sleep(10)
         elif res[0] == 200:
-            comm_q.put(res[3])
+            comm_q.put((res[3], res[4]))
             img_name_original, pixiv_name, danb_name, img_data_array, pixiv_illustration, danbooru_illustration = process_img_data(img, res, comm_error_q)
             #if img_name_original != False:
             img_data_q.put((img_name_original, pixiv_name, danb_name, img_data_array, pixiv_illustration, danbooru_illustration))

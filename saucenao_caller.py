@@ -110,7 +110,7 @@ def get_response(image, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
             #Issue is unclear, so don't flood requests.
             return [402, 'Bad image, or API failure.']
     #print(results)
-    return [200, results, results['header']['short_remaining'], results['header']['long_remaining']]
+    return [200, results, results['header']['short_remaining'], results['header']['long_remaining'], results['header']['long_limit']]
 
 def decode_response(results, EnableRename=False):
     """
