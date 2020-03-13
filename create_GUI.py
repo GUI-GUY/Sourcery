@@ -5,7 +5,7 @@
 from os import listdir, path, remove
 from copy import copy
 import time
-from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END
+from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END, W
 from tkinter.ttk import Label, Button, Style, Entry, Frame
 #from tkinter import messagebox as mb
 #from tkinter.filedialog import askdirectory
@@ -59,24 +59,13 @@ def display_startpage():
     x = int(height/160*2)
     y = int(height/9)
     c = 23
+
     sourcery_lbl.place(x = x, y = int(height/160))
-    images_in_input_lbl.place(x = x, y = y + c * 4)
-    images_in_input_count_lbl.place(x = x + 150, y = y + c * 4)
-    currently_sourcing_lbl.place(x = x, y = y + c * 5)
-    currently_sourcing_img_lbl.place(x = x + 150, y = y + c * 5)
-    remaining_searches_lbl.place(x = x, y = y + c * 6)
-    saucenao_requests_count_lbl.place(x = x + 150, y = y + c * 6.3)
-    #elapsed_time_lbl.place(x = 200, y = y + c * 4)
-    #eta_lbl.place(x = 200, y = y + c * 5)
-    error_lbl.place(x = x, y = y + c * 12)
+    sub_frame_startpage.place(x = x, y = y  + c * 4)
 
     open_input_btn.place(x = x, y = y + c * 0)
     open_sourced_btn.place(x = x, y = y + c * 1)
-    #statistics_btn.place(x = x, y = y + c * 2)
     options_btn.place(x = x, y = y + c * 2)
-    do_sourcery_btn.place(x = x, y = y + c * 8)
-    stop_btn.place(x = x, y = y + c * 9)
-    load_from_ref_btn.place(x = x, y = y + c * 10)
     
     results_lbl.place(x = int(width/16*4), y = int(height/90*6))
     save_locked_btn.place(x = int(width*0.48), y = int(height*0.9))
@@ -199,10 +188,7 @@ def refresh_startpage(change, answer2):
                             gv.free_space[x] = False
                             break
                     x += 1
-    if gv.esc_op:
-        Options_Class.display_sourcery_options()
-    else:
-        window.after(100, refresh_startpage, change, answer2)
+    window.after(100, refresh_startpage, change, answer2)
 
 def load_from_ref():
     refs = gv.Files.Ref.read_reference()
@@ -250,12 +236,6 @@ def display_logfile():
 def forget_all_widgets():
     for widget in window.winfo_children():
         widget.place_forget()
-
-def escape_options():
-    """
-    Sets an escape variable on 'options'-button press for refresh_startpage to stop looping.
-    """
-    gv.esc_op = True
 
 def stop():
     """
@@ -365,29 +345,51 @@ if __name__ == '__main__':
     
     Options_Class = Options(window, display_startpage, enforce_style)
 
+    sub_frame_startpage = Frame(window, width=width/5, height=height/5, style="frame.TFrame")
+    canvas = Canvas(sub_frame_startpage, width=width/5, height=height/5, background=gv.Files.Theme.background, highlightthickness=0)
+    frame_startpage = Frame(canvas, width=width/5, height=height/5, style="frame.TFrame")
+    canvas.pack(side="left")
+    canvas.create_window((0,0),window=frame_startpage,anchor='nw')
+
     # widgets for start screen
     sourcery_lbl = Label(window, text="Sourcery", font=("Arial Bold", 50), style="label.TLabel")
-    images_in_input_lbl = Label(window, text="Images in Input folder:", style="label.TLabel")
-    images_in_input_count_lbl = Label(window, text="Number here", style="label.TLabel")
-    currently_sourcing_lbl = Label(window, text="Currently Sourcing:", style="label.TLabel")
-    currently_sourcing_img_lbl = Label(window, text="None", style="label.TLabel")
-    remaining_searches_lbl = Label(window, text="Remaining SauceNao\nsearches today:", style="label.TLabel")
-    saucenao_requests_count_lbl = Label(window, text="???/200", style="label.TLabel")
-    #elapsed_time_lbl = Label(window, text="Elapsed time:", style="label.TLabel")
-    #eta_lbl = Label(window, text="ETA:", style="label.TLabel")
-    error_lbl = Label(window, text="", style="label.TLabel")
+    images_in_input_lbl = Label(frame_startpage, text="Images in Input folder:", style="label.TLabel")
+    images_in_input_count_lbl = Label(frame_startpage, text="Number here", style="label.TLabel")
+    currently_sourcing_lbl = Label(frame_startpage, text="Currently Sourcing:", style="label.TLabel")
+    currently_sourcing_img_lbl = Label(frame_startpage, text="None", style="label.TLabel")
+    remaining_searches_lbl = Label(frame_startpage, text="Remaining SauceNao\nsearches today:", style="label.TLabel")
+    saucenao_requests_count_lbl = Label(frame_startpage, text="???/200", style="label.TLabel")
+    #elapsed_time_lbl = Label(frame_startpage, text="Elapsed time:", style="label.TLabel")
+    #eta_lbl = Label(frame_startpage, text="ETA:", style="label.TLabel")
+    error_lbl = Label(frame_startpage, text="", style="label.TLabel")
+
+    images_in_input_lbl.grid(row=0, column=0, sticky=W)
+    images_in_input_count_lbl.grid(row=0, column=1, sticky=W, padx = 10)
+    currently_sourcing_lbl.grid(row=1, column=0, sticky=W)
+    currently_sourcing_img_lbl.grid(row=1, column=1, sticky=W, padx = 10)
+    remaining_searches_lbl.grid(row=2, column=0, sticky=W)
+    saucenao_requests_count_lbl.grid(row=2, column=1, sticky=W, padx = 10)
+    #elapsed_time_lbl.grid(row= 5, column= 0)
+    #eta_lbl.grid(row= 5, column= 0)
+    error_lbl.grid(row=7, column=0, columnspan=3, sticky=W)
 
     open_input_btn = Button(window, text="Open Input", command=open_input, style="button.TLabel")
     open_sourced_btn = Button(window, text="Open Output", command=open_sourced, style="button.TLabel")
     #statistics_btn = Button(window, text="Statistics", command=display_statistics, style="button.TLabel")
-    options_btn = Button(window, text="Options", command=escape_options, style="button.TLabel")
-    do_sourcery_btn = Button(window, text="Get Sources", command=magic, style="button.TLabel")
-    stop_btn = Button(window, text="Stop", command=stop, style="button.TLabel")
+    options_btn = Button(window, text="Options", command=Options_Class.display_sourcery_options, style="button.TLabel")
+    do_sourcery_btn = Button(frame_startpage, text="Get Sources", command=magic, style="button.TLabel")
+    stop_btn = Button(frame_startpage, text="Stop", command=stop, style="button.TLabel")
     #view_results_btn = Button(window, text="View Results", command=escape_results, style="button.TLabel")
     display_info_btn = Button(window, text="Image Info", command=display_info, style="button.TLabel")
     display_logfile_btn = Button(window, text="Log", command=display_logfile, style="button.TLabel")
-    load_from_ref_btn = Button(window, text="Load from Reference File", command=load_from_ref, style="button.TLabel")
+    load_from_ref_btn = Button(frame_startpage, text="Load from Reference File", command=load_from_ref, style="button.TLabel")
     
+    do_sourcery_btn.grid(row= 3, column= 0, sticky=W, pady = 1)
+    stop_btn.grid(row= 4, column= 0, sticky=W, pady = 1)
+    load_from_ref_btn.grid(row= 5, column= 0, sticky=W, pady = 1, columnspan=2)
+
+    frame_startpage.columnconfigure(2, weight=1)
+
     # widgets for results
     results_lbl = Label(window, text="Results", font=("Arial Bold", 20), style="label.TLabel")
     lock_save_btn = Button(window, text="Lock selected", command=lock_save, style="button.TLabel")
@@ -404,7 +406,6 @@ if __name__ == '__main__':
     #gv.display_view_results = display_view_results
     gv.display_startpage = display_startpage
     currently_processing = ''
-    gv.esc_op = False # Escape variable for options
     process = Process()
     comm_q = Queue() # Queue for 'Remaining searches'
     comm_img_q = Queue() # Queue for 'Currently Sourcing'

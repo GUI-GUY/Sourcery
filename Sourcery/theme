@@ -22,7 +22,7 @@ Custom Theme
 background=#1f1f1f
 foreground=white
 button_background=purple
-button_background_active=yellow
+button_background_active=#dd64d3
 button_foreground_active=black
 button_background_pressed=#fff
 button_foreground_pressed=blue

@@ -17,7 +17,6 @@ display_startpage = None
 log_text = None
 info_ScrollFrame = None
 
-esc_op = False
 width = 0
 height = 0
 

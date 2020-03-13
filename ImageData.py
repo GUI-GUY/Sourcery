@@ -16,6 +16,7 @@ class ImageData():
         self.name_pixiv = pixiv_name
         self.set_name_pixiv()
         self.name_danb = danb_name
+        self.set_name_danb()
         self.pixiv_dict = self.pixiv_clean_dict(pixiv_illust, dict_list) # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
         self.danb_dict = self.danbooru_clean_dict(danbooru_illust, dict_list)
         #self.minsim = dict_list[4]
@@ -77,6 +78,23 @@ class ImageData():
                 test = elem.rsplit('.', 1)
                 if self.name_pixiv == test[0]:
                     self.name_pixiv = elem
+
+    def set_name_danb(self):
+        """
+        Sets correct name for danbooru
+        """
+        try:
+            dir = listdir(gv.cwd + '/Sourcery/sourced_progress/danbooru/')
+        except Exception as e:
+            print("ERROR [0041] " + str(e))
+            gv.Files.Log.write_to_log("ERROR [0041] " + str(e))
+            mb.showerror("ERROR [0041]", "ERROR CODE [0041]\nSomething went wrong while accessing the 'Sourcery/sourced_progress/danbooru' folder, please restart Sourcery.")
+            return    
+        for elem in dir:
+            if is_image(elem):
+                test = elem.rsplit('.', 1)
+                if self.name_danb == test[0]:
+                    self.name_danb = elem
 
     def pixiv_clean_dict(self, illust, dict_list):
         x = None
