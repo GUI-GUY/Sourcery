@@ -56,7 +56,7 @@ beta 0.3
 
 OPTIONS
 + options(images per page)
-gv.esc_op
++ gv.esc_op
 provider options
 SauceNao options
 png over jpg over high res over uncensored options (weight system?)
@@ -74,6 +74,7 @@ better sync for stop-???
 queue images instead of 'get source' button?
 self_destruct->unload
 preload next x images
+repair duplicate loop
 
 UI
 + show info panel on 'more info' click
@@ -83,17 +84,17 @@ more metadata(uncensored)
 save: feedback message
 better checkbutton graphics
 big selector text green/red/white if better/worse/same res/datatype?
-minilog clips into results
++ minilog clips into results
 on save clear info panel
 ~ scaling
 + remaining searches/search limit
-...make canvas for startpage updated widgets
++ make canvas for startpage updated widgets
 
 MISC
-multiple SauceNao accounts support? if it works
+- multiple SauceNao accounts support? if it works(nope doesn't)
 pximg.net (with referer)
 all TODOs
-~ comments
++ comments
 Fehlerbehandlung
 
 Last Error: 0047

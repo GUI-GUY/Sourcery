@@ -6,6 +6,9 @@ import global_variables as gv
 client = Client()
 
 def pixiv_login(comm_error_q=None):
+    """
+    Attempt to login to pixiv with the login data(username, password)
+    """
     try:
         client.login(gv.Files.Cred.pixiv_username, gv.Files.Cred.pixiv_password)
         gv.Files.Cred.pixiv_refreshtoken = client.refresh_token
@@ -21,6 +24,9 @@ def pixiv_login(comm_error_q=None):
 
 
 def pixiv_authenticate(comm_error_q=None):
+    """
+    Attempt to login to pixiv with the refreshtoken
+    """
     try:
         client.authenticate(gv.Files.Cred.pixiv_refreshtoken)
     except Exception as e:
@@ -36,6 +42,9 @@ def pixiv_authenticate(comm_error_q=None):
     return True
 
 def pixiv_fetch_illustration(img_name_original, imgid, comm_error_q=None):
+    """
+    Request information from pixiv for the given imgid
+    """
     #print('id' + imgid)
     try:
         illustration = client.fetch_illustration(imgid) # 75523989
@@ -51,6 +60,10 @@ def pixiv_fetch_illustration(img_name_original, imgid, comm_error_q=None):
     return illustration
 
 def pixiv_download(img_name_original, imgid, illustration, comm_error_q=None):
+    """
+    Download given image and rename it properly
+    Return the new name
+    """
     try:
         if gv.Files.Conf.rename_pixiv == 'True':
             illustration.download(directory=Path.cwd() / 'Sourcery/sourced_progress/pixiv', size=Size.ORIGINAL)

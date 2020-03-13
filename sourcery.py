@@ -13,10 +13,17 @@ def die(message, comm_error_q, comm_img_q):
     exit()
 
 def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, duplicate_c_pipe):
+    """
+    1. Pixiv Login
+    2. for all images in input folder:
+    3. get SauceNao information
+    4. If success download image else next/die
+    """
     comm_error_q.put('[Sourcery] Attempting Pixiv login...')
     if not pixiv_authenticate(comm_error_q):
         die('Pixiv Authentication Failed.\nPlease check your login data.', comm_error_q, comm_img_q)
     comm_error_q.put('[Sourcery] Pixiv login successful')
+
     # For every input image a request goes out to saucenao and gets decoded
     for img in input_images_array:
         comm_img_q.put(img)
@@ -33,6 +40,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_
             copy(cwd + '/Input/' + img, cwd + '/Sourcery/sourced_original')
         except Exception as e:
             die(str(e), comm_error_q, comm_img_q)
+        
         res = get_response(img, cwd, saucenao_key, minsim, comm_error_q)
         if res[0] == 401:
             # Exception while opening image!
@@ -88,7 +96,8 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_
             
 def process_img_data(img_name_original, res, comm_error_q):
     """
-    Downloads the image from pixiv, creates an ImageData class and returns it or False on ERROR
+    Downloads the image from pixiv and Danbooru
+    Returns information on the downloads
     """
     dict_list = decode_response(res[1])
     pixiv_illustration = None
@@ -109,5 +118,6 @@ def process_img_data(img_name_original, res, comm_error_q):
                 danb_name = danbooru_download(img_name_original, source['illust_id'], danbooru_illustration, comm_error_q)
         # comm_error_q.put('[Sourcery] Fetched illustration successfully')
         comm_error_q.put('[Sourcery] Downloaded illustration successfully')
+    # dict_list is list of dicts of this format: {"service_name": service_name, "illust_id": illust_id, "source": source}
     return img_name_original, pixiv_name, danb_name, dict_list, pixiv_illustration, danbooru_illustration
     return False, None, None, None, None # TODO

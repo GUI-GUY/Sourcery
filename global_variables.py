@@ -6,13 +6,12 @@ from Files import Files
 cwd = getcwd()
 Files = Files()
 
-frame = None #TODO what is this
-frame2 = None
-frame3 = None
+res_frame = None # ScrollFrame for results to put widgets in
+big_frame = None # ScrollFrame for big selector to put widgets in
+info_frame = None # ScrollFrame for info to put widgets in
 window = None
 big_selector_frame = None
 big_selector_canvas = None
-display_view_results = None
 display_startpage = None
 log_text = None
 info_ScrollFrame = None

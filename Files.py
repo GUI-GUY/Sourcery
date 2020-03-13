@@ -8,7 +8,7 @@ from json import loads
 cwd = getcwd()
 
 class Files():
-    """PixivOptions"""
+    """Hosts all File classes and creates neccesary files and folders on startup"""
     def __init__(self):
         self.create_files()
         self.Log = LogFile()
@@ -35,6 +35,9 @@ class Files():
             mb.showerror("ERROR [0007]", "ERROR CODE [0007]\nSomething went wrong while creating directories, please restart Sourcery.")
 
     def init_configs(self):
+        """
+        Creates all configuration files if they are not yet existent
+        """
         if not path.exists(cwd + '/Sourcery/theme'):
             try:
                 theme = open(cwd + '/Sourcery/theme', 'x')
@@ -79,7 +82,7 @@ class Files():
                 mb.showerror("ERROR [0036]", "ERROR CODE [0036]\nSomething went wrong while accessing a configuration file(reference), please restart Sourcery.")
 
 class ThemeFile():
-    """PixivOptions"""
+    """Includes the color hex codes for the current and the custom theme and also methods to write/read these to/from the theme file"""
     def __init__(self, log):
         self.Log = log
         self.current_theme = 'Dark Theme'
@@ -177,6 +180,9 @@ class ThemeFile():
         return False
         
     def write_theme(self, chosen_theme):
+        """
+        Writes information for the chosen theme and the custom theme to the theme file
+        """
         theme = ("Current theme=" + chosen_theme +
             "\n\nDark Theme"
             "\nbackground=#252525"
@@ -221,7 +227,7 @@ class ThemeFile():
         return None
 
 class CredFile():
-    """PixivOptions"""
+    """Includes the credentials of the user and also methods to write/read these to/from the credentials file"""
     def __init__(self, log):
         self.Log = log
         self.saucenao_api_key = ''
@@ -262,6 +268,9 @@ class CredFile():
         return False
 
     def write_credentials(self):
+        """
+        Writes credentials to the credentials file
+        """
         creds = ("SauceNao"
                 "\nAPI-Key=" + self.saucenao_api_key +
                 "\n\nPixiv"
@@ -286,7 +295,7 @@ class CredFile():
         return None
 
 class LogFile():
-    """PixivOptions"""
+    """Includes the opened log and the log text frame on the startpage and also methods to write these to the log file"""
     def __init__(self):
         self.log = -1
         self.log_text = None
@@ -318,6 +327,7 @@ class LogFile():
                 mb.showerror("ERROR [0036]", "ERROR CODE [0036]\nSomething went wrong while accessing a configuration file(log), please restart Sourcery as soon as possible.")
 
 class ConfigFile():
+    """Includes the options and also methods to write/read these to/from the config file"""
     def __init__(self, log):
         self.Log = log
         self.rename_pixiv = 'False'
@@ -327,6 +337,9 @@ class ConfigFile():
             self.write_config()
     
     def read_config(self):
+        """
+        Reads in the options from the config file
+        """
         try:
             f = open(cwd + '/Sourcery/config')
         except Exception as e:
@@ -350,6 +363,9 @@ class ConfigFile():
         return False
 
     def write_config(self):
+        """
+        Writes the current options to the config file
+        """
         try:
             temp_num = int(self.minsim)
             if temp_num < 0 or temp_num > 100:
@@ -383,10 +399,14 @@ class ConfigFile():
         self.read_config()
 
 class ReferenceFile():
+    """Includes methods to add a new reference, read these from the reference file or delete its contents"""
     def __init__(self, log):
         self.Log = log
 
     def new_reference(self, old_name, new_name_pixiv, id_pixiv, new_name_danb, id_danb, rename_option, minsim):
+        """
+        Appends a new image reference to the reference file
+        """
         ref = ("{\"old_name\" : \"" + old_name +
                 "\", \"new_name_pixiv\" : \"" + new_name_pixiv +
                 "\", \"id_pixiv\" : " + str(id_pixiv) +
@@ -407,6 +427,7 @@ class ReferenceFile():
 
     def read_reference(self):
         """
+        Reads in all references from the reference file
         Returns a list of reference dicionaries.
         """
         try:
@@ -430,6 +451,9 @@ class ReferenceFile():
         return return_array
 
     def clean_reference(self):
+        """
+        Deletes the content of the reference file
+        """
         try:
             f = open(cwd + '/Sourcery/reference', 'w')
         except Exception as e:

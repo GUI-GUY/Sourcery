@@ -25,6 +25,10 @@ def is_image(img):
     return False
 
 def save():
+    """
+    Saves all locked in and checked (by the user) images(ImageData) and removes them from the img_data_array
+    """
+
     if len(gv.img_data_array) == 0:
         return False
     

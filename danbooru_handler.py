@@ -11,11 +11,18 @@ danbooru_folder = 'D:\All_Files\python\GitHub\Sourcery\Sourcery\dan'
 
 # request json, get urls of pictures and download them
 def danbooru_fetch_illustration(imgid, comm_error_q=None):
+    """
+    Request info from danbooru API to given imgid and return it
+    """
     r = get('https://danbooru.donmai.us/posts/' + str(imgid) + '.json')
     illustration = r.json()
     return illustration # TODO
 
 def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None):
+    """
+    Downloads given image from Danbooru and renames it properly
+    Returns the new name
+    """
     if 'file_url' in illustration:
         if gv.Files.Conf.rename_pixiv == 'True':
             urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + illustration['file_url'].split('/')[-1])

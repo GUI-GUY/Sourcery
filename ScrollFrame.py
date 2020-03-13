@@ -3,7 +3,7 @@ from tkinter.ttk import Frame, Scrollbar
 import global_variables as gv
 
 class ScrollFrame():
-    """PixivOptions"""
+    """A frame with a scrollbar"""
     def __init__(self, parent, width, height):
         self.width = width
         self.height = height

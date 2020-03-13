@@ -10,7 +10,7 @@ from file_operations import is_image
 import global_variables as gv
 
 class ImageData():
-    """PixivOptions"""
+    """Includes all information on the sourced images"""
     def __init__(self, old_name, pixiv_name, danb_name, dict_list, pixiv_illust, danbooru_illust):
         self.name_original = old_name
         self.name_pixiv = pixiv_name
@@ -19,7 +19,7 @@ class ImageData():
         self.set_name_danb()
         self.pixiv_dict = self.pixiv_clean_dict(pixiv_illust, dict_list) # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
         self.danb_dict = self.danbooru_clean_dict(danbooru_illust, dict_list)
-        #self.minsim = dict_list[4]
+        self.minsim = 80
         if old_name == pixiv_name: # TODO
             self.rename = False
         else:
@@ -36,18 +36,18 @@ class ImageData():
         self.downloaded_image_pixiv_preview = None
         self.downloaded_photoImage_pixiv_preview = None
         self.original_var = IntVar(value=0)
-        self.original_chkbtn = Checkbutton(master=gv.frame, var=self.original_var, style="chkbtn.TCheckbutton")
-        self.original_lbl = Label(master=gv.frame, text = "Input", style='label.TLabel')
-        self.original_wxh_lbl = Label(master=gv.frame, style='label.TLabel')
-        self.original_type_lbl = Label(master=gv.frame, style='label.TLabel')
-        self.original_cropped_lbl = Label(master=gv.frame, style='label.TLabel')
+        self.original_chkbtn = Checkbutton(master=gv.res_frame, var=self.original_var, style="chkbtn.TCheckbutton")
+        self.original_lbl = Label(master=gv.res_frame, text = "Input", style='label.TLabel')
+        self.original_wxh_lbl = Label(master=gv.res_frame, style='label.TLabel')
+        self.original_type_lbl = Label(master=gv.res_frame, style='label.TLabel')
+        self.original_cropped_lbl = Label(master=gv.res_frame, style='label.TLabel')
 
         self.siblings_array = list()
         self.pixiv = ProviderImageData('Pixiv', self.name_pixiv, self.path_pixiv, self.thumb_size, self.preview_size, self.pixiv_dict, self.siblings_array)
         self.danb = ProviderImageData('Danbooru', self.name_danb, self.path_danb, self.thumb_size, self.preview_size, self.danb_dict, self.siblings_array)
 
-        self.big_selector_btn = Button(master=gv.frame, command=self.display_big_selector, text='Big Selector', style='button.TLabel')
-        self.info_btn = Button(master=gv.frame, command=self.display_info, text='More Info', style='button.TLabel')        
+        self.big_selector_btn = Button(master=gv.res_frame, command=self.display_big_selector, text='Big Selector', style='button.TLabel')
+        self.info_btn = Button(master=gv.res_frame, command=self.display_info, text='More Info', style='button.TLabel')        
         self.back_btn = Button(gv.window, text = 'Back', command = self.display_view_results, style = 'button.TLabel')
         self.next_btn = Button(gv.window, text = 'Next', style = 'button.TLabel')
         self.prev_btn = Button(gv.window, text = 'Previous', style = 'button.TLabel')
@@ -97,6 +97,9 @@ class ImageData():
                     self.name_danb = elem
 
     def pixiv_clean_dict(self, illust, dict_list):
+        """
+        Cleans up the dictionary to only include needed information and returns them as a formatted dictionary
+        """
         x = None
         for t in dict_list:
             if t['service_name'] == 'Pixiv':
@@ -110,6 +113,9 @@ class ImageData():
         return {"artist": illust.user.name, "title": illust.title, "caption": illust.caption, "create_date": illust.create_date, "width": illust.width, "height": illust.height, "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "tags": str(tags)}
 
     def danbooru_clean_dict(self, illust, dict_list):
+        """
+        Cleans up the dictionary to only include needed information and returns them as a formatted dictionary
+        """
         x = None
         for t in dict_list:
             if t['service_name'] == 'Danbooru':
@@ -125,7 +131,7 @@ class ImageData():
     def forget_all_widgets(self):
         for widget in gv.window.winfo_children():
             widget.place_forget()
-        for widget in gv.frame2.winfo_children():
+        for widget in gv.big_frame.winfo_children():
             widget.grid_forget()
 
     def load(self):
@@ -191,23 +197,22 @@ class ImageData():
         if self.danb_dict != None:    
             self.danb.modify_results_widgets()
 
-        gv.frame.columnconfigure(0, weight=1)
-        gv.frame.columnconfigure(1, weight=1)
-        gv.frame.columnconfigure(2, weight=1)
-        gv.frame.columnconfigure(3, weight=1)
-        gv.frame.columnconfigure(4, weight=1)
-        gv.frame.columnconfigure(5, weight=2)
+        gv.res_frame.columnconfigure(0, weight=1)
+        gv.res_frame.columnconfigure(1, weight=1)
+        gv.res_frame.columnconfigure(2, weight=1)
+        gv.res_frame.columnconfigure(3, weight=1)
+        gv.res_frame.columnconfigure(4, weight=1)
+        gv.res_frame.columnconfigure(5, weight=2)
         #self.modify_big_widgets_init = False
         self.modify_results_widgets_init = True
 
     def display_view_results(self):
         self.forget_all_widgets()
         gv.display_startpage()
-        #gv.display_view_results()
 
     def display_results(self, t):
         """
-        Displays all widgets corresponding to this image\n
+        Displays all widgets corresponding to this image on the results frame\n
         IMPORTANT:\n
         Call load, process_results_imgs and modify_results_widgets in that order before
         """
@@ -227,11 +232,19 @@ class ImageData():
             self.danb.display_results(t+1)
 
     def lock(self):
+        """
+        Locks in the image so that it can be saved safely
+        """
         self.locked = True
         self.original_cropped_lbl.configure(background = 'green')
 
     def display_info(self):
-        for widget in gv.frame3.winfo_children():
+        """
+        Displays all widgets corresponding to this image on the info frame\n
+        IMPORTANT:\n
+        Call load before
+        """
+        for widget in gv.info_frame.winfo_children():
             widget.grid_forget()
         
         gv.Files.Log.log_text.place_forget()
@@ -245,6 +258,11 @@ class ImageData():
             self.danb.display_info(t)
 
     def display_big_selector(self):
+        """
+        Displays all widgets corresponding to this image on the big selector page\n
+        IMPORTANT:\n
+        Call load before
+        """
         self.process_big_imgs()
         self.modify_big_widgets()
         self.forget_all_widgets()
@@ -284,7 +302,7 @@ class ImageData():
 
     def modify_big_widgets(self):
         """
-        Sets up next and previous buttons\n
+        Sets up next and previous buttons for the big selector screen\n
         """
         flag_next = False
         flag_prev = False
@@ -309,6 +327,10 @@ class ImageData():
         return True
 
     def save(self):
+        """
+        "Saves" own checked images and schedules the unchecked images to be deleted 
+        """
+
         pass # TODO
         #downloaded_name_new = None
         original_name_new = None
@@ -395,6 +417,7 @@ class ImageData():
         self.danb.self_destruct()
 
 class ProviderImageData():
+    """Includes all information on the sourced images for the given image provider"""
     def __init__(self, service, name, path, thumb_size, preview_size, dictionary, siblings_array):
         self.service = service
         self.name = name
@@ -411,29 +434,29 @@ class ProviderImageData():
         self.sub_dir_array = list()
         self.sub_dir_img_array = list()
         self.downloaded_var = IntVar(value=0)
-        self.downloaded_chkbtn = Checkbutton(master = gv.frame, var=self.downloaded_var, style="chkbtn.TCheckbutton")
-        self.downloaded_lbl = Label(master=gv.frame, text = service, style='label.TLabel')
+        self.downloaded_chkbtn = Checkbutton(master = gv.res_frame, var=self.downloaded_var, style="chkbtn.TCheckbutton")
+        self.downloaded_lbl = Label(master=gv.res_frame, text = service, style='label.TLabel')
         try:
-            self.downloaded_wxh_lbl = Label(master=gv.frame, text = str(len(listdir(self.path))) + " images", style='label.TLabel')
+            self.downloaded_wxh_lbl = Label(master=gv.res_frame, text = str(len(listdir(self.path))) + " images", style='label.TLabel')
         except:
-            self.downloaded_wxh_lbl = Label(master=gv.frame, text = "More images", style='label.TLabel')
-        self.downloaded_type_lbl = Label(master=gv.frame, style='label.TLabel')
+            self.downloaded_wxh_lbl = Label(master=gv.res_frame, text = "More images", style='label.TLabel')
+        self.downloaded_type_lbl = Label(master=gv.res_frame, style='label.TLabel')
 
-        self.info_img_lbl = Label(master=gv.frame3, style='label.TLabel')
-        self.info_provider_lbl = Label(master=gv.frame3, style='label.TLabel')
-        self.info_artist_lbl = Label(master=gv.frame3, style='label.TLabel')
-        self.info_title_lbl = Label(master=gv.frame3, style='label.TLabel')
-        #self.info_imageid_lbl = Label(master=gv.frame3, style='label.TLabel')
-        self.info_url_lbl = Label(master=gv.frame3, style='label.TLabel')
-        self.info_date_lbl = Label(master=gv.frame3, style='label.TLabel')
-        self.info_caption_lbl = Label(master=gv.frame3, style='label.TLabel')
-        self.info_wxh_lbl = Label(master=gv.frame3, style='label.TLabel')
-        self.tags_pixiv_lbl = Label(master=gv.frame3, style='label.TLabel')
+        self.info_img_lbl = Label(master=gv.info_frame, style='label.TLabel')
+        self.info_provider_lbl = Label(master=gv.info_frame, style='label.TLabel')
+        self.info_artist_lbl = Label(master=gv.info_frame, style='label.TLabel')
+        self.info_title_lbl = Label(master=gv.info_frame, style='label.TLabel')
+        #self.info_imageid_lbl = Label(master=gv.info_frame, style='label.TLabel')
+        self.info_url_lbl = Label(master=gv.info_frame, style='label.TLabel')
+        self.info_date_lbl = Label(master=gv.info_frame, style='label.TLabel')
+        self.info_caption_lbl = Label(master=gv.info_frame, style='label.TLabel')
+        self.info_wxh_lbl = Label(master=gv.info_frame, style='label.TLabel')
+        self.tags_pixiv_lbl = Label(master=gv.info_frame, style='label.TLabel')
         self.tags_lbl_array = list()
 
-        self.tags_lbl_array.append((Label(master=gv.frame3, text = 'Original:', style='label.TLabel', font = ('Arial Bold', 11)), Label(master=gv.frame3, text = 'Translated:', style='label.TLabel', font = ('Arial Bold', 11))))
+        self.tags_lbl_array.append((Label(master=gv.info_frame, text = 'Original:', style='label.TLabel', font = ('Arial Bold', 11)), Label(master=gv.info_frame, text = 'Translated:', style='label.TLabel', font = ('Arial Bold', 11))))
         for tag in dictionary['tags'].strip('[]\'').split('\', \''):
-            self.tags_lbl_array.append((Label(master=gv.frame3, text = tag, style='label.TLabel'), Label(master=gv.frame3, text = tag, style='label.TLabel')))
+            self.tags_lbl_array.append((Label(master=gv.info_frame, text = tag, style='label.TLabel'), Label(master=gv.info_frame, text = tag, style='label.TLabel')))
 
         self.source_url = None
 
@@ -446,7 +469,9 @@ class ProviderImageData():
         self.process_big_imgs_init = False
 
     def load(self):
-
+        """
+        Loads images into memory
+        """
         if self.load_init:
             return
 
@@ -465,7 +490,7 @@ class ProviderImageData():
                     if self.path not in gv.delete_dirs_array:
                         gv.delete_dirs_array.append(self.path)
                 for img in self.sub_dir_array:
-                    self.sub_dir_img_array.append(SubImageData(img, self.path, self.service, gv.window, gv.frame2, master_folder=self.name, siblings=self.siblings_array))#(Image.open(self.path + '/' + img), img))
+                    self.sub_dir_img_array.append(SubImageData(img, self.path, self.service, gv.window, gv.big_frame, master_folder=self.name, siblings=self.siblings_array))#(Image.open(self.path + '/' + img), img))
                 self.siblings_array.extend(self.sub_dir_img_array)
             except Exception as e:
                 print("ERROR [0046] " + str(e))
@@ -522,7 +547,7 @@ class ProviderImageData():
             
     def display_results(self, t):
         """
-        Displays all widgets corresponding to this image\n
+        Displays all widgets corresponding to this image on the results frame\n
         IMPORTANT:\n
         Call load, process_results_imgs and modify_results_widgets in that order before
         """
@@ -533,7 +558,11 @@ class ProviderImageData():
         self.downloaded_type_lbl.grid(column = 4, row = t+2, sticky = W, padx = 10)
 
     def display_info(self, t):
-
+        """
+        Displays all widgets corresponding to this image on the info frame\n
+        IMPORTANT:\n
+        Call load and process_info_imgs in that order before
+        """
         self.process_info_imgs()
         self.info_img_lbl.configure(image = self.downloaded_photoImage_preview)
         self.info_provider_lbl.configure(text = str(self.service), font = ('Arial Bold', 18))
@@ -594,18 +623,25 @@ class ProviderImageData():
         self.process_info_imgs_init = True
 
     def hyperlink(self, event):
+        """
+        Opens a webbrowser with a URL on click of a widget that is bound to this method
+        """
         open_new(event.widget.cget("text"))
 
     def display_big_selector(self, t):
-
+        """
+        Displays all widgets corresponding to this image on the big selector screen\n
+        IMPORTANT:\n
+        Call load and process_big_imgs in that order before
+        """
         if path.isfile(self.path):
             self.downloaded_SubImgData.display_grid(t)
-            gv.frame2.grid_rowconfigure(3, weight = 1)
+            gv.big_frame.grid_rowconfigure(3, weight = 1)
             return t + 4
         elif path.isdir(self.path):
             for elem in self.sub_dir_img_array:
                 elem.display_grid(t)
-                gv.frame2.grid_rowconfigure(t + 3, weight = 1)
+                gv.big_frame.grid_rowconfigure(t + 3, weight = 1)
                 t += 4
             return t
 
@@ -619,7 +655,7 @@ class ProviderImageData():
             return
 
         if path.isfile(self.path):
-            self.downloaded_SubImgData = SubImageData(self.name, self.path, self.service, gv.window, gv.frame2, self.downloaded_image, self.downloaded_var, siblings=self.siblings_array)#ImageTk.PhotoImage(self.downloaded_image_pixiv)
+            self.downloaded_SubImgData = SubImageData(self.name, self.path, self.service, gv.window, gv.big_frame, self.downloaded_image, self.downloaded_var, siblings=self.siblings_array)#ImageTk.PhotoImage(self.downloaded_image_pixiv)
             self.downloaded_SubImgData.load()
             self.siblings_array.append(self.downloaded_SubImgData)
         elif path.isdir(self.path):
@@ -659,6 +695,7 @@ class ProviderImageData():
         self.downloaded_chkbtn.image = None
 
 class SubImageData():
+    """Includes information for images in subdirectories of downloads"""
     def __init__(self, name, path, service, parent, scrollparent, img=None, var=None, master_folder='', siblings=list()):
         self.name = name
         self.path = path + '/' + name
@@ -687,6 +724,9 @@ class SubImageData():
         self.load_init = False
 
     def load(self):
+        """
+        Loads image into memory
+        """
         if self.load_init:
             return
         flag = False
@@ -726,6 +766,10 @@ class SubImageData():
         self.load_init = True
     
     def display_grid(self, t):
+        """
+        Use this for the downloaded images
+        Display the preview and corresponding info on the big selector scrollframe
+        """
         self.thumb_chkbtn.grid(row=t, column=0, rowspan=4)
         self.lbl.grid(row=t+0, column=1, sticky=W)
         self.wxh_lbl.grid(row=t+1, column=1, sticky=W)
@@ -733,6 +777,10 @@ class SubImageData():
         self.show_btn.grid(row=t+3, column=1, sticky=W)
     
     def display_place(self):
+        """
+        Use this for the original image
+        Display the corresponding info above the big selector scrollframe
+        """
         self.chkbtn.place(x = int(gv.width/160*1.5), y = int(gv.height/90*4))
         self.lbl2.place(x = int(gv.width/160*3.2), y = int(gv.height/90*2))
         self.lbl.place(x = int(gv.width*0.86), y = int(gv.height/90*6.3))
@@ -740,6 +788,9 @@ class SubImageData():
         self.type_lbl.place(x = int(gv.width*0.94), y = int(gv.height/90*6.3))
 
     def show(self):
+        """
+        Displays the image on the screen and forgets all siblings
+        """
         for sib in self.siblings_array:
             sib.forget()
         self.lbl2.place(x = int(gv.width*0.44), y = int(gv.height/90*2))
@@ -768,7 +819,7 @@ class SubImageData():
 
 def resize(image):
     """
-    Resizes given image to a third of the screen width and to the screen height-120 and returns it as a new object.
+    Resizes given image to a third of the screen width and to the screen height*0.87 and returns it as a new object.
     """
 
     oldwidth = image.width

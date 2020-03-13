@@ -90,6 +90,8 @@ def refresh_startpage(change, answer2):
     - Images in Input folder
     - Remaining searches on SauceNao
     - Current image that is being processed
+    Creates ImageData classes from the information the magic process gives
+    Displays all results
     """
     global currently_processing
     try:
@@ -191,6 +193,9 @@ def refresh_startpage(change, answer2):
     window.after(100, refresh_startpage, change, answer2)
 
 def load_from_ref():
+    """
+    Loads images whose info has been saved in the reference file
+    """
     refs = gv.Files.Ref.read_reference()
     if refs:
         pixiv_authenticate()
@@ -215,6 +220,9 @@ def load_from_ref():
         gv.Files.Log.write_to_log('Reference file is empty')
 
 def duplicate_loop():
+    """
+    Looks if a requested image has already been sourced and notifies the magic process
+    """
     if duplicate_p_pipe.poll():
         dup_list = duplicate_p_pipe.recv()
         is_dup = False
@@ -239,7 +247,7 @@ def forget_all_widgets():
 
 def stop():
     """
-    Stop further search for images and halt the second process.
+    Stop further search for images and halt the magic process.
     """
     global process
     if process.is_alive():
@@ -250,7 +258,7 @@ def stop():
 
 def lock_save():
     """
-    Locks in selected images to save
+    Locks in selected images(ImageData) to save
     """
     data_list = copy(gv.img_data_array)
     for data in data_list:
@@ -271,6 +279,9 @@ def save_locked():
     save_locked_btn.configure(state='disabled')
 
 def leftovers():
+    """
+    Deletes files and folders scheduled to be deleted indicated by delete_dirs_array
+    """
     # # Delete leftovers
     # if not process.is_alive():
     #     for img in listdir(gv.cwd + '/Sourcery/sourced_original'):
@@ -395,15 +406,14 @@ if __name__ == '__main__':
     lock_save_btn = Button(window, text="Lock selected", command=lock_save, style="button.TLabel")
     save_locked_btn = Button(window, text="Save selected images", command=save_locked, state = 'disabled', style="button.TLabel")
 
-    gv.frame = results_ScrollFrame.frame
-    gv.frame2 = big_selector_ScrollFrame.frame
-    gv.frame3 = info_ScrollFrame.frame
+    gv.res_frame = results_ScrollFrame.frame
+    gv.big_frame = big_selector_ScrollFrame.frame
+    gv.info_frame = info_ScrollFrame.frame
     gv.window = window
     gv.big_selector_frame = big_selector_ScrollFrame.sub_frame
     gv.big_selector_canvas = big_selector_ScrollFrame.canvas
     for i in range(int(gv.Files.Conf.imgpp)):
         gv.free_space.append(True)
-    #gv.display_view_results = display_view_results
     gv.display_startpage = display_startpage
     currently_processing = ''
     process = Process()
@@ -411,7 +421,7 @@ if __name__ == '__main__':
     comm_img_q = Queue() # Queue for 'Currently Sourcing'
     comm_stop_q = Queue() # Queue for stop signal
     comm_error_q = Queue() # Queue for error messages
-    img_data_q = Queue() # Queue for ImageData classes
+    img_data_q = Queue() # Queue for ImageData information
     duplicate_p_pipe, duplicate_c_pipe = Pipe()
     #sem = Semaphore(12)
     #image_preloader()

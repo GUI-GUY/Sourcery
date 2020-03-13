@@ -9,7 +9,7 @@ import global_variables as gv
 
 
 class Options():
-    """Options"""
+    """Hosts all Options classes and methods to switch between the options views"""
     def __init__(self, parent, display_startpage, enforce_style):
         self.par = parent
         self.NAOO = SauceNaoOptions(parent)
@@ -65,7 +65,7 @@ class Options():
             widget.place_forget()
 
 class SauceNaoOptions():
-    """SauceNaoOptions"""
+    """Includes all widgets for SauceNao and methods to display and modify them"""
     def __init__(self, parent):
         self.par = parent
         self.saucenao_key_lbl = Label(parent, text="SauceNao API-Key", style="label.TLabel")
@@ -131,10 +131,13 @@ class SauceNaoOptions():
         gv.Files.Log.write_to_log('Saved SauceNao Options')
 
     def hyperlink(self, event):
+        """
+        Opens a webbrowser with a URL on click of a widget that is bound to this method
+        """
         open_new(event.widget.cget("text"))
 
 class SourceryOptions():
-    """SourceryOptions"""
+    """Includes all widgets for Sourcery and methods to display and modify them"""
     def __init__(self, parent, enforce_style):
         self.par = parent
         self.en_s = enforce_style
@@ -236,6 +239,9 @@ class SourceryOptions():
             gv.Files.Log.write_to_log('Failed to save Custom Theme')
 
     def color_insert(self):
+        """
+        Inserts the colors from the theme file into the custom theme preview
+        """
         self.custom_background_color_lbl.configure(background = gv.Files.Theme.custom_background, cursor='hand2')
         self.custom_foreground_color_lbl.configure(background = gv.Files.Theme.custom_foreground, cursor='hand2')
         self.custom_button_background_color_lbl.configure(background = gv.Files.Theme.custom_button_background, cursor='hand2')
@@ -245,6 +251,9 @@ class SourceryOptions():
         self.custom_button_foreground_pressed_color_lbl.configure(background = gv.Files.Theme.custom_button_foreground_pressed, cursor='hand2')
     
     def color_bind(self):
+        """
+        Binds the custom preview widgets to a color chooser
+        """
         c_bg_c_par = partial(self.color_choose, self.custom_background_color_lbl)
         self.custom_background_color_lbl.bind("<Button-1>", c_bg_c_par)
 
@@ -267,6 +276,9 @@ class SourceryOptions():
         self.custom_button_foreground_pressed_color_lbl.bind("<Button-1>", c_bfg_p_c_par)
 
     def color_choose(self, lbl, event):
+        """
+        Opens the color chooser and colors the label with the received color
+        """
         color = colorchooser.askcolor()
         lbl.configure(background = color[1])
 
@@ -277,7 +289,7 @@ class SourceryOptions():
         gv.Files.Log.write_to_log('Saved Sourcery Options')
 
 class ProviderOptions():
-    """ProviderOptions"""
+    """Hosts all image provider options Classes"""
     def __init__(self, parent):
         self.par = parent
         self.PixO = PixivOptions(parent)
@@ -290,7 +302,7 @@ class ProviderOptions():
         self.PixO.pixiv_display()
 
 class PixivOptions():
-    """PixivOptions"""
+    """Includes all widgets for Pixiv and methods to display and modify them"""
     def __init__(self, parent):
         self.par = parent
         self.pixiv_login_lbl = Label(parent, text="Pixiv Login", style="label.TLabel")
@@ -365,6 +377,9 @@ class PixivOptions():
         self.pixiv_password_filled_lbl.configure(text=gv.Files.Cred.pixiv_password)
 
     def pixiv_display(self):
+        """
+        Displays the pixiv options widgets
+        """
         y = int(gv.height/90*10)
         c = 23
         self.pixiv_login_lbl.place(x = int(gv.width/160*5), y = y)
@@ -390,4 +405,7 @@ class PixivOptions():
         gv.Files.Log.write_to_log('Saved Pixiv options')
     
     def hyperlink(self, event):
+        """
+        Opens a webbrowser with a URL on click of a widget that is bound to this method
+        """
         open_new(event.widget.cget("text"))

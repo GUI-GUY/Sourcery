@@ -62,6 +62,10 @@ db_bitmask = int(index_mangadex+index_madokami+index_pawoo+index_da+index_portal
 db_count = int(index_mangadex)+int(index_madokami)+int(index_pawoo)+int(index_da)+int(index_portalgraphics)+int(index_bcycosplay)+int(index_bcyillust)+int(index_idolcomplex)+int(index_e621)+int(index_animepictures)+int(index_sankaku)+int(index_konachan)+int(index_gelbooru)+int(index_shows)+int(index_movies)+int(index_hanime)+int(index_anime)+int(index_medibang)+int(index_2dmarket)+int(index_hmisc)+int(index_fakku)+int(index_shutterstock)+int(index_reserved)+int(index_animeop)+int(index_yandere)+int(index_nijie)+int(index_drawr)+int(index_danbooru)+int(index_seigaillust)+int(index_anime)+int(index_pixivhistorical)+int(index_pixiv)+int(index_ddbsamples)+int(index_ddbobjects)+int(index_hcg)+int(index_hanime)+int(index_hmags)
 
 def get_response(image, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
+    """
+    Request information from SauceNao on the given image
+    Returns a List with a status code indicated success or which failure, a message for the user and information on the search limit
+    """
     if api_key == None or api_key == '':
         return [403, 'Incorrect or Invalid API Key!\nGo to Options->SauceNao->SauceNao API-Key and insert a Key']
     try:
@@ -115,10 +119,10 @@ def get_response(image, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
 def decode_response(results, EnableRename=False):
     """
     Returns a list of dictionaries with:\n
-    [0]service - pixiv/danbooru or '' if failure\n
-    [1]illust_id - 0 if failure\n
-    [2]member_id - negative if failure\n
-    [3]source_url - '' if failure\n
+    service - pixiv/danbooru or '' if failure\n
+    illust_id - 0 if failure\n
+    member_id - negative if failure\n
+    source_url - '' if failure\n
     """
     # print(results)
     
