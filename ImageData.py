@@ -86,7 +86,10 @@ class ImageData():
                 break
         if x == None:
             return None
-        return {"artist": illust.user.name, "title": illust.title, "caption": illust.caption, "create_date": illust.create_date, "width": illust.width, "height": illust.height, "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source']}
+        tags = list()
+        for tag in illust.tags:
+            tags.append(tag['name'] + ' | ' + str(tag['translated_name']))
+        return {"artist": illust.user.name, "title": illust.title, "caption": illust.caption, "create_date": illust.create_date, "width": illust.width, "height": illust.height, "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "tags": str(tags)}
 
     def danbooru_clean_dict(self, illust, dict_list):
         x = None
@@ -96,7 +99,10 @@ class ImageData():
                 break
         if x == None:
             return None
-        return {"artist": illust['tag_string_artist'], "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['image_width'], "height": illust['image_height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source']}
+
+        tags = illust['tag_string_general']
+        tags = tags.split()
+        return {"artist": illust['tag_string_artist'], "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['image_width'], "height": illust['image_height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "tags": str(tags)}
 
     def forget_all_widgets(self):
         for widget in gv.window.winfo_children():
@@ -216,7 +222,7 @@ class ImageData():
         t = 0
         if self.pixiv_dict != None:
             self.pixiv.display_info(t)
-            t += 10
+            t += 26
         if self.danb_dict != None:
             self.danb.display_info(t)
 
@@ -407,10 +413,9 @@ class ProviderImageData():
         self.tags_pixiv_lbl = Label(master=gv.frame3, style='label.TLabel')
         self.tags_lbl_array = list()
 
-        # self.tags_lbl_array.append((Label(master=gv.frame3, text = 'Original:', style='label.TLabel', font = ('Arial Bold', 11)), Label(master=gv.frame3, text = 'Translated:', style='label.TLabel', font = ('Arial Bold', 11))))
-        # if pixiv_illust != None:
-        #     for tag in pixiv_illust.tags:
-        #         self.tags_lbl_array.append((Label(master=gv.frame3, text = tag['name'], style='label.TLabel'), Label(master=gv.frame3, text = tag['translated_name'], style='label.TLabel')))
+        self.tags_lbl_array.append((Label(master=gv.frame3, text = 'Original:', style='label.TLabel', font = ('Arial Bold', 11)), Label(master=gv.frame3, text = 'Translated:', style='label.TLabel', font = ('Arial Bold', 11))))
+        for tag in dictionary['tags'].strip('[]\'').split('\', \''):
+            self.tags_lbl_array.append((Label(master=gv.frame3, text = tag, style='label.TLabel'), Label(master=gv.frame3, text = tag, style='label.TLabel')))
 
         self.source_url = None
 
@@ -539,12 +544,11 @@ class ProviderImageData():
         #     self.info_wxh_lbl.grid(column = 1, row = 6, sticky = W, padx = 5)
         # self.info_url_lbl.grid(column = 0, row = 10, columnspan = 3, sticky = W)
         # self.tags_pixiv_lbl.grid(column = 0, row = 11, sticky = W)
-        
-        # t=0
-        # for lbl in self.tags_lbl_array:
-        #     lbl[0].grid(column = 0, row = 12 + t, sticky = W)
-        #     lbl[1].grid(column = 1, row = 12 + t, sticky = W)
-        #     t += 1
+
+        for lbl in self.tags_lbl_array:
+            lbl[0].grid(column = 0, row = 12 + t, sticky = W, columnspan=2)
+            #lbl[1].grid(column = 1, row = 12 + t, sticky = W)
+            t += 1
 
     def process_info_imgs(self):
         """

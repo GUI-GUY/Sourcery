@@ -78,7 +78,7 @@ preload next x images
 UI
 + show info panel on 'more info' click
 + link to SauceNao/Pixiv login data online(https://www.pixiv.net/setting_user.php)
-tags
+~ tags
 more metadata(uncensored)
 save: feedback message
 better checkbutton graphics
