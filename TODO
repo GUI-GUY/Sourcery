@@ -64,6 +64,7 @@ foreign folder support
 preview/thumbnail scaling/options
 + tkinter color picker
 tag own images as uncensored
++ show tags on request(e.g uncensored)
 
 PERFORMANCE
 optimizations
@@ -80,7 +81,6 @@ UI
 + show info panel on 'more info' click
 + link to SauceNao/Pixiv login data online(https://www.pixiv.net/setting_user.php)
 ~ tags
-more metadata(uncensored)
 save: feedback message
 better checkbutton graphics
 big selector text green/red/white if better/worse/same res/datatype?
@@ -95,6 +95,7 @@ MISC
 pximg.net (with referer)
 all TODOs
 + comments
+Danbooru siblings/parents
 Fehlerbehandlung
 
 Last Error: 0047
@@ -108,3 +109,4 @@ direct replace if sim is over X%
 change font option (maybe not)
 statistics
 elapsed time / ETA
+Danbooru Gold

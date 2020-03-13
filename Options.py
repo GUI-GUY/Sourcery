@@ -1,4 +1,4 @@
-from tkinter import IntVar, E, W, colorchooser
+from tkinter import IntVar, E, W, colorchooser, Text, END
 #from tkinter import messagebox as mb
 from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 from functools import partial
@@ -293,6 +293,7 @@ class ProviderOptions():
     def __init__(self, parent):
         self.par = parent
         self.PixO = PixivOptions(parent)
+        self.DanO = DanbooruOptions(parent)
     
     def display(self):
         """
@@ -300,6 +301,7 @@ class ProviderOptions():
         - Pixiv 
         """
         self.PixO.pixiv_display()
+        self.DanO.danb_display()
 
 class PixivOptions():
     """Includes all widgets for Pixiv and methods to display and modify them"""
@@ -322,6 +324,13 @@ class PixivOptions():
             self.rename_var = IntVar(value=0)
         self.rename_chkbtn = Checkbutton(parent, text='Rename images from pixiv to pixiv name', var=self.rename_var, style="chkbtn.TCheckbutton")
         self.save_btn = Button(parent, text='Save', command=self.pixiv_save, style ="button.TLabel")
+
+        self.show_tags_lbl = Label(parent, text="Put tags seperated by spaces here to make them show up in the results screen:", style="label.TLabel")
+        self.show_tags_txt = Text(parent, foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10)) # TODO not upadated with theme
+        self.save_btn = Button(parent, text='Save', command=self.pixiv_save, style ="button.TLabel")
+
+        self.show_tags_txt.insert(END, gv.Files.Conf.tags_pixiv)
+        self.tags = None
 
         self.pixiv_address_1 = Label(parent, text="Your Login Data can be found here:", style="label.TLabel")
         self.pixiv_address_2 = Label(parent, text="https://www.pixiv.net/setting_user.php", style="label.TLabel")
@@ -392,6 +401,9 @@ class PixivOptions():
         self.pixiv_address_1.place(x = int(gv.width/160*5), y = y + c * 5)
         self.pixiv_address_2.place(x = int(gv.width/160*5), y = y + c * 6)
 
+        self.show_tags_lbl.place(x = int(gv.width/160*5), y = y + c * 9)
+        self.show_tags_txt.place(x = int(gv.width/160*5), y = y + c * 10)
+
         self.rename_chkbtn.place(x = int(gv.width/160*5), y = y + c * 7)
         self.save_btn.place(x = int(gv.width/160*5), y = y + c * 8)
 
@@ -401,7 +413,10 @@ class PixivOptions():
             gv.Files.Conf.rename_pixiv = 'True'
         else:
             gv.Files.Conf.rename_pixiv = 'False'
+        self.tags = self.show_tags_txt.get('1.0', END)
+        gv.Files.Conf.tags_pixiv = self.tags
         gv.Files.Conf.write_config()
+        gv.results_tags_pixiv = self.tags.split()
         gv.Files.Log.write_to_log('Saved Pixiv options')
     
     def hyperlink(self, event):
@@ -409,3 +424,36 @@ class PixivOptions():
         Opens a webbrowser with a URL on click of a widget that is bound to this method
         """
         open_new(event.widget.cget("text"))
+
+class DanbooruOptions():
+    """Includes all widgets for Danbooru and methods to display and modify them"""
+    def __init__(self, parent):
+        self.par = parent
+        self.show_tags_lbl = Label(parent, text="Put tags seperated by spaces or newlines here to make them show up in the results screen:", style="label.TLabel")
+        self.show_tags_txt = Text(parent, foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10)) # TODO not upadated with theme
+        self.save_btn = Button(parent, text='Save', command=self.danbooru_save, style ="button.TLabel")
+
+        self.show_tags_txt.insert(END, gv.Files.Conf.tags_danbooru)
+        self.tags = None
+
+    def danb_display(self):
+        """
+        Displays the danbooru options widgets
+        """
+        y = int(gv.height/90*10)
+        c = 23
+        self.show_tags_lbl.place(x = int(gv.width/160*50), y = y)
+        self.show_tags_txt.place(x = int(gv.width/160*50), y = y + c * 1)
+        self.save_btn.place(x = int(gv.width/160*50), y = y + c * 20)
+        pass
+
+    def danbooru_save(self):
+        gv.Files.Log.write_to_log('Attempting to save Danbooru options...')
+        self.tags = self.show_tags_txt.get('1.0', END)
+        gv.Files.Conf.tags_danbooru = self.tags
+        gv.Files.Conf.write_config()
+        gv.results_tags_danbooru = self.tags.split()
+        gv.Files.Log.write_to_log('Saved Danbooru options')
+
+
+        pass

@@ -221,8 +221,8 @@ class ImageData():
         self.original_lbl.grid(column = 2, row = t+1, sticky = W, padx = 10)
         self.original_wxh_lbl.grid(column = 3, row = t+1, sticky = W, padx = 10)
         self.original_type_lbl.grid(column = 4, row = t+1, sticky = W, padx = 10)
-        self.info_btn.grid(column = 5, row = t+2, sticky = W, padx = 10)
-        self.original_cropped_lbl.grid(column = 1, row = t, columnspan=5, sticky = W, padx = 10)
+        self.info_btn.grid(column = 6, row = t+1, sticky = W, padx = 10)
+        self.original_cropped_lbl.grid(column = 1, row = t, columnspan=6, sticky = W, padx = 10)
         self.big_selector_btn.grid(column = 5, row = t+1, sticky = W, padx = 10)
 
         if self.pixiv_dict != None:
@@ -425,6 +425,7 @@ class ProviderImageData():
         self.thumb_size = thumb_size
         self.preview_size = preview_size
         self.dict = dictionary
+        self.tags = dictionary['tags'].strip('[]\'').split('\', \'')
         self.siblings_array = siblings_array
         self.downloaded_image = None
         self.downloaded_image_thumb = None
@@ -441,6 +442,7 @@ class ProviderImageData():
         except:
             self.downloaded_wxh_lbl = Label(master=gv.res_frame, text = "More images", style='label.TLabel')
         self.downloaded_type_lbl = Label(master=gv.res_frame, style='label.TLabel')
+        self.results_tags_lbl = Label(gv.res_frame, style='label.TLabel')
 
         self.info_img_lbl = Label(master=gv.info_frame, style='label.TLabel')
         self.info_provider_lbl = Label(master=gv.info_frame, style='label.TLabel')
@@ -455,7 +457,7 @@ class ProviderImageData():
         self.tags_lbl_array = list()
 
         self.tags_lbl_array.append((Label(master=gv.info_frame, text = 'Original:', style='label.TLabel', font = ('Arial Bold', 11)), Label(master=gv.info_frame, text = 'Translated:', style='label.TLabel', font = ('Arial Bold', 11))))
-        for tag in dictionary['tags'].strip('[]\'').split('\', \''):
+        for tag in self.tags:
             self.tags_lbl_array.append((Label(master=gv.info_frame, text = tag, style='label.TLabel'), Label(master=gv.info_frame, text = tag, style='label.TLabel')))
 
         self.source_url = None
@@ -537,6 +539,12 @@ class ProviderImageData():
         self.downloaded_chkbtn.configure(image=self.downloaded_photoImage_thumb)
         self.downloaded_chkbtn.image = self.downloaded_photoImage_thumb
 
+        results_tags = ''
+        for elem in gv.results_tags_danbooru:
+            if elem in self.tags:
+                results_tags = results_tags + elem + '\n' 
+        self.results_tags_lbl.configure(text = results_tags)
+
         if not path.isdir(self.path):
             self.downloaded_var.set(1)
             self.downloaded_wxh_lbl.configure(text = str(self.downloaded_image.size))
@@ -556,7 +564,8 @@ class ProviderImageData():
         self.downloaded_lbl.grid(column = 2, row = t+2, sticky = W, padx = 10)
         self.downloaded_wxh_lbl.grid(column = 3, row = t+2, sticky = W, padx = 10)
         self.downloaded_type_lbl.grid(column = 4, row = t+2, sticky = W, padx = 10)
-
+        self.results_tags_lbl.grid(column = 5, row = t+2, sticky = W, padx = 10, columnspan=2)
+        
     def display_info(self, t):
         """
         Displays all widgets corresponding to this image on the info frame\n

@@ -93,7 +93,7 @@ def refresh_startpage(change, answer2):
     Creates ImageData classes from the information the magic process gives
     Displays all results
     """
-    global currently_processing
+    
     try:
         gv.input_images_array = listdir(gv.cwd + "/Input")
     except Exception as e:
@@ -118,6 +118,7 @@ def refresh_startpage(change, answer2):
         else:
             try:
                 answer2 = comm_img_q.get()
+                global currently_processing
                 if answer2 != currently_processing:
                     currently_processing = answer2
             except:

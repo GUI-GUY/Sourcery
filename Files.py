@@ -333,6 +333,8 @@ class ConfigFile():
         self.rename_pixiv = 'False'
         self.minsim = '80'
         self.imgpp = '12'
+        self.tags_danbooru = ''
+        self.tags_pixiv = ''
         if self.read_config():
             self.write_config()
     
@@ -358,6 +360,12 @@ class ConfigFile():
                 self.minsim = temp[temp.find('=')+1:-1]
             if temp.startswith('imagesperpage='):
                 self.imgpp = temp[temp.find('=')+1:-1]
+            if temp.startswith('tags_danbooru='):
+                self.tags_danbooru = temp[temp.find('=')+1:-1]
+                self.tags_danbooru = self.tags_danbooru.replace(' /n ', '\n').replace(' /t ', '\t')
+            if temp.startswith('tags_pixiv='):
+                self.tags_pixiv = temp[temp.find('=')+1:-1]
+                self.tags_pixiv = self.tags_pixiv.replace(' /n ', '\n').replace(' /t ', '\t')
             temp = f.readline()
         f.close()
         return False
@@ -383,9 +391,14 @@ class ConfigFile():
             mb.showerror('Invalid Value', 'Please insert a value between 0 and 1000 into the Images per page option')
             self.imgpp = '12'
 
+        self.tags_danbooru = self.tags_danbooru.replace('\n', ' /n ').replace('\t', ' /t ')
+        self.tags_pixiv = self.tags_pixiv.replace('\n', ' /n ').replace('\t', ' /t ')
+
         conf = ("rename_pixiv=" + self.rename_pixiv +
                 "\nminsim=" + self.minsim +
                 "\nimagesperpage=" + self.imgpp +
+                "\ntags_danbooru=" + self.tags_danbooru +
+                "\ntags_pixiv=" + self.tags_pixiv +
                 "\n\nEND")
         try:
             f = open(cwd + '/Sourcery/config', 'w')
