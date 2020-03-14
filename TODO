@@ -78,7 +78,7 @@ better sync for stop-???
 queue images instead of 'get source' button?
 self_destruct->unload
 preload next x images
-repair duplicate loop
++ repair duplicate loop
 
 UI
 + show info panel on 'more info' click
@@ -115,3 +115,11 @@ change font option (maybe not)
 statistics
 elapsed time / ETA
 Danbooru Gold
+
+
+LEGEND:
++ done (probably)
+- not possible
+~ done but can be improved
+? done but I don't know if this works
+-- previously thought impossible but recheck required 

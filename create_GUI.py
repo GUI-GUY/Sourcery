@@ -148,7 +148,7 @@ def refresh_startpage(change, answer2):
         try:
             a = img_data_q.get()
             #print(a)
-            b = ImageData(a[0], a[1], a[2], a[3], a[4], a[5])
+            b = ImageData(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7])
             gv.img_data_array.append(b)
             #print(b)
         except Exception as e:
@@ -210,35 +210,35 @@ def load_from_ref():
         for ref in refs:
             pixiv_illust = pixiv_fetch_illustration(ref['old_name'], ref['id_pixiv'])
             danb_illust = danbooru_fetch_illustration(ref['id_danb'])
-            # if not pixiv_illust:
-            #     continue
-            # next_img = False
-            # for data in gv.img_data_array: #TODO duplicates
-            #     if ref['old_name'] == data.name_original and ref['id_pixiv'] == pixiv_illust.id and strtobool(ref['rename_option']) == data.rename:
-            #         next_img = True
-            #         break
-            # if next_img:
-            #     gv.Files.Log.write_to_log('Image already sourced')
-            #     continue
+            if not pixiv_illust and not danb_illust:
+                continue
+            next_img = False
+            for data in gv.img_data_array: #TODO duplicates
+                if str(ref['old_name']) == data.name_original and ref['id_pixiv'] == pixiv_illust.id and strtobool(ref['rename_pixiv']) == strtobool(str(data.rename_pixiv)) and strtobool(ref['rename_danbooru']) == strtobool(str(data.rename_danbooru)) and str(ref['minsim']) == gv.Files.Conf.minsim:
+                    next_img = True
+                    break
+            if next_img:
+                gv.Files.Log.write_to_log('Image already sourced')
+                continue
             # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
-            gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], ref['new_name_danb'], [{"service_name": 'Pixiv', "illust_id": 'None', "source": 'None', "???": 'None', "minsim": ref['minsim']}, {"service_name": 'Danbooru', "illust_id": 'None', "source": 'None', "???": 'None', "minsim": ref['minsim']}], pixiv_illust, danb_illust))
+            gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], gv.Files.Conf.rename_pixiv, ref['new_name_danb'], gv.Files.Conf.rename_danbooru, [{"service_name": 'Pixiv', "illust_id": pixiv_illust.id, "source": 'None', "???": 'None', "minsim": ref['minsim']}, {"service_name": 'Danbooru', "illust_id": danb_illust['id'], "source": 'None', "???": 'None', "minsim": ref['minsim']}], pixiv_illust, danb_illust))
         gv.Files.Log.write_to_log('Loaded images from reference file')
     else:
         gv.Files.Log.write_to_log('Reference file is empty')
 
 def duplicate_loop():
     """
-    Looks if a requested image has already been sourced and notifies the magic process
+    Looks if a requested image has already been sourced with the same options and notifies the magic process
     """
     if duplicate_p_pipe.poll():
-        dup_list = duplicate_p_pipe.recv()
+        dup_dict = duplicate_p_pipe.recv()
         is_dup = False
-        for data in gv.img_data_array:
-            if dup_list[0] == data.name_original and dup_list[1] == str(data.minsim) and dup_list[2] == str(data.rename):
+        for data in gv.img_data_array: # {'img_name': img, 'minsim': minsim, 'rename_pixiv': gv.Files.Conf.rename_pixiv, 'rename_danbooru': gv.Files.Conf.rename_danbooru}
+            if str(dup_dict['img_name']) == data.name_original and str(dup_dict['minsim']) == str(data.minsim) and dup_dict['rename_pixiv'] == str(data.rename_pixiv) and dup_dict['rename_danbooru'] == str(data.rename_danbooru):
                 is_dup = True
                 break
         duplicate_p_pipe.send(is_dup)
-    window.after(10, duplicate_loop)
+    window.after(1, duplicate_loop)
 
 def display_info():
     gv.Files.Log.log_text.place_forget()

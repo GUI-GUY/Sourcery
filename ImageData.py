@@ -11,7 +11,7 @@ import global_variables as gv
 
 class ImageData():
     """Includes all information on the sourced images"""
-    def __init__(self, old_name, pixiv_name, danb_name, dict_list, pixiv_illust, danbooru_illust):
+    def __init__(self, old_name, pixiv_name, pixiv_rename, danb_name, danb_rename, dict_list, pixiv_illust, danbooru_illust):
         self.name_original = old_name
         self.name_pixiv = pixiv_name
         self.set_name_pixiv()
@@ -20,10 +20,8 @@ class ImageData():
         self.pixiv_dict = self.pixiv_clean_dict(pixiv_illust, dict_list) # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
         self.danb_dict = self.danbooru_clean_dict(danbooru_illust, dict_list)
         self.minsim = 80
-        if old_name == pixiv_name: # TODO
-            self.rename = False
-        else:
-            self.rename = True
+        self.rename_pixiv = pixiv_rename
+        self.rename_danbooru = danb_rename
         self.path_original = gv.cwd + '/Sourcery/sourced_original/' + self.name_original
         self.path_pixiv = gv.cwd + '/Sourcery/sourced_progress/pixiv/' + self.name_pixiv
         self.path_danb = gv.cwd + '/Sourcery/sourced_progress/danbooru/' + self.name_danb

@@ -29,8 +29,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
         comm_img_q.put(img)
         comm_error_q.put('[Sourcery] Sourcing: ' + img)
         # if an ImageData instance with the same original name, minsim and rename options already exists, skip
-        duplicate_c_pipe.send([img, minsim, gv.Files.Conf.rename_pixiv])
-        #print(gv.Files.Conf.rename_pixiv)
+        duplicate_c_pipe.send({'img_name': img, 'minsim': minsim, 'rename_pixiv': gv.Files.Conf.rename_pixiv, 'rename_danbooru': gv.Files.Conf.rename_danbooru})
         next_img = duplicate_c_pipe.recv()
         if next_img:
             comm_error_q.put('[Sourcery] Image has already been sourced')
@@ -77,8 +76,8 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
             comm_q.put((res[3], res[4]))
             img_name_original, pixiv_name, danb_name, img_data_array, pixiv_illustration, danbooru_illustration = process_img_data(img, res, comm_error_q)
             #if img_name_original != False:
-            img_data_q.put((img_name_original, pixiv_name, danb_name, img_data_array, pixiv_illustration, danbooru_illustration))
-            gv.Files.Ref.new_reference(img_name_original, pixiv_name, pixiv_illustration.id, danb_name, danbooru_illustration['id'], gv.Files.Conf.rename_pixiv, minsim)# TODO
+            img_data_q.put((img_name_original, pixiv_name, gv.Files.Conf.rename_pixiv, danb_name, gv.Files.Conf.rename_danbooru, img_data_array, pixiv_illustration, danbooru_illustration))
+            gv.Files.Ref.new_reference(img_name_original, pixiv_name, pixiv_illustration.id, danb_name, danbooru_illustration['id'], gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, minsim)# TODO
             if res[3] < 1:
                 die('Out of searches for today', comm_error_q, comm_img_q)
             if res[2] < 1:

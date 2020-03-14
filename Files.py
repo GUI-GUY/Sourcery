@@ -331,6 +331,7 @@ class ConfigFile():
     def __init__(self, log):
         self.Log = log
         self.rename_pixiv = 'False'
+        self.rename_danbooru = 'False'
         self.minsim = '80'
         self.imgpp = '12'
         self.tags_danbooru = ''
@@ -359,6 +360,8 @@ class ConfigFile():
         while (not temp.startswith('END')):
             if temp.startswith('rename_pixiv='):
                 self.rename_pixiv = temp[temp.find('=')+1:-1]
+            if temp.startswith('rename_danbooru='):
+                self.rename_danbooru = temp[temp.find('=')+1:-1]
             if temp.startswith('minsim='):
                 self.minsim = temp[temp.find('=')+1:-1]
             if temp.startswith('imagesperpage='):
@@ -404,6 +407,7 @@ class ConfigFile():
         self.tags_pixiv = self.tags_pixiv.replace('\n', ' /n ').replace('\t', ' /t ')
 
         conf = ("rename_pixiv=" + self.rename_pixiv +
+                "\nrename_danbooru=" + self.rename_danbooru +
                 "\nminsim=" + self.minsim +
                 "\nimagesperpage=" + self.imgpp +
                 "\ntags_danbooru=" + self.tags_danbooru +
@@ -428,7 +432,7 @@ class ReferenceFile():
     def __init__(self, log):
         self.Log = log
 
-    def new_reference(self, old_name, new_name_pixiv, id_pixiv, new_name_danb, id_danb, rename_option, minsim):
+    def new_reference(self, old_name, new_name_pixiv, id_pixiv, new_name_danb, id_danb, rename_pixiv, rename_danbooru, minsim):
         """
         Appends a new image reference to the reference file
         """
@@ -437,7 +441,8 @@ class ReferenceFile():
                 "\", \"id_pixiv\" : " + str(id_pixiv) +
                 ", \"new_name_danb\" : \"" + new_name_danb +
                 "\", \"id_danb\" : " + str(id_danb) +
-                ", \"rename_option\" : \"" + rename_option +
+                ", \"rename_pixiv\" : \"" + rename_pixiv +
+                "\", \"rename_danbooru\" : \"" + rename_danbooru +
                 "\", \"minsim\" : " + str(minsim) +
                 "}\n")
         try:
