@@ -340,33 +340,35 @@ class PixivOptions():
     """Includes all widgets for Pixiv and methods to display and modify them"""
     def __init__(self, parent):
         self.par = parent
-        self.pixiv_login_lbl = Label(parent, text="Pixiv Login", style="label.TLabel")
-        self.pixiv_user_lbl = Label(parent, text="Username", style="label.TLabel")
-        self.pixiv_user_filled_lbl = Label(parent, width=50, text=gv.Files.Cred.pixiv_username, style="button.TLabel")
-        self.pixiv_user_entry = Entry(parent, width=52, style="button.TLabel")
-        self.pixiv_password_lbl = Label(parent, text="Password", style="label.TLabel")
-        self.pixiv_password_filled_lbl = Label(parent, width=50, text=gv.Files.Cred.pixiv_password, style="button.TLabel")
-        self.pixiv_password_entry = Entry(parent, width=52, style="button.TLabel")
-        self.pixiv_login_change_btn = Button(parent, text="Change", command=self.pixiv_change_login, style="button.TLabel")
-        self.pixiv_login_confirm_btn = Button(parent, text="Confirm & Save", command=partial(self.pixiv_set_login, True), style="button.TLabel")
-        self.pixiv_login_confirm_nosave_btn = Button(parent, text="Confirm & Don't Save", command=partial(self.pixiv_set_login, False), style="button.TLabel")
-        self.pixiv_warning_lbl = Label(parent, width=50, text='THIS WILL BE SAVED IN PLAINTEXT!!!', style="label.TLabel")
+        self.scrollpar = ScrollFrame(self.par, gv.width/4, gv.height*0.6)
+        self.scrollpar_frame =self.scrollpar.frame
+        self.pixiv_lbl = Label(parent, text="Pixiv", font=('Arial Bold', 13), style="label.TLabel")
+        self.pixiv_login_lbl = Label(self.scrollpar_frame, text="Pixiv Login", style="label.TLabel")
+        self.pixiv_user_lbl = Label(self.scrollpar_frame, text="Username", style="label.TLabel")
+        self.pixiv_user_filled_lbl = Label(self.scrollpar_frame, width=50, text=gv.Files.Cred.pixiv_username, style="button.TLabel")
+        self.pixiv_user_entry = Entry(self.scrollpar_frame, width=52, style="button.TLabel")
+        self.pixiv_password_lbl = Label(self.scrollpar_frame, text="Password", style="label.TLabel")
+        self.pixiv_password_filled_lbl = Label(self.scrollpar_frame, width=50, text=gv.Files.Cred.pixiv_password, style="button.TLabel")
+        self.pixiv_password_entry = Entry(self.scrollpar_frame, width=52, style="button.TLabel")
+        self.pixiv_login_change_btn = Button(self.scrollpar_frame, text="Change", command=self.pixiv_change_login, style="button.TLabel")
+        self.pixiv_login_confirm_btn = Button(self.scrollpar_frame, text="Confirm & Save", command=partial(self.pixiv_set_login, True), style="button.TLabel")
+        self.pixiv_login_confirm_nosave_btn = Button(self.scrollpar_frame, text="Confirm & Don't Save", command=partial(self.pixiv_set_login, False), style="button.TLabel")
+        self.pixiv_warning_lbl = Label(self.scrollpar_frame, width=50, text='THIS WILL BE SAVED IN PLAINTEXT!!!', style="label.TLabel")
         if gv.Files.Conf.rename_pixiv == 'True':
             self.rename_var = IntVar(value=1)
         else:
             self.rename_var = IntVar(value=0)
-        self.rename_chkbtn = Checkbutton(parent, text='Rename images from pixiv to pixiv name', var=self.rename_var, style="chkbtn.TCheckbutton")
+        self.rename_chkbtn = Checkbutton(self.scrollpar_frame, text='Rename images from pixiv to pixiv name', var=self.rename_var, style="chkbtn.TCheckbutton")
         self.save_btn = Button(parent, text='Save', command=self.pixiv_save, style ="button.TLabel")
 
-        self.show_tags_lbl = Label(parent, text="Put tags seperated by spaces here to make them show up in the results screen:", style="label.TLabel")
-        self.show_tags_txt = Text(parent, foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10)) # TODO not upadated with theme
-        self.save_btn = Button(parent, text='Save', command=self.pixiv_save, style ="button.TLabel")
+        self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
+        self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10)) # TODO not upadated with theme
 
         self.show_tags_txt.insert(END, gv.Files.Conf.tags_pixiv)
         self.tags = None
 
-        self.pixiv_address_1 = Label(parent, text="Your Login Data can be found here:", style="label.TLabel")
-        self.pixiv_address_2 = Label(parent, text="https://www.pixiv.net/setting_user.php", style="label.TLabel")
+        self.pixiv_address_1 = Label(self.scrollpar_frame, text="Your Login Data can be found here:", style="label.TLabel")
+        self.pixiv_address_2 = Label(self.scrollpar_frame, text="https://www.pixiv.net/setting_user.php", style="label.TLabel")
         self.pixiv_address_2.configure(foreground='#2626ff', cursor='hand2', font=('Arial', 10))
         self.pixiv_address_2.bind("<Button-1>", self.hyperlink)
 
@@ -374,15 +376,13 @@ class PixivOptions():
         """
         Unlock login widget for pixiv, so that you can change your login data. 
         """
-        y = int(gv.height/90*10)
-        c = 23
-        self.pixiv_user_filled_lbl.place_forget()
-        self.pixiv_password_filled_lbl.place_forget()
-        self.pixiv_login_change_btn.place_forget()
-        self.pixiv_user_entry.place(x = int(gv.width/160*12), y = y + c * 1)
-        self.pixiv_password_entry.place(x = int(gv.width/160*12), y = y + c * 2)
-        self.pixiv_login_confirm_btn.place(x = int(gv.width/160*5), y = y + c * 4)
-        self.pixiv_login_confirm_nosave_btn.place(x = int(gv.width/160*18), y = y + c * 4)
+        self.pixiv_user_filled_lbl.grid_forget()
+        self.pixiv_password_filled_lbl.grid_forget()
+        self.pixiv_login_change_btn.grid_forget()
+        self.pixiv_user_entry.grid(row= 1, column= 1, sticky=W, padx=2, pady=1)
+        self.pixiv_password_entry.grid(row= 2, column= 1, sticky=W, padx=2, pady=1)
+        self.pixiv_login_confirm_btn.grid(row= 3, column= 0, sticky=W, padx=2, pady=1)
+        self.pixiv_login_confirm_nosave_btn.grid(row= 3, column= 1, sticky=W, padx=2, pady=1)
         self.pixiv_user_entry.delete(0, len(gv.Files.Cred.pixiv_username))
         self.pixiv_password_entry.delete(0, len(gv.Files.Cred.pixiv_password))
         self.pixiv_user_entry.insert(0, gv.Files.Cred.pixiv_username)
@@ -392,15 +392,13 @@ class PixivOptions():
         """
         Save pixiv login data and revert the widgets to being uneditable.
         """
-        y = int(gv.height/90*10)
-        c = 23
-        self.pixiv_user_entry.place_forget()
-        self.pixiv_password_entry.place_forget()
-        self.pixiv_login_confirm_btn.place_forget()
-        self.pixiv_login_confirm_nosave_btn.place_forget()
-        self.pixiv_user_filled_lbl.place(x = int(gv.width/160*12), y = y + c * 1)
-        self.pixiv_password_filled_lbl.place(x = int(gv.width/160*12), y = y + c * 2)
-        self.pixiv_login_change_btn.place(x = int(gv.width/160*5), y = y + c * 4)
+        self.pixiv_user_entry.grid_forget()
+        self.pixiv_password_entry.grid_forget()
+        self.pixiv_login_confirm_btn.grid_forget()
+        self.pixiv_login_confirm_nosave_btn.grid_forget()
+        self.pixiv_user_filled_lbl.grid(row= 1, column= 1, sticky=W, padx=2, pady=1)
+        self.pixiv_password_filled_lbl.grid(row= 2, column= 1, sticky=W, padx=2, pady=1)
+        self.pixiv_login_change_btn.grid(row= 3, column= 0, sticky=W, padx=2, pady=1)
         
         gv.Files.Cred.pixiv_username = self.pixiv_user_entry.get()
         gv.Files.Cred.pixiv_password = self.pixiv_password_entry.get()
@@ -422,23 +420,31 @@ class PixivOptions():
         """
         Displays the pixiv options widgets
         """
-        y = int(gv.height/90*10)
-        c = 23
-        self.pixiv_login_lbl.place(x = int(gv.width/160*5), y = y)
-        self.pixiv_user_lbl.place(x = int(gv.width/160*5), y = y + c * 1)
-        self.pixiv_user_filled_lbl.place(x = int(gv.width/160*12), y = y + c * 1)
-        self.pixiv_password_lbl.place(x = int(gv.width/160*5), y = y + c * 2)
-        self.pixiv_password_filled_lbl.place(x = int(gv.width/160*12), y = y + c * 2)
-        self.pixiv_login_change_btn.place(x = int(gv.width/160*5), y = y + c * 4)
-        self.pixiv_warning_lbl.place(x = int(gv.width/160*5), y = y + c * 3)
-        self.pixiv_address_1.place(x = int(gv.width/160*5), y = y + c * 5)
-        self.pixiv_address_2.place(x = int(gv.width/160*5), y = y + c * 6)
+        self.pixiv_user_entry.grid_forget()
+        self.pixiv_password_entry.grid_forget()
+        self.pixiv_login_confirm_btn.grid_forget()
+        self.pixiv_login_confirm_nosave_btn.grid_forget()
+        
+        self.pixiv_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90*8))
+        self.scrollpar.display(x = int(gv.width/160*5), y= int(gv.height/90*10))
 
-        self.show_tags_lbl.place(x = int(gv.width/160*5), y = y + c * 9)
-        self.show_tags_txt.place(x = int(gv.width/160*5), y = y + c * 10)
+        #TODO lager das aus damits nicht öfters aufgerufen wird
+        self.pixiv_login_lbl.grid(row= 0, column= 0, sticky=W, padx=2, pady=1)
+        self.pixiv_user_lbl.grid(row= 1, column= 0, sticky=W, padx=2, pady=1)
+        self.pixiv_user_filled_lbl.grid(row= 1, column= 1, sticky=W, padx=2, pady=1)
+        self.pixiv_password_lbl.grid(row= 2, column= 0, sticky=W, padx=2, pady=1)
+        self.pixiv_password_filled_lbl.grid(row= 2, column= 1, sticky=W, padx=2, pady=1)
+        self.pixiv_login_change_btn.grid(row= 3, column= 0, sticky=W, padx=2, pady=1)
+        self.pixiv_warning_lbl.grid(row= 4, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+        self.pixiv_address_1.grid(row= 5, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+        self.pixiv_address_2.grid(row= 6, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
 
-        self.rename_chkbtn.place(x = int(gv.width/160*5), y = y + c * 7)
-        self.save_btn.place(x = int(gv.width/160*5), y = y + c * 8)
+        self.show_tags_lbl.grid(row= 7, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
+        self.show_tags_txt.grid(row= 8, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
+        self.scrollpar_frame.columnconfigure(2, weight=1)
+
+        self.rename_chkbtn.grid(row= 9, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+        self.save_btn.place(x = int(gv.width/160*5), y = gv.height-220)
 
     def pixiv_save(self):
         gv.Files.Log.write_to_log('Attempting to save Pixiv options...')
@@ -462,8 +468,11 @@ class DanbooruOptions():
     """Includes all widgets for Danbooru and methods to display and modify them"""
     def __init__(self, parent):
         self.par = parent
-        self.show_tags_lbl = Label(parent, text="Put tags seperated by spaces or newlines here to make them show up in the results screen:", style="label.TLabel")
-        self.show_tags_txt = Text(parent, foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10)) # TODO not upadated with theme
+        self.scrollpar = ScrollFrame(self.par, gv.width/4, gv.height*0.6)
+        self.scrollpar_frame = self.scrollpar.frame
+        self.danbooru_lbl = Label(parent, text="Danbooru", font=('Arial Bold', 13), style="label.TLabel")
+        self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
+        self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10)) # TODO not upadated with theme
         self.save_btn = Button(parent, text='Save', command=self.danbooru_save, style ="button.TLabel")
 
         self.show_tags_txt.insert(END, gv.Files.Conf.tags_danbooru)
@@ -473,12 +482,12 @@ class DanbooruOptions():
         """
         Displays the danbooru options widgets
         """
-        y = int(gv.height/90*10)
-        c = 23
-        self.show_tags_lbl.place(x = int(gv.width/160*50), y = y)
-        self.show_tags_txt.place(x = int(gv.width/160*50), y = y + c * 1)
-        self.save_btn.place(x = int(gv.width/160*50), y = y + c * 20)
-        pass
+        self.danbooru_lbl.place(x = int(gv.width/160*50), y = int(gv.height/90*8))
+        self.scrollpar.display(x = int(gv.width/160*50), y= int(gv.height/90*10))
+
+        self.show_tags_lbl.grid(row= 0, column= 0, sticky=W, padx=2, pady=1)
+        self.show_tags_txt.grid(row= 1, column= 0, sticky=W, padx=2, pady=1)
+        self.save_btn.place(x = int(gv.width/160*50), y = gv.height-220)
 
     def danbooru_save(self):
         gv.Files.Log.write_to_log('Attempting to save Danbooru options...')
@@ -487,6 +496,3 @@ class DanbooruOptions():
         gv.Files.Conf.write_config()
         gv.results_tags_danbooru = self.tags.split()
         gv.Files.Log.write_to_log('Saved Danbooru options')
-
-
-        pass

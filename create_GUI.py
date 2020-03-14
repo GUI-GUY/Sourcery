@@ -218,7 +218,7 @@ def load_from_ref():
                     next_img = True
                     break
             if next_img:
-                gv.Files.Log.write_to_log('Image already sourced')
+                gv.Files.Log.write_to_log('Image ' + str(ref['old_name']) + ' already sourced')
                 continue
             # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
             gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], gv.Files.Conf.rename_pixiv, ref['new_name_danb'], gv.Files.Conf.rename_danbooru, [{"service_name": 'Pixiv', "illust_id": pixiv_illust.id, "source": 'None', "???": 'None', "minsim": ref['minsim']}, {"service_name": 'Danbooru', "illust_id": danb_illust['id'], "source": 'None', "???": 'None', "minsim": ref['minsim']}], pixiv_illust, danb_illust))

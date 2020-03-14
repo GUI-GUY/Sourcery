@@ -65,9 +65,9 @@ png over jpg over high res over uncensored options (weight system?)
 + foreign folder support
 preview/thumbnail scaling/options
 + tkinter color picker
-tag own images as uncensored
+* tag own images as uncensored
 + show tags on request(e.g uncensored)
-generate tag file
+save: generate tag file
 
 PERFORMANCE
 optimizations
@@ -93,9 +93,10 @@ big selector text green/red/white if better/worse/same res/datatype?
 + remaining searches/search limit
 + make canvas for startpage updated widgets
 + show input and output dir
++ provider options scrollframes
 
 MISC
-- multiple SauceNao accounts support? if it works(nope doesn't)
+- multiple SauceNao accounts support? if it works
 pximg.net (with referer)
 all TODOs
 + comments
@@ -122,4 +123,5 @@ LEGEND:
 - not possible
 ~ done but can be improved
 ? done but I don't know if this works
--- previously thought impossible but recheck required 
+-- previously thought impossible but recheck required
+* idea yes, implementation no
