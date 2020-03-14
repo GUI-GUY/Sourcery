@@ -88,7 +88,7 @@ save: feedback message
 better checkbutton graphics
 big selector text green/red/white if better/worse/same res/datatype?
 + minilog clips into results
-on save clear info panel
++ on save clear info panel
 ~ scaling
 + remaining searches/search limit
 + make canvas for startpage updated widgets

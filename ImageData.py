@@ -341,7 +341,14 @@ class ImageData():
                 gv.delete_dirs_array.append(self.path_original)
 
 
-        gv.Files.Conf.delete_input
+
+
+        for widget in gv.info_frame.winfo_children():
+            widget.grid_forget()
+
+        if gv.Files.Conf.delete_input == '1':
+            #delete input
+            pass
         # new code above old code below
         
         if self.original_var.get() == 1:
