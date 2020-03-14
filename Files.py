@@ -438,10 +438,10 @@ class ReferenceFile():
         """
         ref = ("{\"old_name\" : \"" + old_name +
                 "\", \"new_name_pixiv\" : \"" + new_name_pixiv +
-                "\", \"id_pixiv\" : " + str(id_pixiv) +
-                ", \"new_name_danb\" : \"" + new_name_danb +
-                "\", \"id_danb\" : " + str(id_danb) +
-                ", \"rename_pixiv\" : \"" + rename_pixiv +
+                "\", \"id_pixiv\" : \"" + str(id_pixiv) +
+                "\", \"new_name_danb\" : \"" + new_name_danb +
+                "\", \"id_danb\" : \"" + str(id_danb) +
+                "\", \"rename_pixiv\" : \"" + rename_pixiv +
                 "\", \"rename_danbooru\" : \"" + rename_danbooru +
                 "\", \"minsim\" : " + str(minsim) +
                 "}\n")

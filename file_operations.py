@@ -49,6 +49,10 @@ def save():
             remove_later_list.append(data)
     for data in remove_later_list:
         gv.img_data_array.remove(data)
+    # gv.last_occupied_result = 0
+    # for data in gv.img_data_array:
+    #     data.index = gv.last_occupied_result
+    #     gv.last_occupied_result += 1
     remove_later_list.clear()
     gv.Files.Ref.clean_reference()
     return True

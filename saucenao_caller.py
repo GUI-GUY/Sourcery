@@ -59,7 +59,7 @@ if True:
 
 #generate appropriate bitmask
 db_bitmask = int(index_mangadex+index_madokami+index_pawoo+index_da+index_portalgraphics+index_bcycosplay+index_bcyillust+index_idolcomplex+index_e621+index_animepictures+index_sankaku+index_konachan+index_gelbooru+index_shows+index_movies+index_hanime+index_anime+index_medibang+index_2dmarket+index_hmisc+index_fakku+index_shutterstock+index_reserved+index_animeop+index_yandere+index_nijie+index_drawr+index_danbooru+index_seigaillust+index_anime+index_pixivhistorical+index_pixiv+index_ddbsamples+index_ddbobjects+index_hcg+index_hanime+index_hmags,2)
-db_count = int(index_mangadex)+int(index_madokami)+int(index_pawoo)+int(index_da)+int(index_portalgraphics)+int(index_bcycosplay)+int(index_bcyillust)+int(index_idolcomplex)+int(index_e621)+int(index_animepictures)+int(index_sankaku)+int(index_konachan)+int(index_gelbooru)+int(index_shows)+int(index_movies)+int(index_hanime)+int(index_anime)+int(index_medibang)+int(index_2dmarket)+int(index_hmisc)+int(index_fakku)+int(index_shutterstock)+int(index_reserved)+int(index_animeop)+int(index_yandere)+int(index_nijie)+int(index_drawr)+int(index_danbooru)+int(index_seigaillust)+int(index_anime)+int(index_pixivhistorical)+int(index_pixiv)+int(index_ddbsamples)+int(index_ddbobjects)+int(index_hcg)+int(index_hanime)+int(index_hmags)
+db_count = 10# int(index_mangadex)+int(index_madokami)+int(index_pawoo)+int(index_da)+int(index_portalgraphics)+int(index_bcycosplay)+int(index_bcyillust)+int(index_idolcomplex)+int(index_e621)+int(index_animepictures)+int(index_sankaku)+int(index_konachan)+int(index_gelbooru)+int(index_shows)+int(index_movies)+int(index_hanime)+int(index_anime)+int(index_medibang)+int(index_2dmarket)+int(index_hmisc)+int(index_fakku)+int(index_shutterstock)+int(index_reserved)+int(index_animeop)+int(index_yandere)+int(index_nijie)+int(index_drawr)+int(index_danbooru)+int(index_seigaillust)+int(index_anime)+int(index_pixivhistorical)+int(index_pixiv)+int(index_ddbsamples)+int(index_ddbobjects)+int(index_hcg)+int(index_hanime)+int(index_hmags)
 
 def get_response(image, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
     """
@@ -83,7 +83,7 @@ def get_response(image, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
     imageData = BytesIO()
     image.save(imageData,format='PNG')
     
-    url = 'http://saucenao.com/search.php?output_type=2&minsim='+minsim+'&dbmask='+str(db_bitmask)+'&api_key='+api_key+'&numres='+str(db_count)
+    url = 'http://saucenao.com/search.php?output_type=2&minsim='+minsim+'!&dbmask='+str(db_bitmask)+'&api_key='+api_key+'&numres='+str(db_count)
     files = {'file': ("image.png", imageData.getvalue())}
     imageData.close()
     
@@ -128,23 +128,25 @@ def decode_response(results, EnableRename=False):
     
     if int(results['header']['results_returned']) > 0:
         #one or more results were returned
-        if float(results['results'][0]['header']['similarity']) > float(results['header']['minimum_similarity']):
-            # print('hit! '+str(results['results'][0]['header']['similarity']))
+        #get vars to use
+        service_name = ''
+        illust_id = 0
+        member_id = -1
+        
+        # index_id = results['results'][0]['header']['index_id']
+        # page_string = ''
+        # page_match = search('(_p[\d]+)\.', results['results'][0]['header']['thumbnail'])
+        # if page_match:
+        #     page_string = page_match.group(1)
+        source = ''
+        ret_dict = list()
 
-            #get vars to use
-            service_name = ''
-            illust_id = 0
-            member_id = -1
-            
-            # index_id = results['results'][0]['header']['index_id']
-            # page_string = ''
-            # page_match = search('(_p[\d]+)\.', results['results'][0]['header']['thumbnail'])
-            # if page_match:
-            #     page_string = page_match.group(1)
-            source = ''
-            ret_dict = list()
-            
-            for elem in results['results']:
+        # print('results')
+        # print(results)
+        for elem in results['results']:
+            if float(elem['header']['similarity']) >= float(results['header']['minimum_similarity']):
+                # print('hit! '+str(elem['header']['similarity']))
+                # print('minsim! '+str(results['header']['minimum_similarity']))
                 if elem['header']['index_id'] == 5 or elem['header']['index_id'] == 6:
                     #5->pixiv 6->pixiv historical
                     service_name='Pixiv'
@@ -155,9 +157,7 @@ def decode_response(results, EnableRename=False):
                     # print(source)
                 elif elem['header']['index_id'] == 9:
                     #9->danbooru
-                    # print(results)
                     service_name='Danbooru'
-                    #member_id = elem['data']['member_id']
                     illust_id = elem['data']['danbooru_id']
                     source = elem['data']['ext_urls']
                     ret_dict.append({"service_name": service_name, "illust_id": illust_id, "source": source})
@@ -209,7 +209,7 @@ def decode_response(results, EnableRename=False):
         #     #print('Out of searches for this 30 second period. Sleeping for 25 seconds...')
         #     time.sleep(25)
     
-            return ret_dict# [service_name, illust_id, member_id, source, results['header']['minimum_similarity']]
+        return ret_dict# [service_name, illust_id, member_id, source, results['header']['minimum_similarity']]
     return[{"service_name": '', "member_id": 0, "illust_id": -1, "source": ''}]
     #print('All Done!')
 

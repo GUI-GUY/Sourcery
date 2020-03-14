@@ -74,10 +74,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
             sleep(10)
         elif res[0] == 200:
             comm_q.put((res[3], res[4]))
-            img_name_original, pixiv_name, danb_name, img_data_array, pixiv_illustration, danbooru_illustration = process_img_data(img, res, comm_error_q)
-            #if img_name_original != False:
-            img_data_q.put((img_name_original, pixiv_name, gv.Files.Conf.rename_pixiv, danb_name, gv.Files.Conf.rename_danbooru, img_data_array, pixiv_illustration, danbooru_illustration))
-            gv.Files.Ref.new_reference(img_name_original, pixiv_name, pixiv_illustration.id, danb_name, danbooru_illustration['id'], gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, minsim)# TODO
+            process_img_data(img, res, minsim, img_data_q, comm_error_q)   
             if res[3] < 1:
                 die('Out of searches for today', comm_error_q, comm_img_q)
             if res[2] < 1:
@@ -93,30 +90,63 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
     comm_img_q.put("Finished")
     exit()
             
-def process_img_data(img_name_original, res, comm_error_q):
+def process_img_data(img_name_original, res, minsim, img_data_q, comm_error_q):
     """
     Downloads the image from pixiv and Danbooru
     Returns information on the downloads
     """
+    # dict_list is list of dicts of this format: {"service_name": service_name, "illust_id": illust_id, "source": source}
     dict_list = decode_response(res[1])
-    pixiv_illustration = None
-    danbooru_illustration = None
+    # print('hier dict list:')
+    # print(dict_list)
+    pixiv_illustration = False
+    pixiv_illustration_list = list()
+    danbooru_illustration = False
+    danbooru_illustration_list = list()
     new_name = img_name_original
-    flag = None
-    for source in dict_list:
-        #print(source)
+    danb_name = False
+    pixiv_name = False
+    pixiv_visited = list()
+    danbooru_visited = list()
+
+    for source in dict_list: # TODO same id filter
         if source['illust_id'] != 0:
             comm_error_q.put('[Sourcery] Attempting to fetch illustration...')
             if source['service_name'] == 'Pixiv':
-                pixiv_illustration = pixiv_fetch_illustration(img_name_original, source['illust_id'], comm_error_q)
-                # if pixiv_illustration == False:
-                #     return False, None, None, None, None
-                flag, pixiv_name = pixiv_download(img_name_original, source['illust_id'], pixiv_illustration, comm_error_q)
+                if source['illust_id'] not in pixiv_visited:
+                    pixiv_illustration = pixiv_fetch_illustration(img_name_original, source['illust_id'], comm_error_q)
+                    if pixiv_illustration != False:
+                        pixiv_name = pixiv_download(img_name_original, source['illust_id'], pixiv_illustration, comm_error_q)
+                    if pixiv_name != False:
+                        pixiv_illustration_list.append((pixiv_illustration, pixiv_name))
+                        pixiv_visited.append(source['illust_id'])
             if source['service_name'] == 'Danbooru':
-                danbooru_illustration = danbooru_fetch_illustration(source['illust_id'], comm_error_q)
-                danb_name = danbooru_download(img_name_original, source['illust_id'], danbooru_illustration, comm_error_q)
-        # comm_error_q.put('[Sourcery] Fetched illustration successfully')
+                if source['illust_id'] not in danbooru_visited:
+                    danbooru_illustration = danbooru_fetch_illustration(source['illust_id'], comm_error_q)
+                    if danbooru_illustration != False:
+                        danb_name = danbooru_download(img_name_original, source['illust_id'], danbooru_illustration, comm_error_q)
+                    if danb_name != False:
+                        danbooru_illustration_list.append((danbooru_illustration, danb_name))
+                        danbooru_visited.append(source['illust_id'])
         comm_error_q.put('[Sourcery] Downloaded illustration successfully')
-    # dict_list is list of dicts of this format: {"service_name": service_name, "illust_id": illust_id, "source": source}
-    return img_name_original, pixiv_name, danb_name, dict_list, pixiv_illustration, danbooru_illustration
-    return False, None, None, None, None # TODO
+    
+    if len(danbooru_illustration_list) == 0 and len(pixiv_illustration_list) == 0:
+        return #TODO Message
+    img_data_q.put((img_name_original, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, dict_list, pixiv_illustration_list, danbooru_illustration_list))
+    
+    pixiv_name = ''
+    pixiv_illustration_id = ''
+    for elem in pixiv_illustration_list:
+        pixiv_name = pixiv_name + ' | ' + elem[1]
+        pixiv_illustration_id = pixiv_illustration_id + str(elem[0].id) + ' | '
+    
+    danbooru_name = ''
+    danbooru_illustration_id = ''
+    for elem in danbooru_illustration_list:
+        danbooru_name = danbooru_name + ' | ' + elem[1]
+        danbooru_illustration_id = danbooru_illustration_id + str(elem[0]['id']) + ' | '
+
+    gv.Files.Ref.new_reference(img_name_original, pixiv_name, pixiv_illustration_id, danb_name, danbooru_illustration_id, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, minsim)# TODO
+    
+    #return img_name_original, pixiv_name, danb_name, dict_list, pixiv_illustration, danbooru_illustration
+    #return False, None, None, None, None # TODO

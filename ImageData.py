@@ -11,28 +11,45 @@ import global_variables as gv
 
 class ImageData():
     """Includes all information on the sourced images"""
-    def __init__(self, old_name, pixiv_name, pixiv_rename, danb_name, danb_rename, dict_list, pixiv_illust, danbooru_illust):
+    def __init__(self, old_name, pixiv_rename, danb_rename, dict_list, pixiv_illust_list, danbooru_illust_list, index):
         self.name_original = old_name
-        self.name_pixiv = pixiv_name
-        self.set_name_pixiv()
-        self.name_danb = danb_name
-        self.set_name_danb()
-        self.pixiv_dict = self.pixiv_clean_dict(pixiv_illust, dict_list) # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
-        self.danb_dict = self.danbooru_clean_dict(danbooru_illust, dict_list)
+        self.thumb_size = (70,70)
+        self.preview_size = (200, 200)
+        self.siblings_array = list()
+        self.pixiv_list = list()
+        # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
+        for elem in pixiv_illust_list:
+            print('pixiv')
+            print(elem[1])
+            name = self.correct_name('pixiv', elem[1]) # TODO if name == False
+            path_pixiv = gv.cwd + '/Sourcery/sourced_progress/pixiv/' + name
+            self.pixiv_dict = self.pixiv_clean_dict(elem[0], dict_list) 
+            self.pixiv_list.append(ProviderImageData('Pixiv', name, path_pixiv, self.thumb_size, self.preview_size, self.pixiv_dict, self.siblings_array))
+        
+        self.danb_list = list()
+        for elem in danbooru_illust_list:
+            print('dan')
+            print(elem[1])
+            name = self.correct_name('danbooru', elem[1]) # TODO if name == False
+            path_danb = gv.cwd + '/Sourcery/sourced_progress/danbooru/' + name
+            self.danb_dict = self.danbooru_clean_dict(elem[0], dict_list)
+            self.danb_list.append(ProviderImageData('Danbooru', name, path_danb, self.thumb_size, self.preview_size, self.danb_dict, self.siblings_array))
+        #self.name_pixiv = pixiv_name
+        #self.set_name_pixiv()
+        #self.name_danb = danb_name
+        #self.set_name_danb()
+        
         self.minsim = 80
         self.rename_pixiv = pixiv_rename
         self.rename_danbooru = danb_rename
         self.path_original = gv.cwd + '/Sourcery/sourced_original/' + self.name_original
-        self.path_pixiv = gv.cwd + '/Sourcery/sourced_progress/pixiv/' + self.name_pixiv
-        self.path_danb = gv.cwd + '/Sourcery/sourced_progress/danbooru/' + self.name_danb
+        
         self.original_image = None
         self.downloaded_image_pixiv = None
-        self.thumb_size = (70,70)
-        self.preview_size = (200, 200)
+        
         self.original_image_thumb = None
         self.original_photoImage_thumb = None
-        self.downloaded_image_pixiv_preview = None
-        self.downloaded_photoImage_pixiv_preview = None
+
         self.original_var = IntVar(value=0)
         self.original_chkbtn = Checkbutton(master=gv.res_frame, var=self.original_var, style="chkbtn.TCheckbutton")
         self.original_lbl = Label(master=gv.res_frame, text = "Input", style='label.TLabel')
@@ -40,16 +57,13 @@ class ImageData():
         self.original_type_lbl = Label(master=gv.res_frame, style='label.TLabel')
         self.original_cropped_lbl = Label(master=gv.res_frame, style='label.TLabel')
 
-        self.siblings_array = list()
-        self.pixiv = ProviderImageData('Pixiv', self.name_pixiv, self.path_pixiv, self.thumb_size, self.preview_size, self.pixiv_dict, self.siblings_array)
-        self.danb = ProviderImageData('Danbooru', self.name_danb, self.path_danb, self.thumb_size, self.preview_size, self.danb_dict, self.siblings_array)
-
         self.big_selector_btn = Button(master=gv.res_frame, command=self.display_big_selector, text='Big Selector', style='button.TLabel')
         self.info_btn = Button(master=gv.res_frame, command=self.display_info, text='More Info', style='button.TLabel')        
         self.back_btn = Button(gv.window, text = 'Back', command = self.display_view_results, style = 'button.TLabel')
         self.next_btn = Button(gv.window, text = 'Next', style = 'button.TLabel')
         self.prev_btn = Button(gv.window, text = 'Previous', style = 'button.TLabel')
-        self.index = None
+        self.index = index
+        self.placed = False
 
         self.original_SubImgData = None
 
@@ -60,39 +74,22 @@ class ImageData():
         self.process_info_imgs_init = False
         self.locked = False
 
-    def set_name_pixiv(self):
+    def correct_name(self, folder, name):
         """
-        Sets correct name for pixiv
+        Returns corrected given name on success, False otherwise
         """
         try:
-            dir = listdir(gv.cwd + '/Sourcery/sourced_progress/pixiv/')
+            directory = listdir(gv.cwd + '/Sourcery/sourced_progress/' + folder + '/')
         except Exception as e:
             print("ERROR [0041] " + str(e))
             gv.Files.Log.write_to_log("ERROR [0041] " + str(e))
-            mb.showerror("ERROR [0041]", "ERROR CODE [0041]\nSomething went wrong while accessing the 'Sourcery/sourced_progress/pixiv' folder, please restart Sourcery.")
-            return    
-        for elem in dir:
-            if is_image(elem):
-                test = elem.rsplit('.', 1)
-                if self.name_pixiv == test[0]:
-                    self.name_pixiv = elem
-
-    def set_name_danb(self):
-        """
-        Sets correct name for danbooru
-        """
-        try:
-            dir = listdir(gv.cwd + '/Sourcery/sourced_progress/danbooru/')
-        except Exception as e:
-            print("ERROR [0041] " + str(e))
-            gv.Files.Log.write_to_log("ERROR [0041] " + str(e))
-            mb.showerror("ERROR [0041]", "ERROR CODE [0041]\nSomething went wrong while accessing the 'Sourcery/sourced_progress/danbooru' folder, please restart Sourcery.")
-            return    
-        for elem in dir:
-            if is_image(elem):
-                test = elem.rsplit('.', 1)
-                if self.name_danb == test[0]:
-                    self.name_danb = elem
+            mb.showerror("ERROR [0041]", "ERROR CODE [0041]\nSomething went wrong while accessing the 'Sourcery/sourced_progress/'" + folder + "folder, please restart Sourcery.")
+            return False 
+        for elem in directory:
+            test = elem.rsplit('.', 1)
+            if name == test[0]:
+                return elem
+        return False
 
     def pixiv_clean_dict(self, illust, dict_list):
         """
@@ -146,11 +143,11 @@ class ImageData():
                 gv.Files.Log.write_to_log("ERROR [0039] " + str(e))
                 return False
 
-        if self.pixiv_dict != None:
-            self.pixiv.load()
+        for elem in self.pixiv_list:
+            elem.load()
 
-        if self.danb_dict != None:
-            if self.danb.load() == False:
+        for elem in self.danb_list:
+            if elem.load() == False:
                 pass # TODO
         self.load_init = True
         return True
@@ -168,11 +165,11 @@ class ImageData():
         self.original_photoImage_thumb = ImageTk.PhotoImage(self.original_image_thumb)
         self.original_image_thumb.close()
 
-        if self.pixiv_dict != None:
-            self.pixiv.process_results_imgs()
-        
-        if self.danb_dict != None:
-            self.danb.process_results_imgs()
+        for elem in self.pixiv_list:
+            elem.process_results_imgs()
+    
+        for elem in self.danb_list:
+            elem.process_results_imgs()
         self.process_results_imgs_init = True
 
     def modify_results_widgets(self):
@@ -187,13 +184,13 @@ class ImageData():
         self.original_chkbtn.image = self.original_photoImage_thumb
         self.original_wxh_lbl.configure(text = str(self.original_image.size))
         self.original_type_lbl.configure(text = self.name_original[self.name_original.rfind('.')+1:])
-        self.original_cropped_lbl.configure(text = self.name_original + ' -> ' + self.name_pixiv)
+        self.original_cropped_lbl.configure(text = self.name_original)
 
-        if self.pixiv_dict != None:
-            self.pixiv.modify_results_widgets()
+        for elem in self.pixiv_list:
+            elem.modify_results_widgets()
 
-        if self.danb_dict != None:    
-            self.danb.modify_results_widgets()
+        for elem in self.danb_list:
+            elem.modify_results_widgets()
 
         gv.res_frame.columnconfigure(0, weight=1)
         gv.res_frame.columnconfigure(1, weight=1)
@@ -214,7 +211,7 @@ class ImageData():
         IMPORTANT:\n
         Call load, process_results_imgs and modify_results_widgets in that order before
         """
-        self.index = int(t/4)
+        #self.index = int(t/4)
         self.original_chkbtn.grid(column = 0, row = t+1, sticky = W)
         self.original_lbl.grid(column = 2, row = t+1, sticky = W, padx = 10)
         self.original_wxh_lbl.grid(column = 3, row = t+1, sticky = W, padx = 10)
@@ -223,11 +220,13 @@ class ImageData():
         self.original_cropped_lbl.grid(column = 1, row = t, columnspan=6, sticky = W, padx = 10)
         self.big_selector_btn.grid(column = 5, row = t+1, sticky = W, padx = 10)
 
-        if self.pixiv_dict != None:
-            self.pixiv.display_results(t)
+        t += 1
+        for elem in self.pixiv_list:
+            t = elem.display_results(t+1)
+        for elem in self.danb_list:
+            t = elem.display_results(t+1)
 
-        if self.danb_dict != None:
-            self.danb.display_results(t+1)
+        return t
 
     def lock(self):
         """
@@ -249,11 +248,11 @@ class ImageData():
         gv.info_ScrollFrame.display(x = (gv.width/3)*1.85, y = 100)
 
         t = 0
-        if self.pixiv_dict != None:
-            self.pixiv.display_info(t)
+        for elem in self.pixiv_list:
+            elem.display_info(t)#TODO t = elem...
             t += 26
-        if self.danb_dict != None:
-            self.danb.display_info(t)
+        for elem in self.danb_list:
+            elem.display_info(t) #TODO t = elem...
 
     def display_big_selector(self):
         """
@@ -271,10 +270,10 @@ class ImageData():
         self.next_btn.place(x = round(gv.width*0.94), y = int(gv.height/90*4))
 
         t = 0
-        if self.pixiv_dict != None:
-            t = self.pixiv.display_big_selector(t)
-        if self.danb_dict != None:
-            self.danb.display_big_selector(t)
+        for elem in self.pixiv_list:
+            t = elem.display_big_selector(t)
+        for elem in self.danb_list:
+            elem.display_big_selector(t) #TODO t = elem...
 
         self.original_SubImgData.display_place()
 
@@ -290,11 +289,12 @@ class ImageData():
         self.original_SubImgData = SubImageData(self.name_original, self.path_original, 'Input', gv.window, None, self.original_image, self.original_var)#ImageTk.PhotoImage(resize(self.original_image))
         self.original_SubImgData.load()
 
-        if self.pixiv_dict != None:
-            self.pixiv.process_big_imgs()
+        for elem in self.pixiv_list:
+            elem.process_big_imgs()
 
-        if self.danb_dict != None:
-            self.danb.process_big_imgs()
+
+        for elem in self.danb_list:
+            elem.process_big_imgs()
 
         self.process_big_imgs_init = True
 
@@ -320,8 +320,8 @@ class ImageData():
         """
         Returns True if user wants to delete both images (input and downloaded) or if at least one image is checked to save, otherwise False
         """
-        if self.original_var.get() == 0 and self.pixiv.delete_both() and self.danb.delete_both():
-            return mb.askyesno('Delete both?', 'Do you really want to delete both images:\n' + self.name_original + '\n' + self.name_pixiv)
+        if self.original_var.get() == 0 and self.pixiv.delete_both() and self.danb.delete_both():#TODO pixiv_list, danb_list
+            return mb.askyesno('Delete both?', 'Do you really want to delete both images:\n' + self.name_original + '\n')#self.name_pixiv
         return True
 
     def save(self):
@@ -349,55 +349,55 @@ class ImageData():
             pass
         # new code above old code below
         
-        if self.original_var.get() == 1:
-            if self.downloaded_pixiv_var.get() == 1:
-                downloaded_name_new = 'new_' + self.name_pixiv
-                original_name_new = 'old_' + self.name_pixiv
-            else:
-                # Move original image to Sourced and delete downloaded image/directory
-                downloaded_name_new = None
-                original_name_new = self.name_original
-                if self.path_pixiv not in gv.delete_dirs_array:
-                    gv.delete_dirs_array.append(self.path_pixiv)
-        elif self.downloaded_pixiv_var.get() == 1:
-            # Move downloaded image to Sourced and delete original image
-            downloaded_name_new = self.name_pixiv
-            original_name_new = None
-            if self.path_original not in gv.delete_dirs_array:
-                gv.delete_dirs_array.append(self.path_original)
+        # if self.original_var.get() == 1:
+        #     if self.downloaded_pixiv_var.get() == 1:
+        #         downloaded_name_new = 'new_' + self.name_pixiv
+        #         original_name_new = 'old_' + self.name_pixiv
+        #     else:
+        #         # Move original image to Sourced and delete downloaded image/directory
+        #         downloaded_name_new = None
+        #         original_name_new = self.name_original
+        #         if self.path_pixiv not in gv.delete_dirs_array:
+        #             gv.delete_dirs_array.append(self.path_pixiv)
+        # elif self.downloaded_pixiv_var.get() == 1:
+        #     # Move downloaded image to Sourced and delete original image
+        #     downloaded_name_new = self.name_pixiv
+        #     original_name_new = None
+        #     if self.path_original not in gv.delete_dirs_array:
+        #         gv.delete_dirs_array.append(self.path_original)
 
-        if self.downloaded_pixiv_var.get() == 0:
-            for elem in self.sub_dir_img_array_pixiv:
-                elem.save()
-            if self.path_pixiv not in gv.delete_dirs_array:
-                gv.delete_dirs_array.append(self.path_pixiv)
-            if self.original_var.get() == 0:
-                if self.path_original not in gv.delete_dirs_array:
-                    gv.delete_dirs_array.append(self.path_original)
+        # if self.downloaded_pixiv_var.get() == 0:
+        #     for elem in self.sub_dir_img_array_pixiv:
+        #         elem.save()
+        #     if self.path_pixiv not in gv.delete_dirs_array:
+        #         gv.delete_dirs_array.append(self.path_pixiv)
+        #     if self.original_var.get() == 0:
+        #         if self.path_original not in gv.delete_dirs_array:
+        #             gv.delete_dirs_array.append(self.path_original)
 
-        if downloaded_name_new != None:
-            try:
-                move(self.path_pixiv, gv.output_dir + '/' + downloaded_name_new)
-            except Exception as e:
-                print("ERROR [0012] " + str(e))
-                gv.Files.Log.write_to_log("ERROR [0012] " + str(e))
-                #mb.showerror("ERROR [0012]", "ERROR CODE [0012]\nSomething went wrong while moving the image " + self.path_pixiv)
+        # if downloaded_name_new != None:
+        #     try:
+        #         move(self.path_pixiv, gv.output_dir + '/' + downloaded_name_new)
+        #     except Exception as e:
+        #         print("ERROR [0012] " + str(e))
+        #         gv.Files.Log.write_to_log("ERROR [0012] " + str(e))
+        #         #mb.showerror("ERROR [0012]", "ERROR CODE [0012]\nSomething went wrong while moving the image " + self.path_pixiv)
 
-        if original_name_new != None:
-            try:
-                move(self.path_original, gv.output_dir + '/' + original_name_new)
-            except Exception as e:
-                print("ERROR [0013] " + str(e))
-                gv.Files.Log.write_to_log("ERROR [0013] " + str(e))
-                #mb.showerror("ERROR [0013]", "ERROR CODE [0013]\nSomething went wrong while moving the image " + self.path_original)
-        try:
-            remove(gv.input_dir + self.name_original)
-        except Exception as e:
-            print("ERROR [0014] " + str(e))
-            gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
-            #mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.input_dir + self.name_original)
+        # if original_name_new != None:
+        #     try:
+        #         move(self.path_original, gv.output_dir + '/' + original_name_new)
+        #     except Exception as e:
+        #         print("ERROR [0013] " + str(e))
+        #         gv.Files.Log.write_to_log("ERROR [0013] " + str(e))
+        #         #mb.showerror("ERROR [0013]", "ERROR CODE [0013]\nSomething went wrong while moving the image " + self.path_original)
+        # try:
+        #     remove(gv.input_dir + self.name_original)
+        # except Exception as e:
+        #     print("ERROR [0014] " + str(e))
+        #     gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
+        #     #mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.input_dir + self.name_original)
 
-        return True
+        # return True
 
     def forget_results(self):
         self.original_chkbtn.grid_forget()
@@ -408,8 +408,10 @@ class ImageData():
         self.original_cropped_lbl.grid_forget()
         self.big_selector_btn.grid_forget()
 
-        self.pixiv.forget_results()
-        self.danb.forget_results()
+        for elem in self.pixiv_list:
+            elem.forget_results()
+        for elem in self.danb_list:
+            elem.forget_results()
 
     def self_destruct(self):
         if self.original_SubImgData != None:
@@ -420,8 +422,10 @@ class ImageData():
 
         self.original_chkbtn.image = None
 
-        self.pixiv.self_destruct()
-        self.danb.self_destruct()
+        for elem in self.pixiv_list:
+            elem.self_destruct()
+        for elem in self.danb_list:
+            elem.self_destruct()
 
 class ProviderImageData():
     """Includes all information on the sourced images for the given image provider"""
@@ -460,12 +464,17 @@ class ProviderImageData():
         self.info_date_lbl = Label(master=gv.info_frame, style='label.TLabel')
         self.info_caption_lbl = Label(master=gv.info_frame, style='label.TLabel')
         self.info_wxh_lbl = Label(master=gv.info_frame, style='label.TLabel')
-        self.tags_pixiv_lbl = Label(master=gv.info_frame, style='label.TLabel')
+        self.tags_pixiv_lbl = Label(master=gv.info_frame, text = 'Tags', font=('Arial Bold', 15), style='label.TLabel')
         self.tags_lbl_array = list()
 
-        self.tags_lbl_array.append((Label(master=gv.info_frame, text = 'Original:', style='label.TLabel', font = ('Arial Bold', 11)), Label(master=gv.info_frame, text = 'Translated:', style='label.TLabel', font = ('Arial Bold', 11))))
-        for tag in self.tags:
-            self.tags_lbl_array.append((Label(master=gv.info_frame, text = tag, style='label.TLabel'), Label(master=gv.info_frame, text = tag, style='label.TLabel')))
+        if self.service == 'Pixiv':
+            self.tags_lbl_array.append((Label(master=gv.info_frame, text = 'Original:', style='label.TLabel', font = ('Arial Bold', 11)), Label(master=gv.info_frame, text = 'Translated:', style='label.TLabel', font = ('Arial Bold', 11))))
+            for tag in self.tags:
+                self.tags_lbl_array.append((Label(master=gv.info_frame, text = tag[:tag.find(' | ')], style='label.TLabel'), Label(master=gv.info_frame, text = tag[tag.find(' | ')+2:], style='label.TLabel')))
+        else:
+            self.tags_lbl_array.append(Label(master=gv.info_frame, text = 'Tags:', style='label.TLabel', font = ('Arial Bold', 11)))
+            for tag in self.tags:
+                self.tags_lbl_array.append(Label(master=gv.info_frame, text = tag, style='label.TLabel'))
 
         self.source_url = None
 
@@ -513,8 +522,9 @@ class ProviderImageData():
         """
         Turns images into usable photoimages for tkinter\n
         IMPORTANT:\n
-        Call load before
+        #Call load before
         """
+        self.load()
         if self.process_results_imgs_init:
             return
 
@@ -566,12 +576,15 @@ class ProviderImageData():
         IMPORTANT:\n
         Call load, process_results_imgs and modify_results_widgets in that order before
         """
-        self.index = int(t/3)
+        #self.index = int(t/3)
         self.downloaded_chkbtn.grid(column = 0, row = t+2, sticky = W)
         self.downloaded_lbl.grid(column = 2, row = t+2, sticky = W, padx = 10)
         self.downloaded_wxh_lbl.grid(column = 3, row = t+2, sticky = W, padx = 10)
         self.downloaded_type_lbl.grid(column = 4, row = t+2, sticky = W, padx = 10)
         self.results_tags_lbl.grid(column = 5, row = t+2, sticky = W, padx = 10, columnspan=2)
+        
+        t += 2
+        return t
         
     def display_info(self, t):
         """
@@ -593,7 +606,6 @@ class ProviderImageData():
             self.info_url_lbl.configure(text = 'No URL', font=('Arial', 10))
         self.info_date_lbl.configure(text = 'Uploaded on: ' + str(self.dict['create_date']), font = ('Arial', 10))
         self.info_wxh_lbl.configure(text = 'Width x Height: ' + str(self.dict['width']) + ' x ' + str(self.dict['height']), font = ('Arial', 10))
-        self.tags_pixiv_lbl.configure(text = 'Tags', font=('Arial Bold', 15))
 
         self.info_img_lbl.grid(column = 0, row = t + 1, rowspan = 9, sticky=W+N)
         self.info_provider_lbl.grid(column = 0, row = t + 0, sticky = W)
@@ -606,12 +618,18 @@ class ProviderImageData():
         # if len(self.sub_dir_array_pixiv) < 1:#
         #     self.info_wxh_lbl.grid(column = 1, row = 6, sticky = W, padx = 5)
         # self.info_url_lbl.grid(column = 0, row = 10, columnspan = 3, sticky = W)
-        # self.tags_pixiv_lbl.grid(column = 0, row = 11, sticky = W)
+        self.tags_pixiv_lbl.grid(column = 0, row = 11, sticky = W)
 
-        for lbl in self.tags_lbl_array:
-            lbl[0].grid(column = 0, row = 12 + t, sticky = W, columnspan=2)
-            #lbl[1].grid(column = 1, row = 12 + t, sticky = W)
-            t += 1
+
+        if self.service == 'Pixiv':
+            for lbl in self.tags_lbl_array:
+                lbl[0].grid(column = 0, row = 12 + t, sticky = W)
+                lbl[1].grid(column = 1, row = 12 + t, sticky = W)
+                t += 1
+        else:
+            for lbl in self.tags_lbl_array:
+                lbl.grid(column = 0, row = (12 + int(t)), sticky = W, columnspan = 2)
+                t += 1
 
     def process_info_imgs(self):
         """

@@ -43,7 +43,8 @@ def pixiv_authenticate(comm_error_q=None):
 
 def pixiv_fetch_illustration(img_name_original, imgid, comm_error_q=None):
     """
-    Request information from pixiv for the given imgid
+    Request information from pixiv for the given imgid\n
+    Return illustration object on success, False otherwise
     """
     #print('id' + imgid)
     try:
@@ -61,8 +62,8 @@ def pixiv_fetch_illustration(img_name_original, imgid, comm_error_q=None):
 
 def pixiv_download(img_name_original, imgid, illustration, comm_error_q=None):
     """
-    Download given image and rename it properly
-    Return the new name
+    Download given image and rename it properly\n
+    Return the new name on success, False otherwise
     """
     try:
         if gv.Files.Conf.rename_pixiv == 'True':
@@ -82,8 +83,8 @@ def pixiv_download(img_name_original, imgid, illustration, comm_error_q=None):
         else:
             gv.Files.Log.write_to_log('ERROR [0018]\nID: ' + str(imgid) + '\nName: ' + img_name_original + '\nError: ' + str(e))
         #mb.showerror("ERROR", e)
-        return False, None
-    return True, new_name
+        return False
+    return new_name
 
 
 if __name__ == '__main__':

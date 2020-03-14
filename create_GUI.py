@@ -119,7 +119,7 @@ def refresh_startpage(change, answer2):
         except:
             pass
     if not comm_img_q.empty():
-        if answer1 < 1:
+        if answer1 < 1: # TypeError: '<' not supported between instances of 'tuple' and 'int'
             answer2 = "Out of requests"
         else:
             try:
@@ -145,58 +145,72 @@ def refresh_startpage(change, answer2):
         except:
             pass
     if not img_data_q.empty():
-        try:
-            a = img_data_q.get()
-            #print(a)
-            b = ImageData(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7])
-            gv.img_data_array.append(b)
-            #print(b)
-        except Exception as e:
-            print(e)
+        # try:
+        a = img_data_q.get()
+        #print('a')
+        global index
+        b = ImageData(a[0], a[1], a[2], a[3], a[4], a[5], index) #TODO Fehler
+        index += 1
+        gv.img_data_array.append(b)
+        #print('b')
+        # except Exception as e:
+        #     print(e)
     
+    for data in gv.img_data_array:
+        if not data.placed: # TODO imgpp
+            if not data.load():
+                data.self_destruct()
+                gv.img_data_array.remove(data)
+                gv.Files.Log.write_to_log('Problem while loading images, deleted class')
+            else:
+                data.process_results_imgs()
+                data.modify_results_widgets()
+                gv.last_occupied_result = data.display_results(gv.last_occupied_result+1)# TODO test after saved
+                data.placed = True
+
     # Kucke ob freie plätze gefolgt von besetzten
     # wenn ja, rücke auf (erniedrige den index aller datas welche größer sind und platziere sie erneut)
     # Kucke ob es datas gibt welche keinen index haben
     # wenn eine gefunden, 
     # packe es in frühesten freien platz
-
-    mem = False
-    c = 0
-    i = 0
-    if (True in gv.free_space) and (False in gv.free_space):
-        for space in gv.free_space:
-            if space and not mem:
-                mem = True
-                c = i
-            if not space and mem:
-                x = 0
-                t = c * 4
-                for data in gv.img_data_array:
-                    if data.index > c:
-                        gv.free_space[data.index] = True
-                        t = data.display_results(t)
-                        gv.free_space[c+x] = False
-                    x += 1
-                break
-            i += 1
-    if (True in gv.free_space):
-        for data in gv.img_data_array:
-            if data.index == None:
-                x = 0
-                for space in gv.free_space:
-                    if space:
-                        if not data.load():
-                            data.self_destruct()
-                            gv.img_data_array.remove(data)
-                            gv.Files.Log.write_to_log('Problem while loading images, deleted class')
-                            break
-                        else:
-                            data.process_results_imgs()
-                            data.modify_results_widgets()
-                            data.display_results(x*4)
-                            gv.free_space[x] = False
-                            break
-                    x += 1
+    
+    # mem = False
+    # c = 0
+    # i = 0
+    # if (True in gv.free_space) and (False in gv.free_space):
+    #     for space in gv.free_space:
+    #         if space and not mem:
+    #             mem = True
+    #             c = i
+    #         if not space and mem:
+    #             x = 0
+    #             t = c * 4
+    #             for data in gv.img_data_array:
+    #                 if data.index > c:
+    #                     gv.free_space[data.index] = True
+    #                     t = data.display_results(t+1)
+    #                     gv.free_space[c+x] = False
+    #                 x += 1
+    #             break
+    #         i += 1
+    # if (True in gv.free_space):
+    #     for data in gv.img_data_array:
+    #         if data.index == None:
+    #             x = 0
+    #             for space in gv.free_space:
+    #                 if space:
+    #                     if not data.load():
+    #                         data.self_destruct()
+    #                         gv.img_data_array.remove(data)
+    #                         gv.Files.Log.write_to_log('Problem while loading images, deleted class')
+    #                         break
+    #                     else:
+    #                         data.process_results_imgs()
+    #                         data.modify_results_widgets()
+    #                         data.display_results(x*4)
+    #                         gv.free_space[x] = False
+    #                         break
+    #                 x += 1
     window.after(100, refresh_startpage, change, answer2)
 
 def load_from_ref():
@@ -208,20 +222,61 @@ def load_from_ref():
         pixiv_authenticate()
         gv.Files.Log.write_to_log('Loading images from reference file...')
         for ref in refs:
-            pixiv_illust = pixiv_fetch_illustration(ref['old_name'], ref['id_pixiv'])
-            danb_illust = danbooru_fetch_illustration(ref['id_danb'])
-            if not pixiv_illust and not danb_illust:
-                continue
-            next_img = False
-            for data in gv.img_data_array: #TODO duplicates
-                if str(ref['old_name']) == data.name_original and ref['id_pixiv'] == pixiv_illust.id and strtobool(ref['rename_pixiv']) == strtobool(str(data.rename_pixiv)) and strtobool(ref['rename_danbooru']) == strtobool(str(data.rename_danbooru)) and str(ref['minsim']) == gv.Files.Conf.minsim:
-                    next_img = True
-                    break
-            if next_img:
-                gv.Files.Log.write_to_log('Image ' + str(ref['old_name']) + ' already sourced')
-                continue
-            # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
-            gv.img_data_array.append(ImageData(ref['old_name'], ref['new_name_pixiv'], gv.Files.Conf.rename_pixiv, ref['new_name_danb'], gv.Files.Conf.rename_danbooru, [{"service_name": 'Pixiv', "illust_id": pixiv_illust.id, "source": 'None', "???": 'None', "minsim": ref['minsim']}, {"service_name": 'Danbooru', "illust_id": danb_illust['id'], "source": 'None', "???": 'None', "minsim": ref['minsim']}], pixiv_illust, danb_illust))
+
+            pixiv_info_list = list()
+            pix_names = ref['new_name_pixiv']
+            pix_names = pix_names.replace(' | ', ' ').split()
+            pix_ids = ref['id_pixiv']
+            pix_ids = pix_ids.replace(' | ', ' ').split()
+
+            for name, ids in zip(pix_names, pix_ids):
+                pixiv_info_list.append((ids, name))
+
+            danb_info_list = list()
+            dan_names = ref['new_name_danb']
+            dan_names = dan_names.replace(' | ', ' ').split()
+            dan_ids = ref['id_danb']
+            dan_ids = dan_ids.replace(' | ', ' ').split()
+
+            for name, ids in zip(dan_names, dan_ids):
+                danb_info_list.append((ids, name))
+
+            pixiv_illustration_list = list()
+            visited_ids = list()
+            for elem in pixiv_info_list:
+                if elem[0] not in visited_ids:
+                    pixiv_illustration_list.append((pixiv_fetch_illustration(ref['old_name'], elem[0]), elem[1]))
+                    visited_ids.append(elem[0])
+            
+            danb_illustration_list = list()
+            visited_ids = list()
+            for elem in danb_info_list:
+                if elem[0] not in visited_ids:
+                    danb_illustration_list.append((danbooru_fetch_illustration(elem[0]), elem[1]))
+                    visited_ids.append(elem[0])
+            # next_img = False
+            # for data in gv.img_data_array: #TODO duplicates
+            #     if str(ref['old_name']) == data.name_original and ref['id_pixiv'] == pixiv_illust.id and strtobool(ref['rename_pixiv']) == strtobool(str(data.rename_pixiv)) and strtobool(ref['rename_danbooru']) == strtobool(str(data.rename_danbooru)) and str(ref['minsim']) == gv.Files.Conf.minsim:
+            #         next_img = True
+            #         break
+            # if next_img:
+            #     gv.Files.Log.write_to_log('Image ' + str(ref['old_name']) + ' already sourced')
+            #     continue
+            # # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
+            # if not pixiv_illust:
+            #     pixiv_illust_id = 'None'
+            # else:
+            #     pixiv_illust_id = pixiv_illust.id
+            # if not danb_illust:
+            #     danb_illust_id = 'None'
+            # else:
+            #     if 'id' in danb_illust:
+            #         danb_illust_id = danb_illust['id']
+            #     else:
+            #         danb_illust_id = 'None'
+            global index
+            gv.img_data_array.append(ImageData(ref['old_name'], gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, [{"service_name": 'Pixiv', "illust_id": '', "source": 'None', "???": 'None', "minsim": ref['minsim']}, {"service_name": 'Danbooru', "illust_id": '', "source": 'None', "???": 'None', "minsim": ref['minsim']}], pixiv_illustration_list, danb_illustration_list, index))
+            index += 1
         gv.Files.Log.write_to_log('Loaded images from reference file')
     else:
         gv.Files.Log.write_to_log('Reference file is empty')
@@ -434,6 +489,7 @@ if __name__ == '__main__':
     duplicate_p_pipe, duplicate_c_pipe = Pipe()
     #sem = Semaphore(12)
     #image_preloader()
+    index = 0
     gv.Files.Log.write_to_log('Variables initialised')
     duplicate_loop()
     display_startpage()

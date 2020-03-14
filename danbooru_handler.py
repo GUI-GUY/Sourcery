@@ -12,12 +12,16 @@ danbooru_folder = 'D:\All_Files\python\GitHub\Sourcery\Sourcery\dan'
 # request json, get urls of pictures and download them
 def danbooru_fetch_illustration(imgid, comm_error_q=None):
     """
-    Request info from danbooru API to given imgid and return it
+    Request info from danbooru API to given imgid\n
+    Return illustration dictionary on success, False otherwise
     """
     try:
         r = get('https://danbooru.donmai.us/posts/' + str(imgid) + '.json')
         illustration = r.json()
-        return illustration
+        if 'id' in illustration:
+            return illustration
+        else:
+            return False
     except Exception as e:
         # TODO
         return False
@@ -26,23 +30,25 @@ def danbooru_fetch_illustration(imgid, comm_error_q=None):
 
 def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None):
     """
-    Downloads given image from Danbooru and renames it properly
-    Returns the new name
+    Downloads given image from Danbooru and renames it properly\n
+    Return the new name on success, False otherwise
     """
-    if 'file_url' in illustration:
-        if gv.Files.Conf.rename_danbooru == 'True':
-            urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + illustration['file_url'].split('/')[-1])
-            new_name = illustration['file_url'].split('/')[-1]
-        else:
-            dot = img_name_original.rfind('.')
-            if dot != -1:
-                new_name = img_name_original[:dot]
+    try:
+        if 'file_url' in illustration:
+            if gv.Files.Conf.rename_danbooru == 'True':
+                urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + illustration['file_url'].split('/')[-1])
+                new_name = illustration['file_url'].split('/')[-1]
             else:
-                new_name = img_name_original
-            urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + new_name + '.' + illustration['file_ext'])
-    return new_name# TODO
-    #urlretrieve('https://i.pximg.net/img-original/img/2018/11/16/00/00/01/71671760_p0.png', danbooru_folder + '/' + folder + '/' + stream['file_url'].split('/')[-1])
-
+                dot = img_name_original.rfind('.')
+                if dot != -1:
+                    new_name = img_name_original[:dot]
+                else:
+                    new_name = img_name_original
+                urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + new_name + '.' + illustration['file_ext'])
+        return new_name# TODO
+        #urlretrieve('https://i.pximg.net/img-original/img/2018/11/16/00/00/01/71671760_p0.png', danbooru_folder + '/' + folder + '/' + stream['file_url'].split('/')[-1])
+    except Exception as e:
+        return False
 
 if __name__ == '__main__':
     danbooru_fetch_illustration(1)

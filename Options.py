@@ -59,7 +59,7 @@ class Options():
         self.provider_options_btn.place(x = int(gv.width/160*15), y = int(gv.height/90*5))
         self.saucenao_options_btn.place(x = int(gv.width/160*25), y = int(gv.height/90*5))
 
-        self.options_back_btn.place(x = int(gv.width/160*5), y = int(gv.height/90*50))
+        self.options_back_btn.place(x = int(gv.width/160*5), y = gv.height-170)
 
     def forget_all_widgets(self):
         for widget in self.par.winfo_children():
