@@ -4,6 +4,7 @@ from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 from functools import partial
 from webbrowser import open_new
 from pixiv_handler import pixiv_login
+from file_operations import change_input, change_output
 from ScrollFrame import ScrollFrame
 import global_variables as gv
 
@@ -165,11 +166,18 @@ class SourceryOptions():
 
         self.save_custom_theme_btn = Button(parent, text="Save Custom Theme", command=self.save_custom_theme, style="button.TLabel")
 
+        self.input_dir_0_lbl = Label(parent, text="Input Directory:", style="label.TLabel")
+        self.input_dir_1_lbl = Label(parent, text=gv.input_dir, style="label.TLabel")
+        self.input_dir_btn = Button(parent, text='Change', command=self.change_input, style="button.TLabel")
+        self.output_dir_0_lbl = Label(parent, text="Output Directory:", style="label.TLabel")
+        self.output_dir_1_lbl = Label(parent, text=gv.output_dir, style="label.TLabel")
+        self.output_dir_btn = Button(parent, text='Change', command=self.change_output, style="button.TLabel")
+
         if gv.Files.Conf.delete_input == '':
             gv.Files.Conf.delete_input = '0'
             gv.Files.Conf.write_config()
         self.delete_input_var = IntVar(value=int(gv.Files.Conf.delete_input))
-        self.delete_input_chkbtn = Checkbutton(parent, var= self.delete_input_var, text="Delete sourced images from the Input folder?", style="chkbtn.TCheckbutton")
+        self.delete_input_chkbtn = Checkbutton(parent, var=self.delete_input_var, text="Delete sourced images from the Input folder?", style="chkbtn.TCheckbutton")
 
         self.images_per_page_lbl = Label(parent, text="Images per page", font=("Arial Bold", 10), style="label.TLabel")
         self.images_per_page_entry = Entry(parent, width=30, style="button.TLabel")
@@ -213,7 +221,14 @@ class SourceryOptions():
 
         self.delete_input_chkbtn.place(x = x1, y = y + c * 16)
 
-        self.sourcery_confirm_btn.place(x = x1, y = y + c * 17)
+        self.input_dir_0_lbl.place(x = x1, y = y + c * 17)
+        self.input_dir_1_lbl.place(x = x2, y = y + c * 17)
+        self.input_dir_btn.place(x = x1+100, y = y + c * 17)
+        self.output_dir_0_lbl.place(x = x1, y = y + c * 18)
+        self.output_dir_1_lbl.place(x = x2, y = y + c * 18)
+        self.output_dir_btn.place(x = x1+100, y = y + c * 18)
+
+        self.sourcery_confirm_btn.place(x = x1, y = y + c * 23)
 
     def change_to_dark_theme(self):
         gv.Files.Theme.current_theme = "Dark Theme"
@@ -290,6 +305,14 @@ class SourceryOptions():
         """
         color = colorchooser.askcolor()
         lbl.configure(background = color[1])
+
+    def change_input(self):
+        change_input()
+        self.input_dir_1_lbl.configure(text=gv.input_dir)
+
+    def change_output(self):
+        change_output()
+        self.output_dir_1_lbl.configure(text=gv.output_dir)
 
     def sourcery_save(self):
         gv.Files.Log.write_to_log('Attempting to save Sourcery options...')

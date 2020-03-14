@@ -84,6 +84,7 @@ def display_startpage():
     
 def test():
     print(gv.img_data_array)
+    print(gv.input_images_array)
     gv.Files.Log.write_to_log('this is a test')
 
 def refresh_startpage(change, answer2):
@@ -102,9 +103,12 @@ def refresh_startpage(change, answer2):
         print('ERROR [0040] ' + str(e))
         gv.Files.Log.write_to_log('ERROR [0040] ' + str(e))
         #mb.showerror("ERROR [0040]", "ERROR CODE [0040]\nSomething went wrong while accessing a the 'Input' folder, please restart Sourcery.")
+    delete = list()
     for img in gv.input_images_array:
         if (not is_image(img)):
-            gv.input_images_array.remove(img)
+            delete.append(img)
+    for img in delete:
+        gv.input_images_array.remove(img)
     images_in_input_count_lbl.configure(text=str(len(gv.input_images_array)))
 
     answer1 = 201
