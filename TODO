@@ -60,13 +60,14 @@ OPTIONS
 provider options
 SauceNao options
 subfolders in input dir
-delete input
++ delete input
 png over jpg over high res over uncensored options (weight system?)
-...foreign folder support
++ foreign folder support
 preview/thumbnail scaling/options
 + tkinter color picker
 tag own images as uncensored
 + show tags on request(e.g uncensored)
+generate tag file
 
 PERFORMANCE
 optimizations
@@ -91,6 +92,7 @@ on save clear info panel
 ~ scaling
 + remaining searches/search limit
 + make canvas for startpage updated widgets
+show input and output dir
 
 MISC
 - multiple SauceNao accounts support? if it works(nope doesn't)

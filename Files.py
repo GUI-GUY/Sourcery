@@ -335,8 +335,9 @@ class ConfigFile():
         self.imgpp = '12'
         self.tags_danbooru = ''
         self.tags_pixiv = ''
-        self.input_dir = ''
-        self.output_dir = ''
+        self.input_dir = cwd + '/Input'
+        self.output_dir = cwd + '/Output'
+        self.delete_input = '0'
         if self.read_config():
             self.write_config()
     
@@ -372,6 +373,8 @@ class ConfigFile():
                 self.input_dir = temp[temp.find('=')+1:-1]
             if temp.startswith('output_dir='):
                 self.output_dir = temp[temp.find('=')+1:-1]
+            if temp.startswith('delete_input='):
+                self.delete_input = temp[temp.find('=')+1:-1]  
             temp = f.readline()
         f.close()
         return False
@@ -407,6 +410,7 @@ class ConfigFile():
                 "\ntags_pixiv=" + self.tags_pixiv +
                 "\ninput_dir=" + self.input_dir +
                 "\noutput_dir=" + self.output_dir +
+                "\ndelete_input=" + self.delete_input +
                 "\n\nEND")
         try:
             f = open(cwd + '/Sourcery/config', 'w')

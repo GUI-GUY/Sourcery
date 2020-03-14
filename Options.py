@@ -165,6 +165,12 @@ class SourceryOptions():
 
         self.save_custom_theme_btn = Button(parent, text="Save Custom Theme", command=self.save_custom_theme, style="button.TLabel")
 
+        if gv.Files.Conf.delete_input == '':
+            gv.Files.Conf.delete_input = '0'
+            gv.Files.Conf.write_config()
+        self.delete_input_var = IntVar(value=int(gv.Files.Conf.delete_input))
+        self.delete_input_chkbtn = Checkbutton(parent, var= self.delete_input_var, text="Delete sourced images from the Input folder?", style="chkbtn.TCheckbutton")
+
         self.images_per_page_lbl = Label(parent, text="Images per page", font=("Arial Bold", 10), style="label.TLabel")
         self.images_per_page_entry = Entry(parent, width=30, style="button.TLabel")
         self.images_per_page_entry.insert(0, gv.Files.Conf.imgpp)
@@ -204,7 +210,10 @@ class SourceryOptions():
 
         self.images_per_page_lbl.place(x = x1, y = y + c * 15)
         self.images_per_page_entry.place(x = x2, y = y + c * 15)
-        self.sourcery_confirm_btn.place(x = x1, y = y + c * 16)
+
+        self.delete_input_chkbtn.place(x = x1, y = y + c * 16)
+
+        self.sourcery_confirm_btn.place(x = x1, y = y + c * 17)
 
     def change_to_dark_theme(self):
         gv.Files.Theme.current_theme = "Dark Theme"
@@ -285,6 +294,7 @@ class SourceryOptions():
     def sourcery_save(self):
         gv.Files.Log.write_to_log('Attempting to save Sourcery options...')
         gv.Files.Conf.imgpp = self.images_per_page_entry.get()
+        gv.Files.Conf.delete_input = str(self.delete_input_var.get())
         gv.Files.Conf.write_config()
         gv.Files.Log.write_to_log('Saved Sourcery Options')
 

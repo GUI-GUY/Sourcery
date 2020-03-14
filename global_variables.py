@@ -5,17 +5,8 @@ from Files import Files
 
 cwd = getcwd()
 Files = Files()
-if Files.Conf.input_dir == '':
-    input_dir = cwd + '/Input'
-    Files.Conf.input_dir = input_dir
-else:
-    input_dir = Files.Conf.input_dir
-if Files.Conf.output_dir == '':
-    output_dir = cwd + '/Output'
-    Files.Conf.output_dir = output_dir
-else:
-    output_dir = Files.Conf.output_dir
-Files.Conf.write_config()
+input_dir = Files.Conf.input_dir
+output_dir = Files.Conf.output_dir
 
 res_frame = None # ScrollFrame for results to put widgets in
 big_frame = None # ScrollFrame for big selector to put widgets in

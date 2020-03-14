@@ -340,6 +340,8 @@ class ImageData():
             if self.path_original not in gv.delete_dirs_array:
                 gv.delete_dirs_array.append(self.path_original)
 
+
+        gv.Files.Conf.delete_input
         # new code above old code below
         
         if self.original_var.get() == 1:
