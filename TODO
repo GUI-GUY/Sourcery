@@ -59,8 +59,10 @@ OPTIONS
 + gv.esc_op
 provider options
 SauceNao options
+subfolders in input dir
+delete input
 png over jpg over high res over uncensored options (weight system?)
-foreign folder support
+...foreign folder support
 preview/thumbnail scaling/options
 + tkinter color picker
 tag own images as uncensored
@@ -97,6 +99,7 @@ all TODOs
 + comments
 Danbooru siblings/parents
 Fehlerbehandlung
+fehleroutput->logfile
 
 Last Error: 0047
 

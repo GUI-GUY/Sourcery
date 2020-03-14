@@ -335,6 +335,8 @@ class ConfigFile():
         self.imgpp = '12'
         self.tags_danbooru = ''
         self.tags_pixiv = ''
+        self.input_dir = ''
+        self.output_dir = ''
         if self.read_config():
             self.write_config()
     
@@ -366,6 +368,10 @@ class ConfigFile():
             if temp.startswith('tags_pixiv='):
                 self.tags_pixiv = temp[temp.find('=')+1:-1]
                 self.tags_pixiv = self.tags_pixiv.replace(' /n ', '\n').replace(' /t ', '\t')
+            if temp.startswith('input_dir='):
+                self.input_dir = temp[temp.find('=')+1:-1]
+            if temp.startswith('output_dir='):
+                self.output_dir = temp[temp.find('=')+1:-1]
             temp = f.readline()
         f.close()
         return False
@@ -399,6 +405,8 @@ class ConfigFile():
                 "\nimagesperpage=" + self.imgpp +
                 "\ntags_danbooru=" + self.tags_danbooru +
                 "\ntags_pixiv=" + self.tags_pixiv +
+                "\ninput_dir=" + self.input_dir +
+                "\noutput_dir=" + self.output_dir +
                 "\n\nEND")
         try:
             f = open(cwd + '/Sourcery/config', 'w')

@@ -13,7 +13,7 @@ from tkinter.ttk import Label, Button, Style, Entry, Frame
 from shutil import rmtree
 from distutils.util import strtobool
 from multiprocessing import Process, freeze_support, Queue, Pipe#, Semaphore
-from file_operations import is_image, save, open_input, open_sourced, display_statistics
+from file_operations import is_image, save, open_input, open_output, display_statistics, change_input, change_output
 from sourcery import do_sourcery
 from pixiv_handler import pixiv_authenticate, pixiv_login, pixiv_fetch_illustration
 from danbooru_handler import danbooru_fetch_illustration
@@ -33,7 +33,7 @@ def magic():
     load_from_ref_btn.configure(state='disabled')
     if __name__ == '__main__':
         gv.Files.Log.write_to_log('Starting second process for sourcing images')
-        process = Process(target=do_sourcery, args=(gv.cwd, gv.input_images_array, gv.Files.Cred.saucenao_api_key, gv.Files.Conf.minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, duplicate_c_pipe, ))
+        process = Process(target=do_sourcery, args=(gv.cwd, gv.input_images_array, gv.Files.Cred.saucenao_api_key, gv.Files.Conf.minsim, gv.input_dir, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, duplicate_c_pipe, ))
         process.start()
 
 def image_preloader():
@@ -58,14 +58,16 @@ def display_startpage():
     forget_all_widgets()
     x = int(height/160*2)
     y = int(height/9)
-    c = 23
+    c = 22
 
     sourcery_lbl.place(x = x, y = int(height/160))
-    sub_frame_startpage.place(x = x, y = y  + c * 4)
+    sub_frame_startpage.place(x = x, y = y  + c * 6)
 
-    open_input_btn.place(x = x, y = y + c * 0)
-    open_sourced_btn.place(x = x, y = y + c * 1)
-    options_btn.place(x = x, y = y + c * 2)
+    change_input_btn.place(x = x, y = y + c * 0)
+    open_input_btn.place(x = x, y = y + c * 1)
+    change_output_btn.place(x = x, y = y + c * 2)
+    open_output_btn.place(x = x, y = y + c * 3)
+    options_btn.place(x = x, y = y + c * 4)
     
     results_lbl.place(x = int(width/16*4), y = int(height/90*6))
     save_locked_btn.place(x = int(width*0.48), y = int(height*0.9))
@@ -95,7 +97,7 @@ def refresh_startpage(change, answer2):
     """
     
     try:
-        gv.input_images_array = listdir(gv.cwd + "/Input")
+        gv.input_images_array = listdir(gv.input_dir)
     except Exception as e:
         print('ERROR [0040] ' + str(e))
         gv.Files.Log.write_to_log('ERROR [0040] ' + str(e))
@@ -385,8 +387,10 @@ if __name__ == '__main__':
     #eta_lbl.grid(row= 5, column= 0)
     error_lbl.grid(row=7, column=0, columnspan=3, sticky=W)
 
+    change_input_btn = Button(window, text="Change Input", command=change_input, style="button.TLabel")
     open_input_btn = Button(window, text="Open Input", command=open_input, style="button.TLabel")
-    open_sourced_btn = Button(window, text="Open Output", command=open_sourced, style="button.TLabel")
+    change_output_btn = Button(window, text="Change Output", command=change_output, style="button.TLabel")
+    open_output_btn = Button(window, text="Open Output", command=open_output, style="button.TLabel")
     #statistics_btn = Button(window, text="Statistics", command=display_statistics, style="button.TLabel")
     options_btn = Button(window, text="Options", command=Options_Class.display_sourcery_options, style="button.TLabel")
     do_sourcery_btn = Button(frame_startpage, text="Get Sources", command=magic, style="button.TLabel")

@@ -1,5 +1,6 @@
 from os import startfile
 #from tkinter import messagebox as mb
+from tkinter import filedialog as fd
 import global_variables as gv
 
 def is_image(img):
@@ -52,17 +53,27 @@ def save():
     gv.Files.Ref.clean_reference()
     return True
 
+def change_input():
+    gv.input_dir = fd.askdirectory()
+    gv.Files.Conf.input_dir = gv.input_dir
+    gv.Files.Conf.write_config()
+
 def open_input():
     try:
-        startfile(gv.cwd + "/Input")
+        startfile(gv.input_dir)
     except Exception as e:
         print('ERROR [0022] ' + str(e))
         gv.Files.Log.write_to_log('ERROR [0022] ' + str(e))
         #mb.showerror("ERROR", e)
-        
-def open_sourced():
+
+def change_output():
+    gv.output_dir = fd.askdirectory()
+    gv.Files.Conf.output_dir = gv.output_dir
+    gv.Files.Conf.write_config()
+
+def open_output():
     try:
-        startfile(gv.cwd + "/Output")
+        startfile(gv.output_dir)
     except Exception as e:
         print('ERROR [0023] ' + str(e))
         gv.Files.Log.write_to_log('ERROR [0023] ' + str(e))

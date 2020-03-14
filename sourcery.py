@@ -12,7 +12,7 @@ def die(message, comm_error_q, comm_img_q):
     #mb.showerror('ERROR', message)
     exit()
 
-def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, duplicate_c_pipe):
+def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, duplicate_c_pipe):
     """
     1. Pixiv Login
     2. for all images in input folder:
@@ -37,7 +37,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, comm_q, comm_img_
             continue
         try:
             comm_error_q.put('[Sourcery] Moving image to working directory')
-            copy(cwd + '/Input/' + img, cwd + '/Sourcery/sourced_original')
+            copy(input_dir + '/' + img, cwd + '/Sourcery/sourced_original')
         except Exception as e:
             die(str(e), comm_error_q, comm_img_q)
         

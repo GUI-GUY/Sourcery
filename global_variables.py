@@ -5,6 +5,17 @@ from Files import Files
 
 cwd = getcwd()
 Files = Files()
+if Files.Conf.input_dir == '':
+    input_dir = cwd + '/Input'
+    Files.Conf.input_dir = input_dir
+else:
+    input_dir = Files.Conf.input_dir
+if Files.Conf.output_dir == '':
+    output_dir = cwd + '/Output'
+    Files.Conf.output_dir = output_dir
+else:
+    output_dir = Files.Conf.output_dir
+Files.Conf.write_config()
 
 res_frame = None # ScrollFrame for results to put widgets in
 big_frame = None # ScrollFrame for big selector to put widgets in
@@ -18,6 +29,8 @@ info_ScrollFrame = None
 
 results_tags_danbooru = Files.Conf.tags_danbooru.split()
 results_tags_pixiv = Files.Conf.tags_pixiv.split()
+
+
 
 width = 0
 height = 0

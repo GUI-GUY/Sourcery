@@ -370,7 +370,7 @@ class ImageData():
 
         if downloaded_name_new != None:
             try:
-                move(self.path_pixiv, gv.cwd + '/Output/' + downloaded_name_new)
+                move(self.path_pixiv, gv.output_dir + '/' + downloaded_name_new)
             except Exception as e:
                 print("ERROR [0012] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0012] " + str(e))
@@ -378,17 +378,17 @@ class ImageData():
 
         if original_name_new != None:
             try:
-                move(self.path_original, gv.cwd + '/Output/' + original_name_new)
+                move(self.path_original, gv.output_dir + '/' + original_name_new)
             except Exception as e:
                 print("ERROR [0013] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0013] " + str(e))
                 #mb.showerror("ERROR [0013]", "ERROR CODE [0013]\nSomething went wrong while moving the image " + self.path_original)
         try:
-            remove(gv.cwd + '/Input/' + self.name_original)
+            remove(gv.input_dir + self.name_original)
         except Exception as e:
             print("ERROR [0014] " + str(e))
             gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
-            #mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.cwd + '/Input/' + self.name_original)
+            #mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.input_dir + self.name_original)
 
         return True
 
@@ -812,7 +812,7 @@ class SubImageData():
     def save(self):
         if self.var.get() == 1:
             try:
-                move(self.path, gv.cwd + '/Output/' + folder + '/' + self.name)
+                move(self.path, gv.output_dir + '/' + folder + '/' + self.name)
             except Exception as e:
                 print("ERROR [0037] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0037] " + str(e))
