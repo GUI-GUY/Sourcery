@@ -1,4 +1,4 @@
-from os import path, listdir, remove
+from os import path, listdir, remove, makedirs
 from shutil import move, rmtree
 from tkinter import IntVar, W, N
 from tkinter import messagebox as mb
@@ -120,7 +120,7 @@ class ImageData():
             return None
 
         tags = illust['tag_string_general']
-        tags = tags.split()
+        tags = tags.split() #TODO tags with ' in it
         return {"artist": illust['tag_string_artist'], "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['image_width'], "height": illust['image_height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "tags": str(tags)}
 
     def forget_all_widgets(self):
@@ -329,24 +329,73 @@ class ImageData():
         "Saves" own checked images and schedules the unchecked images to be deleted 
         """
 
-        pass # TODO
-        #downloaded_name_new = None
-        original_name_new = None
+        save_counter = 0
+        for elem in self.pixiv_list:
+            if save_counter > 2:
+                break
+            if elem.get_save_status():
+                save_counter += 1
+        for elem in self.danb_list:
+            if save_counter > 2:
+                break
+            if elem.get_save_status():
+                save_counter += 1
+        if self.original_var.get() == 1:
+            save_counter += 1
 
-        if self.original_var.get() == 0:
-            original_name_new = None
-            if self.path_original not in gv.delete_dirs_array:
-                gv.delete_dirs_array.append(self.path_original)
-
-
-
+        if save_counter > 2:
+            new_dir = gv.output_dir + '/' + self.name_original
+            makedirs(new_dir, 0o777, True)
+            t = 0
+            if self.original_var.get() == 1:
+                try:
+                    move(self.path_original, gv.output_dir + '/' + self.name_original + '/' + self.name_original[:self.name_original.rfind('.')] + '_' + str(t) + self.name_original[self.name_original.rfind('.')+1:])
+                except Exception as e:
+                    print("ERROR [0013] " + str(e))
+                    gv.Files.Log.write_to_log("ERROR [0013] " + str(e))
+                    #mb.showerror("ERROR [0013]", "ERROR CODE [0013]\nSomething went wrong while moving the image " + self.path_original)
+                t += 1
+                
+                pass
+            else:
+                if self.path_original not in gv.delete_dirs_array:
+                    gv.delete_dirs_array.append(self.path_original)
+            for elem in self.pixiv_list:
+                elem.save(t, new_dir)
+                t += 1
+            for elem in self.danb_list:
+                elem.save(t, new_dir)
+                t += 1
+            # make folder and save images in it with different names TODO try except
+        else:
+            t = -1
+            if self.original_var.get() == 1:
+                try:
+                    move(self.path_original, gv.output_dir + '/' + self.name_original)
+                except Exception as e:
+                    print("ERROR [0048] " + str(e))
+                    gv.Files.Log.write_to_log("ERROR [0048] " + str(e))
+                    #mb.showerror("ERROR [0048]", "ERROR CODE [0048]\nSomething went wrong while moving the image " + self.path_original)
+            else:
+                if self.path_original not in gv.delete_dirs_array:
+                    gv.delete_dirs_array.append(self.path_original)
+            for elem in self.pixiv_list:
+                elem.save(t)
+            for elem in self.danb_list:
+                elem.save(t)
+            # save the one stuff
+        # TODO
 
         for widget in gv.info_frame.winfo_children():
             widget.grid_forget()
 
         if gv.Files.Conf.delete_input == '1':
-            #delete input
-            pass
+            try:
+                remove(gv.input_dir + self.name_original)
+            except Exception as e:
+                print("ERROR [0014] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
+                #mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.input_dir + self.name_original)
         # new code above old code below
         
         # if self.original_var.get() == 1:
@@ -710,6 +759,27 @@ class ProviderImageData():
             return True
         return False
 
+    def save(self, t, new_dir=None):
+        if t == -1:
+            if self.downloaded_var.get() == 1:
+                move(self.path, gv.output_dir + '/' + self.name)
+            else:
+                if gv.output_dir + '/' + self.name not in gv.delete_dirs_array:
+                    gv.delete_dirs_array.append(self.gv.output_dir + '/' + self.name)
+                for elem in self.sub_dir_img_array:
+                    elem.save()
+            pass# save your inmage in the outputdir+name
+        else:
+            if self.downloaded_var.get() == 1:
+                move(self.path, gv.output_dir + '/' + new_dir + '/' + self.name[:self.name.rfind('.')] + '_' + str(t) + self.name[self.name.rfind('.')+1:])
+            else:
+                if gv.output_dir + '/' + self.name not in gv.delete_dirs_array:
+                    gv.delete_dirs_array.append(self.gv.output_dir + '/' + self.name)
+                for elem in self.sub_dir_img_array:
+                    elem.save(t)
+            pass# save your image in the outputdir+new_dir+name+t
+        #TODO try except
+
     def forget_results(self):
         self.downloaded_chkbtn.grid_forget()
         self.downloaded_lbl.grid_forget()
@@ -834,14 +904,27 @@ class SubImageData():
         self.lbl2.place_forget()
         self.chkbtn.place_forget()
 
-    def save(self):
-        if self.var.get() == 1:
-            try:
-                move(self.path, gv.output_dir + '/' + folder + '/' + self.name)
-            except Exception as e:
-                print("ERROR [0037] " + str(e))
-                gv.Files.Log.write_to_log("ERROR [0037] " + str(e))
-                #mb.showerror("ERROR [0037]", "ERROR CODE [0037]\nSomething went wrong while moving the image " + self.path_original)
+    def save(self, t = -1):
+        if t == -1:
+            makedirs(gv.output_dir + '/' + self.folder, 0o777, True)#TODO try except
+            if self.var.get() == 1:
+                try:
+                    move(self.path, gv.output_dir + '/' + self.folder + '/' + self.name)
+                except Exception as e:
+                    print("ERROR [0037] " + str(e))
+                    gv.Files.Log.write_to_log("ERROR [0037] " + str(e))
+                    #mb.showerror("ERROR [0037]", "ERROR CODE [0037]\nSomething went wrong while moving the image " + self.path_original)
+            # save your images in outputdir+self.folder
+        else:
+            if self.var.get() == 1:
+                try:
+                    move(self.path, gv.output_dir + '/' + self.folder + '/' + self.name[:self.name.rfind('.')] + '_' + str(t) + self.name[self.name.rfind('.')+1:])
+                except Exception as e:
+                    print("ERROR [0049] " + str(e))
+                    gv.Files.Log.write_to_log("ERROR [0049] " + str(e))
+                    #mb.showerror("ERROR [0049]", "ERROR CODE [0049]\nSomething went wrong while moving the image " + self.path_original)
+            # save your images in outputdir+self.folder+t
+        
 
     def self_destruct(self):
         del self.photoImg

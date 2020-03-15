@@ -360,6 +360,10 @@ class PixivOptions():
             self.rename_var = IntVar(value=0)
         self.rename_chkbtn = Checkbutton(self.scrollpar_frame, text='Rename images from pixiv to pixiv name', var=self.rename_var, style="chkbtn.TCheckbutton")
         self.save_btn = Button(parent, text='Save', command=self.pixiv_save, style ="button.TLabel")
+        self.pixiv_address_1 = Label(self.scrollpar_frame, text="Your Login Data can be found here:", style="label.TLabel")
+        self.pixiv_address_2 = Label(self.scrollpar_frame, text="https://www.pixiv.net/setting_user.php", style="label.TLabel")
+        self.pixiv_address_2.configure(foreground='#2626ff', cursor='hand2', font=('Arial', 10))
+        self.pixiv_address_2.bind("<Button-1>", self.hyperlink)
 
         self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
         self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10)) # TODO not upadated with theme
@@ -367,10 +371,12 @@ class PixivOptions():
         self.show_tags_txt.insert(END, gv.Files.Conf.tags_pixiv)
         self.tags = None
 
-        self.pixiv_address_1 = Label(self.scrollpar_frame, text="Your Login Data can be found here:", style="label.TLabel")
-        self.pixiv_address_2 = Label(self.scrollpar_frame, text="https://www.pixiv.net/setting_user.php", style="label.TLabel")
-        self.pixiv_address_2.configure(foreground='#2626ff', cursor='hand2', font=('Arial', 10))
-        self.pixiv_address_2.bind("<Button-1>", self.hyperlink)
+        self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_pixiv))
+        self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_pixiv))
+        self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_pixiv))
+        self.gen_tagfile = Checkbutton(self.scrollpar_frame, text='Generate tagfiles from pixiv images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
+        self.tagfile_pixiv = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
+        self.tagfile_danbooru = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
 
     def pixiv_change_login(self):
         """
@@ -443,7 +449,10 @@ class PixivOptions():
         self.show_tags_txt.grid(row= 8, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
         self.scrollpar_frame.columnconfigure(2, weight=1)
 
-        self.rename_chkbtn.grid(row= 9, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+        self.gen_tagfile.grid(row= 9, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+        self.tagfile_pixiv.grid(row= 10, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.tagfile_danbooru.grid(row= 11, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.rename_chkbtn.grid(row= 13, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
         self.save_btn.place(x = int(gv.width/160*5), y = gv.height-220)
 
     def pixiv_save(self):
@@ -454,6 +463,9 @@ class PixivOptions():
             gv.Files.Conf.rename_pixiv = 'False'
         self.tags = self.show_tags_txt.get('1.0', END)
         gv.Files.Conf.tags_pixiv = self.tags
+        gv.Files.Conf.gen_tagfile_pixiv = str(self.gen_tagfile_var.get())
+        gv.Files.Conf.tagfile_pixiv_pixiv = str(self.tagfile_pixiv_var.get())
+        gv.Files.Conf.tagfile_danbooru_pixiv = str(self.tagfile_danbooru_var.get())
         gv.Files.Conf.write_config()
         gv.results_tags_pixiv = self.tags.split()
         gv.Files.Log.write_to_log('Saved Pixiv options')
@@ -478,6 +490,14 @@ class DanbooruOptions():
         self.show_tags_txt.insert(END, gv.Files.Conf.tags_danbooru)
         self.tags = None
 
+        self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_danbooru))
+        self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_danbooru))
+        self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_danbooru))
+        self.gen_tagfile = Checkbutton(self.scrollpar_frame, text='Generate tagfiles from danbooru images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
+        self.tagfile_pixiv = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
+        self.tagfile_danbooru = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
+
+
     def danb_display(self):
         """
         Displays the danbooru options widgets
@@ -487,12 +507,21 @@ class DanbooruOptions():
 
         self.show_tags_lbl.grid(row= 0, column= 0, sticky=W, padx=2, pady=1)
         self.show_tags_txt.grid(row= 1, column= 0, sticky=W, padx=2, pady=1)
+
+        self.gen_tagfile.grid(row= 9, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+        self.tagfile_pixiv.grid(row= 10, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.tagfile_danbooru.grid(row= 11, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+
+
         self.save_btn.place(x = int(gv.width/160*50), y = gv.height-220)
 
     def danbooru_save(self):
         gv.Files.Log.write_to_log('Attempting to save Danbooru options...')
         self.tags = self.show_tags_txt.get('1.0', END)
         gv.Files.Conf.tags_danbooru = self.tags
+        gv.Files.Conf.gen_tagfile_danbooru = str(self.gen_tagfile_var.get())
+        gv.Files.Conf.tagfile_pixiv_danbooru = str(self.tagfile_pixiv_var.get())
+        gv.Files.Conf.tagfile_danbooru_danbooru = str(self.tagfile_danbooru_var.get())
         gv.Files.Conf.write_config()
         gv.results_tags_danbooru = self.tags.split()
         gv.Files.Log.write_to_log('Saved Danbooru options')

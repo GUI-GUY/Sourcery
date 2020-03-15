@@ -339,6 +339,12 @@ class ConfigFile():
         self.input_dir = cwd + '/Input'
         self.output_dir = cwd + '/Output'
         self.delete_input = '0'
+        self.gen_tagfile_pixiv = '0'
+        self.tagfile_pixiv_pixiv = '0'
+        self.tagfile_danbooru_pixiv = '0'
+        self.gen_tagfile_danbooru = '0'
+        self.tagfile_pixiv_danbooru = '0'
+        self.tagfile_danbooru_danbooru = '0'
         if self.read_config():
             self.write_config()
     
@@ -377,7 +383,20 @@ class ConfigFile():
             if temp.startswith('output_dir='):
                 self.output_dir = temp[temp.find('=')+1:-1]
             if temp.startswith('delete_input='):
-                self.delete_input = temp[temp.find('=')+1:-1]  
+                self.delete_input = temp[temp.find('=')+1:-1]
+            if temp.startswith('gen_tagfile_pixiv='):
+                self.gen_tagfile_pixiv = temp[temp.find('=')+1:-1]
+            if temp.startswith('tagfile_pixiv_pixiv='):
+                self.tagfile_pixiv_pixiv = temp[temp.find('=')+1:-1]
+            if temp.startswith('tagfile_danbooru_pixiv='):
+                self.tagfile_danbooru_pixiv = temp[temp.find('=')+1:-1]
+            if temp.startswith('gen_tagfile_danbooru='):
+                self.gen_tagfile_danbooru = temp[temp.find('=')+1:-1]
+            if temp.startswith('tagfile_pixiv_danbooru='):
+                self.tagfile_pixiv_danbooru = temp[temp.find('=')+1:-1]
+            if temp.startswith('tagfile_danbooru_danbooru='):
+                self.tagfile_danbooru_danbooru = temp[temp.find('=')+1:-1]
+
             temp = f.readline()
         f.close()
         return False
@@ -415,6 +434,12 @@ class ConfigFile():
                 "\ninput_dir=" + self.input_dir +
                 "\noutput_dir=" + self.output_dir +
                 "\ndelete_input=" + self.delete_input +
+                "\ngen_tagfile_pixiv=" + self.gen_tagfile_pixiv +
+                "\ntagfile_pixiv_pixiv=" + self.tagfile_pixiv_pixiv +
+                "\ntagfile_danbooru_pixiv=" + self.tagfile_danbooru_pixiv +
+                "\ngen_tagfile_danbooru=" + self.gen_tagfile_danbooru +
+                "\ntagfile_pixiv_danbooru=" + self.tagfile_pixiv_danbooru +
+                "\ntagfile_danbooru_danbooru=" + self.tagfile_danbooru_danbooru +
                 "\n\nEND")
         try:
             f = open(cwd + '/Sourcery/config', 'w')
@@ -430,7 +455,7 @@ class ConfigFile():
 class ReferenceFile():
     """Includes methods to add a new reference, read these from the reference file or delete its contents"""
     def __init__(self, log):
-        self.Log = log
+        self.Log = log # TODO self.refs to delete duplicate refs
 
     def new_reference(self, old_name, new_name_pixiv, id_pixiv, new_name_danb, id_danb, rename_pixiv, rename_danbooru, minsim):
         """

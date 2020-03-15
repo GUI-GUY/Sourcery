@@ -69,6 +69,7 @@ preview/thumbnail scaling/options
 + show tags on request(e.g uncensored)
 save: generate tag file
 number of sauceNao results(DISCLAIMER: you may miss out on some services)
+direct replace if sim is over X%
 
 PERFORMANCE
 optimizations
@@ -106,14 +107,13 @@ Fehlerbehandlung
 fehleroutput->logfile
 placeholder image for less errors maybe
 
-Last Error: 0047
+Last Error: 0049
 
 beta 0.4
 3rd service
 Hydrus
 DCP
 Keyboard support
-direct replace if sim is over X%
 change font option (maybe not)
 statistics
 elapsed time / ETA
