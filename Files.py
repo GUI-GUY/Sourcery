@@ -345,6 +345,9 @@ class ConfigFile():
         self.gen_tagfile_danbooru = '0'
         self.tagfile_pixiv_danbooru = '0'
         self.tagfile_danbooru_danbooru = '0'
+        self.gen_tagfile_original = '0'
+        self.tagfile_pixiv_original = '0'
+        self.tagfile_danbooru_original = '0'
         if self.read_config():
             self.write_config()
     
@@ -396,6 +399,12 @@ class ConfigFile():
                 self.tagfile_pixiv_danbooru = temp[temp.find('=')+1:-1]
             if temp.startswith('tagfile_danbooru_danbooru='):
                 self.tagfile_danbooru_danbooru = temp[temp.find('=')+1:-1]
+            if temp.startswith('gen_tagfile_original='):
+                self.gen_tagfile_original = temp[temp.find('=')+1:-1]
+            if temp.startswith('tagfile_pixiv_original='):
+                self.tagfile_pixiv_original = temp[temp.find('=')+1:-1]
+            if temp.startswith('tagfile_danbooru_original='):
+                self.tagfile_danbooru_original = temp[temp.find('=')+1:-1]
 
             temp = f.readline()
         f.close()
@@ -440,6 +449,9 @@ class ConfigFile():
                 "\ngen_tagfile_danbooru=" + self.gen_tagfile_danbooru +
                 "\ntagfile_pixiv_danbooru=" + self.tagfile_pixiv_danbooru +
                 "\ntagfile_danbooru_danbooru=" + self.tagfile_danbooru_danbooru +
+                "\ngen_tagfile_original=" + self.gen_tagfile_original +
+                "\ntagfile_pixiv_original=" + self.tagfile_pixiv_original +
+                "\ntagfile_danbooru_original=" + self.tagfile_danbooru_original +
                 "\n\nEND")
         try:
             f = open(cwd + '/Sourcery/config', 'w')

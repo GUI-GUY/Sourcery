@@ -6,7 +6,7 @@ from tkinter.ttk import Checkbutton, Label, Button
 from PIL import ImageTk, Image
 from webbrowser import open_new
 from copy import deepcopy
-from file_operations import is_image
+from file_operations import is_image, gen_tagfile
 import global_variables as gv
 
 class ImageData():
@@ -348,6 +348,7 @@ class ImageData():
             makedirs(new_dir, 0o777, True)
             t = 0
             if self.original_var.get() == 1:
+                self.gen_tagfile()
                 try:
                     move(self.path_original, gv.output_dir + '/' + self.name_original + '/' + self.name_original[:self.name_original.rfind('.')] + '_' + str(t) + self.name_original[self.name_original.rfind('.')+1:])
                 except Exception as e:
@@ -367,9 +368,10 @@ class ImageData():
                 elem.save(t, new_dir)
                 t += 1
             # make folder and save images in it with different names TODO try except
-        else:
+        else: #TODO delete_both here
             t = -1
             if self.original_var.get() == 1:
+                self.gen_tagfile()
                 try:
                     move(self.path_original, gv.output_dir + '/' + self.name_original)
                 except Exception as e:
@@ -396,57 +398,11 @@ class ImageData():
                 print("ERROR [0014] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
                 #mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.input_dir + self.name_original)
-        # new code above old code below
         
-        # if self.original_var.get() == 1:
-        #     if self.downloaded_pixiv_var.get() == 1:
-        #         downloaded_name_new = 'new_' + self.name_pixiv
-        #         original_name_new = 'old_' + self.name_pixiv
-        #     else:
-        #         # Move original image to Sourced and delete downloaded image/directory
-        #         downloaded_name_new = None
-        #         original_name_new = self.name_original
-        #         if self.path_pixiv not in gv.delete_dirs_array:
-        #             gv.delete_dirs_array.append(self.path_pixiv)
-        # elif self.downloaded_pixiv_var.get() == 1:
-        #     # Move downloaded image to Sourced and delete original image
-        #     downloaded_name_new = self.name_pixiv
-        #     original_name_new = None
-        #     if self.path_original not in gv.delete_dirs_array:
-        #         gv.delete_dirs_array.append(self.path_original)
-
-        # if self.downloaded_pixiv_var.get() == 0:
-        #     for elem in self.sub_dir_img_array_pixiv:
-        #         elem.save()
-        #     if self.path_pixiv not in gv.delete_dirs_array:
-        #         gv.delete_dirs_array.append(self.path_pixiv)
-        #     if self.original_var.get() == 0:
-        #         if self.path_original not in gv.delete_dirs_array:
-        #             gv.delete_dirs_array.append(self.path_original)
-
-        # if downloaded_name_new != None:
-        #     try:
-        #         move(self.path_pixiv, gv.output_dir + '/' + downloaded_name_new)
-        #     except Exception as e:
-        #         print("ERROR [0012] " + str(e))
-        #         gv.Files.Log.write_to_log("ERROR [0012] " + str(e))
-        #         #mb.showerror("ERROR [0012]", "ERROR CODE [0012]\nSomething went wrong while moving the image " + self.path_pixiv)
-
-        # if original_name_new != None:
-        #     try:
-        #         move(self.path_original, gv.output_dir + '/' + original_name_new)
-        #     except Exception as e:
-        #         print("ERROR [0013] " + str(e))
-        #         gv.Files.Log.write_to_log("ERROR [0013] " + str(e))
-        #         #mb.showerror("ERROR [0013]", "ERROR CODE [0013]\nSomething went wrong while moving the image " + self.path_original)
-        # try:
-        #     remove(gv.input_dir + self.name_original)
-        # except Exception as e:
-        #     print("ERROR [0014] " + str(e))
-        #     gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
-        #     #mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.input_dir + self.name_original)
-
-        # return True
+    def gen_tagfile(self):
+        if gv.Files.Conf.gen_tagfile_original == '1':
+            gen_tagfile(None, gv.output_dir, self.name_original)
+        pass
 
     def forget_results(self):
         self.original_chkbtn.grid_forget()
@@ -762,6 +718,7 @@ class ProviderImageData():
     def save(self, t, new_dir=None):
         if t == -1:
             if self.downloaded_var.get() == 1:
+                self.gen_tagfile(gv.output_dir)
                 move(self.path, gv.output_dir + '/' + self.name)
             else:
                 if gv.output_dir + '/' + self.name not in gv.delete_dirs_array:
@@ -771,6 +728,7 @@ class ProviderImageData():
             pass# save your inmage in the outputdir+name
         else:
             if self.downloaded_var.get() == 1:
+                self.gen_tagfile(gv.output_dir + '/' + new_dir)
                 move(self.path, gv.output_dir + '/' + new_dir + '/' + self.name[:self.name.rfind('.')] + '_' + str(t) + self.name[self.name.rfind('.')+1:])
             else:
                 if gv.output_dir + '/' + self.name not in gv.delete_dirs_array:
@@ -779,6 +737,22 @@ class ProviderImageData():
                     elem.save(t)
             pass# save your image in the outputdir+new_dir+name+t
         #TODO try except
+
+    def gen_tagfile(self, gen_dir):
+        if self.service == 'Pixiv' and gv.Files.Conf.gen_tagfile_pixiv == '1':
+            if path.isfile(self.path):
+                gen_tagfile(None, gen_dir, self.name)
+            elif path.isdir(self.path):
+                for elem in self.sub_dir_img_array:
+                    elem.gen_tagfile(gen_dir + '/' + self.name)
+        elif self.service == 'Danbooru' and gv.Files.Conf.gen_tagfile_danbooru == '1':
+            if path.isfile(self.path):
+                gen_tagfile(None, gen_dir, self.name)
+            elif path.isdir(self.path):
+                for elem in self.sub_dir_img_array:
+                    elem.gen_tagfile(gen_dir + '/' + self.name)
+        
+        pass
 
     def forget_results(self):
         self.downloaded_chkbtn.grid_forget()
@@ -908,6 +882,7 @@ class SubImageData():
         if t == -1:
             makedirs(gv.output_dir + '/' + self.folder, 0o777, True)#TODO try except
             if self.var.get() == 1:
+                self.gen_tagfile(gv.output_dir + '/' + self.folder)
                 try:
                     move(self.path, gv.output_dir + '/' + self.folder + '/' + self.name)
                 except Exception as e:
@@ -917,6 +892,7 @@ class SubImageData():
             # save your images in outputdir+self.folder
         else:
             if self.var.get() == 1:
+                self.gen_tagfile(gv.output_dir + '/' + self.folder)
                 try:
                     move(self.path, gv.output_dir + '/' + self.folder + '/' + self.name[:self.name.rfind('.')] + '_' + str(t) + self.name[self.name.rfind('.')+1:])
                 except Exception as e:
@@ -925,6 +901,12 @@ class SubImageData():
                     #mb.showerror("ERROR [0049]", "ERROR CODE [0049]\nSomething went wrong while moving the image " + self.path_original)
             # save your images in outputdir+self.folder+t
         
+    def gen_tagfile(self, gen_dir):
+        if self.service == 'Pixiv' and gv.Files.Conf.gen_tagfile_pixiv == '1':
+            gen_tagfile(None, gen_dir, self.name)
+        elif self.service == 'Danbooru' and gv.Files.Conf.gen_tagfile_danbooru == '1':
+            gen_tagfile(None, gen_dir, self.name)
+        pass
 
     def self_destruct(self):
         del self.photoImg

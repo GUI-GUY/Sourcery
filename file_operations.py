@@ -57,6 +57,16 @@ def save():
     gv.Files.Ref.clean_reference()
     return True
 
+def gen_tagfile(tags, gen_dir, name):
+    try:
+        f = open(gen_dir + '/' + name, 'a')
+    except:
+        pass
+    #TODO except
+    for tag in tags:
+        f.write(tag)
+
+
 def change_input():
     gv.input_dir = fd.askdirectory()
     gv.Files.Conf.input_dir = gv.input_dir
