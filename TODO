@@ -67,7 +67,7 @@ preview/thumbnail scaling/options
 + tkinter color picker
 * tag own images as uncensored
 + show tags on request(e.g uncensored)
-save: generate tag file
++ save: generate tag file
 number of sauceNao results(DISCLAIMER: you may miss out on some services)
 direct replace if sim is over X%
 

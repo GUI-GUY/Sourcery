@@ -24,7 +24,7 @@ class ImageData():
             name = self.correct_name('pixiv', elem[1]) # TODO if name == False
             path_pixiv = gv.cwd + '/Sourcery/sourced_progress/pixiv/' + name
             self.pixiv_dict = self.pixiv_clean_dict(elem[0], dict_list) 
-            self.pixiv_list.append(ProviderImageData('Pixiv', name, path_pixiv, self.thumb_size, self.preview_size, self.pixiv_dict, self.siblings_array))
+            self.pixiv_list.append(ProviderImageData('Pixiv', name, path_pixiv, self.thumb_size, self.preview_size, self.pixiv_dict, elem[0], self.siblings_array))
         
         self.danb_list = list()
         for elem in danbooru_illust_list:
@@ -33,7 +33,7 @@ class ImageData():
             name = self.correct_name('danbooru', elem[1]) # TODO if name == False
             path_danb = gv.cwd + '/Sourcery/sourced_progress/danbooru/' + name
             self.danb_dict = self.danbooru_clean_dict(elem[0], dict_list)
-            self.danb_list.append(ProviderImageData('Danbooru', name, path_danb, self.thumb_size, self.preview_size, self.danb_dict, self.siblings_array))
+            self.danb_list.append(ProviderImageData('Danbooru', name, path_danb, self.thumb_size, self.preview_size, self.danb_dict, elem[0], self.siblings_array))
         #self.name_pixiv = pixiv_name
         #self.set_name_pixiv()
         #self.name_danb = danb_name
@@ -329,6 +329,14 @@ class ImageData():
         "Saves" own checked images and schedules the unchecked images to be deleted 
         """
 
+        pixiv_tags = list()
+        for elem in self.pixiv_list:
+            pixiv_tags.extend(elem.get_tags_list())
+
+        danbooru_tags = list()
+        for elem in self.danb_list:
+            danbooru_tags.extend(elem.get_tags_list())
+
         save_counter = 0
         for elem in self.pixiv_list:
             if save_counter > 2:
@@ -348,7 +356,7 @@ class ImageData():
             makedirs(new_dir, 0o777, True)
             t = 0
             if self.original_var.get() == 1:
-                self.gen_tagfile()
+                self.gen_tagfile(pixiv_tags, danbooru_tags)
                 try:
                     move(self.path_original, gv.output_dir + '/' + self.name_original + '/' + self.name_original[:self.name_original.rfind('.')] + '_' + str(t) + self.name_original[self.name_original.rfind('.')+1:])
                 except Exception as e:
@@ -362,16 +370,16 @@ class ImageData():
                 if self.path_original not in gv.delete_dirs_array:
                     gv.delete_dirs_array.append(self.path_original)
             for elem in self.pixiv_list:
-                elem.save(t, new_dir)
+                elem.save(t, pixiv_tags, danbooru_tags, new_dir)
                 t += 1
             for elem in self.danb_list:
-                elem.save(t, new_dir)
+                elem.save(t, pixiv_tags, danbooru_tags, new_dir)
                 t += 1
             # make folder and save images in it with different names TODO try except
         else: #TODO delete_both here
             t = -1
             if self.original_var.get() == 1:
-                self.gen_tagfile()
+                self.gen_tagfile(pixiv_tags, danbooru_tags)
                 try:
                     move(self.path_original, gv.output_dir + '/' + self.name_original)
                 except Exception as e:
@@ -382,9 +390,9 @@ class ImageData():
                 if self.path_original not in gv.delete_dirs_array:
                     gv.delete_dirs_array.append(self.path_original)
             for elem in self.pixiv_list:
-                elem.save(t)
+                elem.save(t, pixiv_tags, danbooru_tags)
             for elem in self.danb_list:
-                elem.save(t)
+                elem.save(t, pixiv_tags, danbooru_tags)
             # save the one stuff
         # TODO
 
@@ -399,9 +407,15 @@ class ImageData():
                 gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
                 #mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.input_dir + self.name_original)
         
-    def gen_tagfile(self):
+    def gen_tagfile(self, pixiv_tags, danbooru_tags):
         if gv.Files.Conf.gen_tagfile_original == '1':
-            gen_tagfile(None, gv.output_dir, self.name_original)
+            all_tags = list()
+            if gv.Files.Conf.tagfile_pixiv_original == '1':
+                all_tags.extend(pixiv_tags)
+            if gv.Files.Conf.tagfile_danbooru_original == '1':
+                all_tags.extend(danbooru_tags)
+            
+            gen_tagfile(all_tags, gv.output_dir, self.name_original)
         pass
 
     def forget_results(self):
@@ -434,13 +448,14 @@ class ImageData():
 
 class ProviderImageData():
     """Includes all information on the sourced images for the given image provider"""
-    def __init__(self, service, name, path, thumb_size, preview_size, dictionary, siblings_array):
+    def __init__(self, service, name, path, thumb_size, preview_size, dictionary, illustration, siblings_array):
         self.service = service
         self.name = name
         self.path = path
         self.thumb_size = thumb_size
         self.preview_size = preview_size
         self.dict = dictionary
+        self.illustration = illustration
         self.tags = dictionary['tags'].strip('[]\'').split('\', \'')
         self.siblings_array = siblings_array
         self.downloaded_image = None
@@ -459,6 +474,9 @@ class ProviderImageData():
             self.downloaded_wxh_lbl = Label(master=gv.res_frame, text = "More images", style='label.TLabel')
         self.downloaded_type_lbl = Label(master=gv.res_frame, style='label.TLabel')
         self.results_tags_lbl = Label(gv.res_frame, style='label.TLabel')
+
+        self.result_not_in_tagfile_var = IntVar(value=0)
+        self.result_not_in_tagfile = Checkbutton(gv.res_frame, text='Not in Tagfile', var=self.result_not_in_tagfile_var, style='chkbtn.TCheckbutton')
 
         self.info_img_lbl = Label(master=gv.info_frame, style='label.TLabel')
         self.info_provider_lbl = Label(master=gv.info_frame, style='label.TLabel')
@@ -587,6 +605,7 @@ class ProviderImageData():
         self.downloaded_wxh_lbl.grid(column = 3, row = t+2, sticky = W, padx = 10)
         self.downloaded_type_lbl.grid(column = 4, row = t+2, sticky = W, padx = 10)
         self.results_tags_lbl.grid(column = 5, row = t+2, sticky = W, padx = 10, columnspan=2)
+        self.result_not_in_tagfile.grid(column = 7, row = t+2, sticky = W, padx = 10)
         
         t += 2
         return t
@@ -715,44 +734,84 @@ class ProviderImageData():
             return True
         return False
 
-    def save(self, t, new_dir=None):
+    def save(self, t, pixiv_tags, danbooru_tags, new_dir=None):
         if t == -1:
             if self.downloaded_var.get() == 1:
-                self.gen_tagfile(gv.output_dir)
+                self.gen_tagfile(gv.output_dir, pixiv_tags, danbooru_tags)
                 move(self.path, gv.output_dir + '/' + self.name)
             else:
                 if gv.output_dir + '/' + self.name not in gv.delete_dirs_array:
                     gv.delete_dirs_array.append(self.gv.output_dir + '/' + self.name)
                 for elem in self.sub_dir_img_array:
-                    elem.save()
+                    elem.save(pixiv_tags, danbooru_tags)
             pass# save your inmage in the outputdir+name
         else:
             if self.downloaded_var.get() == 1:
-                self.gen_tagfile(gv.output_dir + '/' + new_dir)
+                self.gen_tagfile(gv.output_dir + '/' + new_dir, pixiv_tags, danbooru_tags)
                 move(self.path, gv.output_dir + '/' + new_dir + '/' + self.name[:self.name.rfind('.')] + '_' + str(t) + self.name[self.name.rfind('.')+1:])
             else:
                 if gv.output_dir + '/' + self.name not in gv.delete_dirs_array:
                     gv.delete_dirs_array.append(self.gv.output_dir + '/' + self.name)
                 for elem in self.sub_dir_img_array:
-                    elem.save(t)
+                    elem.save(pixiv_tags, danbooru_tags, t)
             pass# save your image in the outputdir+new_dir+name+t
         #TODO try except
 
-    def gen_tagfile(self, gen_dir):
+    def gen_tagfile(self, gen_dir, pixiv_tags, danbooru_tags):
         if self.service == 'Pixiv' and gv.Files.Conf.gen_tagfile_pixiv == '1':
             if path.isfile(self.path):
-                gen_tagfile(None, gen_dir, self.name)
+                all_tags = list()
+                if gv.Files.Conf.tagfile_pixiv_pixiv == '1':
+                    all_tags.extend(pixiv_tags)
+                if gv.Files.Conf.tagfile_danbooru_pixiv == '1':
+                    all_tags.extend(danbooru_tags)
+                gen_tagfile(all_tags, gen_dir, self.name)
             elif path.isdir(self.path):
                 for elem in self.sub_dir_img_array:
-                    elem.gen_tagfile(gen_dir + '/' + self.name)
+                    elem.gen_tagfile(gen_dir + '/' + self.name, pixiv_tags, danbooru_tags)
         elif self.service == 'Danbooru' and gv.Files.Conf.gen_tagfile_danbooru == '1':
             if path.isfile(self.path):
-                gen_tagfile(None, gen_dir, self.name)
+                all_tags = list()
+                if gv.Files.Conf.tagfile_pixiv_danbooru == '1':
+                    all_tags.extend(pixiv_tags)
+                if gv.Files.Conf.tagfile_danbooru_danbooru == '1':
+                    all_tags.extend(danbooru_tags)
+                gen_tagfile(all_tags, gen_dir, self.name)
             elif path.isdir(self.path):
                 for elem in self.sub_dir_img_array:
-                    elem.gen_tagfile(gen_dir + '/' + self.name)
-        
-        pass
+                    elem.gen_tagfile(gen_dir + '/' + self.name, pixiv_tags, danbooru_tags)
+    
+    def get_tags_list(self, not_in_file=-1):
+        """
+        Returns a string list of all tags of the image from the provider
+        """
+        if not_in_file == -1:
+            not_in_file = self.result_not_in_tagfile_var.get()
+        ret_list = list()
+        if not_in_file == 0:
+            if self.service == 'Pixiv':
+                for tag in self.illustration.tags:
+                    ret_list.append(tag)
+                ret_list.append('pixiv work:' + self.illustration.id)
+                ret_list.append('creator:' + self.illustration.user)
+                ret_list.append('title:' + self.illustration.title)
+                ret_list.append('rating:' + self.illustration.sanity_level)
+            if self.service == 'Danbooru':
+                for tag in self.illustration['tag_string_general'].strip("'").split():
+                    ret_list.append(tag)
+                for tag in self.illustration['tag_string_character'].strip("'").split():
+                    ret_list.append('character:' + tag)
+                for tag in self.illustration['tag_string_copyright'].strip("'").split():
+                    ret_list.append('copyright:' + tag)
+                for tag in self.illustration['tag_string_artist'].strip("'").split():
+                    ret_list.append('creator:' + tag)
+                for tag in self.illustration['tag_string_meta'].strip("'").split():
+                    ret_list.append('meta:' + tag)
+                ret_list.append('booru:danbooru')
+                ret_list.append('source:' + self.illustration['source'])
+                ret_list.append('rating:' + self.illustration['rating'])
+                if self.illustration['pixiv_id'] != '':
+                    ret_list.append('pixiv work:' + self.illustration['pixiv_id'])
 
     def forget_results(self):
         self.downloaded_chkbtn.grid_forget()
@@ -878,11 +937,11 @@ class SubImageData():
         self.lbl2.place_forget()
         self.chkbtn.place_forget()
 
-    def save(self, t = -1):
+    def save(self, pixiv_tags, danbooru_tags, t = -1):
         if t == -1:
             makedirs(gv.output_dir + '/' + self.folder, 0o777, True)#TODO try except
             if self.var.get() == 1:
-                self.gen_tagfile(gv.output_dir + '/' + self.folder)
+                self.gen_tagfile(gv.output_dir + '/' + self.folder, pixiv_tags, danbooru_tags)
                 try:
                     move(self.path, gv.output_dir + '/' + self.folder + '/' + self.name)
                 except Exception as e:
@@ -892,7 +951,7 @@ class SubImageData():
             # save your images in outputdir+self.folder
         else:
             if self.var.get() == 1:
-                self.gen_tagfile(gv.output_dir + '/' + self.folder)
+                self.gen_tagfile(gv.output_dir + '/' + self.folder, pixiv_tags, danbooru_tags)
                 try:
                     move(self.path, gv.output_dir + '/' + self.folder + '/' + self.name[:self.name.rfind('.')] + '_' + str(t) + self.name[self.name.rfind('.')+1:])
                 except Exception as e:
@@ -901,12 +960,21 @@ class SubImageData():
                     #mb.showerror("ERROR [0049]", "ERROR CODE [0049]\nSomething went wrong while moving the image " + self.path_original)
             # save your images in outputdir+self.folder+t
         
-    def gen_tagfile(self, gen_dir):
+    def gen_tagfile(self, gen_dir, pixiv_tags, danbooru_tags):
         if self.service == 'Pixiv' and gv.Files.Conf.gen_tagfile_pixiv == '1':
-            gen_tagfile(None, gen_dir, self.name)
+            all_tags = list()
+            if gv.Files.Conf.tagfile_pixiv_pixiv == '1':
+                all_tags.extend(pixiv_tags)
+            if gv.Files.Conf.tagfile_danbooru_pixiv == '1':
+                all_tags.extend(danbooru_tags)
+            gen_tagfile(all_tags, gen_dir, self.name)
         elif self.service == 'Danbooru' and gv.Files.Conf.gen_tagfile_danbooru == '1':
-            gen_tagfile(None, gen_dir, self.name)
-        pass
+            all_tags = list()
+            if gv.Files.Conf.tagfile_pixiv_danbooru == '1':
+                all_tags.extend(pixiv_tags)
+            if gv.Files.Conf.tagfile_danbooru_danbooru == '1':
+                all_tags.extend(danbooru_tags)
+            gen_tagfile(all_tags, gen_dir, self.name)
 
     def self_destruct(self):
         del self.photoImg

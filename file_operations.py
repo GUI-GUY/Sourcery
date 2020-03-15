@@ -58,14 +58,16 @@ def save():
     return True
 
 def gen_tagfile(tags, gen_dir, name):
+    """
+    Takes a list of strings, the directory in which to generate the file and the name of the file
+    """
     try:
         f = open(gen_dir + '/' + name, 'a')
     except:
         pass
     #TODO except
     for tag in tags:
-        f.write(tag)
-
+        f.write(tag + '\n')
 
 def change_input():
     gv.input_dir = fd.askdirectory()
