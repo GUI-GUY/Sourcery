@@ -38,9 +38,9 @@ def save():
         if gv.img_data_array.index(data) > int(gv.Files.Conf.imgpp):
             break
         if data.locked:
-            if not data.delete_both():
-                continue
-            gv.Files.Log.write_to_log('Attempting to save image:' + data.name_original + '/' + data.name_pixiv + '...' )
+            # if not data.delete_both():
+            #     continue
+            gv.Files.Log.write_to_log('Attempting to save image:' + data.name_original + '...' )
             if not data.save():
                 continue
             gv.Files.Log.write_to_log('Successfully saved image')
@@ -49,10 +49,6 @@ def save():
             remove_later_list.append(data)
     for data in remove_later_list:
         gv.img_data_array.remove(data)
-    # gv.last_occupied_result = 0
-    # for data in gv.img_data_array:
-    #     data.index = gv.last_occupied_result
-    #     gv.last_occupied_result += 1
     remove_later_list.clear()
     gv.Files.Ref.clean_reference()
     return True
@@ -63,11 +59,16 @@ def gen_tagfile(tags, gen_dir, name):
     """
     try:
         f = open(gen_dir + '/' + name, 'a')
+        for tag in tags:
+            if type(tag) == type(dict()):
+                f.write(tag['name'] + '\n')
+                f.write(tag['translated_name'] + '\n')
+            else:
+                f.write(tag + '\n')
     except:
         pass
     #TODO except
-    for tag in tags:
-        f.write(tag + '\n')
+    
 
 def change_input():
     gv.input_dir = fd.askdirectory()

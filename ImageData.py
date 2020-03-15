@@ -456,7 +456,6 @@ class ProviderImageData():
         self.preview_size = preview_size
         self.dict = dictionary
         self.illustration = illustration
-        self.tags = dictionary['tags'].strip('[]\'').split('\', \'')
         self.siblings_array = siblings_array
         self.downloaded_image = None
         self.downloaded_image_thumb = None
@@ -489,11 +488,15 @@ class ProviderImageData():
         self.info_wxh_lbl = Label(master=gv.info_frame, style='label.TLabel')
         self.tags_pixiv_lbl = Label(master=gv.info_frame, text = 'Tags', font=('Arial Bold', 15), style='label.TLabel')
         self.tags_lbl_array = list()
+        self.tags = self.get_tags_list(0)#dictionary['tags'].strip('[]\'').split('\', \'')
 
         if self.service == 'Pixiv':
             self.tags_lbl_array.append((Label(master=gv.info_frame, text = 'Original:', style='label.TLabel', font = ('Arial Bold', 11)), Label(master=gv.info_frame, text = 'Translated:', style='label.TLabel', font = ('Arial Bold', 11))))
             for tag in self.tags:
-                self.tags_lbl_array.append((Label(master=gv.info_frame, text = tag[:tag.find(' | ')], style='label.TLabel'), Label(master=gv.info_frame, text = tag[tag.find(' | ')+2:], style='label.TLabel')))
+                if type(tag) == type(dict()):
+                    self.tags_lbl_array.append((Label(master=gv.info_frame, text = tag['name'], style='label.TLabel'), Label(master=gv.info_frame, text = tag['translated_name'], style='label.TLabel')))
+                else:
+                    self.tags_lbl_array.append((Label(master=gv.info_frame, text = tag, style='label.TLabel'), Label(master=gv.info_frame, text = '', style='label.TLabel')))
         else:
             self.tags_lbl_array.append(Label(master=gv.info_frame, text = 'Tags:', style='label.TLabel', font = ('Arial Bold', 11)))
             for tag in self.tags:
@@ -748,6 +751,9 @@ class ProviderImageData():
         else:
             if self.downloaded_var.get() == 1:
                 self.gen_tagfile(gv.output_dir + '/' + new_dir, pixiv_tags, danbooru_tags)
+                print(gv.output_dir + '/' + new_dir)
+                print(self.name)
+                print(gv.output_dir + '/' + new_dir + '/' + self.name[:self.name.rfind('.')] + '_' + str(t) + self.name[self.name.rfind('.')+1:])
                 move(self.path, gv.output_dir + '/' + new_dir + '/' + self.name[:self.name.rfind('.')] + '_' + str(t) + self.name[self.name.rfind('.')+1:])
             else:
                 if gv.output_dir + '/' + self.name not in gv.delete_dirs_array:
@@ -756,6 +762,17 @@ class ProviderImageData():
                     elem.save(pixiv_tags, danbooru_tags, t)
             pass# save your image in the outputdir+new_dir+name+t
         #TODO try except
+
+    def get_save_status(self):
+        """
+        Returns True if at least on box is checked, False otherwise
+        """
+        if self.downloaded_var.get() == 1:
+            return True
+        for elem in self.sub_dir_img_array:
+            if elem.get_save_status():
+                return True
+        return False
 
     def gen_tagfile(self, gen_dir, pixiv_tags, danbooru_tags):
         if self.service == 'Pixiv' and gv.Files.Conf.gen_tagfile_pixiv == '1':
@@ -787,15 +804,15 @@ class ProviderImageData():
         """
         if not_in_file == -1:
             not_in_file = self.result_not_in_tagfile_var.get()
-        ret_list = list()
+        
         if not_in_file == 0:
+            ret_list = list()
             if self.service == 'Pixiv':
                 for tag in self.illustration.tags:
                     ret_list.append(tag)
-                ret_list.append('pixiv work:' + self.illustration.id)
-                ret_list.append('creator:' + self.illustration.user)
+                ret_list.append('pixiv work:' + str(self.illustration.id))
                 ret_list.append('title:' + self.illustration.title)
-                ret_list.append('rating:' + self.illustration.sanity_level)
+                ret_list.append('rating:' + str(self.illustration.sanity_level))
             if self.service == 'Danbooru':
                 for tag in self.illustration['tag_string_general'].strip("'").split():
                     ret_list.append(tag)
@@ -811,7 +828,8 @@ class ProviderImageData():
                 ret_list.append('source:' + self.illustration['source'])
                 ret_list.append('rating:' + self.illustration['rating'])
                 if self.illustration['pixiv_id'] != '':
-                    ret_list.append('pixiv work:' + self.illustration['pixiv_id'])
+                    ret_list.append('pixiv work:' + str(self.illustration['pixiv_id']))
+            return ret_list
 
     def forget_results(self):
         self.downloaded_chkbtn.grid_forget()
@@ -960,6 +978,14 @@ class SubImageData():
                     #mb.showerror("ERROR [0049]", "ERROR CODE [0049]\nSomething went wrong while moving the image " + self.path_original)
             # save your images in outputdir+self.folder+t
         
+    def get_save_status(self):
+        """
+        Returns True if at least on box is checked, False otherwise
+        """
+        if self.var.get() == 1:
+            return True
+        return False
+
     def gen_tagfile(self, gen_dir, pixiv_tags, danbooru_tags):
         if self.service == 'Pixiv' and gv.Files.Conf.gen_tagfile_pixiv == '1':
             all_tags = list()
