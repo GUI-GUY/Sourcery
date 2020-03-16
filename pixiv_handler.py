@@ -65,7 +65,7 @@ def pixiv_download(img_name_original, imgid, illustration, comm_error_q=None):
     Return the new name on success, False otherwise
     """
     try:
-        if gv.Files.Conf.rename_pixiv == 'True':
+        if gv.Files.Conf.rename_pixiv == '1':
             illustration.download(directory=Path.cwd() / 'Sourcery/sourced_progress/pixiv', size=Size.ORIGINAL)
             new_name = str(illustration.id)
         else:

@@ -330,8 +330,8 @@ class ConfigFile():
     """Includes the options and also methods to write/read these to/from the config file"""
     def __init__(self, log):
         self.Log = log
-        self.rename_pixiv = 'False'
-        self.rename_danbooru = 'False'
+        self.rename_pixiv = '0'
+        self.rename_danbooru = '0'
         self.minsim = '80'
         self.imgpp = '12'
         self.tags_danbooru = ''
@@ -424,7 +424,6 @@ class ConfigFile():
             if temp.startswith('use_danbooru='):
                 self.use_danbooru = temp[temp.find('=')+1:-1]
             
-
             temp = f.readline()
         f.close()
         return False

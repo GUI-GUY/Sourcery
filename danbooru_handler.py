@@ -26,8 +26,6 @@ def danbooru_fetch_illustration(imgid, comm_error_q=None):
         # TODO
         return False
     
-    
-
 def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None):
     """
     Downloads given image from Danbooru and renames it properly\n
@@ -35,7 +33,7 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None)
     """
     try:
         if 'file_url' in illustration:
-            if gv.Files.Conf.rename_danbooru == 'True':
+            if gv.Files.Conf.rename_danbooru == '1':
                 urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + illustration['file_url'].split('/')[-1])
                 new_name = illustration['file_url'].split('/')[-1]
             else:

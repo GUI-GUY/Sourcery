@@ -11,7 +11,7 @@ from tkinter.ttk import Label, Button, Style, Entry, Frame
 #from tkinter.filedialog import askdirectory
 #from functools import partial
 from shutil import rmtree
-from distutils.util import strtobool
+#from distutils.util import strtobool
 from multiprocessing import Process, freeze_support, Queue, Pipe#, Semaphore
 from file_operations import is_image, save, open_input, open_output, display_statistics, change_input, change_output
 from sourcery import do_sourcery

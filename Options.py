@@ -406,10 +406,7 @@ class PixivOptions():
         self.pixiv_login_confirm_btn = Button(self.scrollpar_frame, text="Confirm & Save", command=partial(self.pixiv_set_login, True), style="button.TLabel")
         self.pixiv_login_confirm_nosave_btn = Button(self.scrollpar_frame, text="Confirm & Don't Save", command=partial(self.pixiv_set_login, False), style="button.TLabel")
         self.pixiv_warning_lbl = Label(self.scrollpar_frame, width=50, text='THIS WILL BE SAVED IN PLAINTEXT!!!', style="label.TLabel")
-        if gv.Files.Conf.rename_pixiv == 'True':
-            self.rename_var = IntVar(value=1)
-        else:
-            self.rename_var = IntVar(value=0)
+        self.rename_var = IntVar(value=int(gv.Files.Conf.rename_pixiv))
         self.rename_chkbtn = Checkbutton(self.scrollpar_frame, text='Rename images from pixiv to pixiv name', var=self.rename_var, style="chkbtn.TCheckbutton")
         
         self.pixiv_address_1_lbl = Label(self.scrollpar_frame, text="Your Login Data can be found here:", style="label.TLabel")
@@ -439,10 +436,10 @@ class PixivOptions():
         self.pixiv_user_filled_lbl.grid_forget()
         self.pixiv_password_filled_lbl.grid_forget()
         self.pixiv_login_change_btn.grid_forget()
-        self.pixiv_user_entry.grid(row= 1, column= 1, sticky=W, padx=2, pady=1)
-        self.pixiv_password_entry.grid(row= 2, column= 1, sticky=W, padx=2, pady=1)
-        self.pixiv_login_confirm_btn.grid(row= 3, column= 0, sticky=W, padx=2, pady=1)
-        self.pixiv_login_confirm_nosave_btn.grid(row= 3, column= 1, sticky=W, padx=2, pady=1)
+        self.pixiv_user_entry.grid(row= 2, column= 1, sticky=W, padx=2, pady=1)
+        self.pixiv_password_entry.grid(row= 3, column= 1, sticky=W, padx=2, pady=1)
+        self.pixiv_login_confirm_btn.grid(row= 4, column= 0, sticky=W, padx=2, pady=1)
+        self.pixiv_login_confirm_nosave_btn.grid(row= 4, column= 1, sticky=W, padx=2, pady=1)
         self.pixiv_user_entry.delete(0, len(gv.Files.Cred.pixiv_username))
         self.pixiv_password_entry.delete(0, len(gv.Files.Cred.pixiv_password))
         self.pixiv_user_entry.insert(0, gv.Files.Cred.pixiv_username)
@@ -456,9 +453,9 @@ class PixivOptions():
         self.pixiv_password_entry.grid_forget()
         self.pixiv_login_confirm_btn.grid_forget()
         self.pixiv_login_confirm_nosave_btn.grid_forget()
-        self.pixiv_user_filled_lbl.grid(row= 1, column= 1, sticky=W, padx=2, pady=1)
-        self.pixiv_password_filled_lbl.grid(row= 2, column= 1, sticky=W, padx=2, pady=1)
-        self.pixiv_login_change_btn.grid(row= 3, column= 0, sticky=W, padx=2, pady=1)
+        self.pixiv_user_filled_lbl.grid(row= 2, column= 1, sticky=W, padx=2, pady=1)
+        self.pixiv_password_filled_lbl.grid(row= 3, column= 1, sticky=W, padx=2, pady=1)
+        self.pixiv_login_change_btn.grid(row= 4, column= 0, sticky=W, padx=2, pady=1)
         
         gv.Files.Cred.pixiv_username = self.pixiv_user_entry.get()
         gv.Files.Cred.pixiv_password = self.pixiv_password_entry.get()
@@ -492,7 +489,7 @@ class PixivOptions():
         self.use_pixiv_chkbtn.grid(row= 0, column= 0, sticky=W, padx=2, pady=1)
         self.pixiv_login_lbl.grid(row= 1, column= 0, sticky=W, padx=2, pady=1)
         self.pixiv_user_lbl.grid(row= 2, column= 0, sticky=W, padx=2, pady=1)
-        self.pixiv_user_filled_lbl.grid(row= 3, column= 1, sticky=W, padx=2, pady=1)
+        self.pixiv_user_filled_lbl.grid(row= 2, column= 1, sticky=W, padx=2, pady=1)
         self.pixiv_password_lbl.grid(row= 3, column= 0, sticky=W, padx=2, pady=1)
         self.pixiv_password_filled_lbl.grid(row= 3, column= 1, sticky=W, padx=2, pady=1)
         self.pixiv_login_change_btn.grid(row= 4, column= 0, sticky=W, padx=2, pady=1)
@@ -545,7 +542,9 @@ class DanbooruOptions():
         self.danbooru_lbl = Label(parent, text="Danbooru", font=('Arial Bold', 13), style="label.TLabel")
         self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
         self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10)) # TODO not upadated with theme
-        self.save_btn = Button(parent, text='Save', command=self.danbooru_save, style ="button.TLabel")
+        
+        self.rename_var = IntVar(value=int(gv.Files.Conf.rename_danbooru))
+        self.rename_chkbtn = Checkbutton(self.scrollpar_frame, text='Rename images from danbooru to danbooru name', var=self.rename_var, style="chkbtn.TCheckbutton")
 
         self.show_tags_txt.insert(END, gv.Files.Conf.tags_danbooru)
         self.tags = None
@@ -556,7 +555,7 @@ class DanbooruOptions():
         self.gen_tagfile_chkbtn = Checkbutton(self.scrollpar_frame, text='Generate tagfiles for danbooru images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
         self.tagfile_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
         self.tagfile_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
-
+        self.save_btn = Button(parent, text='Save', command=self.danbooru_save, style ="button.TLabel")
 
     def danb_display(self):
         """
@@ -573,6 +572,7 @@ class DanbooruOptions():
         self.tagfile_pixiv_chkbtn.grid(row= 10, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
         self.tagfile_danbooru_chkbtn.grid(row= 11, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
 
+        self.rename_chkbtn.grid(row= 15, column= 0, sticky=W, padx=2, pady=1)
 
         self.save_btn.place(x = int(gv.width/160*50), y = gv.height-220)
 
