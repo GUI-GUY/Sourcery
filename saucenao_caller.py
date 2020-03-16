@@ -17,50 +17,6 @@ import global_variables as gv
 
 thumbSize = (250,250)
 
-if True:
-    #enable or disable indexes
-    index_hmags='0'
-    index_reserved='0'
-    index_hcg='0'
-    index_ddbobjects='0'
-    index_ddbsamples='0'
-    index_pixiv='1'
-    index_pixivhistorical='0'
-    index_reserved='0'
-    index_seigaillust='0'
-    index_danbooru='1'#TODO danbooru
-    index_drawr='0'
-    index_nijie='0'
-    index_yandere='0'#TODO danbooru
-    index_animeop='0'
-    index_reserved='0'
-    index_shutterstock='0'
-    index_fakku='0'
-    index_hmisc='0'
-    index_2dmarket='0'
-    index_medibang='0'
-    index_anime='0'
-    index_hanime='0'
-    index_movies='0'
-    index_shows='0'
-    index_gelbooru='0'
-    index_konachan='0'#TODO danbooru
-    index_sankaku='0'
-    index_animepictures='0'
-    index_e621='0'
-    index_idolcomplex='0'
-    index_bcyillust='0'
-    index_bcycosplay='0'
-    index_portalgraphics='0'
-    index_da='0'
-    index_pawoo='0'
-    index_madokami='0'
-    index_mangadex='0'
-
-#generate appropriate bitmask
-db_bitmask = int(index_mangadex+index_madokami+index_pawoo+index_da+index_portalgraphics+index_bcycosplay+index_bcyillust+index_idolcomplex+index_e621+index_animepictures+index_sankaku+index_konachan+index_gelbooru+index_shows+index_movies+index_hanime+index_anime+index_medibang+index_2dmarket+index_hmisc+index_fakku+index_shutterstock+index_reserved+index_animeop+index_yandere+index_nijie+index_drawr+index_danbooru+index_seigaillust+index_anime+index_pixivhistorical+index_pixiv+index_ddbsamples+index_ddbobjects+index_hcg+index_hanime+index_hmags,2)
-#db_count = 10# int(index_mangadex)+int(index_madokami)+int(index_pawoo)+int(index_da)+int(index_portalgraphics)+int(index_bcycosplay)+int(index_bcyillust)+int(index_idolcomplex)+int(index_e621)+int(index_animepictures)+int(index_sankaku)+int(index_konachan)+int(index_gelbooru)+int(index_shows)+int(index_movies)+int(index_hanime)+int(index_anime)+int(index_medibang)+int(index_2dmarket)+int(index_hmisc)+int(index_fakku)+int(index_shutterstock)+int(index_reserved)+int(index_animeop)+int(index_yandere)+int(index_nijie)+int(index_drawr)+int(index_danbooru)+int(index_seigaillust)+int(index_anime)+int(index_pixivhistorical)+int(index_pixiv)+int(index_ddbsamples)+int(index_ddbobjects)+int(index_hcg)+int(index_hanime)+int(index_hmags)
-
 def get_response(image, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
     """
     Request information from SauceNao on the given image
@@ -83,6 +39,49 @@ def get_response(image, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
     imageData = BytesIO()
     image.save(imageData,format='PNG')
     
+    if True:
+        #enable or disable indexes
+        index_hmags='0'
+        index_reserved='0'
+        index_hcg='0'
+        index_ddbobjects='0'
+        index_ddbsamples='0'
+        index_pixiv=gv.Files.Conf.use_pixiv
+        index_pixivhistorical='0'
+        index_reserved='0'
+        index_seigaillust='0'
+        index_danbooru=gv.Files.Conf.use_danbooru
+        index_drawr='0'
+        index_nijie='0'
+        index_yandere='0'#TODO danbooru
+        index_animeop='0'
+        index_reserved='0'
+        index_shutterstock='0'
+        index_fakku='0'
+        index_hmisc='0'
+        index_2dmarket='0'
+        index_medibang='0'
+        index_anime='0'
+        index_hanime='0'
+        index_movies='0'
+        index_shows='0'
+        index_gelbooru='0'
+        index_konachan='0'#TODO danbooru
+        index_sankaku='0'
+        index_animepictures='0'
+        index_e621='0'
+        index_idolcomplex='0'
+        index_bcyillust='0'
+        index_bcycosplay='0'
+        index_portalgraphics='0'
+        index_da='0'
+        index_pawoo='0'
+        index_madokami='0'
+        index_mangadex='0'
+        #generate appropriate bitmask
+        db_bitmask = int(index_mangadex+index_madokami+index_pawoo+index_da+index_portalgraphics+index_bcycosplay+index_bcyillust+index_idolcomplex+index_e621+index_animepictures+index_sankaku+index_konachan+index_gelbooru+index_shows+index_movies+index_hanime+index_anime+index_medibang+index_2dmarket+index_hmisc+index_fakku+index_shutterstock+index_reserved+index_animeop+index_yandere+index_nijie+index_drawr+index_danbooru+index_seigaillust+index_anime+index_pixivhistorical+index_pixiv+index_ddbsamples+index_ddbobjects+index_hcg+index_hanime+index_hmags,2)
+        #db_count = 10# int(index_mangadex)+int(index_madokami)+int(index_pawoo)+int(index_da)+int(index_portalgraphics)+int(index_bcycosplay)+int(index_bcyillust)+int(index_idolcomplex)+int(index_e621)+int(index_animepictures)+int(index_sankaku)+int(index_konachan)+int(index_gelbooru)+int(index_shows)+int(index_movies)+int(index_hanime)+int(index_anime)+int(index_medibang)+int(index_2dmarket)+int(index_hmisc)+int(index_fakku)+int(index_shutterstock)+int(index_reserved)+int(index_animeop)+int(index_yandere)+int(index_nijie)+int(index_drawr)+int(index_danbooru)+int(index_seigaillust)+int(index_anime)+int(index_pixivhistorical)+int(index_pixiv)+int(index_ddbsamples)+int(index_ddbobjects)+int(index_hcg)+int(index_hanime)+int(index_hmags)
+
     url = 'http://saucenao.com/search.php?output_type=2&minsim='+minsim+'!&dbmask='+str(db_bitmask)+'&api_key='+api_key+'&numres='+gv.Files.Conf.saucenao_returns
     files = {'file': ("image.png", imageData.getvalue())}
     imageData.close()
@@ -153,16 +152,16 @@ def decode_response(results, EnableRename=False):
                     member_id = elem['data']['member_id']
                     illust_id = elem['data']['pixiv_id']
                     source = elem['data']['ext_urls']
-                    ret_dict.append({"service_name": service_name, "member_id": member_id, "illust_id": illust_id, "source": source, "similarity:": float(elem['header']['similarity'])})
+                    ret_dict.append({"service_name": service_name, "member_id": member_id, "illust_id": illust_id, "source": source, "similarity": float(elem['header']['similarity'])})
                     # print(source)
                 elif elem['header']['index_id'] == 9:
                     #9->danbooru
                     service_name='Danbooru'
                     illust_id = elem['data']['danbooru_id']
                     source = elem['data']['ext_urls']
-                    ret_dict.append({"service_name": service_name, "illust_id": illust_id, "source": source})
+                    ret_dict.append({"service_name": service_name, "illust_id": illust_id, "source": source, "similarity": float(elem['header']['similarity'])})
                 else:
-                    ret_dict.append({"service_name": service_name, "member_id": member_id, "illust_id": illust_id, "source": source, "similarity:": float(elem['header']['similarity'])})
+                    ret_dict.append({"service_name": service_name, "member_id": member_id, "illust_id": illust_id, "source": source, "similarity": float(elem['header']['similarity'])})
                 # elif index_id == 8:
                 #     #8->nico nico seiga
                 #     service_name='seiga'

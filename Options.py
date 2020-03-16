@@ -194,10 +194,10 @@ class SourceryOptions():
         self.images_per_page_entry.insert(0, gv.Files.Conf.imgpp)
 
         self.direct_replace_lbl = Label(parent, text="Replace images directly if similarity is over:", font=("Arial Bold", 10), style="label.TLabel")
-        self.direct_replace_pixiv_var = IntVar(value = gv.Files.Conf.direct_replace_pixiv)
-        self.direct_replace_pixiv_chkbtn = Checkbutton(parent, text="Replace pixiv images", font=("Arial Bold", 10), style="label.TLabel")
-        self.direct_replace_danbooru_var = IntVar(value = gv.Files.Conf.direct_replace_danbooru)
-        self.direct_replace_danbooru_chkbtn = Checkbutton(parent, text="Replace danbooru images", font=("Arial Bold", 10), style="label.TLabel")
+        self.direct_replace_pixiv_var = IntVar(value = int(gv.Files.Conf.direct_replace_pixiv))
+        self.direct_replace_pixiv_chkbtn = Checkbutton(parent, text="Replace pixiv images", var=self.direct_replace_pixiv_var, style="chkbtn.TCheckbutton")
+        self.direct_replace_danbooru_var = IntVar(value = int(gv.Files.Conf.direct_replace_danbooru))
+        self.direct_replace_danbooru_chkbtn = Checkbutton(parent, text="Replace danbooru images", var=self.direct_replace_danbooru_var, style="chkbtn.TCheckbutton")
         self.direct_replace_entry = Entry(parent, width=30, style="button.TLabel")
         self.direct_replace_entry.insert(0, gv.Files.Conf.direct_replace)
 
@@ -343,8 +343,8 @@ class SourceryOptions():
         gv.Files.Conf.imgpp = self.images_per_page_entry.get()
         gv.Files.Conf.delete_input = str(self.delete_input_var.get())
         gv.Files.Conf.direct_replace = self.direct_replace_entry.get()
-        gv.Files.Conf.direct_replace_pixiv = self.direct_replace_pixiv_var.get()
-        gv.Files.Conf.direct_replace_danbooru = self.direct_replace_danbooru_var.get()
+        gv.Files.Conf.direct_replace_pixiv = str(self.direct_replace_pixiv_var.get())
+        gv.Files.Conf.direct_replace_danbooru = str(self.direct_replace_danbooru_var.get())
         gv.Files.Conf.write_config()
         gv.Files.Log.write_to_log('Saved Sourcery Options')
 
@@ -358,9 +358,9 @@ class ProviderOptions():
         self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_original))
         self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_original))
         self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_original))
-        self.gen_tagfile = Checkbutton(self.par, text='Generate tagfiles for original images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
-        self.tagfile_pixiv = Checkbutton(self.par, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
-        self.tagfile_danbooru = Checkbutton(self.par, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
+        self.gen_tagfile_chkbtn = Checkbutton(self.par, text='Generate tagfiles for original images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
+        self.tagfile_pixiv_chkbtn = Checkbutton(self.par, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
+        self.tagfile_danbooru_chkbtn = Checkbutton(self.par, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
 
         self.save_btn = Button(self.par, text='Save', command=self.original_save, style ="button.TLabel")
     
@@ -373,9 +373,9 @@ class ProviderOptions():
         self.PixO.pixiv_display()
         self.DanO.danb_display()
 
-        self.gen_tagfile.place(x = int(gv.width/1.5), y = int(gv.height/90*8))
-        self.tagfile_pixiv.place(x = int(gv.width/1.48), y = int(gv.height/90*10))
-        self.tagfile_danbooru.place(x = int(gv.width/1.48), y = int(gv.height/90*12))
+        self.gen_tagfile_chkbtn.place(x = int(gv.width/1.5), y = int(gv.height/90*8))
+        self.tagfile_pixiv_chkbtn.place(x = int(gv.width/1.48), y = int(gv.height/90*10))
+        self.tagfile_danbooru_chkbtn.place(x = int(gv.width/1.48), y = int(gv.height/90*12))
         self.save_btn.place(x = int(gv.width/1.5), y = int(gv.height/90*14))
 
     def original_save(self):
@@ -392,6 +392,8 @@ class PixivOptions():
         self.par = parent
         self.scrollpar = ScrollFrame(self.par, gv.width/4, gv.height*0.6)
         self.scrollpar_frame =self.scrollpar.frame
+        self.use_pixiv_var = IntVar(value=int(gv.Files.Conf.use_pixiv))
+        self.use_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Use pixiv', var=self.use_pixiv_var, style="chkbtn.TCheckbutton")
         self.pixiv_lbl = Label(parent, text="Pixiv", font=('Arial Bold', 13), style="label.TLabel")
         self.pixiv_login_lbl = Label(self.scrollpar_frame, text="Pixiv Login", style="label.TLabel")
         self.pixiv_user_lbl = Label(self.scrollpar_frame, text="Username", style="label.TLabel")
@@ -410,10 +412,10 @@ class PixivOptions():
             self.rename_var = IntVar(value=0)
         self.rename_chkbtn = Checkbutton(self.scrollpar_frame, text='Rename images from pixiv to pixiv name', var=self.rename_var, style="chkbtn.TCheckbutton")
         
-        self.pixiv_address_1 = Label(self.scrollpar_frame, text="Your Login Data can be found here:", style="label.TLabel")
-        self.pixiv_address_2 = Label(self.scrollpar_frame, text="https://www.pixiv.net/setting_user.php", style="label.TLabel")
-        self.pixiv_address_2.configure(foreground='#2626ff', cursor='hand2', font=('Arial', 10))
-        self.pixiv_address_2.bind("<Button-1>", self.hyperlink)
+        self.pixiv_address_1_lbl = Label(self.scrollpar_frame, text="Your Login Data can be found here:", style="label.TLabel")
+        self.pixiv_address_2_lbl = Label(self.scrollpar_frame, text="https://www.pixiv.net/setting_user.php", style="label.TLabel")
+        self.pixiv_address_2_lbl.configure(foreground='#2626ff', cursor='hand2', font=('Arial', 10))
+        self.pixiv_address_2_lbl.bind("<Button-1>", self.hyperlink)
 
         self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
         self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10)) # TODO not upadated with theme
@@ -424,9 +426,9 @@ class PixivOptions():
         self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_pixiv))
         self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_pixiv))
         self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_pixiv))
-        self.gen_tagfile = Checkbutton(self.scrollpar_frame, text='Generate tagfiles for pixiv images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
-        self.tagfile_pixiv = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
-        self.tagfile_danbooru = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
+        self.gen_tagfile_chkbtn = Checkbutton(self.scrollpar_frame, text='Generate tagfiles for pixiv images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
+        self.tagfile_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
+        self.tagfile_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
 
         self.save_btn = Button(parent, text='Save', command=self.pixiv_save, style ="button.TLabel")
 
@@ -487,25 +489,26 @@ class PixivOptions():
         self.scrollpar.display(x = int(gv.width/160*5), y= int(gv.height/90*10))
 
         #TODO lager das aus damits nicht öfters aufgerufen wird
-        self.pixiv_login_lbl.grid(row= 0, column= 0, sticky=W, padx=2, pady=1)
-        self.pixiv_user_lbl.grid(row= 1, column= 0, sticky=W, padx=2, pady=1)
-        self.pixiv_user_filled_lbl.grid(row= 1, column= 1, sticky=W, padx=2, pady=1)
-        self.pixiv_password_lbl.grid(row= 2, column= 0, sticky=W, padx=2, pady=1)
-        self.pixiv_password_filled_lbl.grid(row= 2, column= 1, sticky=W, padx=2, pady=1)
-        self.pixiv_login_change_btn.grid(row= 3, column= 0, sticky=W, padx=2, pady=1)
-        self.pixiv_warning_lbl.grid(row= 4, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
-        self.pixiv_address_1.grid(row= 5, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
-        self.pixiv_address_2.grid(row= 6, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+        self.use_pixiv_chkbtn.grid(row= 0, column= 0, sticky=W, padx=2, pady=1)
+        self.pixiv_login_lbl.grid(row= 1, column= 0, sticky=W, padx=2, pady=1)
+        self.pixiv_user_lbl.grid(row= 2, column= 0, sticky=W, padx=2, pady=1)
+        self.pixiv_user_filled_lbl.grid(row= 3, column= 1, sticky=W, padx=2, pady=1)
+        self.pixiv_password_lbl.grid(row= 3, column= 0, sticky=W, padx=2, pady=1)
+        self.pixiv_password_filled_lbl.grid(row= 3, column= 1, sticky=W, padx=2, pady=1)
+        self.pixiv_login_change_btn.grid(row= 4, column= 0, sticky=W, padx=2, pady=1)
+        self.pixiv_warning_lbl.grid(row= 5, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+        self.pixiv_address_1_lbl.grid(row= 6, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+        self.pixiv_address_2_lbl.grid(row= 7, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
 
-        self.show_tags_lbl.grid(row= 7, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
-        self.show_tags_txt.grid(row= 8, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
+        self.show_tags_lbl.grid(row= 8, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
+        self.show_tags_txt.grid(row= 9, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
         self.scrollpar_frame.columnconfigure(2, weight=1)
 
-        self.gen_tagfile.grid(row= 9, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
-        self.tagfile_pixiv.grid(row= 10, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
-        self.tagfile_danbooru.grid(row= 11, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.gen_tagfile_chkbtn.grid(row= 13, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+        self.tagfile_pixiv_chkbtn.grid(row= 14, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.tagfile_danbooru_chkbtn.grid(row= 15, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
 
-        self.rename_chkbtn.grid(row= 13, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+        self.rename_chkbtn.grid(row= 18, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
 
         self.save_btn.place(x = int(gv.width/160*5), y = gv.height-220)
 
@@ -520,6 +523,7 @@ class PixivOptions():
         gv.Files.Conf.gen_tagfile_pixiv = str(self.gen_tagfile_var.get())
         gv.Files.Conf.tagfile_pixiv_pixiv = str(self.tagfile_pixiv_var.get())
         gv.Files.Conf.tagfile_danbooru_pixiv = str(self.tagfile_danbooru_var.get())
+        gv.Files.Conf.use_pixiv = str(self.use_pixiv_var.get())
         gv.Files.Conf.write_config()
         gv.results_tags_pixiv = self.tags.split()
         gv.Files.Log.write_to_log('Saved Pixiv options')
@@ -536,6 +540,8 @@ class DanbooruOptions():
         self.par = parent
         self.scrollpar = ScrollFrame(self.par, gv.width/4, gv.height*0.6)
         self.scrollpar_frame = self.scrollpar.frame
+        self.use_danbooru_var = IntVar(value=int(gv.Files.Conf.use_danbooru))
+        self.use_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Use danbooru', var=self.use_danbooru_var, style="chkbtn.TCheckbutton")
         self.danbooru_lbl = Label(parent, text="Danbooru", font=('Arial Bold', 13), style="label.TLabel")
         self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
         self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10)) # TODO not upadated with theme
@@ -547,9 +553,9 @@ class DanbooruOptions():
         self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_danbooru))
         self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_danbooru))
         self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_danbooru))
-        self.gen_tagfile = Checkbutton(self.scrollpar_frame, text='Generate tagfiles for danbooru images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
-        self.tagfile_pixiv = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
-        self.tagfile_danbooru = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
+        self.gen_tagfile_chkbtn = Checkbutton(self.scrollpar_frame, text='Generate tagfiles for danbooru images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
+        self.tagfile_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
+        self.tagfile_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
 
 
     def danb_display(self):
@@ -559,12 +565,13 @@ class DanbooruOptions():
         self.danbooru_lbl.place(x = int(gv.width/160*50), y = int(gv.height/90*8))
         self.scrollpar.display(x = int(gv.width/160*50), y= int(gv.height/90*10))
 
-        self.show_tags_lbl.grid(row= 0, column= 0, sticky=W, padx=2, pady=1)
-        self.show_tags_txt.grid(row= 1, column= 0, sticky=W, padx=2, pady=1)
+        self.use_danbooru_chkbtn.grid(row= 1, column= 0, sticky=W, padx=2, pady=1)
+        self.show_tags_lbl.grid(row= 3, column= 0, sticky=W, padx=2, pady=1)
+        self.show_tags_txt.grid(row= 4, column= 0, sticky=W, padx=2, pady=1)
 
-        self.gen_tagfile.grid(row= 9, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
-        self.tagfile_pixiv.grid(row= 10, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
-        self.tagfile_danbooru.grid(row= 11, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.gen_tagfile_chkbtn.grid(row= 9, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+        self.tagfile_pixiv_chkbtn.grid(row= 10, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.tagfile_danbooru_chkbtn.grid(row= 11, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
 
 
         self.save_btn.place(x = int(gv.width/160*50), y = gv.height-220)
@@ -576,6 +583,7 @@ class DanbooruOptions():
         gv.Files.Conf.gen_tagfile_danbooru = str(self.gen_tagfile_var.get())
         gv.Files.Conf.tagfile_pixiv_danbooru = str(self.tagfile_pixiv_var.get())
         gv.Files.Conf.tagfile_danbooru_danbooru = str(self.tagfile_danbooru_var.get())
+        gv.Files.Conf.use_danbooru = str(self.use_danbooru_var.get())
         gv.Files.Conf.write_config()
         gv.results_tags_danbooru = self.tags.split()
         gv.Files.Log.write_to_log('Saved Danbooru options')
