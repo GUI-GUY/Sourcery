@@ -153,7 +153,7 @@ def decode_response(results, EnableRename=False):
                     member_id = elem['data']['member_id']
                     illust_id = elem['data']['pixiv_id']
                     source = elem['data']['ext_urls']
-                    ret_dict.append({"service_name": service_name, "member_id": member_id, "illust_id": illust_id, "source": source})
+                    ret_dict.append({"service_name": service_name, "member_id": member_id, "illust_id": illust_id, "source": source, "similarity:": float(elem['header']['similarity'])})
                     # print(source)
                 elif elem['header']['index_id'] == 9:
                     #9->danbooru
@@ -162,7 +162,7 @@ def decode_response(results, EnableRename=False):
                     source = elem['data']['ext_urls']
                     ret_dict.append({"service_name": service_name, "illust_id": illust_id, "source": source})
                 else:
-                    ret_dict.append({"service_name": service_name, "member_id": member_id, "illust_id": illust_id, "source": source})
+                    ret_dict.append({"service_name": service_name, "member_id": member_id, "illust_id": illust_id, "source": source, "similarity:": float(elem['header']['similarity'])})
                 # elif index_id == 8:
                 #     #8->nico nico seiga
                 #     service_name='seiga'
@@ -210,7 +210,7 @@ def decode_response(results, EnableRename=False):
         #     time.sleep(25)
     
         return ret_dict# [service_name, illust_id, member_id, source, results['header']['minimum_similarity']]
-    return[{"service_name": '', "member_id": 0, "illust_id": -1, "source": ''}]
+    return[{"service_name": '', "member_id": 0, "illust_id": -1, "source": '', "similarity": 0.0}]
     #print('All Done!')
 
     # OrderedDict([('header', 

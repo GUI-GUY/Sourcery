@@ -1,4 +1,6 @@
 from os import startfile
+from copy import deepcopy
+from PIL import Image
 #from tkinter import messagebox as mb
 from tkinter import filedialog as fd
 import global_variables as gv
@@ -105,6 +107,28 @@ def open_output():
 
 def display_statistics():
     pass
+
+def resize(image):
+    """
+    Resizes given image to a third of the screen width and to the screen height*0.87 and returns it as a new object.
+    """
+
+    oldwidth = image.width
+    oldheight = image.height
+
+    new_image = deepcopy(image)
+
+    if oldwidth > gv.width/3:
+        newwidth = int(gv.width*0.4)
+        newheight = int(newwidth/(oldwidth/oldheight))
+        newsize = newwidth, newheight
+        new_image = image.resize(newsize, Image.ANTIALIAS)
+    if new_image.height > gv.height*0.87:
+        newheight = int(gv.height*0.87)
+        newwidth = int(newheight/(oldheight/oldwidth))
+        newsize = newwidth, newheight
+        new_image = new_image.resize(newsize, Image.ANTIALIAS)
+    return new_image
 
 if __name__ == '__main__':
     #gv.Files.Log.write_to_log()

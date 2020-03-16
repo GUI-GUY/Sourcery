@@ -350,6 +350,8 @@ class ConfigFile():
         self.tagfile_danbooru_original = '0'
         self.saucenao_returns = '10'
         self.direct_replace = '100'
+        self.direct_replace_pixiv = '0'
+        self.direct_replace_danbooru = '0'
         if self.read_config():
             self.write_config()
     
@@ -411,6 +413,10 @@ class ConfigFile():
                 self.saucenao_returns = temp[temp.find('=')+1:-1]
             if temp.startswith('direct_replace='):
                 self.direct_replace = temp[temp.find('=')+1:-1]
+            if temp.startswith('direct_replace_pixiv='):
+                self.direct_replace_pixiv = temp[temp.find('=')+1:-1]
+            if temp.startswith('direct_replace_danbooru='):
+                self.direct_replace_danbooru = temp[temp.find('=')+1:-1]
 
             temp = f.readline()
         f.close()
@@ -473,6 +479,8 @@ class ConfigFile():
                 "\ntagfile_danbooru_original=" + self.tagfile_danbooru_original +
                 "\nsaucenao_returns=" + self.saucenao_returns +
                 "\ndirect_replace=" + self.direct_replace +
+                "\ndirect_replace_pixiv=" + self.direct_replace_pixiv +
+                "\ndirect_replace_danbooru=" + self.direct_replace_danbooru +
                 "\n\nEND")
         try:
             f = open(cwd + '/Sourcery/config', 'w')

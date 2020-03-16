@@ -158,15 +158,27 @@ def refresh_startpage(change, answer2):
     
     for data in gv.img_data_array:
         if not data.placed: # TODO imgpp
-            if not data.load():
+            load = data.load()
+            if  not load:
                 data.self_destruct()
                 gv.img_data_array.remove(data)
                 gv.Files.Log.write_to_log('Problem while loading images, deleted class')
-            else:
+            elif load:
                 data.process_results_imgs()
                 data.modify_results_widgets()
-                gv.last_occupied_result = data.display_results(gv.last_occupied_result+1)# TODO test after saved
+                x = data.display_results(gv.last_occupied_result+1)# TODO test after saved
+                if x == -1:
+                    gv.Files.Log.write_to_log('Attempting to save image:' + data.name_original + '...' )
+                    if data.save():
+                        gv.Files.Log.write_to_log('Successfully saved image')
+                        data.self_destruct()
+                    else:
+                        gv.Files.Log.write_to_log('Not saved image')# TODO reference
+                    gv.img_data_array.remove(data)
+                else:
+                    gv.last_occupied_result = x
                 data.placed = True
+            #elif load == 'saved'
 
     # Kucke ob freie plätze gefolgt von besetzten
     # wenn ja, rücke auf (erniedrige den index aller datas welche größer sind und platziere sie erneut)

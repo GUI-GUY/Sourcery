@@ -194,6 +194,10 @@ class SourceryOptions():
         self.images_per_page_entry.insert(0, gv.Files.Conf.imgpp)
 
         self.direct_replace_lbl = Label(parent, text="Replace images directly if similarity is over:", font=("Arial Bold", 10), style="label.TLabel")
+        self.direct_replace_pixiv_var = IntVar(value = gv.Files.Conf.direct_replace_pixiv)
+        self.direct_replace_pixiv_chkbtn = Checkbutton(parent, text="Replace pixiv images", font=("Arial Bold", 10), style="label.TLabel")
+        self.direct_replace_danbooru_var = IntVar(value = gv.Files.Conf.direct_replace_danbooru)
+        self.direct_replace_danbooru_chkbtn = Checkbutton(parent, text="Replace danbooru images", font=("Arial Bold", 10), style="label.TLabel")
         self.direct_replace_entry = Entry(parent, width=30, style="button.TLabel")
         self.direct_replace_entry.insert(0, gv.Files.Conf.direct_replace)
 
@@ -244,7 +248,9 @@ class SourceryOptions():
         self.output_dir_btn.place(x = x1+100, y = y + c * 18)
 
         self.direct_replace_lbl.place(x = x1, y = y + c * 19)
-        self.direct_replace_entry.place(x = x2, y = y + c * 20)
+        self.direct_replace_entry.place(x = x2, y = y + c * 19)
+        self.direct_replace_pixiv_chkbtn.place(x = x1, y = y + c * 20)
+        self.direct_replace_danbooru_chkbtn.place(x = x1, y = y + c * 21)
 
         self.sourcery_confirm_btn.place(x = x1, y = y + c * 23)
 
@@ -337,6 +343,8 @@ class SourceryOptions():
         gv.Files.Conf.imgpp = self.images_per_page_entry.get()
         gv.Files.Conf.delete_input = str(self.delete_input_var.get())
         gv.Files.Conf.direct_replace = self.direct_replace_entry.get()
+        gv.Files.Conf.direct_replace_pixiv = self.direct_replace_pixiv_var.get()
+        gv.Files.Conf.direct_replace_danbooru = self.direct_replace_danbooru_var.get()
         gv.Files.Conf.write_config()
         gv.Files.Log.write_to_log('Saved Sourcery Options')
 
