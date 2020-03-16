@@ -83,6 +83,11 @@ class SauceNaoOptions():
         self.saucenao_address_2 = Label(parent, text="https://saucenao.com/user.php?page=search-api", style="label.TLabel")
         self.saucenao_address_2.configure(foreground='#2626ff', cursor='hand2', font=('Arial', 10))
         self.saucenao_address_2.bind("<Button-1>", self.hyperlink)
+
+        self.saucenao_returns_lbl = Label(parent, text="Returns", font=("Arial Bold", 10), style="label.TLabel")
+        self.saucenao_returns_msg_lbl = Label(parent, text="Should be at least 2 times the services you use", font=("Arial Bold", 10), style="label.TLabel")
+        self.saucenao_returns_entry = Entry(parent, width=30, style="button.TLabel")
+        self.saucenao_returns_entry.insert(0, gv.Files.Conf.saucenao_returns)
     
     def display(self):
         """
@@ -96,6 +101,10 @@ class SauceNaoOptions():
         self.saucenao_minsim_confirm_btn.place(x = int(gv.width/160*55), y = int(gv.height/90*12.3))
         self.saucenao_address_1.place(x = int(gv.width/160*5), y = int(gv.height/90*15.6))
         self.saucenao_address_2.place(x = int(gv.width/160*5), y = int(gv.height/90*17.9))
+
+        self.saucenao_returns_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90*20.2))
+        self.saucenao_returns_entry.place(x = int(gv.width/160*18), y = int(gv.height/90*20.2))
+        self.saucenao_returns_msg_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90*22.5))
     
     def saucenao_change_key(self):
         """
@@ -128,6 +137,7 @@ class SauceNaoOptions():
     def saucenao_save(self):
         gv.Files.Log.write_to_log('Attempting to save SauceNAO options...')
         gv.Files.Conf.minsim = self.saucenao_minsim_entry.get()
+        gv.Files.Conf.saucenao_returns = self.saucenao_returns_entry.get()
         gv.Files.Conf.write_config()
         gv.Files.Log.write_to_log('Saved SauceNao Options')
 

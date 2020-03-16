@@ -68,7 +68,7 @@ preview/thumbnail scaling/options
 * tag own images as uncensored
 + show tags on request(e.g uncensored)
 + save: generate tag file
-number of sauceNao results(DISCLAIMER: you may miss out on some services)
++ number of sauceNao results(DISCLAIMER: you may miss out on some services)
 direct replace if sim is over X%
 
 PERFORMANCE
@@ -81,7 +81,7 @@ self_destruct->unload
 UI
 + show info panel on 'more info' click
 + link to SauceNao/Pixiv login data online(https://www.pixiv.net/setting_user.php)
-~ tags
++ tags
 save: feedback message
 better checkbutton graphics
 big selector text green/red/white if better/worse/same res/datatype?

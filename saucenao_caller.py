@@ -59,7 +59,7 @@ if True:
 
 #generate appropriate bitmask
 db_bitmask = int(index_mangadex+index_madokami+index_pawoo+index_da+index_portalgraphics+index_bcycosplay+index_bcyillust+index_idolcomplex+index_e621+index_animepictures+index_sankaku+index_konachan+index_gelbooru+index_shows+index_movies+index_hanime+index_anime+index_medibang+index_2dmarket+index_hmisc+index_fakku+index_shutterstock+index_reserved+index_animeop+index_yandere+index_nijie+index_drawr+index_danbooru+index_seigaillust+index_anime+index_pixivhistorical+index_pixiv+index_ddbsamples+index_ddbobjects+index_hcg+index_hanime+index_hmags,2)
-db_count = 10# int(index_mangadex)+int(index_madokami)+int(index_pawoo)+int(index_da)+int(index_portalgraphics)+int(index_bcycosplay)+int(index_bcyillust)+int(index_idolcomplex)+int(index_e621)+int(index_animepictures)+int(index_sankaku)+int(index_konachan)+int(index_gelbooru)+int(index_shows)+int(index_movies)+int(index_hanime)+int(index_anime)+int(index_medibang)+int(index_2dmarket)+int(index_hmisc)+int(index_fakku)+int(index_shutterstock)+int(index_reserved)+int(index_animeop)+int(index_yandere)+int(index_nijie)+int(index_drawr)+int(index_danbooru)+int(index_seigaillust)+int(index_anime)+int(index_pixivhistorical)+int(index_pixiv)+int(index_ddbsamples)+int(index_ddbobjects)+int(index_hcg)+int(index_hanime)+int(index_hmags)
+#db_count = 10# int(index_mangadex)+int(index_madokami)+int(index_pawoo)+int(index_da)+int(index_portalgraphics)+int(index_bcycosplay)+int(index_bcyillust)+int(index_idolcomplex)+int(index_e621)+int(index_animepictures)+int(index_sankaku)+int(index_konachan)+int(index_gelbooru)+int(index_shows)+int(index_movies)+int(index_hanime)+int(index_anime)+int(index_medibang)+int(index_2dmarket)+int(index_hmisc)+int(index_fakku)+int(index_shutterstock)+int(index_reserved)+int(index_animeop)+int(index_yandere)+int(index_nijie)+int(index_drawr)+int(index_danbooru)+int(index_seigaillust)+int(index_anime)+int(index_pixivhistorical)+int(index_pixiv)+int(index_ddbsamples)+int(index_ddbobjects)+int(index_hcg)+int(index_hanime)+int(index_hmags)
 
 def get_response(image, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
     """
@@ -83,7 +83,7 @@ def get_response(image, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
     imageData = BytesIO()
     image.save(imageData,format='PNG')
     
-    url = 'http://saucenao.com/search.php?output_type=2&minsim='+minsim+'!&dbmask='+str(db_bitmask)+'&api_key='+api_key+'&numres='+str(db_count)
+    url = 'http://saucenao.com/search.php?output_type=2&minsim='+minsim+'!&dbmask='+str(db_bitmask)+'&api_key='+api_key+'&numres='+gv.Files.Conf.saucenao_returns
     files = {'file': ("image.png", imageData.getvalue())}
     imageData.close()
     

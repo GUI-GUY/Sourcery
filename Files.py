@@ -348,6 +348,7 @@ class ConfigFile():
         self.gen_tagfile_original = '0'
         self.tagfile_pixiv_original = '0'
         self.tagfile_danbooru_original = '0'
+        self.saucenao_returns = '10'
         if self.read_config():
             self.write_config()
     
@@ -405,6 +406,8 @@ class ConfigFile():
                 self.tagfile_pixiv_original = temp[temp.find('=')+1:-1]
             if temp.startswith('tagfile_danbooru_original='):
                 self.tagfile_danbooru_original = temp[temp.find('=')+1:-1]
+            if temp.startswith('saucenao_returns='):
+                self.saucenao_returns = temp[temp.find('=')+1:-1]
 
             temp = f.readline()
         f.close()
@@ -430,6 +433,11 @@ class ConfigFile():
         except Exception as e:
             mb.showerror('Invalid Value', 'Please insert a value between 0 and 1000 into the Images per page option')
             self.imgpp = '12'
+        try:
+            temp_num = int(self.saucenao_returns)
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert a value between 0 and 1000 into the Images per page option')
+            self.saucenao_returns = '10'
 
         self.tags_danbooru = self.tags_danbooru.replace('\n', ' /n ').replace('\t', ' /t ')
         self.tags_pixiv = self.tags_pixiv.replace('\n', ' /n ').replace('\t', ' /t ')
@@ -452,6 +460,7 @@ class ConfigFile():
                 "\ngen_tagfile_original=" + self.gen_tagfile_original +
                 "\ntagfile_pixiv_original=" + self.tagfile_pixiv_original +
                 "\ntagfile_danbooru_original=" + self.tagfile_danbooru_original +
+                "\nsaucenao_returns=" + self.saucenao_returns +
                 "\n\nEND")
         try:
             f = open(cwd + '/Sourcery/config', 'w')
