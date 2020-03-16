@@ -63,7 +63,6 @@ subfolders in input dir
 + delete input
 png over jpg over high res over uncensored options (weight system?)
 + foreign folder support
-preview/thumbnail scaling/options
 + tkinter color picker
 * tag own images as uncensored
 + show tags on request(e.g uncensored)
@@ -102,6 +101,7 @@ Danbooru siblings/parents
 Fehlerbehandlung
 fehleroutput->logfile
 placeholder image for less errors maybe
+tagfile generator ascii
 
 Last Error: 0049
 
@@ -116,6 +116,7 @@ elapsed time / ETA
 Danbooru Gold
 scrolling accuracy?
 preload next x images?
+preview/thumbnail scaling/options
 
 beta 0.5?
 queue images instead of 'get source' button?

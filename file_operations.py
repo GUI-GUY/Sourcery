@@ -58,15 +58,22 @@ def gen_tagfile(tags, gen_dir, name):
     Takes a list of strings, the directory in which to generate the file and the name of the file
     """
     try:
-        f = open(gen_dir + '/' + name, 'a')
+        f = open(gen_dir + '/' + name + '.txt', 'a')
         for tag in tags:
             if type(tag) == type(dict()):
-                f.write(tag['name'] + '\n')
-                f.write(tag['translated_name'] + '\n')
+                try:
+                    f.write(tag['name'] + '\n')
+                except:
+                    pass
+                try:
+                    f.write(tag['translated_name'] + '\n')
+                except:
+                    pass
             else:
                 f.write(tag + '\n')
-    except:
-        pass
+        f.close()
+    except Exception as e:
+        print(e)
     #TODO except
     
 

@@ -349,6 +349,7 @@ class ConfigFile():
         self.tagfile_pixiv_original = '0'
         self.tagfile_danbooru_original = '0'
         self.saucenao_returns = '10'
+        self.direct_replace = '100'
         if self.read_config():
             self.write_config()
     
@@ -408,6 +409,8 @@ class ConfigFile():
                 self.tagfile_danbooru_original = temp[temp.find('=')+1:-1]
             if temp.startswith('saucenao_returns='):
                 self.saucenao_returns = temp[temp.find('=')+1:-1]
+            if temp.startswith('direct_replace='):
+                self.direct_replace = temp[temp.find('=')+1:-1]
 
             temp = f.readline()
         f.close()
@@ -426,6 +429,14 @@ class ConfigFile():
             mb.showerror('Invalid Value', 'Please insert a value between 0 and 100 into the Minimum similarity option')
             self.minsim = '80'
         try:
+            temp_num = int(self.direct_replace)
+            if temp_num < 0 or temp_num > 100:
+                mb.showerror('Invalid Value', 'Please insert a value between 0 and 100 into the Direct Replace option')
+                self.direct_replace = '100'
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert a value between 0 and 100 into the Direct Replace option')
+            self.direct_replace = '100'
+        try:
             temp_num = int(self.imgpp)
             if temp_num < 0 or temp_num > 1000:
                 mb.showerror('Invalid Value', 'Please insert a value between 0 and 1000 into the Images per page option')
@@ -436,7 +447,7 @@ class ConfigFile():
         try:
             temp_num = int(self.saucenao_returns)
         except Exception as e:
-            mb.showerror('Invalid Value', 'Please insert a value between 0 and 1000 into the Images per page option')
+            mb.showerror('Invalid Value', 'Please insert a value between 0 and 1000 into the SauceNao Returns option')
             self.saucenao_returns = '10'
 
         self.tags_danbooru = self.tags_danbooru.replace('\n', ' /n ').replace('\t', ' /t ')
@@ -461,6 +472,7 @@ class ConfigFile():
                 "\ntagfile_pixiv_original=" + self.tagfile_pixiv_original +
                 "\ntagfile_danbooru_original=" + self.tagfile_danbooru_original +
                 "\nsaucenao_returns=" + self.saucenao_returns +
+                "\ndirect_replace=" + self.direct_replace +
                 "\n\nEND")
         try:
             f = open(cwd + '/Sourcery/config', 'w')

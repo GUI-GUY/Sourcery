@@ -111,7 +111,7 @@ def refresh_startpage(change, answer2):
         gv.input_images_array.remove(img)
     images_in_input_count_lbl.configure(text=str(len(gv.input_images_array)))
 
-    answer1 = 201
+    answer1 = (201, 200)
     if not comm_q.empty():
         try:
             answer1 = comm_q.get()
@@ -119,7 +119,7 @@ def refresh_startpage(change, answer2):
         except:
             pass
     if not comm_img_q.empty():
-        if answer1 < 1: # TypeError: '<' not supported between instances of 'tuple' and 'int'
+        if answer1[0] < 1: # TypeError: '<' not supported between instances of 'tuple' and 'int'
             answer2 = "Out of requests"
         else:
             try:

@@ -192,6 +192,11 @@ class SourceryOptions():
         self.images_per_page_lbl = Label(parent, text="Images per page", font=("Arial Bold", 10), style="label.TLabel")
         self.images_per_page_entry = Entry(parent, width=30, style="button.TLabel")
         self.images_per_page_entry.insert(0, gv.Files.Conf.imgpp)
+
+        self.direct_replace_lbl = Label(parent, text="Replace images directly if similarity is over:", font=("Arial Bold", 10), style="label.TLabel")
+        self.direct_replace_entry = Entry(parent, width=30, style="button.TLabel")
+        self.direct_replace_entry.insert(0, gv.Files.Conf.direct_replace)
+
         self.sourcery_confirm_btn = Button(parent, text="Save", command=self.sourcery_save, style="button.TLabel")
 
     def display(self):
@@ -237,6 +242,9 @@ class SourceryOptions():
         self.output_dir_0_lbl.place(x = x1, y = y + c * 18)
         self.output_dir_1_lbl.place(x = x2, y = y + c * 18)
         self.output_dir_btn.place(x = x1+100, y = y + c * 18)
+
+        self.direct_replace_lbl.place(x = x1, y = y + c * 19)
+        self.direct_replace_entry.place(x = x2, y = y + c * 20)
 
         self.sourcery_confirm_btn.place(x = x1, y = y + c * 23)
 
@@ -328,6 +336,7 @@ class SourceryOptions():
         gv.Files.Log.write_to_log('Attempting to save Sourcery options...')
         gv.Files.Conf.imgpp = self.images_per_page_entry.get()
         gv.Files.Conf.delete_input = str(self.delete_input_var.get())
+        gv.Files.Conf.direct_replace = self.direct_replace_entry.get()
         gv.Files.Conf.write_config()
         gv.Files.Log.write_to_log('Saved Sourcery Options')
 
