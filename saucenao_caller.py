@@ -17,7 +17,7 @@ import global_variables as gv
 
 thumbSize = (250,250)
 
-def get_response(image, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
+def get_response(image_name, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
     """
     Request information from SauceNao on the given image
     Returns a List with a status code indicated success or which failure, a message for the user and information on the search limit
@@ -25,15 +25,15 @@ def get_response(image, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
     if api_key == None or api_key == '':
         return [403, 'Incorrect or Invalid API Key!\nGo to Options->SauceNao->SauceNao API-Key and insert a Key']
     try:
-        image = Image.open(cwd + '/Sourcery/sourced_original/' + image)
+        image = Image.open(cwd + '/Sourcery/sourced_original/' + image_name)
     except Exception as e:
         print('ERROR [0019] ' + str(e))
         if comm_error_q != None:
             comm_error_q.put('[Sourcery] ERROR [0019] ' + str(e))
         else:
             gv.Files.Log.write_to_log('ERROR [0019] ' + str(e))
-        #mb.showerror("ERROR CODE [0015]\nSomething went wrong while opening the image " + image)
-        return [401, 'Something went wrong while opening the image ' + image]
+        #mb.showerror("ERROR CODE [0015]\nSomething went wrong while opening the image " + image_name)
+        return [401, 'Something went wrong while opening the image ' + image_name]
     image = image.convert('RGB')
     image.thumbnail(thumbSize, resample=Image.ANTIALIAS)
     imageData = BytesIO()

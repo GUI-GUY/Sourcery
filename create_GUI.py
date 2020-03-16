@@ -12,7 +12,7 @@ from tkinter.ttk import Label, Button, Style, Entry, Frame
 #from functools import partial
 from shutil import rmtree
 #from distutils.util import strtobool
-from multiprocessing import Process, freeze_support, Queue, Pipe#, Semaphore
+from multiprocessing import Process, freeze_support, Queue, Pipe, Lock#, Semaphore
 from file_operations import is_image, save, open_input, open_output, display_statistics, change_input, change_output
 from sourcery import do_sourcery
 from pixiv_handler import pixiv_authenticate, pixiv_login, pixiv_fetch_illustration
@@ -29,12 +29,15 @@ def magic():
     Starts second process which searches for images and downloads them.
     """
     global process
+    global input_images_array
     do_sourcery_btn.configure(state='disabled')
     load_from_ref_btn.configure(state='disabled')
     if __name__ == '__main__':
         gv.Files.Log.write_to_log('Starting second process for sourcing images')
-        process = Process(target=do_sourcery, args=(gv.cwd, gv.input_images_array, gv.Files.Cred.saucenao_api_key, gv.Files.Conf.minsim, gv.input_dir, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, duplicate_c_pipe, ))
+        input_lock.acquire()
+        process = Process(target=do_sourcery, args=(gv.cwd, input_images_array, gv.Files.Cred.saucenao_api_key, gv.Files.Conf.minsim, gv.input_dir, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, duplicate_c_pipe, ))
         process.start()
+        input_lock.release()
 
 def image_preloader():
     # """
@@ -83,9 +86,19 @@ def display_startpage():
     refresh_startpage(1, '')
     
 def test():
+    global input_images_array
     print(gv.img_data_array)
-    print(gv.input_images_array)
+    print(input_images_array)
     gv.Files.Log.write_to_log('this is a test')
+
+def list_input(directory_list, directory, depth):
+    add = list()
+    for elem in directory_list:
+        if path.isfile(directory + '/' + elem) or depth == 0:
+            add.append(directory + '/' + elem)
+        elif path.isdir(directory + '/' + elem):
+            add.extend(list_input(listdir(directory + '/' + elem), directory + '/' + elem, depth-1))
+    return add
 
 def refresh_startpage(change, answer2):
     """
@@ -96,20 +109,25 @@ def refresh_startpage(change, answer2):
     Creates ImageData classes from the information the magic process gives
     Displays all results
     """
+    global input_images_array
     
+    input_lock.acquire()
     try:
-        gv.input_images_array = listdir(gv.input_dir)
+        input_images_array = list_input(listdir(gv.input_dir), gv.input_dir, int(gv.Files.Conf.input_search_depth))
+        input_images_array.extend(listdir(gv.input_dir))
     except Exception as e:
         print('ERROR [0040] ' + str(e))
         gv.Files.Log.write_to_log('ERROR [0040] ' + str(e))
         #mb.showerror("ERROR [0040]", "ERROR CODE [0040]\nSomething went wrong while accessing a the 'Input' folder, please restart Sourcery.")
     delete = list()
-    for img in gv.input_images_array:
-        if (not is_image(img)):
+    for img in input_images_array:
+        if (not is_image(img)) or not path.isfile(img):
             delete.append(img)
-    for img in delete:
-        gv.input_images_array.remove(img)
-    images_in_input_count_lbl.configure(text=str(len(gv.input_images_array)))
+    for elem in delete:
+        if elem in input_images_array:
+            input_images_array.remove(elem)
+    input_lock.release()
+    images_in_input_count_lbl.configure(text=str(len(input_images_array)))
 
     answer1 = (201, 200)
     if not comm_q.empty():
@@ -149,7 +167,7 @@ def refresh_startpage(change, answer2):
         a = img_data_q.get()
         #print('a')
         global index
-        b = ImageData(a[0], a[1], a[2], a[3], a[4], a[5], index) #TODO Fehler
+        b = ImageData(a[0], a[1], a[2], a[3], a[4], a[5], a[6], index) #TODO Fehler
         index += 1
         gv.img_data_array.append(b)
         #print('b')
@@ -499,6 +517,8 @@ if __name__ == '__main__':
     comm_error_q = Queue() # Queue for error messages
     img_data_q = Queue() # Queue for ImageData information
     duplicate_p_pipe, duplicate_c_pipe = Pipe()
+    input_images_array = list()
+    input_lock = Lock()
     #sem = Semaphore(12)
     #image_preloader()
     index = 0

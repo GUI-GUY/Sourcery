@@ -27,7 +27,7 @@ width = 0
 height = 0
 
 # global arrays
-input_images_array = list() # For all images in Input folder
+# input_images_array = list() # For all images in Input folder
 delete_dirs_array = list() # For empty directories or dirs where no original is present
 img_data_array = list() # For all ImageData instances
 free_space = list()

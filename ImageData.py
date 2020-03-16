@@ -13,7 +13,7 @@ import global_variables as gv
 
 class ImageData():
     """Includes all information on the sourced images"""
-    def __init__(self, old_name, pixiv_rename, danb_rename, dict_list, pixiv_illust_list, danbooru_illust_list, index):
+    def __init__(self, old_name, input_path, pixiv_rename, danb_rename, dict_list, pixiv_illust_list, danbooru_illust_list, index):
         self.name_original = old_name
         self.thumb_size = (70,70)
         self.preview_size = (200, 200)
@@ -45,6 +45,7 @@ class ImageData():
         self.rename_pixiv = pixiv_rename
         self.rename_danbooru = danb_rename
         self.path_original = gv.cwd + '/Sourcery/sourced_original/' + self.name_original
+        self.input_path = input_path
         
         self.original_image = None
         self.downloaded_image_pixiv = None
@@ -436,7 +437,7 @@ class ImageData():
 
         if gv.Files.Conf.delete_input == '1':
             try:
-                remove(gv.input_dir + self.name_original)
+                remove(self.input_path)
             except Exception as e:
                 print("ERROR [0014] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0014] " + str(e))

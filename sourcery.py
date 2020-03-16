@@ -25,7 +25,8 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
     comm_error_q.put('[Sourcery] Pixiv login successful')
 
     # For every input image a request goes out to saucenao and gets decoded
-    for img in input_images_array:
+    for image in input_images_array:
+        img = image.split('/')[-1]
         comm_img_q.put(img)
         comm_error_q.put('[Sourcery] Sourcing: ' + img)
         # if an ImageData instance with the same original name, minsim and rename options already exists, skip
@@ -36,7 +37,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
             continue
         try:
             comm_error_q.put('[Sourcery] Moving image to working directory')
-            copy(input_dir + '/' + img, cwd + '/Sourcery/sourced_original')
+            copy(image, cwd + '/Sourcery/sourced_original')
         except Exception as e:
             die(str(e), comm_error_q, comm_img_q)
         
@@ -74,7 +75,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
             sleep(10)
         elif res[0] == 200:
             comm_q.put((res[3], res[4]))
-            process_img_data(img, res, minsim, img_data_q, comm_error_q)   
+            process_img_data(img, image, res, minsim, img_data_q, comm_error_q)   
             if res[3] < 1:
                 die('Out of searches for today', comm_error_q, comm_img_q)
             if res[2] < 1:
@@ -90,7 +91,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
     comm_img_q.put("Finished")
     exit()
             
-def process_img_data(img_name_original, res, minsim, img_data_q, comm_error_q):
+def process_img_data(img_name_original, input_path, res, minsim, img_data_q, comm_error_q):
     """
     Downloads the image from pixiv and Danbooru
     Returns information on the downloads
@@ -132,7 +133,7 @@ def process_img_data(img_name_original, res, minsim, img_data_q, comm_error_q):
     
     if len(danbooru_illustration_list) == 0 and len(pixiv_illustration_list) == 0:
         return #TODO Message
-    img_data_q.put((img_name_original, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, dict_list, pixiv_illustration_list, danbooru_illustration_list))
+    img_data_q.put((img_name_original, input_path, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, dict_list, pixiv_illustration_list, danbooru_illustration_list))
     
     pixiv_name = ''
     pixiv_illustration_id = ''

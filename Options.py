@@ -8,7 +8,6 @@ from file_operations import change_input, change_output
 from ScrollFrame import ScrollFrame
 import global_variables as gv
 
-
 class Options():
     """Hosts all Options classes and methods to switch between the options views"""
     def __init__(self, parent, display_startpage, enforce_style):
@@ -187,17 +186,21 @@ class SourceryOptions():
             gv.Files.Conf.delete_input = '0'
             gv.Files.Conf.write_config()
         self.delete_input_var = IntVar(value=int(gv.Files.Conf.delete_input))
-        self.delete_input_chkbtn = Checkbutton(parent, var=self.delete_input_var, text="Delete sourced images from the Input folder?", style="chkbtn.TCheckbutton")
+        self.delete_input_chkbtn = Checkbutton(parent, var=self.delete_input_var, text="Delete sourced images from the Input folder on save?", style="chkbtn.TCheckbutton")
 
         self.images_per_page_lbl = Label(parent, text="Images per page", font=("Arial Bold", 10), style="label.TLabel")
         self.images_per_page_entry = Entry(parent, width=30, style="button.TLabel")
         self.images_per_page_entry.insert(0, gv.Files.Conf.imgpp)
 
-        self.direct_replace_lbl = Label(parent, text="Replace images directly if similarity is over:", font=("Arial Bold", 10), style="label.TLabel")
+        self.input_search_depth_lbl = Label(parent, text="Input search depth", font=("Arial Bold", 10), style="label.TLabel")
+        self.input_search_depth_entry = Entry(parent, width=30, style="button.TLabel")
+        self.input_search_depth_entry.insert(0, gv.Files.Conf.input_search_depth)
+
+        self.direct_replace_lbl = Label(parent, text="Save images directly if similarity is over:", font=("Arial Bold", 10), style="label.TLabel")
         self.direct_replace_pixiv_var = IntVar(value = int(gv.Files.Conf.direct_replace_pixiv))
-        self.direct_replace_pixiv_chkbtn = Checkbutton(parent, text="Replace pixiv images", var=self.direct_replace_pixiv_var, style="chkbtn.TCheckbutton")
+        self.direct_replace_pixiv_chkbtn = Checkbutton(parent, text="Save pixiv images directly", var=self.direct_replace_pixiv_var, style="chkbtn.TCheckbutton")
         self.direct_replace_danbooru_var = IntVar(value = int(gv.Files.Conf.direct_replace_danbooru))
-        self.direct_replace_danbooru_chkbtn = Checkbutton(parent, text="Replace danbooru images", var=self.direct_replace_danbooru_var, style="chkbtn.TCheckbutton")
+        self.direct_replace_danbooru_chkbtn = Checkbutton(parent, text="Save danbooru images directly", var=self.direct_replace_danbooru_var, style="chkbtn.TCheckbutton")
         self.direct_replace_entry = Entry(parent, width=30, style="button.TLabel")
         self.direct_replace_entry.insert(0, gv.Files.Conf.direct_replace)
 
@@ -252,7 +255,10 @@ class SourceryOptions():
         self.direct_replace_pixiv_chkbtn.place(x = x1, y = y + c * 20)
         self.direct_replace_danbooru_chkbtn.place(x = x1, y = y + c * 21)
 
-        self.sourcery_confirm_btn.place(x = x1, y = y + c * 23)
+        self.input_search_depth_lbl.place(x = x1, y = y + c * 25)
+        self.input_search_depth_entry.place(x = x2, y = y + c * 25)
+
+        self.sourcery_confirm_btn.place(x = x1, y = y + c * 30)
 
     def change_to_dark_theme(self):
         gv.Files.Theme.current_theme = "Dark Theme"
@@ -345,6 +351,7 @@ class SourceryOptions():
         gv.Files.Conf.direct_replace = self.direct_replace_entry.get()
         gv.Files.Conf.direct_replace_pixiv = str(self.direct_replace_pixiv_var.get())
         gv.Files.Conf.direct_replace_danbooru = str(self.direct_replace_danbooru_var.get())
+        gv.Files.Conf.input_search_depth = str(self.input_search_depth_entry.get())
         gv.Files.Conf.write_config()
         gv.Files.Log.write_to_log('Saved Sourcery Options')
 

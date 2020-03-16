@@ -354,6 +354,7 @@ class ConfigFile():
         self.direct_replace_danbooru = '0'
         self.use_pixiv = '1'
         self.use_danbooru = '1'
+        self.input_search_depth = '1'
         if self.read_config():
             self.write_config()
     
@@ -423,7 +424,8 @@ class ConfigFile():
                 self.use_pixiv = temp[temp.find('=')+1:-1]
             if temp.startswith('use_danbooru='):
                 self.use_danbooru = temp[temp.find('=')+1:-1]
-            
+            if temp.startswith('input_search_depth='):
+                self.input_search_depth = temp[temp.find('=')+1:-1]
             temp = f.readline()
         f.close()
         return False
@@ -459,8 +461,13 @@ class ConfigFile():
         try:
             temp_num = int(self.saucenao_returns)
         except Exception as e:
-            mb.showerror('Invalid Value', 'Please insert a value between 0 and 1000 into the SauceNao Returns option')
+            mb.showerror('Invalid Value', 'Please insert a value between 0 and infinite into the SauceNao Returns option')
             self.saucenao_returns = '10'
+        try:
+            temp_num = int(self.input_search_depth)
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert a value between -1 and infinite into the SauceNao Returns option')
+            self.input_search_depth = '1'
 
         self.tags_danbooru = self.tags_danbooru.replace('\n', ' /n ').replace('\t', ' /t ')
         self.tags_pixiv = self.tags_pixiv.replace('\n', ' /n ').replace('\t', ' /t ')
@@ -488,7 +495,8 @@ class ConfigFile():
                 "\ndirect_replace_pixiv=" + self.direct_replace_pixiv +
                 "\ndirect_replace_danbooru=" + self.direct_replace_danbooru +
                 "\nuse_pixiv=" + self.use_pixiv +
-                "\nuse_danbooru=" + self.danbooru +
+                "\nuse_danbooru=" + self.use_danbooru +
+                "\ninput_search_depth=" + self.input_search_depth +
                 "\n\nEND")
         try:
             f = open(cwd + '/Sourcery/config', 'w')
