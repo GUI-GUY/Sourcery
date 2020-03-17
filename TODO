@@ -57,8 +57,8 @@ beta 0.3
 OPTIONS
 + options(images per page)
 + gv.esc_op
-provider options
-SauceNao options
++ provider options
++ SauceNao options
 + subfolders in input dir
 + delete input
 png over jpg over high res over uncensored options (weight system?)
@@ -69,6 +69,7 @@ png over jpg over high res over uncensored options (weight system?)
 + save: generate tag file
 + number of sauceNao results(DISCLAIMER: you may miss out on some services)
 ? direct replace if sim is over X%
+Default buttons
 
 PERFORMANCE
 optimizations
@@ -91,6 +92,8 @@ big selector text green/red/white if better/worse/same res/datatype?
 + make canvas for startpage updated widgets
 + show input and output dir
 + provider options scrollframes
+Cancel button pixiv login
+
 
 MISC
 - multiple SauceNao accounts support? if it works

@@ -355,6 +355,9 @@ class ConfigFile():
         self.use_pixiv = '1'
         self.use_danbooru = '1'
         self.input_search_depth = '1'
+        self.saucenao_depth = '128'
+        self.saucenao_bias = '15'
+        self.saucenao_biasmin = '70'
         if self.read_config():
             self.write_config()
     
@@ -426,6 +429,13 @@ class ConfigFile():
                 self.use_danbooru = temp[temp.find('=')+1:-1]
             if temp.startswith('input_search_depth='):
                 self.input_search_depth = temp[temp.find('=')+1:-1]
+            if temp.startswith('saucenao_depth='):
+                self.saucenao_depth = temp[temp.find('=')+1:-1]
+            if temp.startswith('saucenao_bias='):
+                self.saucenao_bias = temp[temp.find('=')+1:-1]
+            if temp.startswith('saucenao_biasmin='):
+                self.saucenao_biasmin = temp[temp.find('=')+1:-1]
+
             temp = f.readline()
         f.close()
         return False
@@ -452,22 +462,49 @@ class ConfigFile():
             self.direct_replace = '100'
         try:
             temp_num = int(self.imgpp)
-            if temp_num < 0 or temp_num > 1000:
-                mb.showerror('Invalid Value', 'Please insert a value between 0 and 1000 into the Images per page option')
+            if temp_num < 1 or temp_num > 1000:
+                mb.showerror('Invalid Value', 'Please insert a value between 1 and 1000 into the Images per page option')
                 self.imgpp = '12'
         except Exception as e:
-            mb.showerror('Invalid Value', 'Please insert a value between 0 and 1000 into the Images per page option')
+            mb.showerror('Invalid Value', 'Please insert a value between 1 and 1000 into the Images per page option')
             self.imgpp = '12'
         try:
             temp_num = int(self.saucenao_returns)
+            if temp_num < 1:
+                mb.showerror('Invalid Value', 'Please insert a value between 1 and 100 into the SauceNao Returns option')
+                self.saucenao_returns = '10'
         except Exception as e:
-            mb.showerror('Invalid Value', 'Please insert a value between 0 and infinite into the SauceNao Returns option')
+            mb.showerror('Invalid Value', 'Please insert a value between 1 and infinite into the SauceNao Returns option')
             self.saucenao_returns = '10'
         try:
             temp_num = int(self.input_search_depth)
         except Exception as e:
             mb.showerror('Invalid Value', 'Please insert a value between -1 and infinite into the SauceNao Returns option')
             self.input_search_depth = '1'
+        try:
+            temp_num = int(self.saucenao_depth)
+            if temp_num < 0:
+                mb.showerror('Invalid Value', 'Please insert a value between 0 and 100 into the SauceNao depth option')
+                self.saucenao_depth = '128'
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert a value between 0 and infinite into the SauceNao depth option')
+            self.saucenao_depth = '128'
+        try:
+            temp_num = int(self.saucenao_bias)
+            if temp_num < 0 or temp_num > 100:
+                mb.showerror('Invalid Value', 'Please insert a value between 0 and 100 into the SauceNao bias option')
+                self.saucenao_bias = '15'
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert a value between 0 and 100 into the SauceNao bias option')
+            self.saucenao_bias = '15'
+        try:
+            temp_num = int(self.saucenao_biasmin)
+            if temp_num < 0 or temp_num > 100:
+                mb.showerror('Invalid Value', 'Please insert a value between 0 and 100 into the SauceNao biasmin option')
+                self.saucenao_biasmin = '70'
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert a value between 0 and 100 into the SauceNao biasmin option')
+            self.saucenao_biasmin = '70'
 
         self.tags_danbooru = self.tags_danbooru.replace('\n', ' /n ').replace('\t', ' /t ')
         self.tags_pixiv = self.tags_pixiv.replace('\n', ' /n ').replace('\t', ' /t ')
@@ -497,6 +534,9 @@ class ConfigFile():
                 "\nuse_pixiv=" + self.use_pixiv +
                 "\nuse_danbooru=" + self.use_danbooru +
                 "\ninput_search_depth=" + self.input_search_depth +
+                "\nsaucenao_depth=" + self.saucenao_depth +
+                "\nsaucenao_bias=" + self.saucenao_bias +
+                "\nsaucenao_biasmin=" + self.saucenao_biasmin +
                 "\n\nEND")
         try:
             f = open(cwd + '/Sourcery/config', 'w')
