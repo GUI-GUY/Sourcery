@@ -196,51 +196,7 @@ def refresh_startpage(change, answer2):
                 else:
                     gv.last_occupied_result = x
                 data.placed = True
-            #elif load == 'saved'
 
-    # Kucke ob freie plätze gefolgt von besetzten
-    # wenn ja, rücke auf (erniedrige den index aller datas welche größer sind und platziere sie erneut)
-    # Kucke ob es datas gibt welche keinen index haben
-    # wenn eine gefunden, 
-    # packe es in frühesten freien platz
-    
-    # mem = False
-    # c = 0
-    # i = 0
-    # if (True in gv.free_space) and (False in gv.free_space):
-    #     for space in gv.free_space:
-    #         if space and not mem:
-    #             mem = True
-    #             c = i
-    #         if not space and mem:
-    #             x = 0
-    #             t = c * 4
-    #             for data in gv.img_data_array:
-    #                 if data.index > c:
-    #                     gv.free_space[data.index] = True
-    #                     t = data.display_results(t+1)
-    #                     gv.free_space[c+x] = False
-    #                 x += 1
-    #             break
-    #         i += 1
-    # if (True in gv.free_space):
-    #     for data in gv.img_data_array:
-    #         if data.index == None:
-    #             x = 0
-    #             for space in gv.free_space:
-    #                 if space:
-    #                     if not data.load():
-    #                         data.self_destruct()
-    #                         gv.img_data_array.remove(data)
-    #                         gv.Files.Log.write_to_log('Problem while loading images, deleted class')
-    #                         break
-    #                     else:
-    #                         data.process_results_imgs()
-    #                         data.modify_results_widgets()
-    #                         data.display_results(x*4)
-    #                         gv.free_space[x] = False
-    #                         break
-    #                 x += 1
     window.after(100, refresh_startpage, change, answer2)
 
 def load_from_ref():

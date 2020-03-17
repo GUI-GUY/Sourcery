@@ -17,7 +17,7 @@ import global_variables as gv
 
 thumbSize = (250,250)
 
-def get_response(image_name, cwd, api_key, minsim, comm_error_q=None):#minsim='80!'
+def get_response(image_name, cwd, api_key, minsim, comm_error_q=None):
     """
     Request information from SauceNao on the given image
     Returns a List with a status code indicated success or which failure, a message for the user and information on the search limit

@@ -81,7 +81,6 @@ UI
 + show info panel on 'more info' click
 + link to SauceNao/Pixiv login data online(https://www.pixiv.net/setting_user.php)
 + tags
-save: feedback message
 better checkbutton graphics
 big selector text green/red/white if better/worse/same res/datatype?
 + minilog clips into results
@@ -103,7 +102,7 @@ Danbooru siblings/parents
 Fehlerbehandlung
 fehleroutput->logfile
 placeholder image for less errors maybe
-tagfile generator ascii
+tagfile generator: ascii
 
 Last Error: 0049
 
@@ -119,6 +118,8 @@ Danbooru Gold
 scrolling accuracy?
 preload next x images?
 preview/thumbnail scaling/options
+Notification rework
+    save: feedback message
 
 beta 0.5?
 queue images instead of 'get source' button?

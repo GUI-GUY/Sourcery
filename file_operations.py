@@ -77,7 +77,6 @@ def gen_tagfile(tags, gen_dir, name):
     except Exception as e:
         print(e)
     #TODO except
-    
 
 def change_input():
     gv.input_dir = fd.askdirectory()
