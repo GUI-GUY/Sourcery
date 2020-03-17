@@ -74,7 +74,7 @@ PERFORMANCE
 optimizations
 + options loop makes program laggy
 -- minileak in results (does this still exist?)
-self_destruct->unload
++ self_destruct->unload
 + repair duplicate loop
 
 UI

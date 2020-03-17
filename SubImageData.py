@@ -169,8 +169,8 @@ class SubImageData():
             gen_tagfile(all_tags, gen_dir, name)
 
     def self_destruct(self):
-        del self.photoImg
-        del self.photoImg_thumb
+        self.photoImg = None
+        self.photoImg_thumb = None
         if self.chkbtn != None:
             self.chkbtn.image = None
         if self.thumb_chkbtn != None:

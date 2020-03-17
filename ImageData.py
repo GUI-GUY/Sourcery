@@ -473,7 +473,7 @@ class ImageData():
             self.original_SubImgData.self_destruct()
         if self.original_image != None:
             self.original_image.close()
-        del self.original_photoImage_thumb
+        self.original_photoImage_thumb = None
 
         self.original_chkbtn.image = None
 

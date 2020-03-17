@@ -421,7 +421,7 @@ class ProviderImageData():
             self.downloaded_image.close()
         for img in self.sub_dir_img_array:
             img.self_destruct()
-        del self.downloaded_photoImage_thumb
-        del self.downloaded_photoImage_preview
+        self.downloaded_photoImage_thumb = None
+        self.downloaded_photoImage_preview = None
 
         self.downloaded_chkbtn.image = None
