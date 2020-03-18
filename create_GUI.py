@@ -15,7 +15,7 @@ from shutil import rmtree
 from multiprocessing import Process, freeze_support, Queue, Pipe, Lock#, Semaphore
 from file_operations import is_image, save, open_input, open_output, display_statistics, change_input, change_output
 from sourcery import do_sourcery
-from pixiv_handler import pixiv_authenticate, pixiv_login, pixiv_fetch_illustration
+from pixiv_handler import pixiv_fetch_illustration
 from danbooru_handler import danbooru_fetch_illustration
 from Options import Options
 #from image_preloader import preload_main
@@ -205,7 +205,6 @@ def load_from_ref():
     """
     refs = gv.Files.Ref.read_reference()
     if refs:
-        pixiv_authenticate()
         gv.Files.Log.write_to_log('Loading images from reference file...')
         for ref in refs:
 

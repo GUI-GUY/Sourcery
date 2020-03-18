@@ -18,3 +18,4 @@ dl.py
 credentials*
 **.pyc
 danbooru_experiment.py
+pixiv_handler_old.py

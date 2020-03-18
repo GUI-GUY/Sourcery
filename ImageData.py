@@ -24,6 +24,7 @@ class ImageData():
             #print('pixiv')
             #print(elem[1])
             name = self.correct_name('pixiv', elem[1]) # TODO if name == False
+            #print(name)
             path_pixiv = gv.cwd + '/Sourcery/sourced_progress/pixiv/' + name
             self.pixiv_dict = self.pixiv_clean_dict(elem[0], dict_list) 
             self.pixiv_list.append(ProviderImageData('Pixiv', name, path_pixiv, self.thumb_size, self.preview_size, self.pixiv_dict, elem[0], self.siblings_array))

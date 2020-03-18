@@ -231,9 +231,6 @@ class CredFile():
     def __init__(self, log):
         self.Log = log
         self.saucenao_api_key = ''
-        self.pixiv_username = ''
-        self.pixiv_password = ''
-        self.pixiv_refreshtoken = ''
         if self.read_credentials():
             self.write_credentials()
 
@@ -256,13 +253,6 @@ class CredFile():
             if creds == 'SauceNao\n':
                 creds = f.readline()
                 self.saucenao_api_key = creds[creds.find('=')+1:-1]
-            if creds == 'Pixiv\n':
-                creds = f.readline()
-                self.pixiv_username = creds[creds.find('=')+1:-1]
-                creds = f.readline()
-                self.pixiv_password = creds[creds.find('=')+1:-1]
-                creds = f.readline()
-                self.pixiv_refreshtoken = creds[creds.find('=')+1:-1]
             creds = f.readline()
         f.close()
         return False
@@ -273,10 +263,6 @@ class CredFile():
         """
         creds = ("SauceNao"
                 "\nAPI-Key=" + self.saucenao_api_key +
-                "\n\nPixiv"
-                "\nUsername=" + self.pixiv_username +
-                "\nPassword=" + self.pixiv_password +
-                "\nrefreshtoken=" + self.pixiv_refreshtoken +
                 "\n\nEND")
         try:
             f = open(cwd + '/Sourcery/credentials', 'w')

@@ -2,7 +2,7 @@
 from time import sleep
 from shutil import copy
 from saucenao_caller import get_response, decode_response
-from pixiv_handler import pixiv_authenticate, pixiv_download, pixiv_fetch_illustration
+from pixiv_handler import pixiv_download, pixiv_fetch_illustration
 from danbooru_handler import danbooru_download, danbooru_fetch_illustration
 import global_variables as gv
 
@@ -14,16 +14,10 @@ def die(message, comm_error_q, comm_img_q):
 
 def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, duplicate_c_pipe):
     """
-    1. Pixiv Login
-    2. for all images in input folder:
-    3. get SauceNao information
-    4. If success download image else next/die
+    1. for all images in input folder:
+    2. get SauceNao information
+    3. If success download image else next/die
     """
-    comm_error_q.put('[Sourcery] Attempting Pixiv login...')
-    if not pixiv_authenticate(comm_error_q):
-        die('Pixiv Authentication Failed.\nPlease check your login data.', comm_error_q, comm_img_q)
-    comm_error_q.put('[Sourcery] Pixiv login successful')
-
     # For every input image a request goes out to saucenao and gets decoded
     for image in input_images_array:
         img = image.split('/')[-1]
@@ -117,7 +111,7 @@ def process_img_data(img_name_original, input_path, res, minsim, img_data_q, com
                 if source['illust_id'] not in pixiv_visited:
                     pixiv_illustration = pixiv_fetch_illustration(img_name_original, source['illust_id'], comm_error_q)
                     if pixiv_illustration != False:
-                        pixiv_name = pixiv_download(img_name_original, source['illust_id'], pixiv_illustration, comm_error_q)
+                        pixiv_name = pixiv_download(img_name_original, pixiv_illustration, comm_error_q)
                     if pixiv_name != False:
                         pixiv_illustration_list.append((pixiv_illustration, pixiv_name))
                         pixiv_visited.append(source['illust_id'])

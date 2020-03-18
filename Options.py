@@ -3,7 +3,7 @@ from tkinter import IntVar, E, W, colorchooser, Text, END
 from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
 from functools import partial
 from webbrowser import open_new
-from pixiv_handler import pixiv_login
+#from pixiv_handler import pixiv_login
 from file_operations import change_input, change_output
 from ScrollFrame import ScrollFrame
 import global_variables as gv
@@ -436,25 +436,8 @@ class PixivOptions():
         self.use_pixiv_var = IntVar(value=int(gv.Files.Conf.use_pixiv))
         self.use_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Use pixiv', var=self.use_pixiv_var, style="chkbtn.TCheckbutton")
         self.pixiv_lbl = Label(parent, text="Pixiv", font=('Arial Bold', 13), style="label.TLabel")
-        self.pixiv_login_lbl = Label(self.scrollpar_frame, text="Pixiv Login", style="label.TLabel")
-        self.pixiv_user_lbl = Label(self.scrollpar_frame, text="Username", style="label.TLabel")
-        self.pixiv_user_filled_lbl = Label(self.scrollpar_frame, width=50, text=gv.Files.Cred.pixiv_username, style="button.TLabel")
-        self.pixiv_user_entry = Entry(self.scrollpar_frame, width=52, style="button.TLabel")
-        self.pixiv_password_lbl = Label(self.scrollpar_frame, text="Password", style="label.TLabel")
-        self.pixiv_password_filled_lbl = Label(self.scrollpar_frame, width=50, text=gv.Files.Cred.pixiv_password, style="button.TLabel")
-        self.pixiv_password_entry = Entry(self.scrollpar_frame, width=52, style="button.TLabel")
-        self.pixiv_login_change_btn = Button(self.scrollpar_frame, text="Change", command=self.pixiv_change_login, style="button.TLabel")
-        self.pixiv_login_confirm_btn = Button(self.scrollpar_frame, text="Confirm & Save", command=partial(self.pixiv_set_login, True), style="button.TLabel")
-        self.pixiv_login_confirm_nosave_btn = Button(self.scrollpar_frame, text="Confirm & Don't Save", command=partial(self.pixiv_set_login, False), style="button.TLabel")
-        self.pixiv_login_cancel_btn = Button(self.scrollpar_frame, text="Cancel", command=self.pixiv_display, style="button.TLabel")
-        self.pixiv_warning_lbl = Label(self.scrollpar_frame, width=50, text='THIS WILL BE SAVED IN PLAINTEXT!!!', style="label.TLabel")
         self.rename_var = IntVar(value=int(gv.Files.Conf.rename_pixiv))
         self.rename_chkbtn = Checkbutton(self.scrollpar_frame, text='Rename images from pixiv to pixiv name', var=self.rename_var, style="chkbtn.TCheckbutton")
-        
-        self.pixiv_address_1_lbl = Label(self.scrollpar_frame, text="Your Login Data can be found here:", style="label.TLabel")
-        self.pixiv_address_2_lbl = Label(self.scrollpar_frame, text="https://www.pixiv.net/setting_user.php", style="label.TLabel")
-        self.pixiv_address_2_lbl.configure(foreground='#2626ff', cursor='hand2', font=('Arial', 10))
-        self.pixiv_address_2_lbl.bind("<Button-1>", self.hyperlink)
 
         self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
         self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10)) # TODO not upadated with theme
@@ -471,74 +454,15 @@ class PixivOptions():
 
         self.save_btn = Button(parent, text='Save', command=self.pixiv_save, style ="button.TLabel")
 
-    def pixiv_change_login(self):
-        """
-        Unlock login widget for pixiv, so that you can change your login data. 
-        """
-        self.pixiv_user_filled_lbl.grid_forget()
-        self.pixiv_password_filled_lbl.grid_forget()
-        self.pixiv_login_change_btn.grid_forget()
-        self.pixiv_user_entry.grid(row= 2, column= 1, sticky=W, padx=2, pady=1)
-        self.pixiv_password_entry.grid(row= 3, column= 1, sticky=W, padx=2, pady=1)
-        self.pixiv_login_confirm_btn.grid(row= 4, column= 0, sticky=W, padx=2, pady=1)
-        self.pixiv_login_confirm_nosave_btn.grid(row= 4, column= 1, sticky=W, padx=2, pady=1)
-        self.pixiv_login_cancel_btn.grid(row= 4, column= 2, sticky=W, padx=2, pady=1)
-        self.pixiv_user_entry.delete(0, len(gv.Files.Cred.pixiv_username))
-        self.pixiv_password_entry.delete(0, len(gv.Files.Cred.pixiv_password))
-        self.pixiv_user_entry.insert(0, gv.Files.Cred.pixiv_username)
-        self.pixiv_password_entry.insert(0, gv.Files.Cred.pixiv_password)
-
-    def pixiv_set_login(self, save):
-        """
-        Save pixiv login data and revert the widgets to being uneditable.
-        """
-        self.pixiv_user_entry.grid_forget()
-        self.pixiv_password_entry.grid_forget()
-        self.pixiv_login_confirm_btn.grid_forget()
-        self.pixiv_login_confirm_nosave_btn.grid_forget()
-        self.pixiv_user_filled_lbl.grid(row= 2, column= 1, sticky=W, padx=2, pady=1)
-        self.pixiv_password_filled_lbl.grid(row= 3, column= 1, sticky=W, padx=2, pady=1)
-        self.pixiv_login_change_btn.grid(row= 4, column= 0, sticky=W, padx=2, pady=1)
-        
-        gv.Files.Cred.pixiv_username = self.pixiv_user_entry.get()
-        gv.Files.Cred.pixiv_password = self.pixiv_password_entry.get()
-        if save:
-            gv.Files.Log.write_to_log('Attempting to save Pixiv Login Data...')
-            e = gv.Files.Cred.write_credentials()
-        else:
-            gv.Files.Log.write_to_log('Attempting to generate refreshtoken and save it...')
-            pixiv_login()
-            gv.Files.Cred.pixiv_username = ''
-            gv.Files.Cred.pixiv_password = ''
-            e = gv.Files.Cred.write_credentials()
-        if e == None:
-            gv.Files.Log.write_to_log('Saved pixiv login data successfully')
-        self.pixiv_user_filled_lbl.configure(text=gv.Files.Cred.pixiv_username)
-        self.pixiv_password_filled_lbl.configure(text=gv.Files.Cred.pixiv_password)
-
     def pixiv_display(self):
         """
         Displays the pixiv options widgets
         """
-        self.pixiv_user_entry.grid_forget()
-        self.pixiv_password_entry.grid_forget()
-        self.pixiv_login_confirm_btn.grid_forget()
-        self.pixiv_login_confirm_nosave_btn.grid_forget()
-        
         self.pixiv_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90*8))
         self.scrollpar.display(x = int(gv.width/160*5), y= int(gv.height/90*10))
 
         #TODO lager das aus damits nicht öfters aufgerufen wird
         self.use_pixiv_chkbtn.grid(row= 0, column= 0, sticky=W, padx=2, pady=1)
-        self.pixiv_login_lbl.grid(row= 1, column= 0, sticky=W, padx=2, pady=1)
-        self.pixiv_user_lbl.grid(row= 2, column= 0, sticky=W, padx=2, pady=1)
-        self.pixiv_user_filled_lbl.grid(row= 2, column= 1, sticky=W, padx=2, pady=1)
-        self.pixiv_password_lbl.grid(row= 3, column= 0, sticky=W, padx=2, pady=1)
-        self.pixiv_password_filled_lbl.grid(row= 3, column= 1, sticky=W, padx=2, pady=1)
-        self.pixiv_login_change_btn.grid(row= 4, column= 0, sticky=W, padx=2, pady=1)
-        self.pixiv_warning_lbl.grid(row= 5, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
-        self.pixiv_address_1_lbl.grid(row= 6, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
-        self.pixiv_address_2_lbl.grid(row= 7, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
 
         self.show_tags_lbl.grid(row= 8, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
         self.show_tags_txt.grid(row= 9, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
@@ -567,12 +491,6 @@ class PixivOptions():
         gv.Files.Conf.write_config()
         gv.results_tags_pixiv = self.tags.split()
         gv.Files.Log.write_to_log('Saved Pixiv options')
-    
-    def hyperlink(self, event):
-        """
-        Opens a webbrowser with a URL on click of a widget that is bound to this method
-        """
-        open_new(event.widget.cget("text"))
 
 class DanbooruOptions():
     """Includes all widgets for Danbooru and methods to display and modify them"""

@@ -95,13 +95,12 @@ big selector text green/red/white if better/worse/same res/datatype?
 
 MISC
 - multiple SauceNao accounts support? if it works
-pximg.net (with referer)
++ pximg.net (with referer)
 all TODOs
 + comments
 Danbooru siblings/parents
 Fehlerbehandlung
 fehleroutput->logfile
-placeholder image for less errors maybe
 tagfile generator: ascii
 
 Last Error: 0049
@@ -120,6 +119,8 @@ preload next x images?
 preview/thumbnail scaling/options
 Notification rework
     save: feedback message
+bind keys
+import configparser
 
 beta 0.5?
 queue images instead of 'get source' button?
