@@ -344,6 +344,16 @@ class ConfigFile():
         self.saucenao_depth = '128'
         self.saucenao_bias = '15'
         self.saucenao_biasmin = '70'
+        self.png_weight = '0'
+        self.jpg_weight = '0'
+        self.jfif_weight = '0'
+        self.gif_weight = '0'
+        self.bmp_weight = '0'
+        self.other_weight = '0'
+        self.higher_resolution_weight = '0'
+        self.pixiv_weight = '0'
+        self.danbooru_weight = '0'
+        self.original_weight = '0'
         if self.read_config():
             self.write_config()
     
@@ -421,6 +431,26 @@ class ConfigFile():
                 self.saucenao_bias = temp[temp.find('=')+1:-1]
             if temp.startswith('saucenao_biasmin='):
                 self.saucenao_biasmin = temp[temp.find('=')+1:-1]
+            if temp.startswith('png_weight='):
+                self.png_weight = temp[temp.find('=')+1:-1]
+            if temp.startswith('jpg_weight='):
+                self.jpg_weight = temp[temp.find('=')+1:-1]
+            if temp.startswith('jfif_weight='):
+                self.jfif_weight = temp[temp.find('=')+1:-1]
+            if temp.startswith('gif_weight='):
+                self.gif_weight = temp[temp.find('=')+1:-1]
+            if temp.startswith('bmp_weight='):
+                self.bmp_weight = temp[temp.find('=')+1:-1]
+            if temp.startswith('other_weight='):
+                self.other_weight = temp[temp.find('=')+1:-1]
+            if temp.startswith('higher_resolution_weight='):
+                self.higher_resolution_weight = temp[temp.find('=')+1:-1]
+            if temp.startswith('pixiv_weight='):
+                self.pixiv_weight = temp[temp.find('=')+1:-1]
+            if temp.startswith('danbooru_weight='):
+                self.danbooru_weight = temp[temp.find('=')+1:-1]
+            if temp.startswith('original_weight='):
+                self.original_weight = temp[temp.find('=')+1:-1]
 
             temp = f.readline()
         f.close()
@@ -523,6 +553,16 @@ class ConfigFile():
                 "\nsaucenao_depth=" + self.saucenao_depth +
                 "\nsaucenao_bias=" + self.saucenao_bias +
                 "\nsaucenao_biasmin=" + self.saucenao_biasmin +
+                "\npng_weight=" + self.png_weight +#TODO numbers cruncher
+                "\njpg_weight=" + self.jpg_weight +
+                "\njfif_weight=" + self.jfif_weight +
+                "\ngif_weight=" + self.gif_weight +
+                "\nbmp_weight=" + self.bmp_weight +
+                "\nother_weight=" + self.other_weight +
+                "\nhigher_resolution_weight=" + self.higher_resolution_weight +
+                "\npixiv_weight=" + self.pixiv_weight +
+                "\ndanbooru_weight=" + self.danbooru_weight +
+                "\noriginal_weight=" + self.original_weight +
                 "\n\nEND")
         try:
             f = open(cwd + '/Sourcery/config', 'w')

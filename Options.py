@@ -1,10 +1,11 @@
-from tkinter import IntVar, E, W, colorchooser, Text, END
+from tkinter import IntVar, StringVar, E, W, colorchooser, Text, END
 #from tkinter import messagebox as mb
-from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame
+from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame, OptionMenu
 from functools import partial
 from webbrowser import open_new
 #from pixiv_handler import pixiv_login
 from file_operations import change_input, change_output
+from WeightSystem import WeightSystem
 from ScrollFrame import ScrollFrame
 import global_variables as gv
 
@@ -395,6 +396,7 @@ class ProviderOptions():
         self.par = parent
         self.PixO = PixivOptions(parent)
         self.DanO = DanbooruOptions(parent)
+        self.Weight = WeightSystem(parent)
 
         self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_original))
         self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_original))
@@ -413,11 +415,12 @@ class ProviderOptions():
         """
         self.PixO.pixiv_display()
         self.DanO.danb_display()
+        self.Weight.weight_display()
 
-        self.gen_tagfile_chkbtn.place(x = int(gv.width/1.5), y = int(gv.height/90*8))
-        self.tagfile_pixiv_chkbtn.place(x = int(gv.width/1.48), y = int(gv.height/90*10))
-        self.tagfile_danbooru_chkbtn.place(x = int(gv.width/1.48), y = int(gv.height/90*12))
-        self.save_btn.place(x = int(gv.width/1.5), y = int(gv.height/90*14))
+        self.gen_tagfile_chkbtn.place(x = int(gv.width/1.2), y = int(gv.height/90*8))
+        self.tagfile_pixiv_chkbtn.place(x = int(gv.width/1.18), y = int(gv.height/90*10))
+        self.tagfile_danbooru_chkbtn.place(x = int(gv.width/1.18), y = int(gv.height/90*12))
+        self.save_btn.place(x = int(gv.width/1.2), y = int(gv.height/90*14))
 
     def original_save(self):
         gv.Files.Log.write_to_log('Attempting to save Original options...')
@@ -432,7 +435,7 @@ class PixivOptions():
     def __init__(self, parent):
         self.par = parent
         self.scrollpar = ScrollFrame(self.par, gv.width/4, gv.height*0.6)
-        self.scrollpar_frame =self.scrollpar.frame
+        self.scrollpar_frame = self.scrollpar.frame
         self.use_pixiv_var = IntVar(value=int(gv.Files.Conf.use_pixiv))
         self.use_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Use pixiv', var=self.use_pixiv_var, style="chkbtn.TCheckbutton")
         self.pixiv_lbl = Label(parent, text="Pixiv", font=('Arial Bold', 13), style="label.TLabel")
@@ -478,10 +481,7 @@ class PixivOptions():
 
     def pixiv_save(self):
         gv.Files.Log.write_to_log('Attempting to save Pixiv options...')
-        if self.rename_var.get() == 1:
-            gv.Files.Conf.rename_pixiv = 'True'
-        else:
-            gv.Files.Conf.rename_pixiv = 'False'
+        gv.Files.Conf.rename_pixiv = str(self.rename_var.get())
         self.tags = self.show_tags_txt.get('1.0', END)
         gv.Files.Conf.tags_pixiv = self.tags
         gv.Files.Conf.gen_tagfile_pixiv = str(self.gen_tagfile_var.get())
@@ -548,3 +548,4 @@ class DanbooruOptions():
         gv.Files.Conf.write_config()
         gv.results_tags_danbooru = self.tags.split()
         gv.Files.Log.write_to_log('Saved Danbooru options')
+
