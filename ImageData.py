@@ -402,6 +402,7 @@ class ImageData():
         """
         "Saves" own checked images and schedules the unchecked images to be deleted 
         """
+        # TODO all returns
         # TODO gv.Files.Conf.direct_replace
         pixiv_tags = list()
         for elem in self.pixiv_list:
@@ -488,6 +489,8 @@ class ImageData():
                 gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
                 #mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.input_dir + self.name_original)
         
+        return True
+
     def gen_tagfile(self, pixiv_tags, danbooru_tags, gen_dir, name):
         if gv.Files.Conf.gen_tagfile_original == '1':
             all_tags = list()

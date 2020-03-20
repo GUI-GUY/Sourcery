@@ -52,7 +52,7 @@ beta 0.2 (Classified)
 
 beta 0.3
 
-~ 2nd service
++ 2nd service
 
 OPTIONS
 + options(images per page)
@@ -99,7 +99,7 @@ all TODOs
 Danbooru siblings/parents
 Fehlerbehandlung
 + stderr->logfile
-tagfile generator: ascii
++ tagfile generator: utf-8
 
 Last Error: 0049
 

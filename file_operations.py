@@ -44,6 +44,7 @@ def save():
             #     continue
             gv.Files.Log.write_to_log('Attempting to save image:' + data.name_original + '...' )
             if not data.save():
+                print('error while saving')
                 continue
             gv.Files.Log.write_to_log('Successfully saved image')
             data.forget_results()
@@ -60,7 +61,7 @@ def gen_tagfile(tags, gen_dir, name):
     Takes a list of strings, the directory in which to generate the file and the name of the file
     """
     try:
-        f = open(gen_dir + '/' + name + '.txt', 'a')
+        f = open(gen_dir + '/' + name + '.txt', 'a', encoding='utf8')
         for tag in tags:
             if type(tag) == type(dict()):
                 try:
