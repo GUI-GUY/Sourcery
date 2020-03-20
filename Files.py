@@ -1,4 +1,5 @@
 from os import makedirs, path, getcwd
+from sys import stderr
 from tkinter import END, Text
 from tkinter import messagebox as mb
 from time import strftime
@@ -311,6 +312,12 @@ class LogFile():
                 print("ERROR [0036] " + str(e))
                 #self.Log.write_to_log("ERROR [0033] " + str(e))
                 mb.showerror("ERROR [0036]", "ERROR CODE [0036]\nSomething went wrong while accessing a configuration file(log), please restart Sourcery as soon as possible.")
+
+    def write(self, message):
+        self.write_to_log(message)
+        #self.log.write('[' + strftime("%H:%M:%S") + '] ' + message + '\n')
+        stderr.flush()
+        #self.log.flush()
 
 class ConfigFile():
     """Includes the options and also methods to write/read these to/from the config file"""

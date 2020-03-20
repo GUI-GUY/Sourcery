@@ -3,6 +3,7 @@
 # __author__ = 'Cardinal Biggles'
 
 from os import listdir, path, remove
+from sys import stderr
 from copy import copy
 import time
 from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END, W
@@ -23,6 +24,8 @@ from ImageData import ImageData
 from ScrollFrame import ScrollFrame
 from Files import Files
 import global_variables as gv
+
+stderr = gv.Files.Log
 
 def magic():
     """

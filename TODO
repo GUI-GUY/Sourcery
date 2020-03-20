@@ -98,7 +98,7 @@ all TODOs
 + comments
 Danbooru siblings/parents
 Fehlerbehandlung
-fehleroutput->logfile
++ stderr->logfile
 tagfile generator: ascii
 
 Last Error: 0049
