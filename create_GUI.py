@@ -7,6 +7,7 @@ from sys import stderr
 from copy import copy
 import time
 from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END, W
+from tkinter import Checkbutton as cb
 from tkinter.ttk import Label, Button, Style, Entry, Frame
 #from tkinter import messagebox as mb
 #from tkinter.filedialog import askdirectory
@@ -367,12 +368,50 @@ def enforce_style():
         background=[('pressed', '!disabled', gv.Files.Theme.button_background_pressed), ('disabled', 'black'), ('active', gv.Files.Theme.button_background_active)]
     )
     style.configure("frame.TFrame", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background)
-    style.configure("chkbtn.TCheckbutton", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, borderwidth = 0, highlightthickness = 10, selectcolor=gv.Files.Theme.button_background, activebackground=gv.Files.Theme.button_background, activeforeground=gv.Files.Theme.button_background, disabledforeground=gv.Files.Theme.button_background, highlightcolor=gv.Files.Theme.button_background, font=("Arial Bold", 10))
+    style.configure("chkbtn.TCheckbutton", 
+        foreground=gv.Files.Theme.foreground, 
+        background=gv.Files.Theme.background, 
+        borderwidth = 0, 
+        highlightthickness = 10, 
+        font=("Arial Bold", 10)) # sunken, raised, groove, ridge, flat
+    for elem in window.winfo_children():
+        if type(elem) == type(cb()):
+            elem.configure(
+                foreground=gv.Files.Theme.foreground, 
+                background=gv.Files.Theme.background, 
+                selectcolor=gv.Files.Theme.checkbutton_pressed, 
+                activebackground=gv.Files.Theme.button_background_active, 
+                activeforeground=gv.Files.Theme.button_foreground_active, 
+            )
+    for elem in gv.res_frame.winfo_children():
+        if type(elem) == type(cb()):
+            elem.configure(
+                foreground=gv.Files.Theme.foreground, 
+                background=gv.Files.Theme.background, 
+                selectcolor=gv.Files.Theme.checkbutton_pressed, 
+                activebackground=gv.Files.Theme.button_background_active, 
+                activeforeground=gv.Files.Theme.button_foreground_active, 
+            )
+    for elem in gv.big_frame.winfo_children():
+        if type(elem) == type(cb()):
+            elem.configure(
+                foreground=gv.Files.Theme.foreground, 
+                background=gv.Files.Theme.background, 
+                selectcolor=gv.Files.Theme.checkbutton_pressed, 
+                activebackground=gv.Files.Theme.button_background_active, 
+                activeforeground=gv.Files.Theme.button_foreground_active, 
+            )
+        
     gv.Files.Log.log_text.configure(foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
+    
     #style.configure("scroll.Vertical.TScrollbar", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.button_background, throughcolor=gv.Files.Theme.button_background, activebackground=gv.Files.Theme.button_background)
     results_ScrollFrame.canvas.configure(background=gv.Files.Theme.background)
     info_ScrollFrame.canvas.configure(background=gv.Files.Theme.background)
     big_selector_ScrollFrame.canvas.configure(background=gv.Files.Theme.background)
+    canvas_startpage.configure(background=gv.Files.Theme.background)
+    Options_Class.ProO.PixO.scrollpar.canvas.configure(background=gv.Files.Theme.background)
+    Options_Class.ProO.DanO.scrollpar.canvas.configure(background=gv.Files.Theme.background)
+    Options_Class.ProO.Weight.scrollpar.canvas.configure(background=gv.Files.Theme.background)
 
 if __name__ == '__main__':
     freeze_support()
@@ -398,19 +437,25 @@ if __name__ == '__main__':
     gv.info_ScrollFrame = info_ScrollFrame
     big_selector_ScrollFrame = ScrollFrame(window, big_selector_frame_width, big_selector_frame_height)
 
+    gv.res_frame = results_ScrollFrame.frame
+    gv.big_frame = big_selector_ScrollFrame.frame
+    gv.info_frame = info_ScrollFrame.frame
+
+
     gv.Files.Log.log_text = Text(master=window, height=int(info_frame_height/16), width=int(info_frame_width/7))
     gv.Files.Log.init_log()
     gv.Files.Log.write_to_log('Initialising variables...')
 
-    enforce_style()
-    
+    sub_frame_startpage = Frame(window, width=width/5, height=height/5, style="frame.TFrame")
+    canvas_startpage = Canvas(sub_frame_startpage, width=width/5, height=height/5, background=gv.Files.Theme.background, highlightthickness=0)
+    frame_startpage = Frame(canvas_startpage, width=width/5, height=height/5, style="frame.TFrame")
+    canvas_startpage.pack(side="left")
+    canvas_startpage.create_window((0,0),window=frame_startpage,anchor='nw')
+
     Options_Class = Options(window, display_startpage, enforce_style)
 
-    sub_frame_startpage = Frame(window, width=width/5, height=height/5, style="frame.TFrame")
-    canvas = Canvas(sub_frame_startpage, width=width/5, height=height/5, background=gv.Files.Theme.background, highlightthickness=0)
-    frame_startpage = Frame(canvas, width=width/5, height=height/5, style="frame.TFrame")
-    canvas.pack(side="left")
-    canvas.create_window((0,0),window=frame_startpage,anchor='nw')
+    enforce_style()
+    
 
     # widgets for start screen
     sourcery_lbl = Label(window, text="Sourcery", font=("Arial Bold", 50), style="label.TLabel")
@@ -458,9 +503,7 @@ if __name__ == '__main__':
     lock_save_btn = Button(window, text="Lock selected", command=lock_save, style="button.TLabel")
     save_locked_btn = Button(window, text="Save selected images", command=save_locked, state = 'disabled', style="button.TLabel")
 
-    gv.res_frame = results_ScrollFrame.frame
-    gv.big_frame = big_selector_ScrollFrame.frame
-    gv.info_frame = info_ScrollFrame.frame
+    
     gv.window = window
     gv.big_selector_frame = big_selector_ScrollFrame.sub_frame
     gv.big_selector_canvas = big_selector_ScrollFrame.canvas

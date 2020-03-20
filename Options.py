@@ -197,6 +197,7 @@ class SourceryOptions():
         self.custom_button_foreground_active_lbl = Label(parent, text="Button Foreground Active", style="label.TLabel")
         self.custom_button_background_pressed_lbl = Label(parent, text="Button Background Pressed", style="label.TLabel")
         self.custom_button_foreground_pressed_lbl = Label(parent, text="Button Foreground Pressed", style="label.TLabel")
+        self.custom_checkbutton_pressed_lbl = Label(parent, text="Checkbutton Pressed", style="label.TLabel")
 
         rel = 'raised'
         self.custom_background_color_lbl = Label(parent, width=10, relief=rel, style="label.TLabel")
@@ -206,6 +207,7 @@ class SourceryOptions():
         self.custom_button_foreground_active_color_lbl = Label(parent, width=10, relief=rel, style="label.TLabel")
         self.custom_button_background_pressed_color_lbl = Label(parent, width=10, relief=rel, style="label.TLabel")
         self.custom_button_foreground_pressed_color_lbl = Label(parent, width=10, relief=rel, style="label.TLabel")
+        self.custom_checkbutton_pressed_color_lbl = Label(parent, width=10, relief=rel, style="label.TLabel")
         self.color_bind()
 
         self.save_custom_theme_btn = Button(parent, text="Save Custom Theme", command=self.save_custom_theme, style="button.TLabel")
@@ -263,6 +265,7 @@ class SourceryOptions():
         self.custom_button_foreground_active_lbl.place(x = x1, y = y + c * 8)
         self.custom_button_background_pressed_lbl.place(x = x1, y = y + c * 9)
         self.custom_button_foreground_pressed_lbl.place(x = x1, y = y + c * 10)
+        self.custom_checkbutton_pressed_lbl.place(x = x1, y = y + c * 11)
         self.custom_background_color_lbl.place(x = x2, y = y + c * 4)
         self.custom_foreground_color_lbl.place(x = x2, y = y + c * 5)
         self.custom_button_background_color_lbl.place(x = x2, y = y + c * 6)
@@ -270,6 +273,7 @@ class SourceryOptions():
         self.custom_button_foreground_active_color_lbl.place(x = x2, y = y + c * 8)
         self.custom_button_background_pressed_color_lbl.place(x = x2, y = y + c * 9)
         self.custom_button_foreground_pressed_color_lbl.place(x = x2, y = y + c * 10)
+        self.custom_checkbutton_pressed_color_lbl.place(x = x2, y = y + c * 11)
 
         self.save_custom_theme_btn.place(x = x1, y = y + c * 12)
 
@@ -319,6 +323,7 @@ class SourceryOptions():
         gv.Files.Theme.custom_button_foreground_active = str(self.custom_button_foreground_active_color_lbl.cget('background'))
         gv.Files.Theme.custom_button_background_pressed = str(self.custom_button_background_pressed_color_lbl.cget('background'))
         gv.Files.Theme.custom_button_foreground_pressed = str(self.custom_button_foreground_pressed_color_lbl.cget('background'))
+        gv.Files.Theme.custom_checkbutton_pressed = str(self.custom_checkbutton_pressed_color_lbl.cget('background'))
         e = gv.Files.Theme.write_theme(gv.Files.Theme.current_theme)
         if e == None:
             gv.Files.Log.write_to_log('Saved custom theme successfully')
@@ -338,6 +343,7 @@ class SourceryOptions():
         self.custom_button_foreground_active_color_lbl.configure(background = gv.Files.Theme.custom_button_foreground_active, cursor='hand2')
         self.custom_button_background_pressed_color_lbl.configure(background = gv.Files.Theme.custom_button_background_pressed, cursor='hand2')
         self.custom_button_foreground_pressed_color_lbl.configure(background = gv.Files.Theme.custom_button_foreground_pressed, cursor='hand2')
+        self.custom_checkbutton_pressed_color_lbl.configure(background = gv.Files.Theme.custom_checkbutton_pressed, cursor='hand2')
     
     def color_bind(self):
         """
@@ -363,6 +369,9 @@ class SourceryOptions():
 
         c_bfg_p_c_par = partial(self.color_choose, self.custom_button_foreground_pressed_color_lbl)
         self.custom_button_foreground_pressed_color_lbl.bind("<Button-1>", c_bfg_p_c_par)
+
+        c_cb_p_c_par = partial(self.color_choose, self.custom_checkbutton_pressed_color_lbl)
+        self.custom_checkbutton_pressed_color_lbl.bind("<Button-1>", c_cb_p_c_par)
 
     def color_choose(self, lbl, event):
         """

@@ -81,7 +81,7 @@ UI
 + show info panel on 'more info' click
 + link to SauceNao/Pixiv login data online(https://www.pixiv.net/setting_user.php)
 + tags
-better checkbutton graphics
++ better checkbutton graphics
 big selector text green/red/white if better/worse/same res/datatype?
 + minilog clips into results
 + on save clear info panel

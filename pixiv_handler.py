@@ -1,14 +1,17 @@
 from os import getcwd, path, makedirs
 from json import loads
+from copy import deepcopy
 from requests import request, get
 from fake_useragent import UserAgent
 import global_variables as gv
+
+headers = {"user-agent": UserAgent().random, 'accept-language':'en'}
 
 class Illustration():
     """Includes all information on the pixiv image"""
     def __init__(self, response, headers):
         self.response = response
-        self.headers = headers
+        self.headers = deepcopy(headers)
         self.id = response['body']['illustId']
         self.tags = list()
         #print(response['body']['tags']['tags'][1])
@@ -41,8 +44,8 @@ def pixiv_fetch_illustration(img_name_original, imgid, comm_error_q=None):
     Request information from pixiv for the given imgid\n
     Return illustration object on success, False otherwise
     """
+    global headers
     img_info_url = "https://www.pixiv.net/ajax/illust/" + str(imgid)
-    headers = {"user-agent": UserAgent().random, 'accept-language':'en'}
     res = get(img_info_url, headers=headers)
     js = loads(res.text)# {'error': True, 'message': '該当作品は削除されたか、存在しない作品IDです。', 'body': []}
     

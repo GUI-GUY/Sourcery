@@ -94,6 +94,7 @@ class ThemeFile():
         self.button_foreground_active = 'black'
         self.button_background_pressed = '#111'
         self.button_foreground_pressed = 'white'
+        self.checkbutton_pressed = 'green'
         self.custom_background = '#101010'
         self.custom_foreground = 'white'
         self.custom_button_background = 'purple'
@@ -101,6 +102,7 @@ class ThemeFile():
         self.custom_button_foreground_active = 'black'
         self.custom_button_background_pressed = '#fff'
         self.custom_button_foreground_pressed = 'green'
+        self.custom_checkbutton_pressed = 'green'
         if self.read_theme():
             self.write_theme('Dark Theme')
     
@@ -148,6 +150,8 @@ class ThemeFile():
                 self.button_background_pressed = assign[assign.find('=')+1:-1]
             if assign.startswith('button_foreground_pressed='):
                 self.button_foreground_pressed = assign[assign.find('=')+1:-1]
+            if assign.startswith('checkbutton_pressed='):
+                self.checkbutton_pressed = assign[assign.find('=')+1:-1]
 
         if ct: #if current theme is custom theme
             self.custom_background = self.background
@@ -157,6 +161,7 @@ class ThemeFile():
             self.custom_button_foreground_active = self.button_foreground_active
             self.custom_button_background_pressed = self.button_background_pressed
             self.custom_button_foreground_pressed = self.button_foreground_pressed
+            self.custom_checkbutton_foreground_pressed = self.checkbutton_pressed
         else:
             while assign != 'Custom Theme\n':
                 assign = f.readline()
@@ -176,6 +181,8 @@ class ThemeFile():
                     self.custom_button_background_pressed = assign[assign.find('=')+1:-1]
                 if assign.startswith('button_foreground_pressed='):
                     self.custom_button_foreground_pressed = assign[assign.find('=')+1:-1]
+                if assign.startswith('checkbutton_pressed='):
+                    self.custom_checkbutton_pressed = assign[assign.find('=')+1:-1]
         self.current_theme = self.current_theme[0:-1]
         f.close()
         return False
@@ -193,6 +200,7 @@ class ThemeFile():
             "\nbutton_foreground_active=black"
             "\nbutton_background_pressed=#111"
             "\nbutton_foreground_pressed=white"
+            "\ncheckbutton_pressed=green"
             "\n\nLight Theme"
             "\nbackground=#eee"
             "\nforeground=black"
@@ -201,6 +209,7 @@ class ThemeFile():
             "\nbutton_foreground_active=white"
             "\nbutton_background_pressed=#ddd"
             "\nbutton_foreground_pressed=black"
+            "\ncheckbutton_pressed=green"
             "\n\nCustom Theme"
             "\nbackground=" + self.custom_background +
             "\nforeground=" + self.custom_foreground +
@@ -209,6 +218,7 @@ class ThemeFile():
             "\nbutton_foreground_active=" + self.custom_button_foreground_active +
             "\nbutton_background_pressed=" + self.custom_button_background_pressed +
             "\nbutton_foreground_pressed=" + self.custom_button_foreground_pressed +
+            "\ncheckbutton_pressed=" + self.custom_checkbutton_pressed +
             "\n\nEND")
 
         try:

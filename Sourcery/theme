@@ -1,4 +1,4 @@
-Current theme=Custom Theme
+Current theme=Light Theme
 
 Dark Theme
 background=#252525
@@ -8,6 +8,7 @@ button_background_active=white
 button_foreground_active=black
 button_background_pressed=#111
 button_foreground_pressed=white
+checkbutton_pressed=green
 
 Light Theme
 background=#eee
@@ -17,6 +18,7 @@ button_background_active=black
 button_foreground_active=white
 button_background_pressed=#ddd
 button_foreground_pressed=black
+checkbutton_pressed=green
 
 Custom Theme
 background=#1f1f1f
@@ -26,5 +28,6 @@ button_background_active=#dd64d3
 button_foreground_active=black
 button_background_pressed=#fff
 button_foreground_pressed=blue
+checkbutton_pressed=green
 
 END

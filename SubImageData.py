@@ -1,6 +1,7 @@
 from os import path, listdir, remove, makedirs
 from shutil import move, rmtree
 from tkinter import IntVar, W, N
+from tkinter import Checkbutton as cb
 from tkinter import messagebox as mb
 from tkinter.ttk import Checkbutton, Label, Button
 from PIL import ImageTk, Image
@@ -59,7 +60,18 @@ class SubImageData():
         
         if self.var == None:
             self.var = IntVar()
-        self.chkbtn = Checkbutton(self.par, image=self.photoImg, var=self.var, style="chkbtn.TCheckbutton")
+        self.chkbtn = cb(self.par, image=self.photoImg, var=self.var,
+            foreground=gv.Files.Theme.foreground, 
+            background=gv.Files.Theme.background, 
+            borderwidth = 1,
+            highlightthickness = 6, 
+            selectcolor=gv.Files.Theme.checkbutton_pressed, 
+            activebackground=gv.Files.Theme.button_background_active, 
+            activeforeground=gv.Files.Theme.button_foreground_active, 
+            relief='flat',#default flat
+            overrelief='ridge',#no default
+            offrelief='flat',#default raised
+            indicatoron='false')# sunken, raised, groove, ridge, flat)#, style="chkbtn.TCheckbutton")
         self.chkbtn.image = self.photoImg
         self.lbl = Label(self.scrollpar, text=self.service, style='label.TLabel')
         self.lbl2 = Label(self.par, text=self.service, style='label.TLabel')
@@ -71,7 +83,18 @@ class SubImageData():
             img_obj_thumb = deepcopy(self.img_obj)
             img_obj_thumb.thumbnail((70, 70), resample=Image.ANTIALIAS)
             self.photoImg_thumb = ImageTk.PhotoImage(img_obj_thumb)
-            self.thumb_chkbtn = Checkbutton(self.scrollpar, image=self.photoImg_thumb, var=self.var, style="chkbtn.TCheckbutton")
+            self.thumb_chkbtn = cb(self.scrollpar, image=self.photoImg_thumb, var=self.var,
+                foreground=gv.Files.Theme.foreground, 
+                background=gv.Files.Theme.background, 
+                borderwidth = 1,
+                highlightthickness = 1, 
+                selectcolor=gv.Files.Theme.checkbutton_pressed, 
+                activebackground=gv.Files.Theme.button_background_active, 
+                activeforeground=gv.Files.Theme.button_foreground_active, 
+                relief='flat',#default flat
+                overrelief='ridge',#no default
+                offrelief='flat',#default raised
+                indicatoron='false')# style="chkbtn.TCheckbutton")
             self.thumb_chkbtn.image = self.photoImg_thumb
             img_obj_thumb.close()
 

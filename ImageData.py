@@ -1,6 +1,7 @@
 from os import path, listdir, remove, makedirs
 from shutil import move, rmtree
 from tkinter import IntVar, W, N
+from tkinter import Checkbutton as cb
 from tkinter import messagebox as mb
 from tkinter.ttk import Checkbutton, Label, Button
 from PIL import ImageTk, Image
@@ -55,7 +56,7 @@ class ImageData():
         self.original_photoImage_thumb = None
 
         self.original_var = IntVar(value=0)
-        self.original_chkbtn = Checkbutton(master=gv.res_frame, var=self.original_var, style="chkbtn.TCheckbutton")
+        self.original_chkbtn = cb(master=gv.res_frame, var=self.original_var)
         self.original_lbl = Label(master=gv.res_frame, text = "Input", style='label.TLabel')
         self.original_wxh_lbl = Label(master=gv.res_frame, style='label.TLabel')
         self.original_type_lbl = Label(master=gv.res_frame, style='label.TLabel')
@@ -185,7 +186,17 @@ class ImageData():
         """
         if self.modify_results_widgets_init:
             return
-        self.original_chkbtn.configure(image=self.original_photoImage_thumb)
+        self.original_chkbtn.configure(image=self.original_photoImage_thumb, 
+            foreground=gv.Files.Theme.foreground, 
+            background=gv.Files.Theme.background, 
+            borderwidth = 1, 
+            selectcolor=gv.Files.Theme.checkbutton_pressed, 
+            activebackground=gv.Files.Theme.button_background_active, 
+            activeforeground=gv.Files.Theme.button_foreground_active, 
+            relief='flat',#default flat
+            overrelief='ridge',#no default
+            offrelief='flat',#default raised
+            indicatoron='false')# sunken, raised, groove, ridge, flat
         self.original_chkbtn.image = self.original_photoImage_thumb
         self.original_wxh_lbl.configure(text = str(self.original_image.size))
         self.original_type_lbl.configure(text = self.name_original[self.name_original.rfind('.')+1:])
@@ -402,7 +413,7 @@ class ImageData():
         """
         "Saves" own checked images and schedules the unchecked images to be deleted 
         """
-        # TODO all returns
+        # TODO #1 all returns
         # TODO gv.Files.Conf.direct_replace
         pixiv_tags = list()
         for elem in self.pixiv_list:

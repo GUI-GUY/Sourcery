@@ -1,6 +1,7 @@
 from os import path, listdir, remove, makedirs
 from shutil import move, rmtree
 from tkinter import IntVar, W, N
+from tkinter import Checkbutton as cb
 from tkinter import messagebox as mb
 from tkinter.ttk import Checkbutton, Label, Button
 from PIL import ImageTk, Image
@@ -29,7 +30,18 @@ class ProviderImageData():
         self.sub_dir_array = list()
         self.sub_dir_img_array = list()
         self.downloaded_var = IntVar(value=0)
-        self.downloaded_chkbtn = Checkbutton(master = gv.res_frame, var=self.downloaded_var, style="chkbtn.TCheckbutton")
+        self.downloaded_chkbtn = cb(master = gv.res_frame, var=self.downloaded_var,
+            foreground=gv.Files.Theme.foreground, 
+            background=gv.Files.Theme.background, 
+            borderwidth = 1,
+            highlightthickness = 1, 
+            selectcolor=gv.Files.Theme.checkbutton_pressed, 
+            activebackground=gv.Files.Theme.button_background_active, 
+            activeforeground=gv.Files.Theme.button_foreground_active, 
+            relief='flat',#default flat
+            overrelief='ridge',#no default
+            offrelief='flat',#default raised
+            indicatoron='false')
         self.downloaded_lbl = Label(master=gv.res_frame, text = service, style='label.TLabel')
         try:
             self.downloaded_wxh_lbl = Label(master=gv.res_frame, text = str(len(listdir(self.path))) + " images", style='label.TLabel')
@@ -220,8 +232,11 @@ class ProviderImageData():
 
         if self.service == 'Pixiv':
             for lbl in self.tags_lbl_array:
-                lbl[0].grid(column = 0, row = 12 + t, sticky = W)
-                lbl[1].grid(column = 1, row = 12 + t, sticky = W)
+                if lbl[1].cget('text') == '':
+                    lbl[0].grid(column = 0, row = 12 + t, sticky = W, columnspan=2)
+                else:
+                    lbl[0].grid(column = 0, row = 12 + t, sticky = W)
+                    lbl[1].grid(column = 1, row = 12 + t, sticky = W)
                 t += 1
         else:
             for lbl in self.tags_lbl_array:
