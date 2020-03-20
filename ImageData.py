@@ -241,6 +241,30 @@ class ImageData():
                         elem.downloaded_var.set(0)
             return -1
         
+        aspect_flag = False
+        highest_weight = (None, 0)
+        for elem in self.pixiv_list:
+            weight, flag = elem.evaluate_weight(self.original_image.size[0]/self.original_image.size[1], self.original_image.size[0])
+            if not aspect_flag:
+                aspect_flag = flag
+            if weight > highest_weight[1]:
+                highest_weight = (elem, weight)
+        for elem in self.danb_list:
+            weight, flag = elem.evaluate_weight(self.original_image.size[0]/self.original_image.size[1], self.original_image.size[0])
+            if not aspect_flag:
+                aspect_flag = flag
+            if weight > highest_weight[1]:
+                highest_weight = (elem, weight)
+        
+        original_weight = self.evaluate_weight()
+
+        if not aspect_flag:
+            original_weight = original_weight + int(gv.Files.Conf.higher_resolution_weight)
+        if original_weight > highest_weight[1]:
+            self.original_var.set(1)
+        else:
+            highest_weight[0].downloaded_var.set(1)
+
         #self.index = int(t/4)
         self.original_chkbtn.grid(column = 0, row = t+1, sticky = W)
         self.original_lbl.grid(column = 2, row = t+1, sticky = W, padx = 10)
@@ -257,6 +281,26 @@ class ImageData():
             t = elem.display_results(t+1)
 
         return t
+
+    def evaluate_weight(self):
+        img_weight = 0
+        filetype = self.name_original.split('.')[-1]
+        if filetype == 'png':
+            img_weight = img_weight + int(gv.Files.Conf.png_weight)
+        elif filetype == 'jpg':
+            img_weight = img_weight + int(gv.Files.Conf.jpg_weight)
+        elif filetype == 'jfif':
+            img_weight = img_weight + int(gv.Files.Conf.jfif_weight)
+        elif filetype == 'gif':
+            img_weight = img_weight + int(gv.Files.Conf.gif_weight)
+        elif filetype == 'bmp':
+            img_weight = img_weight + int(gv.Files.Conf.bmp_weight)
+        else:
+            img_weight = img_weight + int(gv.Files.Conf.other_weight)
+
+        img_weight = img_weight + int(gv.Files.Conf.original_weight)
+        
+        return img_weight
 
     def lock(self):
         """

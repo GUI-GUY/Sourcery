@@ -61,7 +61,7 @@ OPTIONS
 + SauceNao options
 + subfolders in input dir
 + delete input
-png over jpg over high res over uncensored options (weight system?)
++ png over jpg over high res over uncensored options (weight system?)
 + foreign folder support
 + tkinter color picker
 * tag own images as uncensored
@@ -121,6 +121,7 @@ bind keys
 import configparser
 pixiv gif support
 danbooru gif support
+weighted tags
 
 beta 0.5?
 queue images instead of 'get source' button?

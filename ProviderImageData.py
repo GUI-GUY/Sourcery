@@ -159,7 +159,7 @@ class ProviderImageData():
         self.results_tags_lbl.configure(text = results_tags)
 
         if not path.isdir(self.path):
-            self.downloaded_var.set(1)
+            #self.downloaded_var.set(1)
             self.downloaded_wxh_lbl.configure(text = str(self.downloaded_image.size))
             self.downloaded_type_lbl.configure(text = self.name[self.name.rfind(".")+1:])
         
@@ -405,6 +405,36 @@ class ProviderImageData():
                 if self.illustration['pixiv_id'] != None:
                     ret_list.append('pixiv work:' + str(self.illustration['pixiv_id']))
             return ret_list
+
+    def evaluate_weight(self, original_aspect_ratio, original_width):
+        img_weight = 0
+        aspect_flag = False
+        filetype = self.name.split('.')[-1]
+        if filetype == 'png':
+            img_weight = img_weight + int(gv.Files.Conf.png_weight)
+        elif filetype == 'jpg':
+            img_weight = img_weight + int(gv.Files.Conf.jpg_weight)
+        elif filetype == 'jfif':
+            img_weight = img_weight + int(gv.Files.Conf.jfif_weight)
+        elif filetype == 'gif':
+            img_weight = img_weight + int(gv.Files.Conf.gif_weight)
+        elif filetype == 'bmp':
+            img_weight = img_weight + int(gv.Files.Conf.bmp_weight)
+        else:
+            img_weight = img_weight + int(gv.Files.Conf.other_weight)
+
+        if self.service == 'Danbooru':
+            img_weight = img_weight + int(gv.Files.Conf.danbooru_weight)
+        elif self.service == 'Pixiv':
+            img_weight = img_weight + int(gv.Files.Conf.pixiv_weight)
+
+        if original_aspect_ratio == int(self.dict['width'])/int(self.dict['height']):
+            if int(self.dict['width']) > original_width:
+                img_weight = img_weight + int(gv.Files.Conf.higher_resolution_weight)
+            else:
+                aspect_flag = True
+        
+        return img_weight, aspect_flag
 
     def forget_results(self):
         self.downloaded_chkbtn.grid_forget()

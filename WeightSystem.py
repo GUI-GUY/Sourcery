@@ -34,7 +34,7 @@ class WeightSystem():
         self.other_weight_entry.insert(0, gv.Files.Conf.other_weight)
 
         
-        self.higher_resolution_weight_lbl = Label(self.scrollpar_frame, text="Higher resolution", font=("Arial Bold", 10), style="label.TLabel")
+        self.higher_resolution_weight_lbl = Label(self.scrollpar_frame, text="Higher resolution\n(Compared to input image)", font=("Arial Bold", 10), style="label.TLabel")
         self.higher_resolution_weight_entry = Entry(self.scrollpar_frame, width=width, style="button.TLabel")
         self.higher_resolution_weight_entry.insert(0, gv.Files.Conf.higher_resolution_weight)
 
@@ -89,7 +89,8 @@ class WeightSystem():
     # on change dropdown value
     def test_weights(self):
         img_0_weight = 0
-        s0_var = self.filetype_0_var.get()
+        img_1_weight = 0
+        s0_var = self.filetype_0_var.get() # TODO numbers cruncher
         if s0_var == 'png':
             img_0_weight = img_0_weight + int(self.png_weight_entry.get())
         if s0_var == 'jpg':
@@ -107,12 +108,14 @@ class WeightSystem():
             img_0_weight = img_0_weight + int(self.danbooru_weight_entry.get())
         if s0_var == 'Pixiv':
             img_0_weight = img_0_weight + int(self.pixiv_weight_entry.get())
-        if s0_var == 'Pixiv':
+        if s0_var == 'Original':
             img_0_weight = img_0_weight + int(self.original_weight_entry.get())
-        if int(self.width_0_entry.get()) > int(self.width_1_entry.get()):
-            img_0_weight = img_0_weight + int(self.higher_resolution_weight_entry.get())
-
-        img_1_weight = 0
+        if int(self.width_0_entry.get())/int(self.height_0_entry.get()) == int(self.width_1_entry.get())/int(self.height_1_entry.get()):
+            if int(self.width_0_entry.get()) > int(self.width_1_entry.get()):
+                img_0_weight = img_0_weight + int(self.higher_resolution_weight_entry.get())
+            else:
+                img_1_weight = img_1_weight + int(self.higher_resolution_weight_entry.get())
+        
         s1_var = self.filetype_1_var.get()
         if s1_var == 'png':
             img_1_weight = img_1_weight + int(self.png_weight_entry.get())
@@ -133,9 +136,7 @@ class WeightSystem():
             img_1_weight = img_1_weight + int(self.pixiv_weight_entry.get())
         if s1_var == 'Original':
             img_1_weight = img_1_weight + int(self.original_weight_entry.get())
-        if int(self.width_0_entry.get()) < int(self.width_1_entry.get()):
-            img_1_weight = img_1_weight + int(self.higher_resolution_weight_entry.get())
-        
+                
         self.image_0_weight_lbl.configure(text=str(img_0_weight))
         self.image_1_weight_lbl.configure(text=str(img_1_weight))
 
