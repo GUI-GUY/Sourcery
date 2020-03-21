@@ -61,6 +61,13 @@ def gen_tagfile(tags, gen_dir, name):
     """
     Takes a list of strings, the directory in which to generate the file and the name of the file
     """
+    for tag in tags:
+        counter = -1
+        for ta in tags:
+            if tag == ta:
+                counter = counter + 1
+        for t in range(counter):
+            tags.remove(tag)
     try:
         f = open(gen_dir + '/' + name + '.txt', 'a', encoding='utf8')
         for tag in tags:

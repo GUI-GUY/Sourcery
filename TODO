@@ -93,17 +93,17 @@ UI
 MISC
 - multiple SauceNao accounts support? if it works
 + pximg.net (with referer)
-+ all TODOs
+all TODOs
 + comments
 + Danbooru parents
 Fehlerbehandlung
 + stderr->logfile
 + tagfile generator: utf-8
-danbooru TODOs
++ danbooru TODOs
 reference repair
 weights default
-
-Last Error: 0049
+save button in provider options saves all 
+Last Error: 0050
 
 beta 0.4
 3rd service

@@ -53,7 +53,7 @@ def get_response(image_name, cwd, api_key, minsim, comm_error_q=None):
         index_danbooru=gv.Files.Conf.use_danbooru
         index_drawr='0'
         index_nijie='0'
-        index_yandere='0'#TODO danbooru
+        index_yandere=gv.Files.Conf.use_yandere#TODO danbooru
         index_animeop='0'
         index_reserved='0'
         index_shutterstock='0'
@@ -66,7 +66,7 @@ def get_response(image_name, cwd, api_key, minsim, comm_error_q=None):
         index_movies='0'
         index_shows='0'
         index_gelbooru='0'
-        index_konachan='0'#TODO danbooru
+        index_konachan=gv.Files.Conf.use_konachan#TODO danbooru
         index_sankaku='0'
         index_animepictures='0'
         index_e621='0'
@@ -161,6 +161,30 @@ def decode_response(results, EnableRename=False):
                     illust_id = elem['data']['danbooru_id']
                     source = elem['data']['ext_urls']
                     ret_dict.append({"service_name": service_name, "illust_id": illust_id, "source": source, "similarity": float(elem['header']['similarity'])})
+                elif elem['header']['index_id'] == 12:
+                    #12->yandere
+                    service_name='Yandere'
+                    illust_id = elem['data']['yandere_id']
+                    source = elem['data']['ext_urls']
+                    ret_dict.append({"service_name": service_name, "illust_id": illust_id, "source": source, "similarity": float(elem['header']['similarity'])})
+                    if 'danbooru_id' in elem['data']:
+                        if elem['data']['danbooru_id'] != None:
+                            service_name='Danbooru'
+                            illust_id = elem['data']['danbooru_id']
+                            source = elem['data']['ext_urls']
+                            ret_dict.append({"service_name": service_name, "illust_id": illust_id, "source": source, "similarity": float(elem['header']['similarity'])})
+                elif elem['header']['index_id'] == 26:
+                    #26->konachan
+                    service_name='Konachan'
+                    illust_id = elem['data']['konachan_id']
+                    source = elem['data']['ext_urls']
+                    ret_dict.append({"service_name": service_name, "illust_id": illust_id, "source": source, "similarity": float(elem['header']['similarity'])})
+                    if 'danbooru_id' in elem['data']:
+                        if elem['data']['danbooru_id'] != None:
+                            service_name='Danbooru'
+                            illust_id = elem['data']['danbooru_id']
+                            source = elem['data']['ext_urls']
+                            ret_dict.append({"service_name": service_name, "illust_id": illust_id, "source": source, "similarity": float(elem['header']['similarity'])})
                 else:
                     ret_dict.append({"service_name": service_name, "member_id": member_id, "illust_id": illust_id, "source": source, "similarity": float(elem['header']['similarity'])})
                 # elif index_id == 8:

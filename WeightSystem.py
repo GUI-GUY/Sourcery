@@ -7,9 +7,10 @@ import global_variables as gv
 
 class WeightSystem():
     """Includes all widgets for the weight system and methods to display and modify them"""
-    def __init__(self, parent):
+    def __init__(self, parent, lord):
         self.par = parent
-        self.scrollpar = ScrollFrame(self.par, gv.width/4, gv.height*0.6)
+        self.lord = lord
+        self.scrollpar = ScrollFrame(self.par, gv.width/3, gv.height*0.6)
         self.scrollpar_frame = self.scrollpar.frame
 
         self.weight_system_lbl = Label(self.par, text="Weight System", font=("Arial Bold", 12), style="label.TLabel")
@@ -49,6 +50,12 @@ class WeightSystem():
         self.danbooru_weight_lbl = Label(self.scrollpar_frame, text="Danbooru", font=("Arial Bold", 10), style="label.TLabel")
         self.danbooru_weight_entry = Entry(self.scrollpar_frame, width=width, style="button.TLabel")
         self.danbooru_weight_entry.insert(0, gv.Files.Conf.danbooru_weight)
+        self.yandere_weight_lbl = Label(self.scrollpar_frame, text="Yandere", font=("Arial Bold", 10), style="label.TLabel")
+        self.yandere_weight_entry = Entry(self.scrollpar_frame, width=width, style="button.TLabel")
+        self.yandere_weight_entry.insert(0, gv.Files.Conf.yandere_weight)
+        self.konachan_weight_lbl = Label(self.scrollpar_frame, text="Konachan", font=("Arial Bold", 10), style="label.TLabel")
+        self.konachan_weight_entry = Entry(self.scrollpar_frame, width=width, style="button.TLabel")
+        self.konachan_weight_entry.insert(0, gv.Files.Conf.konachan_weight)
         
 
         self.image_0_lbl = Label(self.scrollpar_frame, text="Image 1", font=("Arial Bold", 10), style="label.TLabel")
@@ -84,10 +91,8 @@ class WeightSystem():
 
         self.test_weights_btn = Button(self.scrollpar_frame, text='Test', command=self.test_weights, style ="button.TLabel")
 
-        self.save_btn = Button(parent, text='Save', command=self.danbooru_save, style ="button.TLabel")
+        self.save_btn = Button(parent, text='Save', command=self.weight_save, style ="button.TLabel")
 
-    
-    # on change dropdown value
     def test_weights(self):
         img_0_weight = 0
         img_1_weight = 0
@@ -148,8 +153,14 @@ class WeightSystem():
         """
         Displays the danbooru options widgets
         """
-        self.weight_system_lbl.place(x = int(gv.width/160*100), y = int(gv.height/90*8))
-        self.scrollpar.display(x = int(gv.width/160*100), y= int(gv.height/90*10))
+        self.lord.forget()
+        self.lord.PixO.forget()
+        self.lord.DanO.forget()
+        self.lord.YanO.forget()
+        self.lord.KonO.forget()
+        
+        self.weight_system_lbl.place(x = int(gv.width/160*40), y = int(gv.height/90*8))
+        self.scrollpar.display(x = int(gv.width/160*40), y= int(gv.height/90*10))
 
         self.filetype_weight_lbl.grid(row=10, column=0, sticky=W, padx=2, pady=1)
         self.png_weight_lbl.grid(row=11, column=0, sticky=W, padx=2, pady=1)
@@ -174,31 +185,91 @@ class WeightSystem():
         self.pixiv_weight_entry.grid(row=35, column=1, sticky=W, padx=2, pady=1)
         self.danbooru_weight_lbl.grid(row=37, column=0, sticky=W, padx=2, pady=1)
         self.danbooru_weight_entry.grid(row=37, column=1, sticky=W, padx=2, pady=1)
-        self.original_weight_lbl.grid(row=38, column=0, sticky=W, padx=2, pady=1)
-        self.original_weight_entry.grid(row=38, column=1, sticky=W, padx=2, pady=1)
+        self.yandere_weight_lbl.grid(row=39, column=0, sticky=W, padx=2, pady=1)
+        self.yandere_weight_entry.grid(row=39, column=1, sticky=W, padx=2, pady=1)
+        self.konachan_weight_lbl.grid(row=41, column=0, sticky=W, padx=2, pady=1)
+        self.konachan_weight_entry.grid(row=41, column=1, sticky=W, padx=2, pady=1)
+        self.original_weight_lbl.grid(row=43, column=0, sticky=W, padx=2, pady=1)
+        self.original_weight_entry.grid(row=43, column=1, sticky=W, padx=2, pady=1)
 
 
-        self.image_0_lbl.grid(row=39, column=0, sticky=W, padx=2, pady=1)
-        self.service_0_optmen.grid(row=40, column=0, sticky=E+W, padx=2, pady=1)
-        self.filetype_0_optmen.grid(row=41, column=0, sticky=E+W, padx=2, pady=1)
-        self.width_0_entry.grid(row=42, column=0, sticky=W, padx=2, pady=1)
-        self.height_0_entry.grid(row=43, column=0, sticky=W, padx=2, pady=1)
-        self.image_1_lbl.grid(row=39, column=1, sticky=W, padx=2, pady=1)
-        self.service_1_optmen.grid(row=40, column=1, sticky=E+W, padx=2, pady=1)
-        self.filetype_1_optmen.grid(row=41, column=1, sticky=E+W, padx=2, pady=1)
-        self.width_1_entry.grid(row=42, column=1, sticky=W, padx=2, pady=1)
-        self.height_1_entry.grid(row=43, column=1, sticky=W, padx=2, pady=1)
-        self.width_lbl.grid(row=42, column=2, sticky=W, padx=2, pady=1)
-        self.height_lbl.grid(row=43, column=2, sticky=W, padx=2, pady=1)
-        self.image_0_weight_lbl.grid(row=44, column=0, sticky=W, padx=2, pady=1)
-        self.image_1_weight_lbl.grid(row=44, column=1, sticky=W, padx=2, pady=1)
-        self.weight_lbl.grid(row=44, column=2, sticky=W, padx=2, pady=1)
+        self.image_0_lbl.grid(row=45, column=0, sticky=W, padx=2, pady=1)
+        self.service_0_optmen.grid(row=46, column=0, sticky=E+W, padx=2, pady=1)
+        self.filetype_0_optmen.grid(row=47, column=0, sticky=E+W, padx=2, pady=1)
+        self.width_0_entry.grid(row=48, column=0, sticky=W, padx=2, pady=1)
+        self.height_0_entry.grid(row=49, column=0, sticky=W, padx=2, pady=1)
+        self.image_1_lbl.grid(row=45, column=1, sticky=W, padx=2, pady=1)
+        self.service_1_optmen.grid(row=46, column=1, sticky=E+W, padx=2, pady=1)
+        self.filetype_1_optmen.grid(row=47, column=1, sticky=E+W, padx=2, pady=1)
+        self.width_1_entry.grid(row=48, column=1, sticky=W, padx=2, pady=1)
+        self.height_1_entry.grid(row=49, column=1, sticky=W, padx=2, pady=1)
+        self.width_lbl.grid(row=48, column=2, sticky=W, padx=2, pady=1)
+        self.height_lbl.grid(row=49, column=2, sticky=W, padx=2, pady=1)
+        self.image_0_weight_lbl.grid(row=50, column=0, sticky=W, padx=2, pady=1)
+        self.image_1_weight_lbl.grid(row=50, column=1, sticky=W, padx=2, pady=1)
+        self.weight_lbl.grid(row=50, column=2, sticky=W, padx=2, pady=1)
 
-        self.test_weights_btn.grid(row=45, column=2, sticky=W, padx=2, pady=1)
+        self.test_weights_btn.grid(row=55, column=2, sticky=W, padx=2, pady=1)
 
-        self.save_btn.place(x = int(gv.width/160*100), y = gv.height-220)
+        self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
 
-    def danbooru_save(self):
+    def forget(self):
+        self.weight_system_lbl.place_forget()
+        self.scrollpar.sub_frame.place_forget()
+
+        self.filetype_weight_lbl.grid_forget()
+        self.png_weight_lbl.grid_forget()
+        self.png_weight_entry.grid_forget()
+        self.jpg_weight_lbl.grid_forget()
+        self.jpg_weight_entry.grid_forget()
+        self.jfif_weight_lbl.grid_forget()
+        self.jfif_weight_entry.grid_forget()
+        self.gif_weight_lbl.grid_forget()
+        self.gif_weight_entry.grid_forget()
+        self.bmp_weight_lbl.grid_forget()
+        self.bmp_weight_entry.grid_forget()
+        self.other_weight_lbl.grid_forget()
+        self.other_weight_entry.grid_forget()
+
+        
+        self.higher_resolution_weight_lbl.grid_forget()
+        self.higher_resolution_weight_entry.grid_forget()
+
+        self.service_weight_lbl.grid_forget()
+        self.pixiv_weight_lbl.grid_forget()
+        self.pixiv_weight_entry.grid_forget()
+        self.danbooru_weight_lbl.grid_forget()
+        self.danbooru_weight_entry.grid_forget()
+        self.yandere_weight_lbl.grid_forget()
+        self.yandere_weight_entry.grid_forget()
+        self.konachan_weight_lbl.grid_forget()
+        self.konachan_weight_entry.grid_forget()
+        self.original_weight_lbl.grid_forget()
+        self.original_weight_entry.grid_forget()
+
+
+        self.image_0_lbl.grid_forget()
+        self.service_0_optmen.grid_forget()
+        self.filetype_0_optmen.grid_forget()
+        self.width_0_entry.grid_forget()
+        self.height_0_entry.grid_forget()
+        self.image_1_lbl.grid_forget()
+        self.service_1_optmen.grid_forget()
+        self.filetype_1_optmen.grid_forget()
+        self.width_1_entry.grid_forget()
+        self.height_1_entry.grid_forget()
+        self.width_lbl.grid_forget()
+        self.height_lbl.grid_forget()
+        self.image_0_weight_lbl.grid_forget()
+        self.image_1_weight_lbl.grid_forget()
+        self.weight_lbl.grid_forget()
+
+        self.test_weights_btn.grid_forget()
+
+        self.save_btn.place_forget()
+
+
+    def weight_save(self):
         gv.Files.Log.write_to_log('Attempting to save Weight options...')
         gv.Files.Conf.png_weight = self.png_weight_entry.get()
         gv.Files.Conf.jpg_weight = self.jpg_weight_entry.get()
@@ -208,6 +279,8 @@ class WeightSystem():
         gv.Files.Conf.other_weight = self.other_weight_entry.get()
         gv.Files.Conf.pixiv_weight = self.pixiv_weight_entry.get()
         gv.Files.Conf.danbooru_weight = self.danbooru_weight_entry.get()
+        gv.Files.Conf.yandere_weight = self.yandere_weight_entry.get()
+        gv.Files.Conf.konachan_weight = self.konachan_weight_entry.get()
         gv.Files.Conf.original_weight = self.original_weight_entry.get()
         gv.Files.Conf.higher_resolution_weight = self.higher_resolution_weight_entry.get()
         gv.Files.Conf.write_config()

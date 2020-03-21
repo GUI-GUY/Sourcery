@@ -2,6 +2,7 @@ from os import getcwd # path manipulation
 from urllib.request import urlretrieve
 from requests import get
 #from webbrowser import open_new
+from fake_useragent import UserAgent
 import global_variables as gv
 
 # https://github.com/uncountablecat/danbooru-grabber
@@ -10,14 +11,24 @@ danbooru_folder = 'D:\All_Files\python\GitHub\Sourcery\Sourcery\dan'
 
 
 # request json, get urls of pictures and download them
-def danbooru_fetch_illustration(imgid, comm_error_q=None):
+def danbooru_fetch_illustration(imgid, comm_error_q=None, danbooru=False, yandere=False, konachan=False):
     """
     Request info from danbooru API to given imgid\n
     Return illustration dictionary on success, False otherwise
     """
     try:
-        r = get('https://danbooru.donmai.us/posts/' + str(imgid) + '.json')
+        if danbooru:
+            r = get('https://danbooru.donmai.us/posts/' + str(imgid) + '.json')
+        elif yandere:
+            r = get('https://yande.re/post.json?tags=id:' + str(imgid))
+        elif konachan:
+            r = get('https://konachan.com/post.json?tags=id:' + str(imgid))
+        else:
+            return False
         illustration = r.json()
+        if yandere or konachan:
+            if 'id' in illustration[0]:
+                return illustration[0]
         if 'id' in illustration:
             return illustration
         else:
@@ -26,24 +37,56 @@ def danbooru_fetch_illustration(imgid, comm_error_q=None):
         # TODO
         return False
     
-def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None):
+def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None, danbooru=False, yandere=False, konachan=False):
     """
     Downloads given image from Danbooru and renames it properly\n
     Return the new name on success, False otherwise
     """
     try:
-        if 'file_url' in illustration:
-            if gv.Files.Conf.rename_danbooru == '1':
-                urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + illustration['file_url'].split('/')[-1])
-                new_name = illustration['file_url'].split('/')[-1]
-            else:
-                dot = img_name_original.rfind('.')
-                if dot != -1:
-                    new_name = img_name_original[:dot] + '.' + illustration['file_ext']
+        if danbooru:
+            if 'file_url' in illustration:
+                if gv.Files.Conf.rename_danbooru == '1':
+                    urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + illustration['file_url'].split('/')[-1])
+                    new_name = illustration['file_url'].split('/')[-1]
                 else:
-                    new_name = img_name_original + '.' + illustration['file_ext']
-                urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + new_name)
-        return new_name# TODO
+                    dot = img_name_original.rfind('.')
+                    if dot != -1:
+                        new_name = img_name_original[:dot] + '.' + illustration['file_ext']
+                    else:
+                        new_name = img_name_original + '.' + illustration['file_ext']
+                    urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + new_name)
+                return new_name# TODO
+            return False
+        elif yandere:
+            if 'file_url' in illustration:
+                if gv.Files.Conf.rename_yandere == '1':
+                    urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/yandere/' + illustration['file_url'].split('/')[-1])
+                    new_name = illustration['file_url'].split('/')[-1]
+                else:
+                    dot = img_name_original.rfind('.')
+                    if dot != -1:
+                        new_name = img_name_original[:dot] + '.' + illustration['file_ext']
+                    else:
+                        new_name = img_name_original + '.' + illustration['file_ext']
+                    urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/yandere/' + new_name)
+                return new_name# TODO
+            return False
+        elif konachan:
+            if 'file_url' in illustration:
+                if gv.Files.Conf.rename_konachan == '1':
+                    urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/konachan/' + illustration['file_url'].split('/')[-1])
+                    new_name = illustration['file_url'].split('/')[-1]
+                else:
+                    dot = img_name_original.rfind('.')
+                    if dot != -1:
+                        new_name = img_name_original[:dot] + '.' + illustration['file_ext']
+                    else:
+                        new_name = img_name_original + '.' + illustration['file_ext']
+                    urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/konachan/' + new_name)
+                return new_name# TODO
+            return False
+        else:
+            return False
         #urlretrieve('https://i.pximg.net/img-original/img/2018/11/16/00/00/01/71671760_p0.png', danbooru_folder + '/' + folder + '/' + stream['file_url'].split('/')[-1])
     except Exception as e:
         return False

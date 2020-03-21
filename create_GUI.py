@@ -26,7 +26,7 @@ from ScrollFrame import ScrollFrame
 from Files import Files
 import global_variables as gv
 
-stderr = gv.Files.Log
+#stderr = gv.Files.Log
 
 def magic():
     """
@@ -171,7 +171,7 @@ def refresh_startpage(change, answer2):
         a = img_data_q.get()
         #print('a')
         global index
-        b = ImageData(a[0], a[1], a[2], a[3], a[4], a[5], a[6], index) #TODO Fehler
+        b = ImageData(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], index) #TODO Fehler
         index += 1
         gv.img_data_array.append(b)
         #print('b')

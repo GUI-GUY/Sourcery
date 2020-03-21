@@ -29,6 +29,8 @@ class Files():
             makedirs(cwd + "/Sourcery/sourced_original", 0o777, True)
             makedirs(cwd + "/Sourcery/sourced_progress/pixiv", 0o777, True)
             makedirs(cwd + "/Sourcery/sourced_progress/danbooru", 0o777, True)
+            makedirs(cwd + "/Sourcery/sourced_progress/yandere", 0o777, True)
+            makedirs(cwd + "/Sourcery/sourced_progress/konachan", 0o777, True)
             # makedirs(cwd + "/Sourcery/sourced_progress/gelbooru", 0o777, True)
         except Exception as e:
             print("ERROR [0007] " + str(e))
@@ -296,9 +298,12 @@ class LogFile():
     def __init__(self):
         self.log = -1
         self.log_text = None
+        self.init_log_init = False
         #self.init_log()
 
     def init_log(self):
+        if self.init_log_init:
+            return
         try:
             self.log = open(cwd + '/Sourcery/log', 'a')
             self.log.write('\nSourcery started. Date:' + strftime("20%y|%m|%d") + ' Time:' + strftime("%H:%M:%S") + '\n')
@@ -309,8 +314,11 @@ class LogFile():
             print("ERROR [0038] " + str(e))
             #self.Log.write_to_log("ERROR [0038] " + str(e))
             mb.showerror("ERROR [0038]", "ERROR CODE [0038]\nSomething went wrong while accessing a configuration file(log), please restart Sourcery.")
-    
+        self.init_log_init = True
+
     def write_to_log(self, message = ''):
+        if self.log == -1:
+            self.init_log()
         if message != '':
             try:
                 self.log.write('[' + strftime("%H:%M:%S") + '] ' + message + '\n')
@@ -319,9 +327,9 @@ class LogFile():
                 self.log_text.insert(END,'[' + strftime("%H:%M:%S") + '] ' + message + '\n')
                 self.log_text.configure(state='disabled')
             except Exception as e:
-                print("ERROR [0036] " + str(e))
-                #self.Log.write_to_log("ERROR [0033] " + str(e))
-                mb.showerror("ERROR [0036]", "ERROR CODE [0036]\nSomething went wrong while accessing a configuration file(log), please restart Sourcery as soon as possible.")
+                print("ERROR [0050] " + str(e))
+                #self.Log.write_to_log("ERROR [0050] " + str(e))
+                mb.showerror("ERROR [0050]", "ERROR CODE [0050]\nSomething went wrong while accessing a configuration file(log), please restart Sourcery as soon as possible.")
 
     def write(self, message):
         self.write_to_log(message)
@@ -334,29 +342,58 @@ class ConfigFile():
     def __init__(self, log):
         self.Log = log
         self.rename_pixiv = '0'
-        self.rename_danbooru = '0'
-        self.minsim = '80'
-        self.imgpp = '12'
-        self.tags_danbooru = ''
         self.tags_pixiv = ''
-        self.input_dir = cwd + '/Input'
-        self.output_dir = cwd + '/Output'
-        self.delete_input = '0'
         self.gen_tagfile_pixiv = '0'
         self.tagfile_pixiv_pixiv = '0'
         self.tagfile_danbooru_pixiv = '0'
+        self.tagfile_yandere_pixiv = '0'
+        self.tagfile_konachan_pixiv = '0'
+        self.direct_replace_pixiv = '0'
+        self.use_pixiv = '1'
+
+        self.rename_danbooru = '0'
+        self.tags_danbooru = ''
         self.gen_tagfile_danbooru = '0'
         self.tagfile_pixiv_danbooru = '0'
         self.tagfile_danbooru_danbooru = '0'
+        self.tagfile_yandere_danbooru = '0'
+        self.tagfile_konachan_danbooru = '0'
+        self.direct_replace_danbooru = '0'
+        self.use_danbooru = '1'
+
+        self.rename_yandere = '0'
+        self.tags_yandere = ''
+        self.gen_tagfile_yandere = '0'
+        self.tagfile_pixiv_yandere = '0'
+        self.tagfile_danbooru_yandere = '0'
+        self.tagfile_yandere_yandere = '0'
+        self.tagfile_konachan_yandere = '0'
+        self.direct_replace_yandere = '0'
+        self.use_yandere = '1'
+
+
+        self.rename_konachan = '0'
+        self.tags_konachan = ''
+        self.gen_tagfile_konachan = '0'
+        self.tagfile_pixiv_konachan = '0'
+        self.tagfile_danbooru_konachan = '0'
+        self.tagfile_yandere_konachan = '0'
+        self.tagfile_konachan_konachan = '0'
+        self.direct_replace_konachan = '0'
+        self.use_konachan = '1'
+
+        self.minsim = '80'
+        self.imgpp = '12'
+        self.input_dir = cwd + '/Input'
+        self.output_dir = cwd + '/Output'
+        self.delete_input = '0'
         self.gen_tagfile_original = '0'
         self.tagfile_pixiv_original = '0'
         self.tagfile_danbooru_original = '0'
+        self.tagfile_yandere_original = '0'
+        self.tagfile_konachan_original = '0'
         self.saucenao_returns = '10'
         self.direct_replace = '100'
-        self.direct_replace_pixiv = '0'
-        self.direct_replace_danbooru = '0'
-        self.use_pixiv = '1'
-        self.use_danbooru = '1'
         self.input_search_depth = '1'
         self.saucenao_depth = '128'
         self.saucenao_bias = '15'
@@ -370,6 +407,8 @@ class ConfigFile():
         self.higher_resolution_weight = '0'
         self.pixiv_weight = '0'
         self.danbooru_weight = '0'
+        self.yandere_weight = '0'
+        self.konachan_weight = '0'
         self.original_weight = '0'
         if self.read_config():
             self.write_config()
@@ -392,81 +431,139 @@ class ConfigFile():
         while (not temp.startswith('END')):
             if temp.startswith('rename_pixiv='):
                 self.rename_pixiv = temp[temp.find('=')+1:-1]
-            if temp.startswith('rename_danbooru='):
-                self.rename_danbooru = temp[temp.find('=')+1:-1]
-            if temp.startswith('minsim='):
-                self.minsim = temp[temp.find('=')+1:-1]
-            if temp.startswith('imagesperpage='):
-                self.imgpp = temp[temp.find('=')+1:-1]
-            if temp.startswith('tags_danbooru='):
-                self.tags_danbooru = temp[temp.find('=')+1:-1]
-                self.tags_danbooru = self.tags_danbooru.replace(' /n ', '\n').replace(' /t ', '\t')
-            if temp.startswith('tags_pixiv='):
+            elif temp.startswith('tags_pixiv='):
                 self.tags_pixiv = temp[temp.find('=')+1:-1]
                 self.tags_pixiv = self.tags_pixiv.replace(' /n ', '\n').replace(' /t ', '\t')
-            if temp.startswith('input_dir='):
-                self.input_dir = temp[temp.find('=')+1:-1]
-            if temp.startswith('output_dir='):
-                self.output_dir = temp[temp.find('=')+1:-1]
-            if temp.startswith('delete_input='):
-                self.delete_input = temp[temp.find('=')+1:-1]
-            if temp.startswith('gen_tagfile_pixiv='):
+            elif temp.startswith('gen_tagfile_pixiv='):
                 self.gen_tagfile_pixiv = temp[temp.find('=')+1:-1]
-            if temp.startswith('tagfile_pixiv_pixiv='):
+            elif temp.startswith('tagfile_pixiv_pixiv='):
                 self.tagfile_pixiv_pixiv = temp[temp.find('=')+1:-1]
-            if temp.startswith('tagfile_danbooru_pixiv='):
+            elif temp.startswith('tagfile_danbooru_pixiv='):
                 self.tagfile_danbooru_pixiv = temp[temp.find('=')+1:-1]
-            if temp.startswith('gen_tagfile_danbooru='):
-                self.gen_tagfile_danbooru = temp[temp.find('=')+1:-1]
-            if temp.startswith('tagfile_pixiv_danbooru='):
-                self.tagfile_pixiv_danbooru = temp[temp.find('=')+1:-1]
-            if temp.startswith('tagfile_danbooru_danbooru='):
-                self.tagfile_danbooru_danbooru = temp[temp.find('=')+1:-1]
-            if temp.startswith('gen_tagfile_original='):
-                self.gen_tagfile_original = temp[temp.find('=')+1:-1]
-            if temp.startswith('tagfile_pixiv_original='):
-                self.tagfile_pixiv_original = temp[temp.find('=')+1:-1]
-            if temp.startswith('tagfile_danbooru_original='):
-                self.tagfile_danbooru_original = temp[temp.find('=')+1:-1]
-            if temp.startswith('saucenao_returns='):
-                self.saucenao_returns = temp[temp.find('=')+1:-1]
-            if temp.startswith('direct_replace='):
-                self.direct_replace = temp[temp.find('=')+1:-1]
-            if temp.startswith('direct_replace_pixiv='):
-                self.direct_replace_pixiv = temp[temp.find('=')+1:-1]
-            if temp.startswith('direct_replace_danbooru='):
-                self.direct_replace_danbooru = temp[temp.find('=')+1:-1]
-            if temp.startswith('use_pixiv='):
+            elif temp.startswith('tagfile_yandere_pixiv='):
+                self.tagfile_yandere_pixiv = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_konachan_pixiv='):
+                self.tagfile_konachan_pixiv = temp[temp.find('=')+1:-1]
+            elif temp.startswith('use_pixiv='):
                 self.use_pixiv = temp[temp.find('=')+1:-1]
-            if temp.startswith('use_danbooru='):
+            elif temp.startswith('direct_replace_pixiv='):
+                self.direct_replace_pixiv = temp[temp.find('=')+1:-1]
+
+            elif temp.startswith('rename_danbooru='):
+                self.rename_danbooru = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tags_danbooru='):
+                self.tags_danbooru = temp[temp.find('=')+1:-1]
+                self.tags_danbooru = self.tags_danbooru.replace(' /n ', '\n').replace(' /t ', '\t')
+            elif temp.startswith('gen_tagfile_danbooru='):
+                self.gen_tagfile_danbooru = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_pixiv_danbooru='):
+                self.tagfile_pixiv_danbooru = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_danbooru_danbooru='):
+                self.tagfile_danbooru_danbooru = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_yandere_danbooru='):
+                self.tagfile_yandere_danbooru = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_konachan_danbooru='):
+                self.tagfile_konachan_danbooru = temp[temp.find('=')+1:-1]
+            elif temp.startswith('use_danbooru='):
                 self.use_danbooru = temp[temp.find('=')+1:-1]
+            elif temp.startswith('direct_replace_danbooru='):
+                self.direct_replace_danbooru = temp[temp.find('=')+1:-1]
+        
+            elif temp.startswith('rename_yandere='):
+                self.rename_yandere = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tags_yandere='):
+                self.tags_yandere = temp[temp.find('=')+1:-1]
+                self.tags_yandere = self.tags_yandere.replace(' /n ', '\n').replace(' /t ', '\t')
+            elif temp.startswith('gen_tagfile_yandere='):
+                self.gen_tagfile_yandere = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_pixiv_yandere='):
+                self.tagfile_pixiv_yandere = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_danbooru_yandere='):
+                self.tagfile_danbooru_yandere = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_yandere_yandere='):
+                self.tagfile_yandere_yandere = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_konachan_yandere='):
+                self.tagfile_konachan_yandere = temp[temp.find('=')+1:-1]
+            elif temp.startswith('use_yandere='):
+                self.use_yandere = temp[temp.find('=')+1:-1]
+            elif temp.startswith('direct_replace_yandere='):
+                self.direct_replace_yandere = temp[temp.find('=')+1:-1]
+
+            elif temp.startswith('rename_konachan='):
+                self.rename_konachan = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tags_konachan='):
+                self.tags_konachan = temp[temp.find('=')+1:-1]
+                self.tags_konachan = self.tags_konachan.replace(' /n ', '\n').replace(' /t ', '\t')     
+            elif temp.startswith('gen_tagfile_konachan='):
+                self.gen_tagfile_konachan = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_pixiv_konachan='):
+                self.tagfile_pixiv_konachan = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_danbooru_konachan='):
+                self.tagfile_danbooru_konachan = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_yandere_konachan='):
+                self.tagfile_yandere_konachan = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_konachan_konachan='):
+                self.tagfile_konachan_konachan = temp[temp.find('=')+1:-1]
+            elif temp.startswith('use_konachan='):
+                self.use_konachan = temp[temp.find('=')+1:-1]
+            elif temp.startswith('direct_replace_konachan='):
+                self.direct_replace_konachan = temp[temp.find('=')+1:-1]
+
+            elif temp.startswith('minsim='):
+                self.minsim = temp[temp.find('=')+1:-1]
+            elif temp.startswith('imagesperpage='):
+                self.imgpp = temp[temp.find('=')+1:-1]
+            elif temp.startswith('input_dir='):
+                self.input_dir = temp[temp.find('=')+1:-1]
+            elif temp.startswith('output_dir='):
+                self.output_dir = temp[temp.find('=')+1:-1]
+            elif temp.startswith('delete_input='):
+                self.delete_input = temp[temp.find('=')+1:-1]
+            elif temp.startswith('gen_tagfile_original='):
+                self.gen_tagfile_original = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_pixiv_original='):
+                self.tagfile_pixiv_original = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_danbooru_original='):
+                self.tagfile_danbooru_original = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_yandere_original='):
+                self.tagfile_yandere_original = temp[temp.find('=')+1:-1]
+            elif temp.startswith('tagfile_konachan_original='):
+                self.tagfile_konachan_original = temp[temp.find('=')+1:-1]
+            elif temp.startswith('saucenao_returns='):
+                self.saucenao_returns = temp[temp.find('=')+1:-1]
+            elif temp.startswith('direct_replace='):
+                self.direct_replace = temp[temp.find('=')+1:-1]
             if temp.startswith('input_search_depth='):
                 self.input_search_depth = temp[temp.find('=')+1:-1]
-            if temp.startswith('saucenao_depth='):
+            elif temp.startswith('saucenao_depth='):
                 self.saucenao_depth = temp[temp.find('=')+1:-1]
-            if temp.startswith('saucenao_bias='):
+            elif temp.startswith('saucenao_bias='):
                 self.saucenao_bias = temp[temp.find('=')+1:-1]
-            if temp.startswith('saucenao_biasmin='):
+            elif temp.startswith('saucenao_biasmin='):
                 self.saucenao_biasmin = temp[temp.find('=')+1:-1]
-            if temp.startswith('png_weight='):
+            elif temp.startswith('png_weight='):
                 self.png_weight = temp[temp.find('=')+1:-1]
-            if temp.startswith('jpg_weight='):
+            elif temp.startswith('jpg_weight='):
                 self.jpg_weight = temp[temp.find('=')+1:-1]
-            if temp.startswith('jfif_weight='):
+            elif temp.startswith('jfif_weight='):
                 self.jfif_weight = temp[temp.find('=')+1:-1]
-            if temp.startswith('gif_weight='):
+            elif temp.startswith('gif_weight='):
                 self.gif_weight = temp[temp.find('=')+1:-1]
-            if temp.startswith('bmp_weight='):
+            elif temp.startswith('bmp_weight='):
                 self.bmp_weight = temp[temp.find('=')+1:-1]
-            if temp.startswith('other_weight='):
+            elif temp.startswith('other_weight='):
                 self.other_weight = temp[temp.find('=')+1:-1]
-            if temp.startswith('higher_resolution_weight='):
+            elif temp.startswith('higher_resolution_weight='):
                 self.higher_resolution_weight = temp[temp.find('=')+1:-1]
-            if temp.startswith('pixiv_weight='):
+            elif temp.startswith('pixiv_weight='):
                 self.pixiv_weight = temp[temp.find('=')+1:-1]
-            if temp.startswith('danbooru_weight='):
+            elif temp.startswith('danbooru_weight='):
                 self.danbooru_weight = temp[temp.find('=')+1:-1]
-            if temp.startswith('original_weight='):
+            elif temp.startswith('yandere_weight='):
+                self.yandere_weight = temp[temp.find('=')+1:-1]
+            elif temp.startswith('konachan_weight='):
+                self.konachan_weight = temp[temp.find('=')+1:-1]
+            elif temp.startswith('original_weight='):
                 self.original_weight = temp[temp.find('=')+1:-1]
 
             temp = f.readline()
@@ -477,6 +574,92 @@ class ConfigFile():
         """
         Writes the current options to the config file
         """
+        self.numbers_cruncher()
+
+        self.tags_pixiv = self.tags_pixiv.replace('\n', ' /n ').replace('\t', ' /t ')
+        self.tags_danbooru = self.tags_danbooru.replace('\n', ' /n ').replace('\t', ' /t ')
+        self.tags_yandere = self.tags_yandere.replace('\n', ' /n ').replace('\t', ' /t ')
+        self.tags_konachan = self.tags_konachan.replace('\n', ' /n ').replace('\t', ' /t ')
+
+        conf = ("rename_pixiv=" + self.rename_pixiv +
+                "\ntags_pixiv=" + self.tags_pixiv +
+                "\ngen_tagfile_pixiv=" + self.gen_tagfile_pixiv +
+                "\ntagfile_pixiv_pixiv=" + self.tagfile_pixiv_pixiv +
+                "\ntagfile_danbooru_pixiv=" + self.tagfile_danbooru_pixiv +
+                "\ntagfile_yandere_pixiv=" + self.tagfile_yandere_pixiv +
+                "\ntagfile_konachan_pixiv=" + self.tagfile_konachan_pixiv +
+                "\ndirect_replace_pixiv=" + self.direct_replace_pixiv +
+                "\nuse_pixiv=" + self.use_pixiv +
+                "\nrename_danbooru=" + self.rename_danbooru +
+                "\ntags_danbooru=" + self.tags_danbooru +
+                "\ngen_tagfile_danbooru=" + self.gen_tagfile_danbooru +
+                "\ntagfile_pixiv_danbooru=" + self.tagfile_pixiv_danbooru +
+                "\ntagfile_danbooru_danbooru=" + self.tagfile_danbooru_danbooru +
+                "\ntagfile_yandere_danbooru=" + self.tagfile_yandere_danbooru +
+                "\ntagfile_konachan_danbooru=" + self.tagfile_konachan_danbooru +
+                "\ndirect_replace_danbooru=" + self.direct_replace_danbooru +
+                "\nuse_danbooru=" + self.use_danbooru +
+                "\nrename_yandere=" + self.rename_yandere +
+                "\ntags_yandere=" + self.tags_yandere +
+                "\ngen_tagfile_yandere=" + self.gen_tagfile_yandere +
+                "\ntagfile_pixiv_yandere=" + self.tagfile_pixiv_yandere +
+                "\ntagfile_danbooru_yandere=" + self.tagfile_danbooru_yandere +
+                "\ntagfile_yandere_yandere=" + self.tagfile_yandere_yandere +
+                "\ntagfile_konachan_yandere=" + self.tagfile_konachan_yandere +
+                "\ndirect_replace_yandere=" + self.direct_replace_yandere +
+                "\nuse_yandere=" + self.use_yandere +
+                "\nrename_konachan=" + self.rename_konachan +
+                "\ntags_konachan=" + self.tags_konachan +
+                "\ngen_tagfile_konachan=" + self.gen_tagfile_konachan +
+                "\ntagfile_pixiv_konachan=" + self.tagfile_pixiv_konachan +
+                "\ntagfile_danbooru_konachan=" + self.tagfile_danbooru_konachan +
+                "\ntagfile_yandere_konachan=" + self.tagfile_yandere_konachan +
+                "\ntagfile_konachan_konachan=" + self.tagfile_konachan_konachan +
+                "\ndirect_replace_konachan=" + self.direct_replace_konachan +
+                "\nuse_konachan=" + self.use_konachan +
+                "\nminsim=" + self.minsim +
+                "\nimagesperpage=" + self.imgpp +
+                "\ntags_yandere=" + self.tags_yandere +
+                "\ntags_konachan=" + self.tags_konachan +
+                "\ninput_dir=" + self.input_dir +
+                "\noutput_dir=" + self.output_dir +
+                "\ndelete_input=" + self.delete_input +
+                "\ngen_tagfile_original=" + self.gen_tagfile_original +
+                "\ntagfile_pixiv_original=" + self.tagfile_pixiv_original +
+                "\ntagfile_danbooru_original=" + self.tagfile_danbooru_original +
+                "\ntagfile_yandere_original=" + self.tagfile_yandere_original +
+                "\ntagfile_konachan_original=" + self.tagfile_konachan_original +
+                "\nsaucenao_returns=" + self.saucenao_returns +
+                "\ndirect_replace=" + self.direct_replace +
+                "\ninput_search_depth=" + self.input_search_depth +
+                "\nsaucenao_depth=" + self.saucenao_depth +
+                "\nsaucenao_bias=" + self.saucenao_bias +
+                "\nsaucenao_biasmin=" + self.saucenao_biasmin +
+                "\npng_weight=" + self.png_weight +
+                "\njpg_weight=" + self.jpg_weight +
+                "\njfif_weight=" + self.jfif_weight +
+                "\ngif_weight=" + self.gif_weight +
+                "\nbmp_weight=" + self.bmp_weight +
+                "\nother_weight=" + self.other_weight +
+                "\nhigher_resolution_weight=" + self.higher_resolution_weight +
+                "\npixiv_weight=" + self.pixiv_weight +
+                "\ndanbooru_weight=" + self.danbooru_weight +
+                "\nyandere_weight=" + self.yandere_weight +
+                "\nkonachan_weight=" + self.konachan_weight +
+                "\noriginal_weight=" + self.original_weight +
+                "\n\nEND")
+        try:
+            f = open(cwd + '/Sourcery/config', 'w')
+            f.write(conf)
+        except Exception as e:
+            print("ERROR [0025] " + str(e))
+            self.Log.write_to_log("ERROR [0025] " + str(e))
+            mb.showerror("ERROR [0025]", "ERROR CODE [0025]\nSomething went wrong while accessing a configuration file(config), please try again or restart Sourcery.")
+            return
+        f.close()
+        self.read_config()
+
+    def numbers_cruncher(self):
         try:
             temp_num = int(self.minsim)
             if temp_num < 0 or temp_num > 100:
@@ -584,63 +767,20 @@ class ConfigFile():
             mb.showerror('Invalid Value', 'Please insert an integer value into the Danbooru weight option')
             self.danbooru_weight = '0'
         try:
+            temp_num = int(self.yandere_weight)
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert an integer value into the Yandere weight option')
+            self.yandere_weight = '0'
+        try:
+            temp_num = int(self.konachan_weight)
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert an integer value into the Konachan weight option')
+            self.konachan_weight = '0'
+        try:
             temp_num = int(self.original_weight)
         except Exception as e:
             mb.showerror('Invalid Value', 'Please insert an integer value into the Original weight option')
             self.original_weight = '0'
-
-        self.tags_danbooru = self.tags_danbooru.replace('\n', ' /n ').replace('\t', ' /t ')
-        self.tags_pixiv = self.tags_pixiv.replace('\n', ' /n ').replace('\t', ' /t ')
-
-        conf = ("rename_pixiv=" + self.rename_pixiv +
-                "\nrename_danbooru=" + self.rename_danbooru +
-                "\nminsim=" + self.minsim +
-                "\nimagesperpage=" + self.imgpp +
-                "\ntags_danbooru=" + self.tags_danbooru +
-                "\ntags_pixiv=" + self.tags_pixiv +
-                "\ninput_dir=" + self.input_dir +
-                "\noutput_dir=" + self.output_dir +
-                "\ndelete_input=" + self.delete_input +
-                "\ngen_tagfile_pixiv=" + self.gen_tagfile_pixiv +
-                "\ntagfile_pixiv_pixiv=" + self.tagfile_pixiv_pixiv +
-                "\ntagfile_danbooru_pixiv=" + self.tagfile_danbooru_pixiv +
-                "\ngen_tagfile_danbooru=" + self.gen_tagfile_danbooru +
-                "\ntagfile_pixiv_danbooru=" + self.tagfile_pixiv_danbooru +
-                "\ntagfile_danbooru_danbooru=" + self.tagfile_danbooru_danbooru +
-                "\ngen_tagfile_original=" + self.gen_tagfile_original +
-                "\ntagfile_pixiv_original=" + self.tagfile_pixiv_original +
-                "\ntagfile_danbooru_original=" + self.tagfile_danbooru_original +
-                "\nsaucenao_returns=" + self.saucenao_returns +
-                "\ndirect_replace=" + self.direct_replace +
-                "\ndirect_replace_pixiv=" + self.direct_replace_pixiv +
-                "\ndirect_replace_danbooru=" + self.direct_replace_danbooru +
-                "\nuse_pixiv=" + self.use_pixiv +
-                "\nuse_danbooru=" + self.use_danbooru +
-                "\ninput_search_depth=" + self.input_search_depth +
-                "\nsaucenao_depth=" + self.saucenao_depth +
-                "\nsaucenao_bias=" + self.saucenao_bias +
-                "\nsaucenao_biasmin=" + self.saucenao_biasmin +
-                "\npng_weight=" + self.png_weight +
-                "\njpg_weight=" + self.jpg_weight +
-                "\njfif_weight=" + self.jfif_weight +
-                "\ngif_weight=" + self.gif_weight +
-                "\nbmp_weight=" + self.bmp_weight +
-                "\nother_weight=" + self.other_weight +
-                "\nhigher_resolution_weight=" + self.higher_resolution_weight +
-                "\npixiv_weight=" + self.pixiv_weight +
-                "\ndanbooru_weight=" + self.danbooru_weight +
-                "\noriginal_weight=" + self.original_weight +
-                "\n\nEND")
-        try:
-            f = open(cwd + '/Sourcery/config', 'w')
-            f.write(conf)
-        except Exception as e:
-            print("ERROR [0025] " + str(e))
-            self.Log.write_to_log("ERROR [0025] " + str(e))
-            mb.showerror("ERROR [0025]", "ERROR CODE [0025]\nSomething went wrong while accessing a configuration file(config), please try again or restart Sourcery.")
-            return
-        f.close()
-        self.read_config()
 
 class ReferenceFile():
     """Includes methods to add a new reference, read these from the reference file or delete its contents"""

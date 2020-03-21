@@ -416,47 +416,92 @@ class ProviderOptions():
     """Hosts all image provider options Classes"""
     def __init__(self, parent):
         self.par = parent
-        self.PixO = PixivOptions(parent)
-        self.DanO = DanbooruOptions(parent)
-        self.Weight = WeightSystem(parent)
+        self.PixO = PixivOptions(parent, self)
+        self.DanO = DanbooruOptions(parent, self)
+        self.YanO = YandereOptions(parent, self)
+        self.KonO = KonachanOptions(parent, self)
+        self.Weight = WeightSystem(parent, self)
 
         self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_original))
         self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_original))
         self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_original))
+        self.tagfile_yandere_var = IntVar(value=int(gv.Files.Conf.tagfile_yandere_original))
+        self.tagfile_konachan_var = IntVar(value=int(gv.Files.Conf.tagfile_konachan_original))
         self.gen_tagfile_chkbtn = Checkbutton(self.par, text='Generate tagfiles for original images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
         self.tagfile_pixiv_chkbtn = Checkbutton(self.par, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
         self.tagfile_danbooru_chkbtn = Checkbutton(self.par, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
+        self.tagfile_yandere_chkbtn = Checkbutton(self.par, text='Include yandere tags', var=self.tagfile_yandere_var, style="chkbtn.TCheckbutton")
+        self.tagfile_konachan_chkbtn = Checkbutton(self.par, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
+
+
+        self.original_btn = Button(self.par, text='Original', command=self.original_display, style ="button.TLabel")
+        self.pixiv_btn = Button(self.par, text='Pixiv', command=self.PixO.pixiv_display, style ="button.TLabel")
+        self.danbooru_btn = Button(self.par, text='Danbooru', command=self.DanO.danbooru_display, style ="button.TLabel")
+        self.yandere_btn = Button(self.par, text='Yandere', command=self.YanO.yandere_display, style ="button.TLabel")
+        self.konachan_btn = Button(self.par, text='Konachan', command=self.KonO.konachan_display, style ="button.TLabel")
+        self.weight_btn = Button(self.par, text='Weight System', command=self.Weight.weight_display, style ="button.TLabel")
 
         self.save_btn = Button(self.par, text='Save', command=self.original_save, style ="button.TLabel")
+
     
     def display(self):
         """
         Draw options (login) for all image providers:\n
         - Pixiv\n
         - Danbooru\n
+        - Yande.re\n
+        - Konachan\n
         """
-        self.PixO.pixiv_display()
-        self.DanO.danb_display()
-        self.Weight.weight_display()
+        self.original_btn.place(x = int(gv.width/12.9), y = int(gv.height/90*8))
+        self.pixiv_btn.place(x = int(gv.width/12.9), y = int(gv.height/90*10))
+        self.danbooru_btn.place(x = int(gv.width/12.9), y = int(gv.height/90*12))
+        self.yandere_btn.place(x = int(gv.width/12.9), y = int(gv.height/90*14))
+        self.konachan_btn.place(x = int(gv.width/12.9), y = int(gv.height/90*16))
+        self.weight_btn.place(x = int(gv.width/12.9), y = int(gv.height/90*18))
 
-        self.gen_tagfile_chkbtn.place(x = int(gv.width/1.2), y = int(gv.height/90*8))
-        self.tagfile_pixiv_chkbtn.place(x = int(gv.width/1.18), y = int(gv.height/90*10))
-        self.tagfile_danbooru_chkbtn.place(x = int(gv.width/1.18), y = int(gv.height/90*12))
-        self.save_btn.place(x = int(gv.width/1.2), y = int(gv.height/90*14))
+        self.original_display()
+
+    def forget(self):
+        self.gen_tagfile_chkbtn.place_forget()
+        self.tagfile_pixiv_chkbtn.place_forget()
+        self.tagfile_danbooru_chkbtn.place_forget()
+        self.tagfile_yandere_chkbtn.place_forget()
+        self.tagfile_konachan_chkbtn.place_forget()
+
+        self.save_btn.place_forget()
+
+    def original_display(self):
+        self.PixO.forget()
+        self.DanO.forget()
+        self.YanO.forget()
+        self.KonO.forget()
+        self.Weight.forget()
+
+        self.gen_tagfile_chkbtn.place(x = int(gv.width/160*40), y = int(gv.height/90*8))
+        self.tagfile_pixiv_chkbtn.place(x = int(gv.width/160*41), y = int(gv.height/90*10))
+        self.tagfile_danbooru_chkbtn.place(x = int(gv.width/160*41), y = int(gv.height/90*12))
+        self.tagfile_yandere_chkbtn.place(x = int(gv.width/160*41), y = int(gv.height/90*14))
+        self.tagfile_konachan_chkbtn.place(x = int(gv.width/160*41), y = int(gv.height/90*16))
+
+        self.save_btn.place(x = int(gv.width/160*41), y = int(gv.height/90*30))
+
 
     def original_save(self):
         gv.Files.Log.write_to_log('Attempting to save Original options...')
         gv.Files.Conf.gen_tagfile_original = str(self.gen_tagfile_var.get())
         gv.Files.Conf.tagfile_pixiv_original = str(self.tagfile_pixiv_var.get())
         gv.Files.Conf.tagfile_danbooru_original = str(self.tagfile_danbooru_var.get())
+        gv.Files.Conf.tagfile_yandere_original = str(self.tagfile_yandere_var.get())
+        gv.Files.Conf.tagfile_konachan_original = str(self.tagfile_konachan_var.get())
         gv.Files.Conf.write_config()
         gv.Files.Log.write_to_log('Saved Original options')
 
 class PixivOptions():
     """Includes all widgets for Pixiv and methods to display and modify them"""
-    def __init__(self, parent):
+    def __init__(self, parent, lord):
         self.par = parent
-        self.scrollpar = ScrollFrame(self.par, gv.width/4, gv.height*0.6)
+        self.lord = lord
+        self.scrollpar = ScrollFrame(self.par, gv.width/3, gv.height*0.6)
         self.scrollpar_frame = self.scrollpar.frame
         self.use_pixiv_var = IntVar(value=int(gv.Files.Conf.use_pixiv))
         self.use_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Use pixiv', var=self.use_pixiv_var, style="chkbtn.TCheckbutton")
@@ -473,21 +518,32 @@ class PixivOptions():
         self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_pixiv))
         self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_pixiv))
         self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_pixiv))
+        self.tagfile_yandere_var = IntVar(value=int(gv.Files.Conf.tagfile_yandere_pixiv))
+        self.tagfile_konachan_var = IntVar(value=int(gv.Files.Conf.tagfile_konachan_pixiv))
         self.gen_tagfile_chkbtn = Checkbutton(self.scrollpar_frame, text='Generate tagfiles for pixiv images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
         self.tagfile_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
         self.tagfile_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
+        self.tagfile_yandere_chkbtn = Checkbutton(self.scrollpar_frame, text='Include yandere tags', var=self.tagfile_yandere_var, style="chkbtn.TCheckbutton")
+        self.tagfile_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
 
-        self.pixiv_display_constant()
+        
         self.save_btn = Button(parent, text='Save', command=self.pixiv_save, style ="button.TLabel")
 
     def pixiv_display(self):
         """
         Displays the pixiv options widgets
         """
-        self.pixiv_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90*8))
-        self.scrollpar.display(x = int(gv.width/160*5), y= int(gv.height/90*10))
+        self.lord.forget()
+        self.lord.DanO.forget()
+        self.lord.YanO.forget()
+        self.lord.KonO.forget()
+        self.lord.Weight.forget()
 
-        self.save_btn.place(x = int(gv.width/160*5), y = gv.height-220)
+        self.pixiv_display_constant()
+        self.pixiv_lbl.place(x = int(gv.width/160*40), y = int(gv.height/90*8))
+        self.scrollpar.display(x = int(gv.width/160*40), y= int(gv.height/90*10))
+
+        self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
 
     def pixiv_display_constant(self):
         self.use_pixiv_chkbtn.grid(row= 0, column= 0, sticky=W, padx=2, pady=1)
@@ -499,8 +555,26 @@ class PixivOptions():
         self.gen_tagfile_chkbtn.grid(row= 13, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
         self.tagfile_pixiv_chkbtn.grid(row= 14, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
         self.tagfile_danbooru_chkbtn.grid(row= 15, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.tagfile_yandere_chkbtn.grid(row= 16, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.tagfile_konachan_chkbtn.grid(row= 17, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
 
         self.rename_chkbtn.grid(row= 18, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+
+    def forget(self):
+        self.pixiv_lbl.place_forget()
+        self.scrollpar.sub_frame.place_forget()
+
+        self.use_pixiv_chkbtn.grid_forget()
+        self.show_tags_lbl.grid_forget()
+        self.show_tags_txt.grid_forget()
+
+        self.gen_tagfile_chkbtn.grid_forget()
+        self.tagfile_pixiv_chkbtn.grid_forget()
+        self.tagfile_danbooru_chkbtn.grid_forget()
+
+        self.rename_chkbtn.grid_forget()
+
+        self.save_btn.place_forget()
 
     def pixiv_save(self):
         gv.Files.Log.write_to_log('Attempting to save Pixiv options...')
@@ -510,6 +584,8 @@ class PixivOptions():
         gv.Files.Conf.gen_tagfile_pixiv = str(self.gen_tagfile_var.get())
         gv.Files.Conf.tagfile_pixiv_pixiv = str(self.tagfile_pixiv_var.get())
         gv.Files.Conf.tagfile_danbooru_pixiv = str(self.tagfile_danbooru_var.get())
+        gv.Files.Conf.tagfile_yandere_pixiv = str(self.tagfile_yandere_var.get())
+        gv.Files.Conf.tagfile_konachan_pixiv = str(self.tagfile_konachan_var.get())
         gv.Files.Conf.use_pixiv = str(self.use_pixiv_var.get())
         gv.Files.Conf.write_config()
         gv.results_tags_pixiv = self.tags.split()
@@ -517,9 +593,10 @@ class PixivOptions():
 
 class DanbooruOptions():
     """Includes all widgets for Danbooru and methods to display and modify them"""
-    def __init__(self, parent):
+    def __init__(self, parent, lord):
         self.par = parent
-        self.scrollpar = ScrollFrame(self.par, gv.width/4, gv.height*0.6)
+        self.lord = lord
+        self.scrollpar = ScrollFrame(self.par, gv.width/3, gv.height*0.6)
         self.scrollpar_frame = self.scrollpar.frame
         self.use_danbooru_var = IntVar(value=int(gv.Files.Conf.use_danbooru))
         self.use_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Use danbooru', var=self.use_danbooru_var, style="chkbtn.TCheckbutton")
@@ -536,17 +613,28 @@ class DanbooruOptions():
         self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_danbooru))
         self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_danbooru))
         self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_danbooru))
+        self.tagfile_yandere_var = IntVar(value=int(gv.Files.Conf.tagfile_yandere_danbooru))
+        self.tagfile_konachan_var = IntVar(value=int(gv.Files.Conf.tagfile_konachan_danbooru))
         self.gen_tagfile_chkbtn = Checkbutton(self.scrollpar_frame, text='Generate tagfiles for danbooru images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
         self.tagfile_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
         self.tagfile_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
+        self.tagfile_yandere_chkbtn = Checkbutton(self.scrollpar_frame, text='Include yandere tags', var=self.tagfile_yandere_var, style="chkbtn.TCheckbutton")
+        self.tagfile_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
+
         self.save_btn = Button(parent, text='Save', command=self.danbooru_save, style ="button.TLabel")
 
-    def danb_display(self):
+    def danbooru_display(self):
         """
         Displays the danbooru options widgets
         """
-        self.danbooru_lbl.place(x = int(gv.width/160*50), y = int(gv.height/90*8))
-        self.scrollpar.display(x = int(gv.width/160*50), y= int(gv.height/90*10))
+        self.lord.forget()
+        self.lord.PixO.forget()
+        self.lord.YanO.forget()
+        self.lord.KonO.forget()
+        self.lord.Weight.forget()
+
+        self.danbooru_lbl.place(x = int(gv.width/160*40), y = int(gv.height/90*8))
+        self.scrollpar.display(x = int(gv.width/160*40), y= int(gv.height/90*10))
 
         self.use_danbooru_chkbtn.grid(row= 1, column= 0, sticky=W, padx=2, pady=1)
         self.show_tags_lbl.grid(row= 3, column= 0, sticky=W, padx=2, pady=1)
@@ -555,10 +643,28 @@ class DanbooruOptions():
         self.gen_tagfile_chkbtn.grid(row= 9, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
         self.tagfile_pixiv_chkbtn.grid(row= 10, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
         self.tagfile_danbooru_chkbtn.grid(row= 11, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.tagfile_yandere_chkbtn.grid(row= 12, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.tagfile_konachan_chkbtn.grid(row= 13, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
 
         self.rename_chkbtn.grid(row= 15, column= 0, sticky=W, padx=2, pady=1)
 
-        self.save_btn.place(x = int(gv.width/160*50), y = gv.height-220)
+        self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
+
+    def forget(self):
+        self.danbooru_lbl.place_forget()
+        self.scrollpar.sub_frame.place_forget()
+
+        self.use_danbooru_chkbtn.grid_forget()
+        self.show_tags_lbl.grid_forget()
+        self.show_tags_txt.grid_forget()
+
+        self.gen_tagfile_chkbtn.grid_forget()
+        self.tagfile_pixiv_chkbtn.grid_forget()
+        self.tagfile_danbooru_chkbtn.grid_forget()
+
+        self.rename_chkbtn.grid_forget()
+
+        self.save_btn.place_forget()
 
     def danbooru_save(self):
         gv.Files.Log.write_to_log('Attempting to save Danbooru options...')
@@ -567,8 +673,189 @@ class DanbooruOptions():
         gv.Files.Conf.gen_tagfile_danbooru = str(self.gen_tagfile_var.get())
         gv.Files.Conf.tagfile_pixiv_danbooru = str(self.tagfile_pixiv_var.get())
         gv.Files.Conf.tagfile_danbooru_danbooru = str(self.tagfile_danbooru_var.get())
+        gv.Files.Conf.tagfile_yandere_danbooru = str(self.tagfile_yandere_var.get())
+        gv.Files.Conf.tagfile_konachan_danbooru = str(self.tagfile_konachan_var.get())
         gv.Files.Conf.use_danbooru = str(self.use_danbooru_var.get())
         gv.Files.Conf.write_config()
         gv.results_tags_danbooru = self.tags.split()
         gv.Files.Log.write_to_log('Saved Danbooru options')
+
+class YandereOptions():
+    """Includes all widgets for Yandere and methods to display and modify them"""
+    def __init__(self, parent, lord):
+        self.par = parent
+        self.lord = lord
+        self.scrollpar = ScrollFrame(self.par, gv.width/3, gv.height*0.6)
+        self.scrollpar_frame = self.scrollpar.frame
+        self.use_yandere_var = IntVar(value=int(gv.Files.Conf.use_yandere))
+        self.use_yandere_chkbtn = Checkbutton(self.scrollpar_frame, text='Use yandere', var=self.use_yandere_var, style="chkbtn.TCheckbutton")
+        self.yandere_lbl = Label(parent, text="Yande.re", font=('Arial Bold', 13), style="label.TLabel")
+        self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
+        self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
+        
+        self.rename_var = IntVar(value=int(gv.Files.Conf.rename_yandere))
+        self.rename_chkbtn = Checkbutton(self.scrollpar_frame, text='Rename images from yandere to yandere name', var=self.rename_var, style="chkbtn.TCheckbutton")
+
+        self.show_tags_txt.insert(END, gv.Files.Conf.tags_yandere)
+        self.tags = None
+
+        self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_yandere))
+        self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_yandere))
+        self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_yandere))
+        self.tagfile_yandere_var = IntVar(value=int(gv.Files.Conf.tagfile_yandere_yandere))
+        self.tagfile_konachan_var = IntVar(value=int(gv.Files.Conf.tagfile_konachan_yandere))
+        self.gen_tagfile_chkbtn = Checkbutton(self.scrollpar_frame, text='Generate tagfiles for yandere images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
+        self.tagfile_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
+        self.tagfile_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
+        self.tagfile_yandere_chkbtn = Checkbutton(self.scrollpar_frame, text='Include yandere tags', var=self.tagfile_yandere_var, style="chkbtn.TCheckbutton")
+        self.tagfile_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
+
+        self.save_btn = Button(parent, text='Save', command=self.yandere_save, style ="button.TLabel")
+
+    def yandere_display(self):
+        """
+        Displays the yandere options widgets
+        """
+        self.lord.forget()
+        self.lord.PixO.forget()
+        self.lord.DanO.forget()
+        self.lord.KonO.forget()
+        self.lord.Weight.forget()
+
+        self.yandere_lbl.place(x = int(gv.width/160*40), y = int(gv.height/90*8))
+        self.scrollpar.display(x = int(gv.width/160*40), y= int(gv.height/90*10))
+
+        self.use_yandere_chkbtn.grid(row= 1, column= 0, sticky=W, padx=2, pady=1)
+        self.show_tags_lbl.grid(row= 3, column= 0, sticky=W, padx=2, pady=1)
+        self.show_tags_txt.grid(row= 4, column= 0, sticky=W, padx=2, pady=1)
+
+        self.gen_tagfile_chkbtn.grid(row= 9, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+        self.tagfile_pixiv_chkbtn.grid(row= 10, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.tagfile_danbooru_chkbtn.grid(row= 11, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.tagfile_yandere_chkbtn.grid(row= 12, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.tagfile_konachan_chkbtn.grid(row= 13, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+
+
+        self.rename_chkbtn.grid(row= 15, column= 0, sticky=W, padx=2, pady=1)
+
+        self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
+
+    def forget(self):
+        self.yandere_lbl.place_forget()
+        self.scrollpar.sub_frame.place_forget()
+
+        self.use_yandere_chkbtn.grid_forget()
+        self.show_tags_lbl.grid_forget()
+        self.show_tags_txt.grid_forget()
+
+        self.gen_tagfile_chkbtn.grid_forget()
+        self.tagfile_pixiv_chkbtn.grid_forget()
+        self.tagfile_danbooru_chkbtn.grid_forget()
+
+        self.rename_chkbtn.grid_forget()
+
+        self.save_btn.place_forget()
+
+    def yandere_save(self):
+        gv.Files.Log.write_to_log('Attempting to save Yande.re options...')
+        self.tags = self.show_tags_txt.get('1.0', END)
+        gv.Files.Conf.tags_yandere = self.tags
+        gv.Files.Conf.gen_tagfile_yandere = str(self.gen_tagfile_var.get())
+        gv.Files.Conf.tagfile_pixiv_yandere = str(self.tagfile_pixiv_var.get())
+        gv.Files.Conf.tagfile_danbooru_yandere = str(self.tagfile_danbooru_var.get())
+        gv.Files.Conf.tagfile_yandere_yandere = str(self.tagfile_yandere_var.get())
+        gv.Files.Conf.tagfile_konachan_yandere = str(self.tagfile_konachan_var.get())
+        gv.Files.Conf.use_yandere = str(self.use_yandere_var.get())
+        gv.Files.Conf.write_config()
+        gv.results_tags_yandere = self.tags.split()
+        gv.Files.Log.write_to_log('Saved Yande.re options')
+
+class KonachanOptions():
+    """Includes all widgets for Konachan and methods to display and modify them"""
+    def __init__(self, parent, lord):
+        self.par = parent
+        self.lord = lord
+        self.scrollpar = ScrollFrame(self.par, gv.width/3, gv.height*0.6)
+        self.scrollpar_frame = self.scrollpar.frame
+        self.use_konachan_var = IntVar(value=int(gv.Files.Conf.use_konachan))
+        self.use_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Use konachan', var=self.use_konachan_var, style="chkbtn.TCheckbutton")
+        self.konachan_lbl = Label(parent, text="Konachan", font=('Arial Bold', 13), style="label.TLabel")
+        self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
+        self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
+        
+        self.rename_var = IntVar(value=int(gv.Files.Conf.rename_konachan))
+        self.rename_chkbtn = Checkbutton(self.scrollpar_frame, text='Rename images from konachan to konachan name', var=self.rename_var, style="chkbtn.TCheckbutton")
+
+        self.show_tags_txt.insert(END, gv.Files.Conf.tags_konachan)
+        self.tags = None
+
+        self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_konachan))
+        self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_konachan))
+        self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_konachan))
+        self.tagfile_yandere_var = IntVar(value=int(gv.Files.Conf.tagfile_yandere_konachan))
+        self.tagfile_konachan_var = IntVar(value=int(gv.Files.Conf.tagfile_konachan_konachan))
+        self.gen_tagfile_chkbtn = Checkbutton(self.scrollpar_frame, text='Generate tagfiles for konachan images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
+        self.tagfile_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
+        self.tagfile_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
+        self.tagfile_yandere_chkbtn = Checkbutton(self.scrollpar_frame, text='Include yandere tags', var=self.tagfile_yandere_var, style="chkbtn.TCheckbutton")
+        self.tagfile_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
+
+        self.save_btn = Button(parent, text='Save', command=self.konachan_save, style ="button.TLabel")
+
+    def konachan_display(self):
+        """
+        Displays the konachan options widgets
+        """
+        self.lord.forget()
+        self.lord.PixO.forget()
+        self.lord.DanO.forget()
+        self.lord.YanO.forget()
+        self.lord.Weight.forget()
+
+        self.konachan_lbl.place(x = int(gv.width/160*40), y = int(gv.height/90*8))
+        self.scrollpar.display(x = int(gv.width/160*40), y= int(gv.height/90*10))
+
+        self.use_konachan_chkbtn.grid(row= 1, column= 0, sticky=W, padx=2, pady=1)
+        self.show_tags_lbl.grid(row= 3, column= 0, sticky=W, padx=2, pady=1)
+        self.show_tags_txt.grid(row= 4, column= 0, sticky=W, padx=2, pady=1)
+
+        self.gen_tagfile_chkbtn.grid(row= 9, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+        self.tagfile_pixiv_chkbtn.grid(row= 10, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.tagfile_danbooru_chkbtn.grid(row= 11, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.tagfile_yandere_chkbtn.grid(row= 12, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.tagfile_konachan_chkbtn.grid(row= 13, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+
+        self.rename_chkbtn.grid(row= 15, column= 0, sticky=W, padx=2, pady=1)
+
+        self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
+
+    def forget(self):
+        self.konachan_lbl.place_forget()
+        self.scrollpar.sub_frame.place_forget()
+
+        self.use_konachan_chkbtn.grid_forget()
+        self.show_tags_lbl.grid_forget()
+        self.show_tags_txt.grid_forget()
+
+        self.gen_tagfile_chkbtn.grid_forget()
+        self.tagfile_pixiv_chkbtn.grid_forget()
+        self.tagfile_danbooru_chkbtn.grid_forget()
+
+        self.rename_chkbtn.grid_forget()
+
+        self.save_btn.place_forget()
+
+    def konachan_save(self):
+        gv.Files.Log.write_to_log('Attempting to save Konachan options...')
+        self.tags = self.show_tags_txt.get('1.0', END)
+        gv.Files.Conf.tags_konachan = self.tags
+        gv.Files.Conf.gen_tagfile_konachan = str(self.gen_tagfile_var.get())
+        gv.Files.Conf.tagfile_pixiv_konachan = str(self.tagfile_pixiv_var.get())
+        gv.Files.Conf.tagfile_danbooru_konachan = str(self.tagfile_danbooru_var.get())
+        gv.Files.Conf.tagfile_yandere_konachan = str(self.tagfile_yandere_var.get())
+        gv.Files.Conf.tagfile_konachan_konachan = str(self.tagfile_konachan_var.get())
+        gv.Files.Conf.use_konachan = str(self.use_konachan_var.get())
+        gv.Files.Conf.write_config()
+        gv.results_tags_konachan = self.tags.split()
+        gv.Files.Log.write_to_log('Saved Konachan options')
 

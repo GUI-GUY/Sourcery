@@ -14,7 +14,7 @@ import global_variables as gv
 
 class ImageData():
     """Includes all information on the sourced images"""
-    def __init__(self, old_name, input_path, pixiv_rename, danb_rename, dict_list, pixiv_illust_list, danbooru_illust_list, index):
+    def __init__(self, old_name, input_path, pixiv_rename, danb_rename, dict_list, pixiv_illust_list, danbooru_illust_list, yandere_illust_list, konachan_illust_list, index):
         self.name_original = old_name
         self.thumb_size = (70,70)
         self.preview_size = (200, 200)
@@ -31,9 +31,24 @@ class ImageData():
         for elem in danbooru_illust_list:
             name = elem[1]
             path_danb = gv.cwd + '/Sourcery/sourced_progress/danbooru/' + name
-            self.danb_dict = self.danbooru_clean_dict(elem[0], dict_list)
+            self.danb_dict = self.danbooru_clean_dict(elem[0], dict_list,'Danbooru')
             self.danb_list.append(ProviderImageData('Danbooru', name, path_danb, self.thumb_size, self.preview_size, self.danb_dict, elem[0], self.siblings_array))
         
+        self.yandere_list = list()
+        for elem in yandere_illust_list:
+            name = elem[1]
+            path_yandere = gv.cwd + '/Sourcery/sourced_progress/yandere/' + name
+            self.yandere_dict = self.danbooru_clean_dict(elem[0], dict_list, 'Yandere')
+            self.yandere_list.append(ProviderImageData('Yandere', name, path_yandere, self.thumb_size, self.preview_size, self.yandere_dict, elem[0], self.siblings_array))
+        
+        self.konachan_list = list()
+        for elem in konachan_illust_list:
+            name = elem[1]
+            path_konachan = gv.cwd + '/Sourcery/sourced_progress/konachan/' + name
+            self.danb_dict = self.danbooru_clean_dict(elem[0], dict_list, 'Konachan')
+            self.danb_list.append(ProviderImageData('Konachan', name, path_konachan, self.thumb_size, self.preview_size, self.konachan_dict, elem[0], self.siblings_array))
+        
+
         self.path_original = gv.cwd + '/Sourcery/sourced_original/' + self.name_original
         self.input_path = input_path
         
@@ -100,13 +115,13 @@ class ImageData():
         #     tags.append(tag['name'] + ' | ' + str(tag['translated_name']))
         return {"artist": illust.user.name, "title": illust.title, "caption": illust.caption, "create_date": illust.create_date, "width": illust.width, "height": illust.height, "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": str(tags)}
 
-    def danbooru_clean_dict(self, illust, dict_list):
+    def danbooru_clean_dict(self, illust, dict_list, service):
         """
         Cleans up the dictionary to only include needed information and returns them as a formatted dictionary
         """
         x = None
         for t in dict_list:
-            if t['service_name'] == 'Danbooru' and t['illust_id'] == illust['id']:
+            if t['service_name'] == service and t['illust_id'] == illust['id']:
                 x = t
                 break
         if x == None:
@@ -114,7 +129,13 @@ class ImageData():
 
         #tags = illust['tag_string_general']
         #tags = tags.split()
-        return {"artist": illust['tag_string_artist'], "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['image_width'], "height": illust['image_height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": illust['tag_string_general']}
+        if service == 'Danbooru':
+            return {"artist": illust['tag_string_artist'], "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['image_width'], "height": illust['image_height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": illust['tag_string_general']}
+        if service == 'Yandere':
+            return {"artist": 'None', "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['width'], "height": illust['height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": illust['tag_string_general']}
+        if service == 'Konachan':
+            return {"artist": 'None', "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['width'], "height": illust['height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": illust['tag_string_general']}
+
 
     def forget_all_widgets(self):
         for widget in gv.window.winfo_children():
@@ -143,6 +164,12 @@ class ImageData():
         for elem in self.danb_list:
             elem.load()
 
+        for elem in self.yandere_list:
+            elem.load()
+        
+        for elem in self.konachan_list:
+            elem.load()
+
         self.load_init = True
         return True
 
@@ -163,6 +190,12 @@ class ImageData():
             elem.process_results_imgs()
     
         for elem in self.danb_list:
+            elem.process_results_imgs()
+
+        for elem in self.yandere_list:
+            elem.process_results_imgs()
+
+        for elem in self.konachan_list:
             elem.process_results_imgs()
         self.process_results_imgs_init = True
 
@@ -196,6 +229,12 @@ class ImageData():
         for elem in self.danb_list:
             elem.modify_results_widgets()
 
+        for elem in self.yandere_list:
+            elem.modify_results_widgets()
+
+        for elem in self.konachan_list:
+            elem.modify_results_widgets()
+
         gv.res_frame.columnconfigure(0, weight=1)
         gv.res_frame.columnconfigure(1, weight=1)
         gv.res_frame.columnconfigure(2, weight=1)
@@ -224,6 +263,14 @@ class ImageData():
             for elem in self.danb_list:
                 if elem.is_greater_than_direct_sim():
                     flag = True
+        if gv.Files.Conf.direct_replace_yandere == '1':
+            for elem in self.yandere_list:
+                if elem.is_greater_than_direct_sim():
+                    flag = True
+        if gv.Files.Conf.direct_replace_konachan == '1':
+            for elem in self.konachan_list:
+                if elem.is_greater_than_direct_sim():
+                    flag = True
 
         if flag:
             if gv.Files.Conf.direct_replace_pixiv == '1':
@@ -234,6 +281,18 @@ class ImageData():
                         elem.downloaded_var.set(0)
             if gv.Files.Conf.direct_replace_danbooru == '1':
                 for elem in self.danb_list:
+                    if elem.is_greater_than_direct_sim():
+                        elem.downloaded_var.set(1)
+                    else:
+                        elem.downloaded_var.set(0)
+            if gv.Files.Conf.direct_replace_yandere == '1':
+                for elem in self.yandere_list:
+                    if elem.is_greater_than_direct_sim():
+                        elem.downloaded_var.set(1)
+                    else:
+                        elem.downloaded_var.set(0)
+            if gv.Files.Conf.direct_replace_konachan == '1':
+                for elem in self.konachan_list:
                     if elem.is_greater_than_direct_sim():
                         elem.downloaded_var.set(1)
                     else:
@@ -249,6 +308,18 @@ class ImageData():
             if weight > highest_weight[1]:
                 highest_weight = (elem, weight)
         for elem in self.danb_list:
+            weight, flag = elem.evaluate_weight(self.original_image.size[0]/self.original_image.size[1], self.original_image.size[0])
+            if not aspect_flag:
+                aspect_flag = flag
+            if weight > highest_weight[1]:
+                highest_weight = (elem, weight)
+        for elem in self.yandere_list:
+            weight, flag = elem.evaluate_weight(self.original_image.size[0]/self.original_image.size[1], self.original_image.size[0])
+            if not aspect_flag:
+                aspect_flag = flag
+            if weight > highest_weight[1]:
+                highest_weight = (elem, weight)
+        for elem in self.konachan_list:
             weight, flag = elem.evaluate_weight(self.original_image.size[0]/self.original_image.size[1], self.original_image.size[0])
             if not aspect_flag:
                 aspect_flag = flag
@@ -277,6 +348,10 @@ class ImageData():
         for elem in self.pixiv_list:
             t = elem.display_results(t+1)
         for elem in self.danb_list:
+            t = elem.display_results(t+1)
+        for elem in self.yandere_list:
+            t = elem.display_results(t+1)
+        for elem in self.konachan_list:
             t = elem.display_results(t+1)
 
         return t
@@ -324,11 +399,14 @@ class ImageData():
 
         t = 0
         for elem in self.pixiv_list:
-            elem.display_info(t)#TODO t = elem...
-            t += 26
+            t = elem.display_info(t)
         for elem in self.danb_list:
-            elem.display_info(t) #TODO t = elem...
-
+            t = elem.display_info(t)
+        for elem in self.yandere_list:
+            t = elem.display_info(t)
+        for elem in self.konachan_list:
+            t = elem.display_info(t)
+        
     def display_big_selector(self):
         """
         Displays all widgets corresponding to this image on the big selector page\n
@@ -349,6 +427,10 @@ class ImageData():
             t = elem.display_big_selector(t)
         for elem in self.danb_list:
             t = elem.display_big_selector(t)
+        for elem in self.yandere_list:
+            t = elem.display_big_selector(t)
+        for elem in self.konachan_list:
+            t = elem.display_big_selector(t)
 
         self.original_SubImgData.display_place()
 
@@ -367,8 +449,13 @@ class ImageData():
         for elem in self.pixiv_list:
             elem.process_big_imgs()
 
-
         for elem in self.danb_list:
+            elem.process_big_imgs()
+        
+        for elem in self.yandere_list:
+            elem.process_big_imgs()
+        
+        for elem in self.konachan_list:
             elem.process_big_imgs()
 
         self.process_big_imgs_init = True
@@ -413,6 +500,14 @@ class ImageData():
         for elem in self.danb_list:
             danbooru_tags.extend(elem.get_tags_list())
 
+        yandere_tags = list()
+        for elem in self.yandere_list:
+            yandere_tags.extend(elem.get_tags_list())
+
+        konachan_tags = list()
+        for elem in self.konachan_list:
+            konachan_tags.extend(elem.get_tags_list())
+
         #--Does the user want to save more than one image?--#
         save_counter = 0
         for elem in self.pixiv_list:
@@ -421,6 +516,16 @@ class ImageData():
             if elem.get_save_status():
                 save_counter += 1
         for elem in self.danb_list:
+            if save_counter > 2:
+                break
+            if elem.get_save_status():
+                save_counter += 1
+        for elem in self.yandere_list:
+            if save_counter > 2:
+                break
+            if elem.get_save_status():
+                save_counter += 1
+        for elem in self.konachan_list:
             if save_counter > 2:
                 break
             if elem.get_save_status():
@@ -437,7 +542,7 @@ class ImageData():
             t = 0
             if self.original_var.get() == 1:
                 new_img_name = self.name_original[:self.name_original.rfind('.')] + '_' + str(t) + self.name_original[self.name_original.rfind('.'):]
-                self.gen_tagfile(pixiv_tags, danbooru_tags, new_dir, self.name_original[:self.name_original.rfind('.')] + '_' + str(t))
+                self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, new_dir, self.name_original[:self.name_original.rfind('.')] + '_' + str(t))
                 try:
                     move(self.path_original, new_dir + '/' + new_img_name)
                 except Exception as e:
@@ -449,10 +554,16 @@ class ImageData():
                 if self.path_original not in gv.delete_dirs_array:
                     gv.delete_dirs_array.append(self.path_original)
             for elem in self.pixiv_list:
-                elem.save(pixiv_tags, danbooru_tags, t, new_dir)
+                elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
                 t += 1
             for elem in self.danb_list:
-                elem.save(pixiv_tags, danbooru_tags, t, new_dir)
+                elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
+                t += 1
+            for elem in self.yandere_list:
+                elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
+                t += 1
+            for elem in self.konachan_list:
+                elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
                 t += 1
             # make folder and save images in it with different names TODO try except
         ##----##
@@ -460,7 +571,7 @@ class ImageData():
         #--If no, go through all saves, the only one that is checked will be in there--#
         else: #TODO delete_both here
             if self.original_var.get() == 1:
-                self.gen_tagfile(pixiv_tags, danbooru_tags, gv.output_dir, self.name_original[:self.name_original.rfind('.')])
+                self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.name_original[:self.name_original.rfind('.')])
                 try:
                     move(self.path_original, gv.output_dir + '/' + self.name_original)
                 except Exception as e:
@@ -471,9 +582,13 @@ class ImageData():
                 if self.path_original not in gv.delete_dirs_array:
                     gv.delete_dirs_array.append(self.path_original)
             for elem in self.pixiv_list:
-                elem.save(pixiv_tags, danbooru_tags)
+                elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags)
             for elem in self.danb_list:
-                elem.save(pixiv_tags, danbooru_tags)
+                elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags)
+            for elem in self.yandere_list:
+                elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags)
+            for elem in self.yandere_list:
+                elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags)
         ##----##
         # TODO
 
@@ -492,13 +607,17 @@ class ImageData():
         
         return True
 
-    def gen_tagfile(self, pixiv_tags, danbooru_tags, gen_dir, name):
+    def gen_tagfile(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gen_dir, name):
         if gv.Files.Conf.gen_tagfile_original == '1':
             all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_original == '1':
                 all_tags.extend(pixiv_tags)
             if gv.Files.Conf.tagfile_danbooru_original == '1':
                 all_tags.extend(danbooru_tags)
+            if gv.Files.Conf.tagfile_yandere_original == '1':
+                all_tags.extend(yandere_tags)
+            if gv.Files.Conf.tagfile_konachan_original == '1':
+                all_tags.extend(konachan_tags)
             
             gen_tagfile(all_tags, gen_dir, name)
         pass
@@ -516,6 +635,10 @@ class ImageData():
             elem.forget_results()
         for elem in self.danb_list:
             elem.forget_results()
+        for elem in self.yandere_list:
+            elem.forget_results()
+        for elem in self.konachan_list:
+            elem.forget_results()
 
     def self_destruct(self):
         if self.original_SubImgData != None:
@@ -529,4 +652,8 @@ class ImageData():
         for elem in self.pixiv_list:
             elem.self_destruct()
         for elem in self.danb_list:
+            elem.self_destruct()
+        for elem in self.yandere_list:
+            elem.self_destruct()
+        for elem in self.konachan_list:
             elem.self_destruct()

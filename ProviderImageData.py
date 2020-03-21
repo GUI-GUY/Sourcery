@@ -192,8 +192,7 @@ class ProviderImageData():
         self.results_tags_lbl.grid(column = 5, row = t+2, sticky = W, padx = 10, columnspan=2)
         self.result_not_in_tagfile.grid(column = 7, row = t+2, sticky = W, padx = 10)
         
-        t += 2
-        return t
+        return t+2
         
     def display_info(self, t):
         """
@@ -242,6 +241,7 @@ class ProviderImageData():
             for lbl in self.tags_lbl_array:
                 lbl.grid(column = 0, row = (12 + int(t)), sticky = W, columnspan = 2)
                 t += 1
+        return t+12
 
     def process_info_imgs(self):
         """
@@ -322,7 +322,7 @@ class ProviderImageData():
             return True
         return False
 
-    def save(self, pixiv_tags, danbooru_tags, t=-1, head_dir=''):
+    def save(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=-1, head_dir=''):
         #new_dir = gv.output_dir + '/' + self.name
         #--If only one image is checked, save your image with the name--#
         if t == -1:
@@ -332,13 +332,13 @@ class ProviderImageData():
                     img_name = self.name[:self.name.rfind('.')]
                 elif path.isdir(self.path):
                     img_name = self.name
-                self.gen_tagfile(pixiv_tags, danbooru_tags, gv.output_dir, img_name)
+                self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, img_name)
                 move(self.path, gv.output_dir + '/' + self.name)
             else:
                 if self.path not in gv.delete_dirs_array:
                     gv.delete_dirs_array.append(self.path)
                 for elem in self.sub_dir_img_array:
-                    elem.save(pixiv_tags, danbooru_tags)
+                    elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags)
         ##----##
 
         #--If more than one image is checked, save your image in the new head directory(full path) with name + t + suffix--#
@@ -347,15 +347,15 @@ class ProviderImageData():
                 if path.isdir(self.path):
                     move(self.path, head_dir + '/' + self.name + '_' + str(t))
                     for img in self.sub_dir_img_array:
-                        img.gen_tagfile(pixiv_tags, danbooru_tags, head_dir + '/' + self.name + '_' + str(t), img.name[:img.name.rfind('.')])
+                        img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.name + '_' + str(t), img.name[:img.name.rfind('.')])
                 elif path.isfile(self.path):
                     move(self.path, head_dir + '/' + self.name[:self.name.rfind('.')] + '_' + str(t) + self.name[self.name.rfind('.'):])
-                    self.gen_tagfile(pixiv_tags, danbooru_tags, head_dir, self.name[:self.name.rfind('.')] + '_' + str(t))
+                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir, self.name[:self.name.rfind('.')] + '_' + str(t))
             else:
                 if self.path not in gv.delete_dirs_array:
                     gv.delete_dirs_array.append(self.path)
                 for elem in self.sub_dir_img_array:
-                    elem.save(pixiv_tags, danbooru_tags, t, head_dir)
+                    elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, head_dir)
         ##----##
 
         # TODO try except
@@ -371,13 +371,17 @@ class ProviderImageData():
                 return True
         return False
 
-    def gen_tagfile(self, pixiv_tags, danbooru_tags, gen_dir, name):
+    def gen_tagfile(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gen_dir, name):
         if self.service == 'Pixiv' and gv.Files.Conf.gen_tagfile_pixiv == '1':
             all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_pixiv == '1':
                 all_tags.extend(pixiv_tags)
             if gv.Files.Conf.tagfile_danbooru_pixiv == '1':
                 all_tags.extend(danbooru_tags)
+            if gv.Files.Conf.tagfile_yandere_pixiv == '1':
+                all_tags.extend(yandere_tags)
+            if gv.Files.Conf.tagfile_konachan_pixiv == '1':
+                all_tags.extend(konachan_tags)
             gen_tagfile(all_tags, gen_dir, name)
         elif self.service == 'Danbooru' and gv.Files.Conf.gen_tagfile_danbooru == '1':
             all_tags = list()
@@ -385,6 +389,32 @@ class ProviderImageData():
                 all_tags.extend(pixiv_tags)
             if gv.Files.Conf.tagfile_danbooru_danbooru == '1':
                 all_tags.extend(danbooru_tags)
+            if gv.Files.Conf.tagfile_yandere_danbooru == '1':
+                all_tags.extend(yandere_tags)
+            if gv.Files.Conf.tagfile_konachan_danbooru == '1':
+                all_tags.extend(konachan_tags)
+            gen_tagfile(all_tags, gen_dir, name)
+        elif self.service == 'Yandere' and gv.Files.Conf.gen_tagfile_yandere == '1':
+            all_tags = list()
+            if gv.Files.Conf.tagfile_pixiv_yandere == '1':
+                all_tags.extend(pixiv_tags)
+            if gv.Files.Conf.tagfile_danbooru_yandere == '1':
+                all_tags.extend(danbooru_tags)
+            if gv.Files.Conf.tagfile_yandere_yandere == '1':
+                all_tags.extend(yandere_tags)
+            if gv.Files.Conf.tagfile_konachan_yandere == '1':
+                all_tags.extend(konachan_tags)
+            gen_tagfile(all_tags, gen_dir, name)
+        elif self.service == 'Konachan' and gv.Files.Conf.gen_tagfile_konachan == '1':
+            all_tags = list()
+            if gv.Files.Conf.tagfile_pixiv_konachan == '1':
+                all_tags.extend(pixiv_tags)
+            if gv.Files.Conf.tagfile_danbooru_konachan == '1':
+                all_tags.extend(danbooru_tags)
+            if gv.Files.Conf.tagfile_yandere_konachan == '1':
+                all_tags.extend(yandere_tags)
+            if gv.Files.Conf.tagfile_konachan_konachan == '1':
+                all_tags.extend(konachan_tags)
             gen_tagfile(all_tags, gen_dir, name)
     
     def get_tags_list(self, not_in_file=-1):
@@ -402,7 +432,7 @@ class ProviderImageData():
                 ret_list.append('pixiv work:' + str(self.illustration.id))
                 ret_list.append('title:' + self.illustration.title)
                 ret_list.append('rating:' + str(self.illustration.sanity_level))
-            if self.service == 'Danbooru':
+            elif self.service == 'Danbooru':
                 for tag in self.illustration['tag_string_general'].strip("'").split():
                     ret_list.append(tag)
                 for tag in self.illustration['tag_string_character'].strip("'").split():
@@ -413,11 +443,22 @@ class ProviderImageData():
                     ret_list.append('creator:' + tag)
                 for tag in self.illustration['tag_string_meta'].strip("'").split():
                     ret_list.append('meta:' + tag)
-                ret_list.append('booru:danbooru')
                 ret_list.append('source:' + self.illustration['source'])
                 ret_list.append('rating:' + self.illustration['rating'])
+                ret_list.append('booru:danbooru')
                 if self.illustration['pixiv_id'] != None:
                     ret_list.append('pixiv work:' + str(self.illustration['pixiv_id']))
+            elif self.service == 'Yandere':
+                for tag in self.illustration['tags'].strip("'").split():
+                    ret_list.append(tag)
+                ret_list.append('rating:' + self.illustration['rating'])
+                ret_list.append('booru:yande.re')
+            elif self.service == 'Konachan':
+                for tag in self.illustration['tags'].strip("'").split():
+                    ret_list.append(tag)
+                ret_list.append('rating:' + self.illustration['rating'])
+                ret_list.append('booru:konachan')
+                
             return ret_list
 
     def evaluate_weight(self, original_aspect_ratio, original_width):
@@ -441,6 +482,10 @@ class ProviderImageData():
             img_weight = img_weight + int(gv.Files.Conf.danbooru_weight)
         elif self.service == 'Pixiv':
             img_weight = img_weight + int(gv.Files.Conf.pixiv_weight)
+        elif self.service == 'Yandere':
+            img_weight = img_weight + int(gv.Files.Conf.yandere_weight)
+        elif self.service == 'Konachan':
+            img_weight = img_weight + int(gv.Files.Conf.konachan_weight)
 
         if original_aspect_ratio == int(self.dict['width'])/int(self.dict['height']):
             if int(self.dict['width']) > original_width:

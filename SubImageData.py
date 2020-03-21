@@ -138,12 +138,12 @@ class SubImageData():
         self.lbl2.place_forget()
         self.chkbtn.place_forget()
 
-    def save(self, pixiv_tags, danbooru_tags, t=-1, head_dir=''):
+    def save(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=-1, head_dir=''):
         #--If only one image is checked, save your image in the subfolder with the name--#
         if t == -1:
             if self.var.get() == 1:
                 makedirs(gv.output_dir + '/' + self.folder, 0o777, True)#TODO try except
-                self.gen_tagfile(pixiv_tags, danbooru_tags, gv.output_dir + '/' + self.folder, self.name[:self.name.rfind('.')])
+                self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir + '/' + self.folder, self.name[:self.name.rfind('.')])
                 try:
                     move(self.path, gv.output_dir + '/' + self.folder + '/' + self.name)
                 except Exception as e:
@@ -157,7 +157,7 @@ class SubImageData():
         else:
             if self.var.get() == 1:
                 makedirs(head_dir + '/' + self.folder, 0o777, True)#TODO try except
-                self.gen_tagfile(pixiv_tags, danbooru_tags, head_dir + '/' + self.folder, self.name[:self.name.rfind('.')])
+                self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.folder, self.name[:self.name.rfind('.')])
                 try:
                     move(self.path, head_dir + '/' + self.folder + '/' + self.name)
                 except Exception as e:
@@ -175,13 +175,17 @@ class SubImageData():
             return True
         return False
 
-    def gen_tagfile(self, pixiv_tags, danbooru_tags, gen_dir, name):
+    def gen_tagfile(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gen_dir, name):
         if self.service == 'Pixiv' and gv.Files.Conf.gen_tagfile_pixiv == '1':
             all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_pixiv == '1':
                 all_tags.extend(pixiv_tags)
             if gv.Files.Conf.tagfile_danbooru_pixiv == '1':
                 all_tags.extend(danbooru_tags)
+            if gv.Files.Conf.tagfile_yandere_pixiv == '1':
+                all_tags.extend(yandere_tags)
+            if gv.Files.Conf.tagfile_konachan_pixiv == '1':
+                all_tags.extend(konachan_tags)
             gen_tagfile(all_tags, gen_dir, name)
         elif self.service == 'Danbooru' and gv.Files.Conf.gen_tagfile_danbooru == '1':
             all_tags = list()
@@ -189,6 +193,32 @@ class SubImageData():
                 all_tags.extend(pixiv_tags)
             if gv.Files.Conf.tagfile_danbooru_danbooru == '1':
                 all_tags.extend(danbooru_tags)
+            if gv.Files.Conf.tagfile_yandere_danbooru == '1':
+                all_tags.extend(yandere_tags)
+            if gv.Files.Conf.tagfile_konachan_danbooru == '1':
+                all_tags.extend(konachan_tags)
+            gen_tagfile(all_tags, gen_dir, name)
+        elif self.service == 'Yandere' and gv.Files.Conf.gen_tagfile_yandere == '1':
+            all_tags = list()
+            if gv.Files.Conf.tagfile_pixiv_yandere == '1':
+                all_tags.extend(pixiv_tags)
+            if gv.Files.Conf.tagfile_danbooru_yandere == '1':
+                all_tags.extend(danbooru_tags)
+            if gv.Files.Conf.tagfile_yandere_yandere == '1':
+                all_tags.extend(yandere_tags)
+            if gv.Files.Conf.tagfile_konachan_yandere == '1':
+                all_tags.extend(konachan_tags)
+            gen_tagfile(all_tags, gen_dir, name)
+        elif self.service == 'Konachan' and gv.Files.Conf.gen_tagfile_konachan == '1':
+            all_tags = list()
+            if gv.Files.Conf.tagfile_pixiv_konachan == '1':
+                all_tags.extend(pixiv_tags)
+            if gv.Files.Conf.tagfile_danbooru_konachan == '1':
+                all_tags.extend(danbooru_tags)
+            if gv.Files.Conf.tagfile_yandere_konachan == '1':
+                all_tags.extend(yandere_tags)
+            if gv.Files.Conf.tagfile_konachan_konachan == '1':
+                all_tags.extend(konachan_tags)
             gen_tagfile(all_tags, gen_dir, name)
 
     def self_destruct(self):
