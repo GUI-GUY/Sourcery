@@ -100,11 +100,12 @@ def process_img_data(img_name_original, input_path, res, minsim, img_data_q, com
     danbooru_illustration_list = list()
     new_name = img_name_original
     danb_name = False
+    danbooru_parent_name = False
     pixiv_name = False
     pixiv_visited = list()
     danbooru_visited = list()
 
-    for source in dict_list: # TODO same id filter
+    for source in dict_list:
         if source['illust_id'] != 0:
             comm_error_q.put('[Sourcery] Attempting to fetch illustration...')
             if source['service_name'] == 'Pixiv':
@@ -119,12 +120,21 @@ def process_img_data(img_name_original, input_path, res, minsim, img_data_q, com
                 if source['illust_id'] not in danbooru_visited:
                     danbooru_illustration = danbooru_fetch_illustration(source['illust_id'], comm_error_q)
                     if danbooru_illustration != False:
+                        if 'parent_id' in danbooru_illustration:
+                            if danbooru_illustration['parent_id'] != None and danbooru_illustration['parent_id'] not in danbooru_visited:
+                                danbooru_parent_illustration = danbooru_fetch_illustration(danbooru_illustration['parent_id'], comm_error_q)
+                                if danbooru_parent_illustration != False:
+                                    danbooru_parent_name = danbooru_download(img_name_original, danbooru_illustration['parent_id'], danbooru_parent_illustration, comm_error_q)
+                                if danbooru_parent_name != False:
+                                    danbooru_illustration_list.append((danbooru_parent_illustration, danbooru_parent_name))
+                                    danbooru_visited.append(danbooru_illustration['parent_id'])
+                                    dict_list.append({"service_name": 'Danbooru', "member_id": -1, "illust_id": danbooru_illustration['parent_id'], "source": danbooru_parent_illustration['source'], "similarity": source['similarity']})#TODO similarity
                         danb_name = danbooru_download(img_name_original, source['illust_id'], danbooru_illustration, comm_error_q)
                     if danb_name != False:
                         danbooru_illustration_list.append((danbooru_illustration, danb_name))
                         danbooru_visited.append(source['illust_id'])
         comm_error_q.put('[Sourcery] Downloaded illustration successfully')
-    
+
     if len(danbooru_illustration_list) == 0 and len(pixiv_illustration_list) == 0:
         return #TODO Message
     img_data_q.put((img_name_original, input_path, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, dict_list, pixiv_illustration_list, danbooru_illustration_list))

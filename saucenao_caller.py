@@ -128,21 +128,22 @@ def decode_response(results, EnableRename=False):
     if int(results['header']['results_returned']) > 0:
         #one or more results were returned
         #get vars to use
-        service_name = ''
-        illust_id = 0
-        member_id = -1
-        
-        # index_id = results['results'][0]['header']['index_id']
-        # page_string = ''
-        # page_match = search('(_p[\d]+)\.', results['results'][0]['header']['thumbnail'])
-        # if page_match:
-        #     page_string = page_match.group(1)
-        source = ''
         ret_dict = list()
 
-        # print('results')
-        # print(results)
         for elem in results['results']:
+            service_name = ''
+            illust_id = 0
+            member_id = -1
+            
+            # index_id = results['results'][0]['header']['index_id']
+            # page_string = ''
+            # page_match = search('(_p[\d]+)\.', results['results'][0]['header']['thumbnail'])
+            # if page_match:
+            #     page_string = page_match.group(1)
+            source = ''
+            
+            # print('results')
+            # print(results)
             if float(elem['header']['similarity']) >= float(results['header']['minimum_similarity']):
                 # print('hit! '+str(elem['header']['similarity']))
                 # print('minsim! '+str(results['header']['minimum_similarity']))

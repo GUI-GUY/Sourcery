@@ -82,7 +82,6 @@ UI
 + link to SauceNao/Pixiv login data online(https://www.pixiv.net/setting_user.php)
 + tags
 + better checkbutton graphics
-big selector text green/red/white if better/worse/same res/datatype?
 + minilog clips into results
 + on save clear info panel
 ~ scaling
@@ -96,7 +95,7 @@ MISC
 + pximg.net (with referer)
 all TODOs
 + comments
-Danbooru siblings/parents
++ Danbooru parents
 Fehlerbehandlung
 + stderr->logfile
 + tagfile generator: utf-8
@@ -122,6 +121,10 @@ import configparser
 pixiv gif support
 danbooru gif support
 weighted tags
+weighted parent/sibling
+big selector text green/red/white if better/worse/same res/datatype?
+link color
+danbooru siblings?
 
 beta 0.5?
 queue images instead of 'get source' button?

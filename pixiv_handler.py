@@ -68,10 +68,10 @@ def pixiv_download(img_name_original, illustration, comm_error_q=None):
     else:
         dot = img_name_original.rfind('.')
         if dot != -1:
-            new_name = img_name_original[:dot] + '_p{page}.{format}'
+            new_name = img_name_original[:dot] + '{page}.{format}'
             folder_name = img_name_original[:dot] + '/'
         else:
-            new_name = img_name_original + '_p{page}.{format}'
+            new_name = img_name_original + '{page}.{format}'
             folder_name = img_name_original + '/'
 
     if illustration.page_count > 1:
@@ -79,6 +79,7 @@ def pixiv_download(img_name_original, illustration, comm_error_q=None):
     else:
         folder_name = ''
 
+    image_format = ''
     for count in range(illustration.page_count):
         illustration.headers["referer"] = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + str(illustration.id)
         img_url = img_url.replace(replace_template.format(page=count-1), replace_template.format(page=count))
@@ -92,7 +93,7 @@ def pixiv_download(img_name_original, illustration, comm_error_q=None):
     if illustration.page_count > 1:
         return folder_name[:-1]
     else:
-        return new_name.format(page=0,format='')[:-1]
+        return new_name.format(page='',format=image_format)[:-1]
 
 
 def download(pid) :

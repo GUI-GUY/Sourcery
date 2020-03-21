@@ -20,11 +20,12 @@ class ImageData():
         self.preview_size = (200, 200)
         self.siblings_array = list()
         self.pixiv_list = list()
-        # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
+        # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source, "similarity": sim}
         for elem in pixiv_illust_list:
             #print('pixiv')
             #print(elem[1])
-            name = self.correct_name('pixiv', elem[1]) # TODO if name == False
+            #name = self.correct_name('pixiv', elem[1]) # TODO if name == False
+            name = elem[1]
             #print(name)
             path_pixiv = gv.cwd + '/Sourcery/sourced_progress/pixiv/' + name
             self.pixiv_dict = self.pixiv_clean_dict(elem[0], dict_list) 
@@ -34,7 +35,9 @@ class ImageData():
         for elem in danbooru_illust_list:
             #print('dan')
             #print(elem[1])
-            name = self.correct_name('danbooru', elem[1]) # TODO if name == False
+            #name = self.correct_name('danbooru', elem[1]) # TODO if name == False
+            name = elem[1]
+            #print(name)
             path_danb = gv.cwd + '/Sourcery/sourced_progress/danbooru/' + name
             self.danb_dict = self.danbooru_clean_dict(elem[0], dict_list)
             self.danb_list.append(ProviderImageData('Danbooru', name, path_danb, self.thumb_size, self.preview_size, self.danb_dict, elem[0], self.siblings_array))
@@ -102,7 +105,7 @@ class ImageData():
         """
         x = None
         for t in dict_list:
-            if t['service_name'] == 'Pixiv':
+            if t['service_name'] == 'Pixiv' and t['illust_id'] == illust.id:
                 x = t
                 break
         if x == None:
@@ -118,7 +121,7 @@ class ImageData():
         """
         x = None
         for t in dict_list:
-            if t['service_name'] == 'Danbooru':
+            if t['service_name'] == 'Danbooru' and t['illust_id'] == illust['id']:
                 x = t
                 break
         if x == None:
@@ -326,6 +329,8 @@ class ImageData():
         IMPORTANT:\n
         Call load before
         """
+        #TODO bild_22 two danbooru tags lists overlap
+        #TODO show (original/download)source again
         for widget in gv.info_frame.winfo_children():
             widget.grid_forget()
         

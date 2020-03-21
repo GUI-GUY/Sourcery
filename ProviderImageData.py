@@ -280,6 +280,7 @@ class ProviderImageData():
         IMPORTANT:\n
         Call load and process_big_imgs in that order before
         """
+        #TODO bild_22 images overlap
         if path.isfile(self.path):
             self.downloaded_SubImgData.display_grid(t)
             gv.big_frame.grid_rowconfigure(3, weight = 1)
