@@ -136,7 +136,8 @@ def process_img_data(img_name_original, input_path, res, minsim, img_data_q, com
         comm_error_q.put('[Sourcery] Downloaded illustration successfully')
 
     if len(danbooru_illustration_list) == 0 and len(pixiv_illustration_list) == 0:
-        return #TODO Message
+        gv.Files.Log.write_to_log('None of the requested images were available!')
+        return
     img_data_q.put((img_name_original, input_path, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, dict_list, pixiv_illustration_list, danbooru_illustration_list))
     
     pixiv_name = ''
@@ -151,7 +152,5 @@ def process_img_data(img_name_original, input_path, res, minsim, img_data_q, com
         danbooru_name = danbooru_name + ' | ' + elem[1]
         danbooru_illustration_id = danbooru_illustration_id + str(elem[0]['id']) + ' | '
 
-    gv.Files.Ref.new_reference(img_name_original, pixiv_name, pixiv_illustration_id, danb_name, danbooru_illustration_id, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, minsim)# TODO
-    
-    #return img_name_original, pixiv_name, danb_name, dict_list, pixiv_illustration, danbooru_illustration
-    #return False, None, None, None, None # TODO
+    gv.Files.Ref.new_reference(img_name_original, pixiv_name, pixiv_illustration_id, danb_name, danbooru_illustration_id, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, minsim)# TODO reference
+

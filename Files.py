@@ -538,6 +538,56 @@ class ConfigFile():
         except Exception as e:
             mb.showerror('Invalid Value', 'Please insert a value between 0 and 100 into the SauceNao biasmin option')
             self.saucenao_biasmin = '70'
+        try:
+            temp_num = int(self.png_weight)
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert an integer value into the png weight option')
+            self.png_weight = '0'
+        try:
+            temp_num = int(self.jpg_weight)
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert an integer value into the jpg weight option')
+            self.jpg_weight = '0'
+        try:
+            temp_num = int(self.jfif_weight)
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert an integer value into the jfif weight option')
+            self.jfif_weight = '0'
+        try:
+            temp_num = int(self.gif_weight)
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert an integer value into the gif weight option')
+            self.gif_weight = '0'
+        try:
+            temp_num = int(self.bmp_weight)
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert an integer value into the bmp weight option')
+            self.bmp_weight = '0'
+        try:
+            temp_num = int(self.other_weight)
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert an integer value into the other weight option')
+            self.other_weight = '0'
+        try:
+            temp_num = int(self.higher_resolution_weight)
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert an integer value into the Higher resolution weight option')
+            self.higher_resolution_weight = '0'
+        try:
+            temp_num = int(self.pixiv_weight)
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert an integer value into the Pixiv weight option')
+            self.pixiv_weight = '0'
+        try:
+            temp_num = int(self.danbooru_weight)
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert an integer value into the Danbooru weight option')
+            self.danbooru_weight = '0'
+        try:
+            temp_num = int(self.original_weight)
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert an integer value into the Original weight option')
+            self.original_weight = '0'
 
         self.tags_danbooru = self.tags_danbooru.replace('\n', ' /n ').replace('\t', ' /t ')
         self.tags_pixiv = self.tags_pixiv.replace('\n', ' /n ').replace('\t', ' /t ')
@@ -570,7 +620,7 @@ class ConfigFile():
                 "\nsaucenao_depth=" + self.saucenao_depth +
                 "\nsaucenao_bias=" + self.saucenao_bias +
                 "\nsaucenao_biasmin=" + self.saucenao_biasmin +
-                "\npng_weight=" + self.png_weight +#TODO numbers cruncher
+                "\npng_weight=" + self.png_weight +
                 "\njpg_weight=" + self.jpg_weight +
                 "\njfif_weight=" + self.jfif_weight +
                 "\ngif_weight=" + self.gif_weight +

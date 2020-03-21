@@ -14,7 +14,7 @@ from tkinter.ttk import Label, Button, Style, Entry, Frame
 #from functools import partial
 from shutil import rmtree
 #from distutils.util import strtobool
-from multiprocessing import Process, freeze_support, Queue, Pipe, Lock#, Semaphore
+from multiprocessing import Process, freeze_support, Queue, Pipe, Lock, Semaphore
 from file_operations import is_image, save, open_input, open_output, display_statistics, change_input, change_output
 from sourcery import do_sourcery
 from pixiv_handler import pixiv_fetch_illustration
@@ -179,27 +179,28 @@ def refresh_startpage(change, answer2):
         #     print(e)
     
     for data in gv.img_data_array:
-        if not data.placed: # TODO imgpp
+        if not data.placed:
             load = data.load()
             if  not load:
                 data.self_destruct()
                 gv.img_data_array.remove(data)
                 gv.Files.Log.write_to_log('Problem while loading images, deleted class')
             elif load:
-                data.process_results_imgs()
-                data.modify_results_widgets()
-                x = data.display_results(gv.last_occupied_result+1)# TODO test after saved
-                if x == -1:
-                    gv.Files.Log.write_to_log('Attempting to save image:' + data.name_original + '...' )
-                    if data.save():
-                        gv.Files.Log.write_to_log('Successfully saved image')
-                        data.self_destruct()
+                if gv.imgpp_sem.acquire(False):
+                    data.process_results_imgs()
+                    data.modify_results_widgets()
+                    x = data.display_results(gv.last_occupied_result+1)
+                    if x == -1:# This means direct replace has triggered
+                        gv.Files.Log.write_to_log('Attempting to save image:' + data.name_original + '...' )
+                        if data.save():
+                            gv.Files.Log.write_to_log('Successfully saved image')
+                            data.self_destruct()
+                        else:
+                            gv.Files.Log.write_to_log('Did not save image')# TODO delete reference
+                        gv.img_data_array.remove(data)
                     else:
-                        gv.Files.Log.write_to_log('Not saved image')# TODO reference
-                    gv.img_data_array.remove(data)
-                else:
-                    gv.last_occupied_result = x
-                data.placed = True
+                        gv.last_occupied_result = x
+                    data.placed = True
 
     window.after(100, refresh_startpage, change, answer2)
 
@@ -368,6 +369,15 @@ def enforce_style():
         background=[('pressed', '!disabled', gv.Files.Theme.button_background_pressed), ('disabled', 'black'), ('active', gv.Files.Theme.button_background_active)]
     )
     style.configure("frame.TFrame", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background)
+    style.configure("optmen.TMenubutton", 
+        foreground=gv.Files.Theme.foreground, 
+        background=gv.Files.Theme.button_background, 
+        activebackground=gv.Files.Theme.button_background,
+        activeforeground=gv.Files.Theme.foreground, 
+        highlightbackground=gv.Files.Theme.button_background,
+        highlightcolor=gv.Files.Theme.foreground, 
+        borderwidth=0, 
+        font=("Arial Bold", 10))
     style.configure("chkbtn.TCheckbutton", 
         foreground=gv.Files.Theme.foreground, 
         background=gv.Files.Theme.background, 
@@ -400,6 +410,20 @@ def enforce_style():
                 selectcolor=gv.Files.Theme.checkbutton_pressed, 
                 activebackground=gv.Files.Theme.button_background_active, 
                 activeforeground=gv.Files.Theme.button_foreground_active, 
+            )
+    for elem in Options_Class.ProO.DanO.scrollpar_frame.winfo_children():
+        if type(elem) == type(Text()):
+            elem.configure(
+                foreground=gv.Files.Theme.foreground, 
+                background=gv.Files.Theme.background, 
+                font=("Arial Bold", 10)
+            )
+    for elem in Options_Class.ProO.PixO.scrollpar_frame.winfo_children():
+        if type(elem) == type(Text()):
+            elem.configure(
+                foreground=gv.Files.Theme.foreground, 
+                background=gv.Files.Theme.background, 
+                font=("Arial Bold", 10)
             )
         
     gv.Files.Log.log_text.configure(foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
@@ -521,6 +545,7 @@ if __name__ == '__main__':
     input_images_array = list()
     input_lock = Lock()
     #sem = Semaphore(12)
+    gv.imgpp_sem = Semaphore(int(gv.Files.Conf.imgpp))#TODO on save add up
     #image_preloader()
     index = 0
     gv.Files.Log.write_to_log('Variables initialised')

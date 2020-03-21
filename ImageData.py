@@ -22,33 +22,18 @@ class ImageData():
         self.pixiv_list = list()
         # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source, "similarity": sim}
         for elem in pixiv_illust_list:
-            #print('pixiv')
-            #print(elem[1])
-            #name = self.correct_name('pixiv', elem[1]) # TODO if name == False
             name = elem[1]
-            #print(name)
             path_pixiv = gv.cwd + '/Sourcery/sourced_progress/pixiv/' + name
             self.pixiv_dict = self.pixiv_clean_dict(elem[0], dict_list) 
             self.pixiv_list.append(ProviderImageData('Pixiv', name, path_pixiv, self.thumb_size, self.preview_size, self.pixiv_dict, elem[0], self.siblings_array))
         
         self.danb_list = list()
         for elem in danbooru_illust_list:
-            #print('dan')
-            #print(elem[1])
-            #name = self.correct_name('danbooru', elem[1]) # TODO if name == False
             name = elem[1]
-            #print(name)
             path_danb = gv.cwd + '/Sourcery/sourced_progress/danbooru/' + name
             self.danb_dict = self.danbooru_clean_dict(elem[0], dict_list)
             self.danb_list.append(ProviderImageData('Danbooru', name, path_danb, self.thumb_size, self.preview_size, self.danb_dict, elem[0], self.siblings_array))
-        #self.name_pixiv = pixiv_name
-        #self.set_name_pixiv()
-        #self.name_danb = danb_name
-        #self.set_name_danb()
         
-        self.minsim = 80
-        self.rename_pixiv = pixiv_rename
-        self.rename_danbooru = danb_rename
         self.path_original = gv.cwd + '/Sourcery/sourced_original/' + self.name_original
         self.input_path = input_path
         
@@ -110,10 +95,10 @@ class ImageData():
                 break
         if x == None:
             return None
-        tags = list()
-        for tag in illust.tags:
-            tags.append(tag['name'] + ' | ' + str(tag['translated_name']))
-        return {"artist": illust.user.name, "title": illust.title, "caption": illust.caption, "create_date": illust.create_date, "width": illust.width, "height": illust.height, "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity']), "tags": str(tags)}
+        # tags = list()
+        # for tag in illust.tags:
+        #     tags.append(tag['name'] + ' | ' + str(tag['translated_name']))
+        return {"artist": illust.user.name, "title": illust.title, "caption": illust.caption, "create_date": illust.create_date, "width": illust.width, "height": illust.height, "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": str(tags)}
 
     def danbooru_clean_dict(self, illust, dict_list):
         """
@@ -127,9 +112,9 @@ class ImageData():
         if x == None:
             return None
 
-        tags = illust['tag_string_general']
-        tags = tags.split() #TODO tags with ' in it
-        return {"artist": illust['tag_string_artist'], "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['image_width'], "height": illust['image_height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity']), "tags": str(tags)}
+        #tags = illust['tag_string_general']
+        #tags = tags.split()
+        return {"artist": illust['tag_string_artist'], "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['image_width'], "height": illust['image_height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": illust['tag_string_general']}
 
     def forget_all_widgets(self):
         for widget in gv.window.winfo_children():
@@ -363,7 +348,7 @@ class ImageData():
         for elem in self.pixiv_list:
             t = elem.display_big_selector(t)
         for elem in self.danb_list:
-            elem.display_big_selector(t) #TODO t = elem...
+            t = elem.display_big_selector(t)
 
         self.original_SubImgData.display_place()
 

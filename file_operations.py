@@ -48,6 +48,7 @@ def save():
                 continue
             gv.Files.Log.write_to_log('Successfully saved image')
             data.forget_results()
+            gv.imgpp_sem.release()
             data.self_destruct()
             remove_later_list.append(data)
     for data in remove_later_list:

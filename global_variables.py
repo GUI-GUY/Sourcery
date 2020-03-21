@@ -22,6 +22,7 @@ results_tags_danbooru = Files.Conf.tags_danbooru.split()
 results_tags_pixiv = Files.Conf.tags_pixiv.split()
 
 last_occupied_result = 0
+imgpp_sem = None
 
 width = 0
 height = 0

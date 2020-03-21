@@ -93,12 +93,15 @@ UI
 MISC
 - multiple SauceNao accounts support? if it works
 + pximg.net (with referer)
-all TODOs
++ all TODOs
 + comments
 + Danbooru parents
 Fehlerbehandlung
 + stderr->logfile
 + tagfile generator: utf-8
+danbooru TODOs
+reference repair
+weights default
 
 Last Error: 0049
 
@@ -125,6 +128,7 @@ weighted parent/sibling
 big selector text green/red/white if better/worse/same res/datatype?
 link color
 danbooru siblings?
+on numbers cruncher exception write back default value
 
 beta 0.5?
 queue images instead of 'get source' button?

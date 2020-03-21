@@ -241,6 +241,8 @@ class SourceryOptions():
         self.direct_replace_entry = Entry(parent, width=30, style="button.TLabel")
         self.direct_replace_entry.insert(0, gv.Files.Conf.direct_replace)
 
+        self.restart_gui_lbl = Label(parent, text="Restart of Sourcery recommended!", font=("Arial Bold", 10), style="label.TLabel")
+
         self.sourcery_confirm_btn = Button(parent, text="Save", command=self.sourcery_save, style="button.TLabel")
 
     def display(self):
@@ -390,6 +392,17 @@ class SourceryOptions():
 
     def sourcery_save(self):
         gv.Files.Log.write_to_log('Attempting to save Sourcery options...')
+        diff = self.images_per_page_entry.get() - gv.Files.Conf.imgpp
+        if diff > 0:
+            for num in range(diff):
+                gv.imgpp_sem.release()
+        else:
+            for num in range(diff, 0):
+                gv.imgpp_sem.acquire(False)#TODO problem when more images are being displayed than imgpp
+            y = int(gv.height/90*10)
+            c = 23
+            x3 = int(gv.width/160*50)
+            self.restart_gui_lbl.place(x = x3, y = y + c * 15)
         gv.Files.Conf.imgpp = self.images_per_page_entry.get()
         gv.Files.Conf.delete_input = str(self.delete_input_var.get())
         gv.Files.Conf.direct_replace = self.direct_replace_entry.get()
@@ -452,7 +465,7 @@ class PixivOptions():
         self.rename_chkbtn = Checkbutton(self.scrollpar_frame, text='Rename images from pixiv to pixiv name', var=self.rename_var, style="chkbtn.TCheckbutton")
 
         self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
-        self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10)) # TODO not upadated with theme
+        self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
 
         self.show_tags_txt.insert(END, gv.Files.Conf.tags_pixiv)
         self.tags = None
@@ -464,6 +477,7 @@ class PixivOptions():
         self.tagfile_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
         self.tagfile_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
 
+        self.pixiv_display_constant()
         self.save_btn = Button(parent, text='Save', command=self.pixiv_save, style ="button.TLabel")
 
     def pixiv_display(self):
@@ -473,7 +487,9 @@ class PixivOptions():
         self.pixiv_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90*8))
         self.scrollpar.display(x = int(gv.width/160*5), y= int(gv.height/90*10))
 
-        #TODO lager das aus damits nicht öfters aufgerufen wird
+        self.save_btn.place(x = int(gv.width/160*5), y = gv.height-220)
+
+    def pixiv_display_constant(self):
         self.use_pixiv_chkbtn.grid(row= 0, column= 0, sticky=W, padx=2, pady=1)
 
         self.show_tags_lbl.grid(row= 8, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
@@ -485,8 +501,6 @@ class PixivOptions():
         self.tagfile_danbooru_chkbtn.grid(row= 15, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
 
         self.rename_chkbtn.grid(row= 18, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
-
-        self.save_btn.place(x = int(gv.width/160*5), y = gv.height-220)
 
     def pixiv_save(self):
         gv.Files.Log.write_to_log('Attempting to save Pixiv options...')
@@ -511,7 +525,7 @@ class DanbooruOptions():
         self.use_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Use danbooru', var=self.use_danbooru_var, style="chkbtn.TCheckbutton")
         self.danbooru_lbl = Label(parent, text="Danbooru", font=('Arial Bold', 13), style="label.TLabel")
         self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
-        self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10)) # TODO not upadated with theme
+        self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
         
         self.rename_var = IntVar(value=int(gv.Files.Conf.rename_danbooru))
         self.rename_chkbtn = Checkbutton(self.scrollpar_frame, text='Rename images from danbooru to danbooru name', var=self.rename_var, style="chkbtn.TCheckbutton")

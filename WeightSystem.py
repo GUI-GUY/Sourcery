@@ -1,4 +1,5 @@
 from tkinter import IntVar, StringVar, E, W
+from tkinter import messagebox as mb
 from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame, OptionMenu
 from ScrollFrame import ScrollFrame
 import global_variables as gv
@@ -60,17 +61,17 @@ class WeightSystem():
         
         self.service_0_var = StringVar(parent)
         self.service_choices = ['Original', 'Danbooru', 'Pixiv']
-        self.service_0_optmen = OptionMenu(self.scrollpar_frame, self.service_0_var, 'Choose Service', *self.service_choices)
+        self.service_0_optmen = OptionMenu(self.scrollpar_frame, self.service_0_var, 'Choose Service', *self.service_choices, style='optmen.TMenubutton')
 
         self.filetype_0_var = StringVar(parent)
         self.filetype_choices = ['png', 'jpg', 'jfif', 'gif', 'bmp', 'other']
-        self.filetype_0_optmen = OptionMenu(self.scrollpar_frame, self.filetype_0_var, 'Choose Filetype', *self.filetype_choices)
+        self.filetype_0_optmen = OptionMenu(self.scrollpar_frame, self.filetype_0_var, 'Choose Filetype', *self.filetype_choices, style='optmen.TMenubutton')
 
         self.service_1_var = StringVar(parent)
-        self.service_1_optmen = OptionMenu(self.scrollpar_frame, self.service_1_var, 'Choose Service', *self.service_choices)
+        self.service_1_optmen = OptionMenu(self.scrollpar_frame, self.service_1_var, 'Choose Service', *self.service_choices, style='optmen.TMenubutton')
 
-        self.filetype_1_var = StringVar(parent) # TODO OptionMenu Style
-        self.filetype_1_optmen = OptionMenu(self.scrollpar_frame, self.filetype_1_var, 'Choose Filetype', *self.filetype_choices)
+        self.filetype_1_var = StringVar(parent)
+        self.filetype_1_optmen = OptionMenu(self.scrollpar_frame, self.filetype_1_var, 'Choose Filetype', *self.filetype_choices, style='optmen.TMenubutton')
 
         self.width_0_entry = Entry(self.scrollpar_frame, width=width, style="button.TLabel")
         self.width_0_entry.insert(0, '1600')
@@ -90,55 +91,58 @@ class WeightSystem():
     def test_weights(self):
         img_0_weight = 0
         img_1_weight = 0
-        s0_var = self.filetype_0_var.get() # TODO numbers cruncher
-        if s0_var == 'png':
-            img_0_weight = img_0_weight + int(self.png_weight_entry.get())
-        if s0_var == 'jpg':
-            img_0_weight = img_0_weight + int(self.jpg_weight_entry.get())
-        if s0_var == 'jfif':
-            img_0_weight = img_0_weight + int(self.jfif_weight_entry.get())
-        if s0_var == 'gif':
-            img_0_weight = img_0_weight + int(self.gif_weight_entry.get())
-        if s0_var == 'bmp':
-            img_0_weight = img_0_weight + int(self.bmp_weight_entry.get())
-        if s0_var == 'other':
-            img_0_weight = img_0_weight + int(self.other_weight_entry.get())
-        s0_var = self.service_0_var.get()
-        if s0_var == 'Danbooru':
-            img_0_weight = img_0_weight + int(self.danbooru_weight_entry.get())
-        if s0_var == 'Pixiv':
-            img_0_weight = img_0_weight + int(self.pixiv_weight_entry.get())
-        if s0_var == 'Original':
-            img_0_weight = img_0_weight + int(self.original_weight_entry.get())
-        if int(self.width_0_entry.get())/int(self.height_0_entry.get()) == int(self.width_1_entry.get())/int(self.height_1_entry.get()):
-            if int(self.width_0_entry.get()) > int(self.width_1_entry.get()):
-                img_0_weight = img_0_weight + int(self.higher_resolution_weight_entry.get())
-            else:
-                img_1_weight = img_1_weight + int(self.higher_resolution_weight_entry.get())
-        
-        s1_var = self.filetype_1_var.get()
-        if s1_var == 'png':
-            img_1_weight = img_1_weight + int(self.png_weight_entry.get())
-        if s1_var == 'jpg':
-            img_1_weight = img_1_weight + int(self.jpg_weight_entry.get())
-        if s1_var == 'jfif':
-            img_1_weight = img_1_weight + int(self.jfif_weight_entry.get())
-        if s1_var == 'gif':
-            img_1_weight = img_1_weight + int(self.gif_weight_entry.get())
-        if s1_var == 'bmp':
-            img_1_weight = img_1_weight + int(self.bmp_weight_entry.get())
-        if s1_var == 'other':
-            img_1_weight = img_1_weight + int(self.other_weight_entry.get())
-        s1_var = self.service_1_var.get()
-        if s1_var == 'Danbooru':
-            img_1_weight = img_1_weight + int(self.danbooru_weight_entry.get())
-        if s1_var == 'Pixiv':
-            img_1_weight = img_1_weight + int(self.pixiv_weight_entry.get())
-        if s1_var == 'Original':
-            img_1_weight = img_1_weight + int(self.original_weight_entry.get())
-                
-        self.image_0_weight_lbl.configure(text=str(img_0_weight))
-        self.image_1_weight_lbl.configure(text=str(img_1_weight))
+        s0_var = self.filetype_0_var.get()
+        try:
+            if s0_var == 'png':
+                img_0_weight = img_0_weight + int(self.png_weight_entry.get())
+            if s0_var == 'jpg':
+                img_0_weight = img_0_weight + int(self.jpg_weight_entry.get())
+            if s0_var == 'jfif':
+                img_0_weight = img_0_weight + int(self.jfif_weight_entry.get())
+            if s0_var == 'gif':
+                img_0_weight = img_0_weight + int(self.gif_weight_entry.get())
+            if s0_var == 'bmp':
+                img_0_weight = img_0_weight + int(self.bmp_weight_entry.get())
+            if s0_var == 'other':
+                img_0_weight = img_0_weight + int(self.other_weight_entry.get())
+            s0_var = self.service_0_var.get()
+            if s0_var == 'Danbooru':
+                img_0_weight = img_0_weight + int(self.danbooru_weight_entry.get())
+            if s0_var == 'Pixiv':
+                img_0_weight = img_0_weight + int(self.pixiv_weight_entry.get())
+            if s0_var == 'Original':
+                img_0_weight = img_0_weight + int(self.original_weight_entry.get())
+            if int(self.width_0_entry.get())/int(self.height_0_entry.get()) == int(self.width_1_entry.get())/int(self.height_1_entry.get()):
+                if int(self.width_0_entry.get()) > int(self.width_1_entry.get()):
+                    img_0_weight = img_0_weight + int(self.higher_resolution_weight_entry.get())
+                else:
+                    img_1_weight = img_1_weight + int(self.higher_resolution_weight_entry.get())
+            
+            s1_var = self.filetype_1_var.get()
+            if s1_var == 'png':
+                img_1_weight = img_1_weight + int(self.png_weight_entry.get())
+            if s1_var == 'jpg':
+                img_1_weight = img_1_weight + int(self.jpg_weight_entry.get())
+            if s1_var == 'jfif':
+                img_1_weight = img_1_weight + int(self.jfif_weight_entry.get())
+            if s1_var == 'gif':
+                img_1_weight = img_1_weight + int(self.gif_weight_entry.get())
+            if s1_var == 'bmp':
+                img_1_weight = img_1_weight + int(self.bmp_weight_entry.get())
+            if s1_var == 'other':
+                img_1_weight = img_1_weight + int(self.other_weight_entry.get())
+            s1_var = self.service_1_var.get()
+            if s1_var == 'Danbooru':
+                img_1_weight = img_1_weight + int(self.danbooru_weight_entry.get())
+            if s1_var == 'Pixiv':
+                img_1_weight = img_1_weight + int(self.pixiv_weight_entry.get())
+            if s1_var == 'Original':
+                img_1_weight = img_1_weight + int(self.original_weight_entry.get())
+                    
+            self.image_0_weight_lbl.configure(text=str(img_0_weight))
+            self.image_1_weight_lbl.configure(text=str(img_1_weight))
+        except:
+            mb.showerror('Invalid Value', 'Please insert an integer value into the Weight options and the width and height')
 
     def weight_display(self):
         """

@@ -64,7 +64,7 @@ class ProviderImageData():
         self.info_wxh_lbl = Label(master=gv.info_frame, style='label.TLabel')
         self.tags_pixiv_lbl = Label(master=gv.info_frame, text = 'Tags', font=('Arial Bold', 15), style='label.TLabel')
         self.tags_lbl_array = list()
-        self.tags = self.get_tags_list(0)#dictionary['tags'].strip('[]\'').split('\', \'')
+        self.tags = self.get_tags_list(0)
 
         if self.service == 'Pixiv':
             self.tags_lbl_array.append((Label(master=gv.info_frame, text = 'Original:', style='label.TLabel', font = ('Arial Bold', 11)), Label(master=gv.info_frame, text = 'Translated:', style='label.TLabel', font = ('Arial Bold', 11))))
@@ -280,7 +280,6 @@ class ProviderImageData():
         IMPORTANT:\n
         Call load and process_big_imgs in that order before
         """
-        #TODO bild_22 images overlap
         if path.isfile(self.path):
             self.downloaded_SubImgData.display_grid(t)
             gv.big_frame.grid_rowconfigure(3, weight = 1)
@@ -360,7 +359,6 @@ class ProviderImageData():
         ##----##
 
         # TODO try except
-        # TODO clear results screen
 
     def get_save_status(self):
         """
