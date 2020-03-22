@@ -79,8 +79,13 @@ class ProviderImageData():
             for tag in self.tags:
                 self.tags_lbl_array.append(Label(master=gv.info_frame, text = tag, style='label.TLabel'))
 
-        for elem in self.dict['source']:
-            lbl = Label(master=gv.info_frame, text = elem, foreground='#2626ff', cursor='hand2', style='label.TLabel')
+        if type(self.dict['source']) == type(list()):
+            for elem in self.dict['source']:
+                lbl = Label(master=gv.info_frame, text = elem, foreground='#2626ff', cursor='hand2', style='label.TLabel')
+                lbl.bind("<Button-1>", self.hyperlink)
+                self.info_url_lbl_list.append(lbl)
+        else:
+            lbl = Label(master=gv.info_frame, text = self.dict['source'], foreground='#2626ff', cursor='hand2', style='label.TLabel')
             lbl.bind("<Button-1>", self.hyperlink)
             self.info_url_lbl_list.append(lbl)
 
@@ -230,8 +235,8 @@ class ProviderImageData():
         #self.info_imageid_lbl.grid(column = 1, row = t + 4, sticky = W, padx = 5)
         self.info_date_lbl.grid(column = 1, row = t + 5, sticky = W, padx = 5)
         
-        if len(self.sub_dir_array_pixiv) < 1:
-            self.info_wxh_lbl.grid(column = 1, row = 6, sticky = W, padx = 5)
+        if len(self.sub_dir_img_array) < 1:
+            self.info_wxh_lbl.grid(column = 1, row = t + 6, sticky = W, padx = 5)
         for elem in self.info_url_lbl_list:
             elem.grid(column = 0, row = t + 10, columnspan = 3, sticky = W)
             t = t+1

@@ -28,12 +28,12 @@ class ImageData():
             self.pixiv_dict = self.pixiv_clean_dict(elem[0], dict_list) 
             self.pixiv_list.append(ProviderImageData('Pixiv', name, path_pixiv, self.thumb_size, self.preview_size, self.pixiv_dict, elem[0], self.siblings_array))
         
-        self.danb_list = list()
+        self.danbooru_list = list()
         for elem in danbooru_illust_list:
             name = elem[1]
             path_danb = gv.cwd + '/Sourcery/sourced_progress/danbooru/' + name
-            self.danb_dict = self.danbooru_clean_dict(elem[0], dict_list,'Danbooru')
-            self.danb_list.append(ProviderImageData('Danbooru', name, path_danb, self.thumb_size, self.preview_size, self.danb_dict, elem[0], self.siblings_array))
+            self.danbooru_dict = self.danbooru_clean_dict(elem[0], dict_list,'Danbooru')
+            self.danbooru_list.append(ProviderImageData('Danbooru', name, path_danb, self.thumb_size, self.preview_size, self.danbooru_dict, elem[0], self.siblings_array))
         
         self.yandere_list = list()
         for elem in yandere_illust_list:
@@ -46,8 +46,8 @@ class ImageData():
         for elem in konachan_illust_list:
             name = elem[1]
             path_konachan = gv.cwd + '/Sourcery/sourced_progress/konachan/' + name
-            self.danb_dict = self.danbooru_clean_dict(elem[0], dict_list, 'Konachan')
-            self.danb_list.append(ProviderImageData('Konachan', name, path_konachan, self.thumb_size, self.preview_size, self.konachan_dict, elem[0], self.siblings_array))
+            self.danbooru_dict = self.danbooru_clean_dict(elem[0], dict_list, 'Konachan')
+            self.danbooru_list.append(ProviderImageData('Konachan', name, path_konachan, self.thumb_size, self.preview_size, self.konachan_dict, elem[0], self.siblings_array))
         
         self.service_list.append(self.pixiv_list)
         self.service_list.append(self.danbooru_list)
@@ -141,7 +141,6 @@ class ImageData():
         if service == 'Konachan':
             return {"artist": 'None', "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['width'], "height": illust['height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": illust['tag_string_general']}
 
-
     def forget_all_widgets(self):
         for widget in gv.window.winfo_children():
             widget.place_forget()
@@ -170,7 +169,7 @@ class ImageData():
         # for elem in self.pixiv_list:
         #     elem.load()
 
-        # for elem in self.danb_list:
+        # for elem in self.danbooru_list:
         #     elem.load()
 
         # for elem in self.yandere_list:
@@ -203,7 +202,7 @@ class ImageData():
         # for elem in self.pixiv_list:
         #     elem.process_results_imgs()
     
-        # for elem in self.danb_list:
+        # for elem in self.danbooru_list:
         #     elem.process_results_imgs()
 
         # for elem in self.yandere_list:
@@ -245,7 +244,7 @@ class ImageData():
         # for elem in self.pixiv_list:
         #     elem.modify_results_widgets()
 
-        # for elem in self.danb_list:
+        # for elem in self.danbooru_list:
         #     elem.modify_results_widgets()
 
         # for elem in self.yandere_list:
@@ -280,7 +279,7 @@ class ImageData():
                     if elem.is_greater_than_direct_sim():
                         flag = True
         if gv.Files.Conf.direct_replace_danbooru == '1':
-            for elem in self.danb_list:
+            for elem in self.danbooru_list:
                 if elem.load_init:
                     if elem.is_greater_than_direct_sim():
                         flag = True
@@ -304,7 +303,7 @@ class ImageData():
                         else:
                             elem.downloaded_var.set(0)
             if gv.Files.Conf.direct_replace_danbooru == '1':
-                for elem in self.danb_list:
+                for elem in self.danbooru_list:
                     if elem.load_init:
                         if elem.is_greater_than_direct_sim():
                             elem.downloaded_var.set(1)
@@ -344,7 +343,7 @@ class ImageData():
         #         aspect_flag = flag
         #     if weight > highest_weight[1]:
         #         highest_weight = (elem, weight)
-        # for elem in self.danb_list:
+        # for elem in self.danbooru_list:
         #     weight, flag = elem.evaluate_weight(self.original_image.size[0]/self.original_image.size[1], self.original_image.size[0])
         #     if not aspect_flag:
         #         aspect_flag = flag
@@ -390,7 +389,7 @@ class ImageData():
         
         # for elem in self.pixiv_list:
         #     t = elem.display_results(t+1)
-        # for elem in self.danb_list:
+        # for elem in self.danbooru_list:
         #     t = elem.display_results(t+1)
         # for elem in self.yandere_list:
         #     t = elem.display_results(t+1)
@@ -443,11 +442,11 @@ class ImageData():
         for service in self.service_list:
             for elem in service:
                 if elem.load_init:
-                    t = elem.display_results(t)
+                    t = elem.display_info(t)
         
         # for elem in self.pixiv_list:
         #     t = elem.display_info(t)
-        # for elem in self.danb_list:
+        # for elem in self.danbooru_list:
         #     t = elem.display_info(t)
         # for elem in self.yandere_list:
         #     t = elem.display_info(t)
@@ -478,7 +477,7 @@ class ImageData():
 
         # for elem in self.pixiv_list:
         #     t = elem.display_big_selector(t)
-        # for elem in self.danb_list:
+        # for elem in self.danbooru_list:
         #     t = elem.display_big_selector(t)
         # for elem in self.yandere_list:
         #     t = elem.display_big_selector(t)
@@ -507,7 +506,7 @@ class ImageData():
         # for elem in self.pixiv_list:
         #     elem.process_big_imgs()
 
-        # for elem in self.danb_list:
+        # for elem in self.danbooru_list:
         #     elem.process_big_imgs()
         
         # for elem in self.yandere_list:
@@ -555,7 +554,7 @@ class ImageData():
             pixiv_tags.extend(elem.get_tags_list())
 
         danbooru_tags = list()
-        for elem in self.danb_list:
+        for elem in self.danbooru_list:
             danbooru_tags.extend(elem.get_tags_list())
 
         yandere_tags = list()
@@ -583,7 +582,7 @@ class ImageData():
             #         break
             #     if elem.get_save_status():
             #         save_counter += 1
-            # for elem in self.danb_list:
+            # for elem in self.danbooru_list:
             #     if save_counter > 1:
             #         break
             #     if elem.get_save_status():
@@ -639,7 +638,7 @@ class ImageData():
             # for elem in self.pixiv_list:
             #     elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
             #     t += 1
-            # for elem in self.danb_list:
+            # for elem in self.danbooru_list:
             #     elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
             #     t += 1
             # for elem in self.yandere_list:
@@ -677,7 +676,7 @@ class ImageData():
             # for elem in self.pixiv_list:
             #     if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags):
             #         return False
-            # for elem in self.danb_list:
+            # for elem in self.danbooru_list:
             #     if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags):
             #         return False
             # for elem in self.yandere_list:
@@ -733,7 +732,7 @@ class ImageData():
 
         # for elem in self.pixiv_list:
         #     elem.forget_results()
-        # for elem in self.danb_list:
+        # for elem in self.danbooru_list:
         #     elem.forget_results()
         # for elem in self.yandere_list:
         #     elem.forget_results()
@@ -756,7 +755,7 @@ class ImageData():
 
         # for elem in self.pixiv_list:
         #     elem.self_destruct()
-        # for elem in self.danb_list:
+        # for elem in self.danbooru_list:
         #     elem.self_destruct()
         # for elem in self.yandere_list:
         #     elem.self_destruct()

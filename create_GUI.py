@@ -26,7 +26,7 @@ from ScrollFrame import ScrollFrame
 from Files import Files
 import global_variables as gv
 
-stderr = gv.Files.Log
+#stderr = gv.Files.Log
 
 def magic():
     """
@@ -80,7 +80,8 @@ def display_startpage():
     save_locked_btn.place(x = int(width*0.48), y = int(height*0.9))
     lock_save_btn.place(x = int(width*0.4), y = int(height*0.9))
     results_ScrollFrame.display(x = int(width/16*4), y = int(height/9))
-    display_info()
+    #display_info()
+    display_logfile()
 
     test_btn = Button(master=window, text='test', command=test)
     test_btn.place(x = 800, y = 60)
@@ -167,6 +168,7 @@ def refresh_startpage(change, answer2):
         except:
             pass
     if not img_data_q.empty():
+        b = None
         try:
             a = img_data_q.get()
             #print('a')
@@ -231,28 +233,28 @@ def load_from_ref():
             visited_ids = list()
             for elem in pixiv_info_list:
                 if elem['id'] not in visited_ids:
-                    pixiv_illustration_list.append((pixiv_fetch_illustration(ref['old_name'], elem['id']), elem['new_name']))
+                    pixiv_illustration_list.append((pixiv_fetch_illustration(ref['old_name'], int(elem['id'])), elem['new_name']))
                     visited_ids.append(elem['id'])
             
             danb_illustration_list = list()
             visited_ids = list()
             for elem in danb_info_list:
                 if elem['id'] not in visited_ids:
-                    danb_illustration_list.append((danbooru_fetch_illustration(elem['id'], danbooru=True), elem['new_name']))
+                    danb_illustration_list.append((danbooru_fetch_illustration(int(elem['id']), danbooru=True), elem['new_name']))
                     visited_ids.append(elem['id'])
             
             yandere_illustration_list = list()
             visited_ids = list()
             for elem in yandere_info_list:
                 if elem['id'] not in visited_ids:
-                    yandere_illustration_list.append((danbooru_fetch_illustration(elem['id'], yandere=True), elem['new_name']))
+                    yandere_illustration_list.append((danbooru_fetch_illustration(int(elem['id']), yandere=True), elem['new_name']))
                     visited_ids.append(elem['id'])
             
             konachan_illustration_list = list()
             visited_ids = list()
             for elem in konachan_info_list:
                 if elem['id'] not in visited_ids:
-                    konachan_illustration_list.append((danbooru_fetch_illustration(elem['id'], konachan=True), elem['new_name']))
+                    konachan_illustration_list.append((danbooru_fetch_illustration(int(elem['id']), konachan=True), elem['new_name']))
                     visited_ids.append(elem['id'])
             
             next_img = False
