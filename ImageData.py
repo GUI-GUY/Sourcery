@@ -19,6 +19,7 @@ class ImageData():
         self.thumb_size = (70,70)
         self.preview_size = (200, 200)
         self.siblings_array = list()
+        self.service_list = list()
         self.pixiv_list = list()
         # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source, "similarity": sim}
         for elem in pixiv_illust_list:
@@ -48,6 +49,10 @@ class ImageData():
             self.danb_dict = self.danbooru_clean_dict(elem[0], dict_list, 'Konachan')
             self.danb_list.append(ProviderImageData('Konachan', name, path_konachan, self.thumb_size, self.preview_size, self.konachan_dict, elem[0], self.siblings_array))
         
+        self.service_list.append(self.pixiv_list)
+        self.service_list.append(self.danbooru_list)
+        self.service_list.append(self.yandere_list)
+        self.service_list.append(self.konachan_list)
 
         self.path_original = gv.cwd + '/Sourcery/sourced_original/' + self.name_original
         self.input_path = input_path
@@ -157,18 +162,22 @@ class ImageData():
                 #mb.showerror("ERROR [0039]", "ERROR CODE [0039]\nSomething went wrong while loading an image.")
                 gv.Files.Log.write_to_log("ERROR [0039] " + str(e))
                 return False
-
-        for elem in self.pixiv_list:
-            elem.load() # TODO error
-
-        for elem in self.danb_list:
-            elem.load()
-
-        for elem in self.yandere_list:
-            elem.load()
         
-        for elem in self.konachan_list:
-            elem.load()
+        for service in self.service_list:
+            for elem in service:
+                elem.load()
+
+        # for elem in self.pixiv_list:
+        #     elem.load()
+
+        # for elem in self.danb_list:
+        #     elem.load()
+
+        # for elem in self.yandere_list:
+        #     elem.load()
+        
+        # for elem in self.konachan_list:
+        #     elem.load()
 
         self.load_init = True
         return True
@@ -186,17 +195,22 @@ class ImageData():
         self.original_photoImage_thumb = ImageTk.PhotoImage(self.original_image_thumb)
         self.original_image_thumb.close()
 
-        for elem in self.pixiv_list:
-            elem.process_results_imgs()
+        for service in self.service_list:
+            for elem in service:
+                if elem.load_init:
+                    elem.process_results_imgs()
+
+        # for elem in self.pixiv_list:
+        #     elem.process_results_imgs()
     
-        for elem in self.danb_list:
-            elem.process_results_imgs()
+        # for elem in self.danb_list:
+        #     elem.process_results_imgs()
 
-        for elem in self.yandere_list:
-            elem.process_results_imgs()
+        # for elem in self.yandere_list:
+        #     elem.process_results_imgs()
 
-        for elem in self.konachan_list:
-            elem.process_results_imgs()
+        # for elem in self.konachan_list:
+        #     elem.process_results_imgs()
         self.process_results_imgs_init = True
 
     def modify_results_widgets(self):
@@ -223,17 +237,22 @@ class ImageData():
         self.original_type_lbl.configure(text = self.name_original[self.name_original.rfind('.')+1:])
         self.original_cropped_lbl.configure(text = self.name_original)
 
-        for elem in self.pixiv_list:
-            elem.modify_results_widgets()
+        for service in self.service_list:
+            for elem in service:
+                if elem.load_init:
+                    elem.modify_results_widgets()
 
-        for elem in self.danb_list:
-            elem.modify_results_widgets()
+        # for elem in self.pixiv_list:
+        #     elem.modify_results_widgets()
 
-        for elem in self.yandere_list:
-            elem.modify_results_widgets()
+        # for elem in self.danb_list:
+        #     elem.modify_results_widgets()
 
-        for elem in self.konachan_list:
-            elem.modify_results_widgets()
+        # for elem in self.yandere_list:
+        #     elem.modify_results_widgets()
+
+        # for elem in self.konachan_list:
+        #     elem.modify_results_widgets()
 
         gv.res_frame.columnconfigure(0, weight=1)
         gv.res_frame.columnconfigure(1, weight=1)
@@ -257,74 +276,92 @@ class ImageData():
         flag = False
         if gv.Files.Conf.direct_replace_pixiv == '1':
             for elem in self.pixiv_list:
-                if elem.is_greater_than_direct_sim():
-                    flag = True
+                if elem.load_init:
+                    if elem.is_greater_than_direct_sim():
+                        flag = True
         if gv.Files.Conf.direct_replace_danbooru == '1':
             for elem in self.danb_list:
-                if elem.is_greater_than_direct_sim():
-                    flag = True
+                if elem.load_init:
+                    if elem.is_greater_than_direct_sim():
+                        flag = True
         if gv.Files.Conf.direct_replace_yandere == '1':
             for elem in self.yandere_list:
-                if elem.is_greater_than_direct_sim():
-                    flag = True
+                if elem.load_init:
+                    if elem.is_greater_than_direct_sim():
+                        flag = True
         if gv.Files.Conf.direct_replace_konachan == '1':
             for elem in self.konachan_list:
-                if elem.is_greater_than_direct_sim():
-                    flag = True
+                if elem.load_init:
+                    if elem.is_greater_than_direct_sim():
+                        flag = True
 
         if flag:
             if gv.Files.Conf.direct_replace_pixiv == '1':
                 for elem in self.pixiv_list:
-                    if elem.is_greater_than_direct_sim():
-                        elem.downloaded_var.set(1)
-                    else:
-                        elem.downloaded_var.set(0)
+                    if elem.load_init:
+                        if elem.is_greater_than_direct_sim():
+                            elem.downloaded_var.set(1)
+                        else:
+                            elem.downloaded_var.set(0)
             if gv.Files.Conf.direct_replace_danbooru == '1':
                 for elem in self.danb_list:
-                    if elem.is_greater_than_direct_sim():
-                        elem.downloaded_var.set(1)
-                    else:
-                        elem.downloaded_var.set(0)
+                    if elem.load_init:
+                        if elem.is_greater_than_direct_sim():
+                            elem.downloaded_var.set(1)
+                        else:
+                            elem.downloaded_var.set(0)
             if gv.Files.Conf.direct_replace_yandere == '1':
                 for elem in self.yandere_list:
-                    if elem.is_greater_than_direct_sim():
-                        elem.downloaded_var.set(1)
-                    else:
-                        elem.downloaded_var.set(0)
+                    if elem.load_init:
+                        if elem.is_greater_than_direct_sim():
+                            elem.downloaded_var.set(1)
+                        else:
+                            elem.downloaded_var.set(0)
             if gv.Files.Conf.direct_replace_konachan == '1':
                 for elem in self.konachan_list:
-                    if elem.is_greater_than_direct_sim():
-                        elem.downloaded_var.set(1)
-                    else:
-                        elem.downloaded_var.set(0)
+                    if elem.load_init:
+                        if elem.is_greater_than_direct_sim():
+                            elem.downloaded_var.set(1)
+                        else:
+                            elem.downloaded_var.set(0)
             return -1
         
         aspect_flag = False
         highest_weight = (None, 0)
-        for elem in self.pixiv_list:
-            weight, flag = elem.evaluate_weight(self.original_image.size[0]/self.original_image.size[1], self.original_image.size[0])
-            if not aspect_flag:
-                aspect_flag = flag
-            if weight > highest_weight[1]:
-                highest_weight = (elem, weight)
-        for elem in self.danb_list:
-            weight, flag = elem.evaluate_weight(self.original_image.size[0]/self.original_image.size[1], self.original_image.size[0])
-            if not aspect_flag:
-                aspect_flag = flag
-            if weight > highest_weight[1]:
-                highest_weight = (elem, weight)
-        for elem in self.yandere_list:
-            weight, flag = elem.evaluate_weight(self.original_image.size[0]/self.original_image.size[1], self.original_image.size[0])
-            if not aspect_flag:
-                aspect_flag = flag
-            if weight > highest_weight[1]:
-                highest_weight = (elem, weight)
-        for elem in self.konachan_list:
-            weight, flag = elem.evaluate_weight(self.original_image.size[0]/self.original_image.size[1], self.original_image.size[0])
-            if not aspect_flag:
-                aspect_flag = flag
-            if weight > highest_weight[1]:
-                highest_weight = (elem, weight)
+
+        for service in self.service_list:
+            for elem in service:
+                if elem.load_init:
+                    weight, flag = elem.evaluate_weight(self.original_image.size[0]/self.original_image.size[1], self.original_image.size[0])
+                    if not aspect_flag:
+                        aspect_flag = flag
+                    if weight > highest_weight[1]:
+                        highest_weight = (elem, weight)
+
+        # for elem in self.pixiv_list:
+        #     weight, flag = elem.evaluate_weight(self.original_image.size[0]/self.original_image.size[1], self.original_image.size[0])
+        #     if not aspect_flag:
+        #         aspect_flag = flag
+        #     if weight > highest_weight[1]:
+        #         highest_weight = (elem, weight)
+        # for elem in self.danb_list:
+        #     weight, flag = elem.evaluate_weight(self.original_image.size[0]/self.original_image.size[1], self.original_image.size[0])
+        #     if not aspect_flag:
+        #         aspect_flag = flag
+        #     if weight > highest_weight[1]:
+        #         highest_weight = (elem, weight)
+        # for elem in self.yandere_list:
+        #     weight, flag = elem.evaluate_weight(self.original_image.size[0]/self.original_image.size[1], self.original_image.size[0])
+        #     if not aspect_flag:
+        #         aspect_flag = flag
+        #     if weight > highest_weight[1]:
+        #         highest_weight = (elem, weight)
+        # for elem in self.konachan_list:
+        #     weight, flag = elem.evaluate_weight(self.original_image.size[0]/self.original_image.size[1], self.original_image.size[0])
+        #     if not aspect_flag:
+        #         aspect_flag = flag
+        #     if weight > highest_weight[1]:
+        #         highest_weight = (elem, weight)
         
         original_weight = self.evaluate_weight()
 
@@ -345,14 +382,20 @@ class ImageData():
         self.big_selector_btn.grid(column = 5, row = t+1, sticky = W, padx = 10)
 
         t += 1
-        for elem in self.pixiv_list:
-            t = elem.display_results(t+1)
-        for elem in self.danb_list:
-            t = elem.display_results(t+1)
-        for elem in self.yandere_list:
-            t = elem.display_results(t+1)
-        for elem in self.konachan_list:
-            t = elem.display_results(t+1)
+
+        for service in self.service_list:
+            for elem in service:
+                if elem.load_init:
+                    t = elem.display_results(t+1)
+        
+        # for elem in self.pixiv_list:
+        #     t = elem.display_results(t+1)
+        # for elem in self.danb_list:
+        #     t = elem.display_results(t+1)
+        # for elem in self.yandere_list:
+        #     t = elem.display_results(t+1)
+        # for elem in self.konachan_list:
+        #     t = elem.display_results(t+1)
 
         return t
 
@@ -389,8 +432,6 @@ class ImageData():
         IMPORTANT:\n
         Call load before
         """
-        #TODO bild_22 two danbooru tags lists overlap
-        #TODO show (original/download)source again
         for widget in gv.info_frame.winfo_children():
             widget.grid_forget()
         
@@ -398,14 +439,20 @@ class ImageData():
         gv.info_ScrollFrame.display(x = (gv.width/3)*1.85, y = 100)
 
         t = 0
-        for elem in self.pixiv_list:
-            t = elem.display_info(t)
-        for elem in self.danb_list:
-            t = elem.display_info(t)
-        for elem in self.yandere_list:
-            t = elem.display_info(t)
-        for elem in self.konachan_list:
-            t = elem.display_info(t)
+
+        for service in self.service_list:
+            for elem in service:
+                if elem.load_init:
+                    t = elem.display_results(t)
+        
+        # for elem in self.pixiv_list:
+        #     t = elem.display_info(t)
+        # for elem in self.danb_list:
+        #     t = elem.display_info(t)
+        # for elem in self.yandere_list:
+        #     t = elem.display_info(t)
+        # for elem in self.konachan_list:
+        #     t = elem.display_info(t)
         
     def display_big_selector(self):
         """
@@ -423,14 +470,20 @@ class ImageData():
         self.next_btn.place(x = round(gv.width*0.94), y = int(gv.height/90*4))
 
         t = 0
-        for elem in self.pixiv_list:
-            t = elem.display_big_selector(t)
-        for elem in self.danb_list:
-            t = elem.display_big_selector(t)
-        for elem in self.yandere_list:
-            t = elem.display_big_selector(t)
-        for elem in self.konachan_list:
-            t = elem.display_big_selector(t)
+
+        for service in self.service_list:
+            for elem in service:
+                if elem.load_init:
+                    t = elem.display_big_selector(t)
+
+        # for elem in self.pixiv_list:
+        #     t = elem.display_big_selector(t)
+        # for elem in self.danb_list:
+        #     t = elem.display_big_selector(t)
+        # for elem in self.yandere_list:
+        #     t = elem.display_big_selector(t)
+        # for elem in self.konachan_list:
+        #     t = elem.display_big_selector(t)
 
         self.original_SubImgData.display_place()
 
@@ -446,17 +499,22 @@ class ImageData():
         self.original_SubImgData = SubImageData(self.name_original, self.path_original, 'Input', gv.window, None, self.original_image, self.original_var)#ImageTk.PhotoImage(resize(self.original_image))
         self.original_SubImgData.load()
 
-        for elem in self.pixiv_list:
-            elem.process_big_imgs()
+        for service in self.service_list:
+            for elem in service:
+                if elem.load_init:
+                    elem.process_big_imgs()
 
-        for elem in self.danb_list:
-            elem.process_big_imgs()
+        # for elem in self.pixiv_list:
+        #     elem.process_big_imgs()
+
+        # for elem in self.danb_list:
+        #     elem.process_big_imgs()
         
-        for elem in self.yandere_list:
-            elem.process_big_imgs()
+        # for elem in self.yandere_list:
+        #     elem.process_big_imgs()
         
-        for elem in self.konachan_list:
-            elem.process_big_imgs()
+        # for elem in self.konachan_list:
+        #     elem.process_big_imgs()
 
         self.process_big_imgs_init = True
 
@@ -466,32 +524,32 @@ class ImageData():
         """
         flag_next = False
         flag_prev = False
+        saved_index_smaller = (None, -1)
+        saved_index_bigger = (None, -1)
         for data in gv.img_data_array:
-            if data.index-1 == self.index:
-                self.next_btn.configure(state='enabled', command = data.display_big_selector)
-                flag_next = True
-            if data.index+1 == self.index:
-                self.prev_btn.configure(state='enabled', command = data.display_big_selector)
-                flag_prev = True
-        if not flag_next:
+            if data.index < self.index and data.index > saved_index_smaller[1]:
+                saved_index_smaller = (data, data.index)
+            if data.index > self.index and (data.index < saved_index_bigger[1] or saved_index_bigger[1] == -1):
+                saved_index_bigger = (data, data.index)
+        if saved_index_smaller[1] > -1:
+            self.next_btn.configure(state='enabled', command = saved_index_smaller[0].display_big_selector)
+        else:
             self.next_btn.configure(state='disabled', command=None)
-        if not flag_prev:
+        if saved_index_bigger[1] > -1:
+            self.prev_btn.configure(state='enabled', command = saved_index_bigger[0].display_big_selector)
+        else:
             self.prev_btn.configure(state='disabled', command=None)
        
     def delete_both(self):
         """
-        Returns True if user wants to delete both images (input and downloaded) or if at least one image is checked to save, otherwise False
-        """
-        if self.original_var.get() == 0 and self.pixiv.delete_both() and self.danb.delete_both():#TODO pixiv_list, danb_list
-            return mb.askyesno('Delete both?', 'Do you really want to delete both images:\n' + self.name_original + '\n')#self.name_pixiv
-        return True
+        Sets self.locked to false if user does not want to delete all images
+        """  
+        self.locked = mb.askyesno('Delete both?', 'Do you really want to delete both images:\n' + self.name_original + '\n')
 
-    def save(self):
+    def save(self, second_try=False, save_counter=0):
         """
         "Saves" own checked images and schedules the unchecked images to be deleted 
         """
-        # TODO #1 all returns
-        # TODO gv.Files.Conf.direct_replace
         pixiv_tags = list()
         for elem in self.pixiv_list:
             pixiv_tags.extend(elem.get_tags_list())
@@ -508,32 +566,45 @@ class ImageData():
         for elem in self.konachan_list:
             konachan_tags.extend(elem.get_tags_list())
 
-        #--Does the user want to save more than one image?--#
-        save_counter = 0
-        for elem in self.pixiv_list:
-            if save_counter > 2:
-                break
-            if elem.get_save_status():
-                save_counter += 1
-        for elem in self.danb_list:
-            if save_counter > 2:
-                break
-            if elem.get_save_status():
-                save_counter += 1
-        for elem in self.yandere_list:
-            if save_counter > 2:
-                break
-            if elem.get_save_status():
-                save_counter += 1
-        for elem in self.konachan_list:
-            if save_counter > 2:
-                break
-            if elem.get_save_status():
-                save_counter += 1
-        if self.original_var.get() == 1:
-            save_counter += 1
-        ##----##
-        
+        if not second_try:
+            #--Does the user want to save more than one image?--#
+            save_counter = 0
+            
+            for service in self.service_list:
+                for elem in service:
+                    if elem.load_init:
+                        if save_counter > 1:
+                            break
+                        if elem.get_save_status():
+                            save_counter += 1
+
+            # for elem in self.pixiv_list:
+            #     if save_counter > 1:
+            #         break
+            #     if elem.get_save_status():
+            #         save_counter += 1
+            # for elem in self.danb_list:
+            #     if save_counter > 1:
+            #         break
+            #     if elem.get_save_status():
+            #         save_counter += 1
+            # for elem in self.yandere_list:
+            #     if save_counter > 1:
+            #         break
+            #     if elem.get_save_status():
+            #         save_counter += 1
+            # for elem in self.konachan_list:
+            #     if save_counter > 1:
+            #         break
+            #     if elem.get_save_status():
+            #         save_counter += 1
+            # if self.original_var.get() == 1:
+            #     save_counter += 1
+            ##----##
+                
+            if save_counter == 0:
+                self.delete_both()
+                return False
 
         #--If yes, make a head directory(new_dir, full path) with the original name and save all checked images in it--#
         if save_counter > 1:
@@ -542,55 +613,80 @@ class ImageData():
             t = 0
             if self.original_var.get() == 1:
                 new_img_name = self.name_original[:self.name_original.rfind('.')] + '_' + str(t) + self.name_original[self.name_original.rfind('.'):]
-                self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, new_dir, self.name_original[:self.name_original.rfind('.')] + '_' + str(t))
+                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, new_dir, self.name_original[:self.name_original.rfind('.')] + '_' + str(t)):
+                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, new_dir, self.name_original[:self.name_original.rfind('.')] + '_' + str(t))
+                
                 try:
                     move(self.path_original, new_dir + '/' + new_img_name)
                 except Exception as e:
-                    print("ERROR [0013] " + str(e))
-                    gv.Files.Log.write_to_log("ERROR [0013] " + str(e))
-                    #mb.showerror("ERROR [0013]", "ERROR CODE [0013]\nSomething went wrong while moving the image " + self.path_original)
+                    if not second_try:
+                        return self.save(True, save_counter)
+                    else:
+                        print("ERROR [0013] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0013] " + str(e))
+                        #mb.showerror("ERROR [0013]", "ERROR CODE [0013]\nSomething went wrong while moving the image " + self.path_original)
+                        return False
+                    
                 t += 1
             else:
                 if self.path_original not in gv.delete_dirs_array:
                     gv.delete_dirs_array.append(self.path_original)
-            for elem in self.pixiv_list:
-                elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
-                t += 1
-            for elem in self.danb_list:
-                elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
-                t += 1
-            for elem in self.yandere_list:
-                elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
-                t += 1
-            for elem in self.konachan_list:
-                elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
-                t += 1
-            # make folder and save images in it with different names TODO try except
+            for service in self.service_list:
+                for elem in service:
+                    if elem.load_init:
+                        elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
+                        t += 1
+            # for elem in self.pixiv_list:
+            #     elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
+            #     t += 1
+            # for elem in self.danb_list:
+            #     elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
+            #     t += 1
+            # for elem in self.yandere_list:
+            #     elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
+            #     t += 1
+            # for elem in self.konachan_list:
+            #     elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
+            #     t += 1
+            # make folder and save images in it with different names
         ##----##
 
         #--If no, go through all saves, the only one that is checked will be in there--#
-        else: #TODO delete_both here
+        else:
             if self.original_var.get() == 1:
-                self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.name_original[:self.name_original.rfind('.')])
+                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.name_original[:self.name_original.rfind('.')]):
+                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.name_original[:self.name_original.rfind('.')])
                 try:
                     move(self.path_original, gv.output_dir + '/' + self.name_original)
                 except Exception as e:
-                    print("ERROR [0048] " + str(e))
-                    gv.Files.Log.write_to_log("ERROR [0048] " + str(e))
-                    #mb.showerror("ERROR [0048]", "ERROR CODE [0048]\nSomething went wrong while moving the image " + self.path_original)
+                    if not second_try:
+                        return self.save(True, save_counter)
+                    else:
+                        print("ERROR [0048] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0048] " + str(e))
+                        #mb.showerror("ERROR [0048]", "ERROR CODE [0048]\nSomething went wrong while moving the image " + self.path_original)
+                        return False
             else:
                 if self.path_original not in gv.delete_dirs_array:
                     gv.delete_dirs_array.append(self.path_original)
-            for elem in self.pixiv_list:
-                elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags)
-            for elem in self.danb_list:
-                elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags)
-            for elem in self.yandere_list:
-                elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags)
-            for elem in self.yandere_list:
-                elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags)
+            for service in self.service_list:
+                for elem in service:
+                    if elem.load_init:
+                        if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags):
+                            return False
+            # for elem in self.pixiv_list:
+            #     if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags):
+            #         return False
+            # for elem in self.danb_list:
+            #     if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags):
+            #         return False
+            # for elem in self.yandere_list:
+            #     if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags):
+            #         return False
+            # for elem in self.yandere_list:
+            #     if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags):
+            #         return False
         ##----##
-        # TODO
 
         self.forget_results()
 
@@ -619,8 +715,7 @@ class ImageData():
             if gv.Files.Conf.tagfile_konachan_original == '1':
                 all_tags.extend(konachan_tags)
             
-            gen_tagfile(all_tags, gen_dir, name)
-        pass
+            return gen_tagfile(all_tags, gen_dir, name)
 
     def forget_results(self):
         self.original_chkbtn.grid_forget()
@@ -631,14 +726,19 @@ class ImageData():
         self.original_cropped_lbl.grid_forget()
         self.big_selector_btn.grid_forget()
 
-        for elem in self.pixiv_list:
-            elem.forget_results()
-        for elem in self.danb_list:
-            elem.forget_results()
-        for elem in self.yandere_list:
-            elem.forget_results()
-        for elem in self.konachan_list:
-            elem.forget_results()
+        for service in self.service_list:
+            for elem in service:
+                if elem.load_init:
+                    elem.forget_results()
+
+        # for elem in self.pixiv_list:
+        #     elem.forget_results()
+        # for elem in self.danb_list:
+        #     elem.forget_results()
+        # for elem in self.yandere_list:
+        #     elem.forget_results()
+        # for elem in self.konachan_list:
+        #     elem.forget_results()
 
     def self_destruct(self):
         if self.original_SubImgData != None:
@@ -649,11 +749,16 @@ class ImageData():
 
         self.original_chkbtn.image = None
 
-        for elem in self.pixiv_list:
-            elem.self_destruct()
-        for elem in self.danb_list:
-            elem.self_destruct()
-        for elem in self.yandere_list:
-            elem.self_destruct()
-        for elem in self.konachan_list:
-            elem.self_destruct()
+        for service in self.service_list:
+            for elem in service:
+                if elem.load_init:
+                    elem.self_destruct()
+
+        # for elem in self.pixiv_list:
+        #     elem.self_destruct()
+        # for elem in self.danb_list:
+        #     elem.self_destruct()
+        # for elem in self.yandere_list:
+        #     elem.self_destruct()
+        # for elem in self.konachan_list:
+        #     elem.self_destruct()

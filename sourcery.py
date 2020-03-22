@@ -142,7 +142,7 @@ def process_img_data(img_name_original, input_path, res, minsim, img_data_q, com
                                 if danbooru_parent_name != False:
                                     danbooru_illustration_list.append((danbooru_parent_illustration, danbooru_parent_name))
                                     danbooru_visited.append(danbooru_illustration['parent_id'])
-                                    dict_list.append({"service_name": 'Danbooru', "member_id": -1, "illust_id": danbooru_illustration['parent_id'], "source": danbooru_parent_illustration['source'], "similarity": source['similarity']})#TODO similarity
+                                    dict_list.append({"service_name": 'Danbooru', "member_id": -1, "illust_id": danbooru_illustration['parent_id'], "source": danbooru_parent_illustration['source'], "similarity": source['similarity']})
                         danbooru_name = danbooru_download(img_name_original, source['illust_id'], danbooru_illustration, comm_error_q, danbooru=True)
                     if danbooru_name != False:
                         danbooru_illustration_list.append((danbooru_illustration, danbooru_name))
@@ -159,7 +159,7 @@ def process_img_data(img_name_original, input_path, res, minsim, img_data_q, com
                                 if yandere_parent_name != False:
                                     yandere_illustration_list.append((yandere_parent_illustration, yandere_parent_name))
                                     yandere_visited.append(yandere_illustration['parent_id'])
-                                    dict_list.append({"service_name": 'Yandere', "member_id": -1, "illust_id": yandere_illustration['parent_id'], "source": yandere_parent_illustration['source'], "similarity": source['similarity']})#TODO similarity
+                                    dict_list.append({"service_name": 'Yandere', "member_id": -1, "illust_id": yandere_illustration['parent_id'], "source": yandere_parent_illustration['source'], "similarity": source['similarity']})
                         yandere_name = danbooru_download(img_name_original, source['illust_id'], yandere_illustration, comm_error_q, yandere=True)
                     if yandere_name != False:
                         yandere_illustration_list.append((yandere_illustration, yandere_name))
@@ -176,7 +176,7 @@ def process_img_data(img_name_original, input_path, res, minsim, img_data_q, com
                                 if konachan_parent_name != False:
                                     konachan_illustration_list.append((konachan_parent_illustration, konachan_parent_name))
                                     konachan_visited.append(konachan_illustration['parent_id'])
-                                    dict_list.append({"service_name": 'Konachan', "member_id": -1, "illust_id": konachan_illustration['parent_id'], "source": konachan_parent_illustration['source'], "similarity": source['similarity']})#TODO similarity
+                                    dict_list.append({"service_name": 'Konachan', "member_id": -1, "illust_id": konachan_illustration['parent_id'], "source": konachan_parent_illustration['source'], "similarity": source['similarity']})
                         konachan_name = danbooru_download(img_name_original, source['illust_id'], konachan_illustration, comm_error_q, konachan=True)
                     if konachan_name != False:
                         konachan_illustration_list.append((konachan_illustration, konachan_name))
@@ -185,7 +185,8 @@ def process_img_data(img_name_original, input_path, res, minsim, img_data_q, com
 
     if len(danbooru_illustration_list) == 0 and len(pixiv_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0:
         #gv.Files.Log.write_to_log('None of the requested images were available!')
-        return # TODO message
+        comm_error_q.put('None of the requested images were available!')
+        return
     img_data_q.put((img_name_original, input_path, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, dict_list, pixiv_illustration_list, danbooru_illustration_list, yandere_illustration_list, konachan_illustration_list))
     
     pixiv_name = ''

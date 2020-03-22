@@ -39,22 +39,25 @@ class SubImageData():
 
         self.load_init = False
 
-    def load(self):
+    def load(self, second_try=False):
         """
         Loads image into memory
         """
         if self.load_init:
-            return
+            return True
         flag = False
         if self.img_obj == None:
             flag = True
             try:
                 self.img_obj = Image.open(self.path)
             except Exception as e:
-                print("ERROR [0044] " + str(e))
-                gv.Files.Log.write_to_log("ERROR [0044] " + str(e))
-                mb.showerror("ERROR [0044]", "ERROR CODE [0044]\nSomething went wrong while accessing an image, please restart Sourcery.")
-                return
+                if not second_try:
+                    return self.load(True)
+                else:
+                    print("ERROR [0044] " + str(e))
+                    gv.Files.Log.write_to_log("ERROR [0044] " + str(e))
+                    mb.showerror("ERROR [0044]", "ERROR CODE [0044]\nSomething went wrong while accessing an image, please restart Sourcery.")
+                    return False
         self.size = self.img_obj.size
         self.photoImg = ImageTk.PhotoImage(resize(self.img_obj))
         
@@ -102,6 +105,7 @@ class SubImageData():
             self.img_obj.close()
 
         self.load_init = True
+        return True
     
     def display_grid(self, t):
         """
@@ -138,32 +142,63 @@ class SubImageData():
         self.lbl2.place_forget()
         self.chkbtn.place_forget()
 
-    def save(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=-1, head_dir=''):
+    def save(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=-1, head_dir='', second_try=False):
         #--If only one image is checked, save your image in the subfolder with the name--#
         if t == -1:
             if self.var.get() == 1:
-                makedirs(gv.output_dir + '/' + self.folder, 0o777, True)#TODO try except
-                self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir + '/' + self.folder, self.name[:self.name.rfind('.')])
+                try:
+                    makedirs(gv.output_dir + '/' + self.folder, 0o777, True)
+                except Exception as e:
+                    if not second_try:
+                        return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=t, head_dir=head_dir, second_try=True)
+                    else:
+                        print("ERROR [0051] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0051] " + str(e))
+                        #mb.showerror("ERROR [0051]", "ERROR CODE [0051]\nSomething went wrong while creating the folder" + gv.output_dir + '/' + self.folder)
+                        return False
+                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir + '/' + self.folder, self.name[:self.name.rfind('.')]):
+                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir + '/' + self.folder, self.name[:self.name.rfind('.')])
                 try:
                     move(self.path, gv.output_dir + '/' + self.folder + '/' + self.name)
                 except Exception as e:
-                    print("ERROR [0037] " + str(e))
-                    gv.Files.Log.write_to_log("ERROR [0037] " + str(e))
-                    #mb.showerror("ERROR [0037]", "ERROR CODE [0037]\nSomething went wrong while moving the image " + self.path_original)
+                    if not second_try:
+                        return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=t, head_dir=head_dir, second_try=True)
+                    else:
+                        print("ERROR [0037] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0037] " + str(e))
+                        #mb.showerror("ERROR [0037]", "ERROR CODE [0037]\nSomething went wrong while moving the image " + self.path_original)
+                        return False
+            return True
             # save your images in outputdir+self.folder
         ##----##
 
         #--If more than one image is checked, save your image in the new head directory(full path) in the subfolder with name + t + suffix--#
         else:
             if self.var.get() == 1:
-                makedirs(head_dir + '/' + self.folder, 0o777, True)#TODO try except
-                self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.folder, self.name[:self.name.rfind('.')])
+                try:
+                    makedirs(head_dir + '/' + self.folder, 0o777, True)
+                except Exception as e:
+                    if not second_try:
+                        return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=t, head_dir=head_dir, second_try=True)
+                    else:
+                        print("ERROR [0052] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0052] " + str(e))
+                        #mb.showerror("ERROR [0052]", "ERROR CODE [0051]\nSomething went wrong while creating the folder" + head_dir + '/' + self.folder)
+                        return False
+                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.folder, self.name[:self.name.rfind('.')]):
+                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.folder, self.name[:self.name.rfind('.')])
+             
                 try:
                     move(self.path, head_dir + '/' + self.folder + '/' + self.name)
                 except Exception as e:
-                    print("ERROR [0049] " + str(e))
-                    gv.Files.Log.write_to_log("ERROR [0049] " + str(e))
-                    #mb.showerror("ERROR [0049]", "ERROR CODE [0049]\nSomething went wrong while moving the image " + self.path_original)
+                    if not second_try:
+                        return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=t, head_dir=head_dir, second_try=True)
+                    else:
+                        print("ERROR [0049] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0049] " + str(e))
+                        #mb.showerror("ERROR [0049]", "ERROR CODE [0049]\nSomething went wrong while moving the image " + self.path)
+                        return False
+            return True
             # save your images in outputdir+self.folder+t
         ##----##
 
@@ -186,7 +221,7 @@ class SubImageData():
                 all_tags.extend(yandere_tags)
             if gv.Files.Conf.tagfile_konachan_pixiv == '1':
                 all_tags.extend(konachan_tags)
-            gen_tagfile(all_tags, gen_dir, name)
+            return gen_tagfile(all_tags, gen_dir, name)
         elif self.service == 'Danbooru' and gv.Files.Conf.gen_tagfile_danbooru == '1':
             all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_danbooru == '1':
@@ -197,7 +232,7 @@ class SubImageData():
                 all_tags.extend(yandere_tags)
             if gv.Files.Conf.tagfile_konachan_danbooru == '1':
                 all_tags.extend(konachan_tags)
-            gen_tagfile(all_tags, gen_dir, name)
+            return gen_tagfile(all_tags, gen_dir, name)
         elif self.service == 'Yandere' and gv.Files.Conf.gen_tagfile_yandere == '1':
             all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_yandere == '1':
@@ -208,7 +243,7 @@ class SubImageData():
                 all_tags.extend(yandere_tags)
             if gv.Files.Conf.tagfile_konachan_yandere == '1':
                 all_tags.extend(konachan_tags)
-            gen_tagfile(all_tags, gen_dir, name)
+            return gen_tagfile(all_tags, gen_dir, name)
         elif self.service == 'Konachan' and gv.Files.Conf.gen_tagfile_konachan == '1':
             all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_konachan == '1':
@@ -219,7 +254,7 @@ class SubImageData():
                 all_tags.extend(yandere_tags)
             if gv.Files.Conf.tagfile_konachan_konachan == '1':
                 all_tags.extend(konachan_tags)
-            gen_tagfile(all_tags, gen_dir, name)
+            return gen_tagfile(all_tags, gen_dir, name)
 
     def self_destruct(self):
         self.photoImg = None

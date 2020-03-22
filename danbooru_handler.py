@@ -34,7 +34,9 @@ def danbooru_fetch_illustration(imgid, comm_error_q=None, danbooru=False, yander
         else:
             return False
     except Exception as e:
-        # TODO
+        print("ERROR [0056] " + str(e))
+        gv.Files.Log.write_to_log("ERROR [0056] " + str(e))
+        #mb.showerror("ERROR [0056]", "ERROR CODE [0056]\nImage data could not be retrieved")
         return False
     
 def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None, danbooru=False, yandere=False, konachan=False):
@@ -42,9 +44,9 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None,
     Downloads given image from Danbooru and renames it properly\n
     Return the new name on success, False otherwise
     """
-    try:
-        if danbooru:
-            if 'file_url' in illustration:
+    if danbooru:
+        if 'file_url' in illustration:
+            try:
                 if gv.Files.Conf.rename_danbooru == '1':
                     urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + illustration['file_url'].split('/')[-1])
                     new_name = illustration['file_url'].split('/')[-1]
@@ -55,10 +57,16 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None,
                     else:
                         new_name = img_name_original + '.' + illustration['file_ext']
                     urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + new_name)
-                return new_name# TODO
-            return False
-        elif yandere:
-            if 'file_url' in illustration:
+                return new_name
+            except Exception as e:
+                print("ERROR [0057] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0057] " + str(e))
+                #mb.showerror("ERROR [0057]", "ERROR CODE [0057]\nImage could not be downloaded")
+                return False
+        return False
+    elif yandere:
+        if 'file_url' in illustration:
+            try:
                 if gv.Files.Conf.rename_yandere == '1':
                     urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/yandere/' + illustration['file_url'].split('/')[-1])
                     new_name = illustration['file_url'].split('/')[-1]
@@ -69,10 +77,16 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None,
                     else:
                         new_name = img_name_original + '.' + illustration['file_ext']
                     urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/yandere/' + new_name)
-                return new_name# TODO
-            return False
-        elif konachan:
-            if 'file_url' in illustration:
+                return new_name
+            except Exception as e:
+                print("ERROR [0058] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0058] " + str(e))
+                #mb.showerror("ERROR [0058]", "ERROR CODE [0058]\nImage could not be downloaded")
+                return False
+        return False
+    elif konachan:
+        if 'file_url' in illustration:
+            try:
                 if gv.Files.Conf.rename_konachan == '1':
                     urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/konachan/' + illustration['file_url'].split('/')[-1])
                     new_name = illustration['file_url'].split('/')[-1]
@@ -83,12 +97,14 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None,
                     else:
                         new_name = img_name_original + '.' + illustration['file_ext']
                     urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/konachan/' + new_name)
-                return new_name# TODO
-            return False
-        else:
-            return False
-        #urlretrieve('https://i.pximg.net/img-original/img/2018/11/16/00/00/01/71671760_p0.png', danbooru_folder + '/' + folder + '/' + stream['file_url'].split('/')[-1])
-    except Exception as e:
+                return new_name
+            except Exception as e:
+                print("ERROR [0059] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0059] " + str(e))
+                #mb.showerror("ERROR [0059]", "ERROR CODE [0059]\nImage could not be downloaded")
+                return False
+        return False
+    else:
         return False
 
 if __name__ == '__main__':

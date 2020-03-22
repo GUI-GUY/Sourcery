@@ -26,7 +26,7 @@ from ScrollFrame import ScrollFrame
 from Files import Files
 import global_variables as gv
 
-#stderr = gv.Files.Log
+stderr = gv.Files.Log
 
 def magic():
     """
@@ -167,16 +167,20 @@ def refresh_startpage(change, answer2):
         except:
             pass
     if not img_data_q.empty():
-        # try:
-        a = img_data_q.get()
-        #print('a')
-        global index
-        b = ImageData(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], index) #TODO Fehler
-        index += 1
-        gv.img_data_array.append(b)
-        #print('b')
-        # except Exception as e:
-        #     print(e)
+        try:
+            a = img_data_q.get()
+            #print('a')
+            global index
+            b = ImageData(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], index)
+            index += 1
+            gv.img_data_array.append(b)
+            #print('b')
+        except Exception as e:
+            if b in gv.img_data_array:
+                gv.img_data_array.remove(b)
+            print("ERROR [0055] " + str(e))
+            gv.Files.Log.write_to_log("ERROR [0055] " + str(e))
+            #mb.showerror("ERROR [0055]", "ERROR CODE [0055]\nImage data could not be loaded, skipped.")
     
     for data in gv.img_data_array:
         if not data.placed:
@@ -184,7 +188,7 @@ def refresh_startpage(change, answer2):
             if  not load:
                 data.self_destruct()
                 gv.img_data_array.remove(data)
-                gv.Files.Log.write_to_log('Problem while loading images, deleted class')
+                gv.Files.Log.write_to_log('Problem while loading images, skipped')
             elif load:
                 if gv.imgpp_sem.acquire(False):
                     data.process_results_imgs()
@@ -545,7 +549,7 @@ if __name__ == '__main__':
     input_images_array = list()
     input_lock = Lock()
     #sem = Semaphore(12)
-    gv.imgpp_sem = Semaphore(int(gv.Files.Conf.imgpp))#TODO on save add up
+    gv.imgpp_sem = Semaphore(int(gv.Files.Conf.imgpp))
     #image_preloader()
     index = 0
     gv.Files.Log.write_to_log('Variables initialised')

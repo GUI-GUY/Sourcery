@@ -58,7 +58,8 @@ class ProviderImageData():
         self.info_artist_lbl = Label(master=gv.info_frame, style='label.TLabel')
         self.info_title_lbl = Label(master=gv.info_frame, style='label.TLabel')
         #self.info_imageid_lbl = Label(master=gv.info_frame, style='label.TLabel')
-        self.info_url_lbl = Label(master=gv.info_frame, style='label.TLabel')
+        self.info_url_lbl_list = list()
+        #self.info_url_lbl = Label(master=gv.info_frame, style='label.TLabel')
         self.info_date_lbl = Label(master=gv.info_frame, style='label.TLabel')
         self.info_caption_lbl = Label(master=gv.info_frame, style='label.TLabel')
         self.info_wxh_lbl = Label(master=gv.info_frame, style='label.TLabel')
@@ -78,7 +79,10 @@ class ProviderImageData():
             for tag in self.tags:
                 self.tags_lbl_array.append(Label(master=gv.info_frame, text = tag, style='label.TLabel'))
 
-        self.source_url = None
+        for elem in self.dict['source']:
+            lbl = Label(master=gv.info_frame, text = elem, foreground='#2626ff', cursor='hand2', style='label.TLabel')
+            lbl.bind("<Button-1>", self.hyperlink)
+            self.info_url_lbl_list.append(lbl)
 
         self.downloaded_SubImgData = None
 
@@ -88,7 +92,7 @@ class ProviderImageData():
         self.process_info_imgs_init = False
         self.process_big_imgs_init = False
 
-    def load(self):
+    def load(self, second_try=False):
         """
         Loads images into memory
         """
@@ -99,10 +103,13 @@ class ProviderImageData():
             try:
                 self.downloaded_image = Image.open(self.path)
             except Exception as e:
-                print("ERROR [0045] " + str(e))
-                #mb.showerror("ERROR [0045]", "ERROR CODE [0045]\nSomething went wrong while loading an image.")
-                gv.Files.Log.write_to_log("ERROR [0045] " + str(e))
-                return False
+                if not second_try:
+                    return self.load(True)
+                else:
+                    print("ERROR [0045] " + str(e))
+                    #mb.showerror("ERROR [0045]", "ERROR CODE [0045]\nSomething went wrong while loading an image.")
+                    gv.Files.Log.write_to_log("ERROR [0045] " + str(e))
+                    return False
         elif path.isdir(self.path):
             try:
                 self.sub_dir_array.extend(listdir(self.path))
@@ -110,13 +117,18 @@ class ProviderImageData():
                     if self.path not in gv.delete_dirs_array:
                         gv.delete_dirs_array.append(self.path)
                 for img in self.sub_dir_array:
-                    self.sub_dir_img_array.append(SubImageData(img, self.path, self.service, gv.window, gv.big_frame, master_folder=self.name, siblings=self.siblings_array))#(Image.open(self.path + '/' + img), img))
+                    data = SubImageData(img, self.path, self.service, gv.window, gv.big_frame, master_folder=self.name, siblings=self.siblings_array)
+                    if data not in self.sub_dir_img_array:
+                        self.sub_dir_img_array.append(data)
                 self.siblings_array.extend(self.sub_dir_img_array)
             except Exception as e:
-                print("ERROR [0046] " + str(e))
-                #mb.showerror("ERROR [0046]", "ERROR CODE [0046]\nSomething went wrong while loading an image.")
-                gv.Files.Log.write_to_log("ERROR [0046] " + str(e))
-                return False
+                if not second_try:
+                    return self.load(True)
+                else:
+                    print("ERROR [0046] " + str(e))
+                    #mb.showerror("ERROR [0046]", "ERROR CODE [0046]\nSomething went wrong while loading an image.")
+                    gv.Files.Log.write_to_log("ERROR [0046] " + str(e))
+                    return False
         
         self.load_init = True
         return True
@@ -207,11 +219,6 @@ class ProviderImageData():
         self.info_title_lbl.configure(text = str(self.dict['title']), font = ('Arial Bold', 13))
         self.info_caption_lbl.configure(text = str(self.dict['caption']))
         #self.info_imageid_lbl.configure(text = 'Image ID: ' + str(self.illust.id))
-        if self.source_url != None:
-            self.info_url_lbl.configure(text = self.source_url[0], foreground='#2626ff', cursor='hand2', font=('Arial', 10))     
-            self.info_url_lbl.bind("<Button-1>", self.hyperlink)
-        else:
-            self.info_url_lbl.configure(text = 'No URL', font=('Arial', 10))
         self.info_date_lbl.configure(text = 'Uploaded on: ' + str(self.dict['create_date']), font = ('Arial', 10))
         self.info_wxh_lbl.configure(text = 'Width x Height: ' + str(self.dict['width']) + ' x ' + str(self.dict['height']), font = ('Arial', 10))
 
@@ -223,25 +230,28 @@ class ProviderImageData():
         #self.info_imageid_lbl.grid(column = 1, row = t + 4, sticky = W, padx = 5)
         self.info_date_lbl.grid(column = 1, row = t + 5, sticky = W, padx = 5)
         
-        # if len(self.sub_dir_array_pixiv) < 1:#
-        #     self.info_wxh_lbl.grid(column = 1, row = 6, sticky = W, padx = 5)
-        # self.info_url_lbl.grid(column = 0, row = 10, columnspan = 3, sticky = W)
+        if len(self.sub_dir_array_pixiv) < 1:
+            self.info_wxh_lbl.grid(column = 1, row = 6, sticky = W, padx = 5)
+        for elem in self.info_url_lbl_list:
+            elem.grid(column = 0, row = t + 10, columnspan = 3, sticky = W)
+            t = t+1
         self.tags_pixiv_lbl.grid(column = 0, row = 11, sticky = W)
 
+        t = t+12
 
         if self.service == 'Pixiv':
             for lbl in self.tags_lbl_array:
                 if lbl[1].cget('text') == '':
-                    lbl[0].grid(column = 0, row = 12 + t, sticky = W, columnspan=2)
+                    lbl[0].grid(column = 0, row = t, sticky = W, columnspan=2)
                 else:
-                    lbl[0].grid(column = 0, row = 12 + t, sticky = W)
-                    lbl[1].grid(column = 1, row = 12 + t, sticky = W)
+                    lbl[0].grid(column = 0, row = t, sticky = W)
+                    lbl[1].grid(column = 1, row = t, sticky = W)
                 t += 1
         else:
             for lbl in self.tags_lbl_array:
-                lbl.grid(column = 0, row = (12 + int(t)), sticky = W, columnspan = 2)
+                lbl.grid(column = 0, row = t, sticky = W, columnspan = 2)
                 t += 1
-        return t+12
+        return t
 
     def process_info_imgs(self):
         """
@@ -310,19 +320,7 @@ class ProviderImageData():
 
         self.process_big_imgs_init = True
 
-    def delete_both(self):
-        """
-        Returns True if self.downloaded_var is 0 and self.sub_dir_img_array[...].var is 0, otherwise False\n
-        Returns True if user has not checked any images in this class to save, otherwise False
-        """
-        if self.downloaded_var.get() == 0:
-            for img in self.sub_dir_img_array:
-                if img.var.get() == 1:
-                    return False
-            return True
-        return False
-
-    def save(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=-1, head_dir=''):
+    def save(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=-1, head_dir='', second_try=False):
         #new_dir = gv.output_dir + '/' + self.name
         #--If only one image is checked, save your image with the name--#
         if t == -1:
@@ -332,33 +330,67 @@ class ProviderImageData():
                     img_name = self.name[:self.name.rfind('.')]
                 elif path.isdir(self.path):
                     img_name = self.name
-                self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, img_name)
-                move(self.path, gv.output_dir + '/' + self.name)
+                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, img_name):
+                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, img_name)
+                try:
+                    move(self.path, gv.output_dir + '/' + self.name)
+                except Exception as e:
+                    if not second_try:
+                        return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=t, head_dir=head_dir, second_try=True)
+                    else:
+                        print("ERROR [0054] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0054] " + str(e))
+                        #mb.showerror("ERROR [0054]", "ERROR CODE [0054]\nSomething went wrong while moving the image " + self.path)
+                        return False
+                return True
             else:
                 if self.path not in gv.delete_dirs_array:
                     gv.delete_dirs_array.append(self.path)
                 for elem in self.sub_dir_img_array:
-                    elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags)
+                    if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags):
+                        return False
+                return True
         ##----##
 
         #--If more than one image is checked, save your image in the new head directory(full path) with name + t + suffix--#
         else:
             if self.downloaded_var.get() == 1:
                 if path.isdir(self.path):
-                    move(self.path, head_dir + '/' + self.name + '_' + str(t))
+                    try:
+                        move(self.path, head_dir + '/' + self.name + '_' + str(t))
+                    except Exception as e:
+                        if not second_try:
+                            return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=t, head_dir=head_dir, second_try=True)
+                        else:
+                            print("ERROR [0055] " + str(e))
+                            gv.Files.Log.write_to_log("ERROR [0055] " + str(e))
+                            #mb.showerror("ERROR [0055]", "ERROR CODE [0055]\nSomething went wrong while moving the image " + self.path)
+                            return False
                     for img in self.sub_dir_img_array:
-                        img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.name + '_' + str(t), img.name[:img.name.rfind('.')])
+                        if not img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.name + '_' + str(t), img.name[:img.name.rfind('.')]):
+                            img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.name + '_' + str(t), img.name[:img.name.rfind('.')])
+                        
                 elif path.isfile(self.path):
-                    move(self.path, head_dir + '/' + self.name[:self.name.rfind('.')] + '_' + str(t) + self.name[self.name.rfind('.'):])
-                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir, self.name[:self.name.rfind('.')] + '_' + str(t))
+                    try:
+                        move(self.path, head_dir + '/' + self.name[:self.name.rfind('.')] + '_' + str(t) + self.name[self.name.rfind('.'):])
+                    except Exception as e:
+                        if not second_try:
+                            return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=t, head_dir=head_dir, second_try=True)
+                        else:
+                            print("ERROR [0056] " + str(e))
+                            gv.Files.Log.write_to_log("ERROR [0056] " + str(e))
+                            #mb.showerror("ERROR [0056]", "ERROR CODE [0056]\nSomething went wrong while moving the image " + self.path)
+                            return False
+                    if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir, self.name[:self.name.rfind('.')] + '_' + str(t)):
+                        self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir, self.name[:self.name.rfind('.')] + '_' + str(t))
+                return True
             else:
                 if self.path not in gv.delete_dirs_array:
                     gv.delete_dirs_array.append(self.path)
                 for elem in self.sub_dir_img_array:
                     elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, head_dir)
+                return True
         ##----##
-
-        # TODO try except
 
     def get_save_status(self):
         """
@@ -382,7 +414,7 @@ class ProviderImageData():
                 all_tags.extend(yandere_tags)
             if gv.Files.Conf.tagfile_konachan_pixiv == '1':
                 all_tags.extend(konachan_tags)
-            gen_tagfile(all_tags, gen_dir, name)
+            return gen_tagfile(all_tags, gen_dir, name)
         elif self.service == 'Danbooru' and gv.Files.Conf.gen_tagfile_danbooru == '1':
             all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_danbooru == '1':
@@ -393,7 +425,7 @@ class ProviderImageData():
                 all_tags.extend(yandere_tags)
             if gv.Files.Conf.tagfile_konachan_danbooru == '1':
                 all_tags.extend(konachan_tags)
-            gen_tagfile(all_tags, gen_dir, name)
+            return gen_tagfile(all_tags, gen_dir, name)
         elif self.service == 'Yandere' and gv.Files.Conf.gen_tagfile_yandere == '1':
             all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_yandere == '1':
@@ -404,7 +436,7 @@ class ProviderImageData():
                 all_tags.extend(yandere_tags)
             if gv.Files.Conf.tagfile_konachan_yandere == '1':
                 all_tags.extend(konachan_tags)
-            gen_tagfile(all_tags, gen_dir, name)
+            return gen_tagfile(all_tags, gen_dir, name)
         elif self.service == 'Konachan' and gv.Files.Conf.gen_tagfile_konachan == '1':
             all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_konachan == '1':
@@ -415,7 +447,7 @@ class ProviderImageData():
                 all_tags.extend(yandere_tags)
             if gv.Files.Conf.tagfile_konachan_konachan == '1':
                 all_tags.extend(konachan_tags)
-            gen_tagfile(all_tags, gen_dir, name)
+            return gen_tagfile(all_tags, gen_dir, name)
     
     def get_tags_list(self, not_in_file=-1):
         """

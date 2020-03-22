@@ -83,9 +83,12 @@ def gen_tagfile(tags, gen_dir, name):
             else:
                 f.write(tag + '\n')
         f.close()
+        return True
     except Exception as e:
-        print(e)
-    #TODO except
+        print("ERROR [0053] " + str(e))
+        gv.Files.Log.write_to_log("ERROR [0053] " + str(e))
+        #mb.showerror("ERROR [0053]", "ERROR CODE [0053]\nSomething went wrong while generating the tagfile" + gen_dir + '/' + name + '.txt')
+        return False
 
 def change_input():
     gv.input_dir = fd.askdirectory()
