@@ -441,7 +441,7 @@ class ProviderOptions():
         self.konachan_btn = Button(self.par, text='Konachan', command=self.KonO.konachan_display, style ="button.TLabel")
         self.weight_btn = Button(self.par, text='Weight System', command=self.Weight.weight_display, style ="button.TLabel")
 
-        self.save_btn = Button(self.par, text='Save', command=self.original_save, style ="button.TLabel")
+        self.save_btn = Button(self.par, text='Save', command=self.save_all, style ="button.TLabel")
 
     
     def display(self):
@@ -458,6 +458,8 @@ class ProviderOptions():
         self.yandere_btn.place(x = int(gv.width/12.9), y = int(gv.height/90*14))
         self.konachan_btn.place(x = int(gv.width/12.9), y = int(gv.height/90*16))
         self.weight_btn.place(x = int(gv.width/12.9), y = int(gv.height/90*18))
+        
+        self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
 
         self.original_display()
 
@@ -468,7 +470,7 @@ class ProviderOptions():
         self.tagfile_yandere_chkbtn.place_forget()
         self.tagfile_konachan_chkbtn.place_forget()
 
-        self.save_btn.place_forget()
+        #self.save_btn.place_forget()
 
     def original_display(self):
         self.PixO.forget()
@@ -483,8 +485,13 @@ class ProviderOptions():
         self.tagfile_yandere_chkbtn.place(x = int(gv.width/160*41), y = int(gv.height/90*14))
         self.tagfile_konachan_chkbtn.place(x = int(gv.width/160*41), y = int(gv.height/90*16))
 
-        self.save_btn.place(x = int(gv.width/160*41), y = int(gv.height/90*30))
-
+    def save_all(self):
+        self.PixO.pixiv_save()
+        self.DanO.danbooru_save()
+        self.YanO.yandere_save()
+        self.KonO.konachan_save()
+        self.Weight.weight_save()
+        self.original_save()
 
     def original_save(self):
         gv.Files.Log.write_to_log('Attempting to save Original options...')
@@ -527,7 +534,7 @@ class PixivOptions():
         self.tagfile_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
 
         
-        self.save_btn = Button(parent, text='Save', command=self.pixiv_save, style ="button.TLabel")
+        #self.save_btn = Button(parent, text='Save', command=self.pixiv_save, style ="button.TLabel")
 
     def pixiv_display(self):
         """
@@ -543,7 +550,7 @@ class PixivOptions():
         self.pixiv_lbl.place(x = int(gv.width/160*40), y = int(gv.height/90*8))
         self.scrollpar.display(x = int(gv.width/160*40), y= int(gv.height/90*10))
 
-        self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
+        #self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
 
     def pixiv_display_constant(self):
         self.use_pixiv_chkbtn.grid(row= 0, column= 0, sticky=W, padx=2, pady=1)
@@ -574,7 +581,7 @@ class PixivOptions():
 
         self.rename_chkbtn.grid_forget()
 
-        self.save_btn.place_forget()
+        #self.save_btn.place_forget()
 
     def pixiv_save(self):
         gv.Files.Log.write_to_log('Attempting to save Pixiv options...')
@@ -621,7 +628,7 @@ class DanbooruOptions():
         self.tagfile_yandere_chkbtn = Checkbutton(self.scrollpar_frame, text='Include yandere tags', var=self.tagfile_yandere_var, style="chkbtn.TCheckbutton")
         self.tagfile_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
 
-        self.save_btn = Button(parent, text='Save', command=self.danbooru_save, style ="button.TLabel")
+        #self.save_btn = Button(parent, text='Save', command=self.danbooru_save, style ="button.TLabel")
 
     def danbooru_display(self):
         """
@@ -648,7 +655,7 @@ class DanbooruOptions():
 
         self.rename_chkbtn.grid(row= 15, column= 0, sticky=W, padx=2, pady=1)
 
-        self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
+        #self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
 
     def forget(self):
         self.danbooru_lbl.place_forget()
@@ -664,7 +671,7 @@ class DanbooruOptions():
 
         self.rename_chkbtn.grid_forget()
 
-        self.save_btn.place_forget()
+        #self.save_btn.place_forget()
 
     def danbooru_save(self):
         gv.Files.Log.write_to_log('Attempting to save Danbooru options...')
@@ -710,7 +717,7 @@ class YandereOptions():
         self.tagfile_yandere_chkbtn = Checkbutton(self.scrollpar_frame, text='Include yandere tags', var=self.tagfile_yandere_var, style="chkbtn.TCheckbutton")
         self.tagfile_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
 
-        self.save_btn = Button(parent, text='Save', command=self.yandere_save, style ="button.TLabel")
+        #self.save_btn = Button(parent, text='Save', command=self.yandere_save, style ="button.TLabel")
 
     def yandere_display(self):
         """
@@ -738,7 +745,7 @@ class YandereOptions():
 
         self.rename_chkbtn.grid(row= 15, column= 0, sticky=W, padx=2, pady=1)
 
-        self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
+        #self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
 
     def forget(self):
         self.yandere_lbl.place_forget()
@@ -754,7 +761,7 @@ class YandereOptions():
 
         self.rename_chkbtn.grid_forget()
 
-        self.save_btn.place_forget()
+        #self.save_btn.place_forget()
 
     def yandere_save(self):
         gv.Files.Log.write_to_log('Attempting to save Yande.re options...')
@@ -800,7 +807,7 @@ class KonachanOptions():
         self.tagfile_yandere_chkbtn = Checkbutton(self.scrollpar_frame, text='Include yandere tags', var=self.tagfile_yandere_var, style="chkbtn.TCheckbutton")
         self.tagfile_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
 
-        self.save_btn = Button(parent, text='Save', command=self.konachan_save, style ="button.TLabel")
+        #self.save_btn = Button(parent, text='Save', command=self.konachan_save, style ="button.TLabel")
 
     def konachan_display(self):
         """
@@ -827,7 +834,7 @@ class KonachanOptions():
 
         self.rename_chkbtn.grid(row= 15, column= 0, sticky=W, padx=2, pady=1)
 
-        self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
+        #self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
 
     def forget(self):
         self.konachan_lbl.place_forget()
@@ -843,7 +850,7 @@ class KonachanOptions():
 
         self.rename_chkbtn.grid_forget()
 
-        self.save_btn.place_forget()
+        #self.save_btn.place_forget()
 
     def konachan_save(self):
         gv.Files.Log.write_to_log('Attempting to save Konachan options...')

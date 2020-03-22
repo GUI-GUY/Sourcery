@@ -91,7 +91,7 @@ class WeightSystem():
 
         self.test_weights_btn = Button(self.scrollpar_frame, text='Test', command=self.test_weights, style ="button.TLabel")
 
-        self.save_btn = Button(parent, text='Save', command=self.weight_save, style ="button.TLabel")
+        #self.save_btn = Button(parent, text='Save', command=self.weight_save, style ="button.TLabel")
 
     def test_weights(self):
         img_0_weight = 0
@@ -211,7 +211,7 @@ class WeightSystem():
 
         self.test_weights_btn.grid(row=55, column=2, sticky=W, padx=2, pady=1)
 
-        self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
+        #self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
 
     def forget(self):
         self.weight_system_lbl.place_forget()
@@ -266,7 +266,7 @@ class WeightSystem():
 
         self.test_weights_btn.grid_forget()
 
-        self.save_btn.place_forget()
+        #self.save_btn.place_forget()
 
 
     def weight_save(self):
