@@ -14,7 +14,7 @@ import global_variables as gv
 
 class ImageData():
     """Includes all information on the sourced images"""
-    def __init__(self, old_name, input_path, pixiv_rename, danb_rename, dict_list, pixiv_illust_list, danbooru_illust_list, yandere_illust_list, konachan_illust_list, index):
+    def __init__(self, old_name, input_path, dict_list, pixiv_illust_list, danbooru_illust_list, yandere_illust_list, konachan_illust_list, index):
         self.name_original = old_name
         self.thumb_size = (70,70)
         self.preview_size = (200, 200)

@@ -787,19 +787,51 @@ class ReferenceFile():
     def __init__(self, log):
         self.Log = log # TODO self.refs to delete duplicate refs
 
-    def new_reference(self, old_name, new_name_pixiv, id_pixiv, new_name_danb, id_danb, rename_pixiv, rename_danbooru, minsim):
+    def new_reference(self, old_name, pixiv_list, danbooru_list, yandere_list, konachan_list, rename_pixiv, rename_danbooru, rename_yandere, rename_konachan, minsim, dict_list, input_path):
         """
         Appends a new image reference to the reference file
         """
+        pixiv_ref = "{"
+        for elem in pixiv_list:
+            pixiv_ref = (pixiv_ref + 
+                        "{\"new_name\" : \"" + elem[0] +
+                        "\", \"id\" : \"" + elem[1] +
+                        "\"}, ")
+        pixiv_ref = pixiv_ref[:-2] + "}"
+        danbooru_ref = "{"
+        for elem in danbooru_list:
+            danbooru_ref = (danbooru_ref + 
+                        "{\"new_name\" : \"" + elem[0] +
+                        "\", \"id\" : \"" + elem[1] +
+                        "\"}, ")
+        danbooru_ref = danbooru_ref[:-2] + "}"
+        yandere_ref = "{"
+        for elem in yandere_list:
+            yandere_ref = (yandere_ref + 
+                        "{\"new_name\" : \"" + elem[0] +
+                        "\", \"id\" : \"" + elem[1] +
+                        "\"}, ")
+        yandere_ref = yandere_ref[:-2] + "}"
+        konachan_ref = "{"
+        for elem in konachan_list:
+            konachan_ref = (konachan_ref + 
+                        "{\"new_name\" : \"" + elem[0] +
+                        "\", \"id\" : \"" + elem[1] +
+                        "\"}, ")
+        konachan_ref = konachan_ref[:-2] + "}"
         ref = ("{\"old_name\" : \"" + old_name +
-                "\", \"new_name_pixiv\" : \"" + new_name_pixiv +
-                "\", \"id_pixiv\" : \"" + str(id_pixiv) +
-                "\", \"new_name_danb\" : \"" + new_name_danb +
-                "\", \"id_danb\" : \"" + str(id_danb) +
-                "\", \"rename_pixiv\" : \"" + rename_pixiv +
+                "\", \"pixiv\" : " + pixiv_ref +
+                ", \"danbooru\" : " + danbooru_ref +
+                ", \"yandere\" : " + yandere_ref +
+                ", \"konachan\" : " + konachan_ref +
+                ", \"rename_pixiv\" : \"" + rename_pixiv +
                 "\", \"rename_danbooru\" : \"" + rename_danbooru +
+                "\", \"rename_yandere\" : \"" + rename_yandere +
+                "\", \"rename_konachan\" : \"" + rename_konachan +
                 "\", \"minsim\" : " + str(minsim) +
-                "}\n")
+                "\", \"dict_list\" : " + str(dict_list) +
+                ", \"input_path\" : " + input_path +
+                "\"}\n")
         try:
             f = open(cwd + '/Sourcery/reference', 'a')
             f.write(ref)

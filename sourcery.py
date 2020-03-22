@@ -184,22 +184,26 @@ def process_img_data(img_name_original, input_path, res, minsim, img_data_q, com
         comm_error_q.put('[Sourcery] Downloaded illustration successfully')
 
     if len(danbooru_illustration_list) == 0 and len(pixiv_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0:
-        #gv.Files.Log.write_to_log('None of the requested images were available!')
         comm_error_q.put('None of the requested images were available!')
         return
-    img_data_q.put((img_name_original, input_path, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, dict_list, pixiv_illustration_list, danbooru_illustration_list, yandere_illustration_list, konachan_illustration_list))
+    img_data_q.put((img_name_original, input_path, dict_list, pixiv_illustration_list, danbooru_illustration_list, yandere_illustration_list, konachan_illustration_list))
     
-    pixiv_name = ''
-    pixiv_illustration_id = ''
+    pixiv_ref_list = list()
     for elem in pixiv_illustration_list:
-        pixiv_name = pixiv_name + ' | ' + elem[1]
-        pixiv_illustration_id = pixiv_illustration_id + str(elem[0].id) + ' | '
-    
-    danbooru_name = ''
-    danbooru_illustration_id = ''
-    for elem in danbooru_illustration_list:
-        danbooru_name = danbooru_name + ' | ' + elem[1]
-        danbooru_illustration_id = danbooru_illustration_id + str(elem[0]['id']) + ' | '
+        pixiv_ref_list.append((elem[1], elem[0].id))
 
-    gv.Files.Ref.new_reference(img_name_original, pixiv_name, pixiv_illustration_id, danbooru_name, danbooru_illustration_id, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, minsim)# TODO reference
+    danbooru_ref_list = list()
+    for elem in danbooru_illustration_list:
+        danbooru_ref_list.append((elem[1], elem[0]['id']))
+
+    yandere_ref_list = list()
+    for elem in yandere_illustration_list:
+        yandere_ref_list.append((elem[1], elem[0]['id']))
+
+    konachan_ref_list = list()
+    for elem in konachan_illustration_list:
+        konachan_ref_list.append((elem[1], elem[0]['id']))
+
+
+    gv.Files.Ref.new_reference(img_name_original, pixiv_ref_list, danbooru_ref_list, yandere_ref_list, konachan_ref_list, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, gv.Files.Conf.rename_yandere, gv.Files.Conf.rename_konachan, minsim, dict_list, input_path)
 

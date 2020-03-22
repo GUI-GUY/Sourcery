@@ -100,10 +100,10 @@ MISC
 + stderr->logfile
 + tagfile generator: utf-8
 + danbooru TODOs
-reference repair
+? reference repair
 weights default
 save button in provider options saves all 
-Last Error: 0056
+Last Error: 0059
 
 beta 0.4
 3rd service

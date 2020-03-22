@@ -171,7 +171,7 @@ def refresh_startpage(change, answer2):
             a = img_data_q.get()
             #print('a')
             global index
-            b = ImageData(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], index)
+            b = ImageData(a[0], a[1], a[2], a[3], a[4], a[5], a[6], index)
             index += 1
             gv.img_data_array.append(b)
             #print('b')
@@ -217,59 +217,56 @@ def load_from_ref():
         gv.Files.Log.write_to_log('Loading images from reference file...')
         for ref in refs:
 
-            pixiv_info_list = list()
-            pix_names = ref['new_name_pixiv']
-            pix_names = pix_names.replace(' | ', ' ').split()
-            pix_ids = ref['id_pixiv']
-            pix_ids = pix_ids.replace(' | ', ' ').split()
+            pixiv_info_list = list(ref['pixiv'])
 
-            for name, ids in zip(pix_names, pix_ids):
-                pixiv_info_list.append((ids, name))
+            danb_info_list = list(ref['danbooru'])
 
-            danb_info_list = list()
-            dan_names = ref['new_name_danb']
-            dan_names = dan_names.replace(' | ', ' ').split()
-            dan_ids = ref['id_danb']
-            dan_ids = dan_ids.replace(' | ', ' ').split()
+            yandere_info_list = list(ref['yandere'])
 
-            for name, ids in zip(dan_names, dan_ids):
-                danb_info_list.append((ids, name))
+            konachan_info_list = list(ref['konachan'])
+
+            dict_list = ref['dict_list']
 
             pixiv_illustration_list = list()
             visited_ids = list()
             for elem in pixiv_info_list:
-                if elem[0] not in visited_ids:
-                    pixiv_illustration_list.append((pixiv_fetch_illustration(ref['old_name'], elem[0]), elem[1]))
-                    visited_ids.append(elem[0])
+                if elem['id'] not in visited_ids:
+                    pixiv_illustration_list.append((pixiv_fetch_illustration(ref['old_name'], elem['id']), elem['new_name']))
+                    visited_ids.append(elem['id'])
             
             danb_illustration_list = list()
             visited_ids = list()
             for elem in danb_info_list:
-                if elem[0] not in visited_ids:
-                    danb_illustration_list.append((danbooru_fetch_illustration(elem[0]), elem[1]))
-                    visited_ids.append(elem[0])
-            # next_img = False
-            # for data in gv.img_data_array: #TODO duplicates
-            #     if str(ref['old_name']) == data.name_original and ref['id_pixiv'] == pixiv_illust.id and strtobool(ref['rename_pixiv']) == strtobool(str(data.rename_pixiv)) and strtobool(ref['rename_danbooru']) == strtobool(str(data.rename_danbooru)) and str(ref['minsim']) == gv.Files.Conf.minsim:
-            #         next_img = True
-            #         break
-            # if next_img:
-            #     gv.Files.Log.write_to_log('Image ' + str(ref['old_name']) + ' already sourced')
-            #     continue
+                if elem['id'] not in visited_ids:
+                    danb_illustration_list.append((danbooru_fetch_illustration(elem['id'], danbooru=True), elem['new_name']))
+                    visited_ids.append(elem['id'])
+            
+            yandere_illustration_list = list()
+            visited_ids = list()
+            for elem in yandere_info_list:
+                if elem['id'] not in visited_ids:
+                    yandere_illustration_list.append((danbooru_fetch_illustration(elem['id'], yandere=True), elem['new_name']))
+                    visited_ids.append(elem['id'])
+            
+            konachan_illustration_list = list()
+            visited_ids = list()
+            for elem in konachan_info_list:
+                if elem['id'] not in visited_ids:
+                    konachan_illustration_list.append((danbooru_fetch_illustration(elem['id'], konachan=True), elem['new_name']))
+                    visited_ids.append(elem['id'])
+            
+            next_img = False
+            for data in gv.img_data_array:
+                if str(ref['old_name']) == data.name_original and str(ref['minsim']) == gv.Files.Conf.minsim:
+                    next_img = True
+                    break
+            if next_img:
+                gv.Files.Log.write_to_log('Image ' + str(ref['old_name']) + ' already sourced')
+                continue
             # # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
-            # if not pixiv_illust:
-            #     pixiv_illust_id = 'None'
-            # else:
-            #     pixiv_illust_id = pixiv_illust.id
-            # if not danb_illust:
-            #     danb_illust_id = 'None'
-            # else:
-            #     if 'id' in danb_illust:
-            #         danb_illust_id = danb_illust['id']
-            #     else:
-            #         danb_illust_id = 'None'
+
             global index
-            gv.img_data_array.append(ImageData(ref['old_name'], gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, [{"service_name": 'Pixiv', "illust_id": '', "source": 'None', "???": 'None', "minsim": ref['minsim']}, {"service_name": 'Danbooru', "illust_id": '', "source": 'None', "???": 'None', "minsim": ref['minsim']}], pixiv_illustration_list, danb_illustration_list, index))
+            gv.img_data_array.append(ImageData(ref['old_name'], ref['input_path'], dict_list, pixiv_illustration_list, danb_illustration_list, yandere_illustration_list, konachan_illustration_list, index))
             index += 1
         gv.Files.Log.write_to_log('Loaded images from reference file')
     else:
@@ -283,7 +280,7 @@ def duplicate_loop():
         dup_dict = duplicate_p_pipe.recv()
         is_dup = False
         for data in gv.img_data_array: # {'img_name': img, 'minsim': minsim, 'rename_pixiv': gv.Files.Conf.rename_pixiv, 'rename_danbooru': gv.Files.Conf.rename_danbooru}
-            if str(dup_dict['img_name']) == data.name_original and str(dup_dict['minsim']) == str(data.minsim) and dup_dict['rename_pixiv'] == str(data.rename_pixiv) and dup_dict['rename_danbooru'] == str(data.rename_danbooru):
+            if str(dup_dict['img_name']) == data.name_original and str(dup_dict['minsim']) == str(data.minsim):
                 is_dup = True
                 break
         duplicate_p_pipe.send(is_dup)
