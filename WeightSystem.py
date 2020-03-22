@@ -67,7 +67,7 @@ class WeightSystem():
         self.image_1_weight_lbl = Label(self.scrollpar_frame, text="", font=("Arial Bold", 10), style="label.TLabel")
         
         self.service_0_var = StringVar(parent)
-        self.service_choices = ['Original', 'Danbooru', 'Pixiv']
+        self.service_choices = ['Original', 'Danbooru', 'Pixiv', 'Yandere', 'Konachan']
         self.service_0_optmen = OptionMenu(self.scrollpar_frame, self.service_0_var, 'Choose Service', *self.service_choices, style='optmen.TMenubutton')
 
         self.filetype_0_var = StringVar(parent)
@@ -115,12 +115,16 @@ class WeightSystem():
                 img_0_weight = img_0_weight + int(self.danbooru_weight_entry.get())
             if s0_var == 'Pixiv':
                 img_0_weight = img_0_weight + int(self.pixiv_weight_entry.get())
+            if s0_var == 'Yandere':
+                img_0_weight = img_0_weight + int(self.yandere_weight_entry.get())
+            if s0_var == 'Konachan':
+                img_0_weight = img_0_weight + int(self.konachan_weight_entry.get())
             if s0_var == 'Original':
                 img_0_weight = img_0_weight + int(self.original_weight_entry.get())
             if int(self.width_0_entry.get())/int(self.height_0_entry.get()) == int(self.width_1_entry.get())/int(self.height_1_entry.get()):
                 if int(self.width_0_entry.get()) > int(self.width_1_entry.get()):
                     img_0_weight = img_0_weight + int(self.higher_resolution_weight_entry.get())
-                else:
+                elif int(self.width_0_entry.get()) < int(self.width_1_entry.get()):
                     img_1_weight = img_1_weight + int(self.higher_resolution_weight_entry.get())
             
             s1_var = self.filetype_1_var.get()

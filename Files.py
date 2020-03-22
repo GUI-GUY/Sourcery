@@ -398,18 +398,18 @@ class ConfigFile():
         self.saucenao_depth = '128'
         self.saucenao_bias = '15'
         self.saucenao_biasmin = '70'
-        self.png_weight = '0'
-        self.jpg_weight = '0'
-        self.jfif_weight = '0'
-        self.gif_weight = '0'
-        self.bmp_weight = '0'
+        self.png_weight = '10'
+        self.jpg_weight = '7'
+        self.jfif_weight = '1'
+        self.gif_weight = '10'
+        self.bmp_weight = '5'
         self.other_weight = '0'
-        self.higher_resolution_weight = '0'
-        self.pixiv_weight = '0'
-        self.danbooru_weight = '0'
+        self.higher_resolution_weight = '10'
+        self.pixiv_weight = '8'
+        self.danbooru_weight = '10'
         self.yandere_weight = '0'
         self.konachan_weight = '0'
-        self.original_weight = '0'
+        self.original_weight = '5'
         if self.read_config():
             self.write_config()
     
@@ -725,27 +725,27 @@ class ConfigFile():
             temp_num = int(self.png_weight)
         except Exception as e:
             mb.showerror('Invalid Value', 'Please insert an integer value into the png weight option')
-            self.png_weight = '0'
+            self.png_weight = '10'
         try:
             temp_num = int(self.jpg_weight)
         except Exception as e:
             mb.showerror('Invalid Value', 'Please insert an integer value into the jpg weight option')
-            self.jpg_weight = '0'
+            self.jpg_weight = '7'
         try:
             temp_num = int(self.jfif_weight)
         except Exception as e:
             mb.showerror('Invalid Value', 'Please insert an integer value into the jfif weight option')
-            self.jfif_weight = '0'
+            self.jfif_weight = '1'
         try:
             temp_num = int(self.gif_weight)
         except Exception as e:
             mb.showerror('Invalid Value', 'Please insert an integer value into the gif weight option')
-            self.gif_weight = '0'
+            self.gif_weight = '10'
         try:
             temp_num = int(self.bmp_weight)
         except Exception as e:
             mb.showerror('Invalid Value', 'Please insert an integer value into the bmp weight option')
-            self.bmp_weight = '0'
+            self.bmp_weight = '5'
         try:
             temp_num = int(self.other_weight)
         except Exception as e:
@@ -755,17 +755,17 @@ class ConfigFile():
             temp_num = int(self.higher_resolution_weight)
         except Exception as e:
             mb.showerror('Invalid Value', 'Please insert an integer value into the Higher resolution weight option')
-            self.higher_resolution_weight = '0'
+            self.higher_resolution_weight = '10'
         try:
             temp_num = int(self.pixiv_weight)
         except Exception as e:
             mb.showerror('Invalid Value', 'Please insert an integer value into the Pixiv weight option')
-            self.pixiv_weight = '0'
+            self.pixiv_weight = '8'
         try:
             temp_num = int(self.danbooru_weight)
         except Exception as e:
             mb.showerror('Invalid Value', 'Please insert an integer value into the Danbooru weight option')
-            self.danbooru_weight = '0'
+            self.danbooru_weight = '10'
         try:
             temp_num = int(self.yandere_weight)
         except Exception as e:
@@ -780,7 +780,7 @@ class ConfigFile():
             temp_num = int(self.original_weight)
         except Exception as e:
             mb.showerror('Invalid Value', 'Please insert an integer value into the Original weight option')
-            self.original_weight = '0'
+            self.original_weight = '5'
 
 class ReferenceFile():
     """Includes methods to add a new reference, read these from the reference file or delete its contents"""
