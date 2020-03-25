@@ -103,7 +103,15 @@ MISC
 + reference repair
 + weights default
 + save button in provider options saves all 
-Last Error: 0059
+Last Error: 0060
+
+BUGS:
+imgpp + locked
+create output folder?
+direct save yandere konachan
+big selector next prev switched
+bild_22 weight system chooses wrong image
+stopping (please wait)
 
 beta 0.4
 3rd service
@@ -128,7 +136,8 @@ weighted parent/sibling
 big selector text green/red/white if better/worse/same res/datatype?
 link color
 danbooru siblings?
-on numbers cruncher exception write back default value
+on numbers cruncher exception write back default value to entry fields
+show 'index' of sourced imaged/all images
 
 beta 0.5?
 queue images instead of 'get source' button?

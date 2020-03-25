@@ -32,10 +32,14 @@ def danbooru_fetch_illustration(imgid, comm_error_q=None, danbooru=False, yander
         if 'id' in illustration:
             return illustration
         else:
+            comm_error_q.put(str(illustration))
             return False
     except Exception as e:
         print("ERROR [0056] " + str(e))
-        gv.Files.Log.write_to_log("ERROR [0056] " + str(e))
+        if comm_error_q != None:
+            comm_error_q.put("[Sourcery] ERROR [0056] " + str(e))
+        else:
+            gv.Files.Log.write_to_log("ERROR [0056] " + str(e))
         #mb.showerror("ERROR [0056]", "ERROR CODE [0056]\nImage data could not be retrieved")
         return False
     
@@ -60,7 +64,10 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None,
                 return new_name
             except Exception as e:
                 print("ERROR [0057] " + str(e))
-                gv.Files.Log.write_to_log("ERROR [0057] " + str(e))
+                if comm_error_q != None:
+                    comm_error_q.put("[Sourcery] ERROR [0057] " + str(e))
+                else:
+                    gv.Files.Log.write_to_log("ERROR [0057] " + str(e))
                 #mb.showerror("ERROR [0057]", "ERROR CODE [0057]\nImage could not be downloaded")
                 return False
         return False
@@ -80,7 +87,10 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None,
                 return new_name
             except Exception as e:
                 print("ERROR [0058] " + str(e))
-                gv.Files.Log.write_to_log("ERROR [0058] " + str(e))
+                if comm_error_q != None:
+                    comm_error_q.put("[Sourcery] ERROR [0058] " + str(e))
+                else:
+                    gv.Files.Log.write_to_log("ERROR [0058] " + str(e))
                 #mb.showerror("ERROR [0058]", "ERROR CODE [0058]\nImage could not be downloaded")
                 return False
         return False
@@ -100,7 +110,10 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None,
                 return new_name
             except Exception as e:
                 print("ERROR [0059] " + str(e))
-                gv.Files.Log.write_to_log("ERROR [0059] " + str(e))
+                if comm_error_q != None:
+                    comm_error_q.put("[Sourcery] ERROR [0059] " + str(e))
+                else:
+                    gv.Files.Log.write_to_log("ERROR [0059] " + str(e))
                 #mb.showerror("ERROR [0059]", "ERROR CODE [0059]\nImage could not be downloaded")
                 return False
         return False

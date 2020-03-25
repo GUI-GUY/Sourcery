@@ -14,74 +14,60 @@ import global_variables as gv
 
 class ImageData():
     """Includes all information on the sourced images"""
-    def __init__(self, dillustration, index):
+    def __init__(self, old_name, input_path, dict_list, pixiv_illust_list, danbooru_illust_list, yandere_illust_list, konachan_illust_list, index):
+        self.name_original = old_name
         self.thumb_size = (70,70)
         self.preview_size = (200, 200)
         self.siblings_array = list()
         self.service_list = list()
         self.pixiv_list = list()
-        for elem in dillustration.pixiv_subdillustration:
-            self.pixiv_list.append(ProviderImageData(elem, dillustration, self.thumb_size, self.preview_size, self.siblings_array))
+        # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source, "similarity": sim}
+        for elem in pixiv_illust_list:
+            name = elem[1]
+            path_pixiv = gv.cwd + '/Sourcery/sourced_progress/pixiv/' + name
+            self.pixiv_dict = self.pixiv_clean_dict(elem[0], dict_list)
+            if self.pixiv_dict == None:
+                gv.Files.Log.write_to_log('Error while parsing pixiv dict, skipped image')
+                continue
+            self.pixiv_list.append(ProviderImageData('Pixiv', name, path_pixiv, self.thumb_size, self.preview_size, self.pixiv_dict, elem[0], self.siblings_array))
+        
         self.danbooru_list = list()
-        for elem in dillustration.danbooru_subdillustration:
-            self.danbooru_list.append(ProviderImageData(elem, dillustration, self.thumb_size, self.preview_size, self.siblings_array))
+        for elem in danbooru_illust_list:
+            name = elem[1]
+            path_danb = gv.cwd + '/Sourcery/sourced_progress/danbooru/' + name
+            self.danbooru_dict = self.danbooru_clean_dict(elem[0], dict_list,'Danbooru')
+            if self.danbooru_dict == None:
+                gv.Files.Log.write_to_log('Error while parsing danbooru dict, skipped image')
+                continue
+            self.danbooru_list.append(ProviderImageData('Danbooru', name, path_danb, self.thumb_size, self.preview_size, self.danbooru_dict, elem[0], self.siblings_array))
+        
         self.yandere_list = list()
-        for elem in dillustration.yandere_subdillustration:
-            self.yandere_list.append(ProviderImageData(elem, dillustration, self.thumb_size, self.preview_size, self.siblings_array))
+        for elem in yandere_illust_list:
+            name = elem[1]
+            path_yandere = gv.cwd + '/Sourcery/sourced_progress/yandere/' + name
+            self.yandere_dict = self.danbooru_clean_dict(elem[0], dict_list, 'Yandere')
+            if self.yandere_dict == None:
+                gv.Files.Log.write_to_log('Error while parsing yandere dict, skipped image')
+                continue
+            self.yandere_list.append(ProviderImageData('Yandere', name, path_yandere, self.thumb_size, self.preview_size, self.yandere_dict, elem[0], self.siblings_array))
+        
         self.konachan_list = list()
-        for elem in dillustration.konachan_subdillustration:
-            self.konachan_list.append(ProviderImageData(elem, dillustration, self.thumb_size, self.preview_size, self.siblings_array))
-
-        self.sub_dill = dillustration.original_sub
-
-        # # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source, "similarity": sim}
-        # for elem in dillustration.pixiv_subdillustration:
-        #     # name = elem[1]
-        #     # path_pixiv = gv.cwd + '/Sourcery/sourced_progress/pixiv/' + name
-        #     # self.pixiv_dict = self.pixiv_clean_dict(elem[0], dict_list)
-        #     # if self.pixiv_dict == None:
-        #     #     gv.Files.Log.write_to_log('Error while parsing pixiv dict, skipped image')
-        #     #     continue
-        #     self.pixiv_list.append(ProviderImageData(elem, dillustration))
-        #     #self.pixiv_list.append(ProviderImageData('Pixiv', name, path_pixiv, self.thumb_size, self.preview_size, self.pixiv_dict, elem[0], self.siblings_array))
-        
-        # self.danbooru_list = list()
-        # for elem in danbooru_illust_list:
-        #     name = elem[1]
-        #     path_danb = gv.cwd + '/Sourcery/sourced_progress/danbooru/' + name
-        #     self.danbooru_dict = self.danbooru_clean_dict(elem[0], dict_list,'Danbooru')
-        #     if self.danbooru_dict == None:
-        #         gv.Files.Log.write_to_log('Error while parsing danbooru dict, skipped image')
-        #         continue
-        #     self.danbooru_list.append(ProviderImageData('Danbooru', name, path_danb, self.thumb_size, self.preview_size, self.danbooru_dict, elem[0], self.siblings_array))
-        
-        # self.yandere_list = list()
-        # for elem in yandere_illust_list:
-        #     name = elem[1]
-        #     path_yandere = gv.cwd + '/Sourcery/sourced_progress/yandere/' + name
-        #     self.yandere_dict = self.danbooru_clean_dict(elem[0], dict_list, 'Yandere')
-        #     if self.yandere_dict == None:
-        #         gv.Files.Log.write_to_log('Error while parsing yandere dict, skipped image')
-        #         continue
-        #     self.yandere_list.append(ProviderImageData('Yandere', name, path_yandere, self.thumb_size, self.preview_size, self.yandere_dict, elem[0], self.siblings_array))
-        
-        # self.konachan_list = list()
-        # for elem in konachan_illust_list:
-        #     name = elem[1]
-        #     path_konachan = gv.cwd + '/Sourcery/sourced_progress/konachan/' + name
-        #     self.danbooru_dict = self.danbooru_clean_dict(elem[0], dict_list, 'Konachan')
-        #     if self.konachan_dict == None:
-        #         gv.Files.Log.write_to_log('Error while parsing konachan dict, skipped image')
-        #         continue
-        #     self.danbooru_list.append(ProviderImageData('Konachan', name, path_konachan, self.thumb_size, self.preview_size, self.konachan_dict, elem[0], self.siblings_array))
+        for elem in konachan_illust_list:
+            name = elem[1]
+            path_konachan = gv.cwd + '/Sourcery/sourced_progress/konachan/' + name
+            self.danbooru_dict = self.danbooru_clean_dict(elem[0], dict_list, 'Konachan')
+            if self.konachan_dict == None:
+                gv.Files.Log.write_to_log('Error while parsing konachan dict, skipped image')
+                continue
+            self.danbooru_list.append(ProviderImageData('Konachan', name, path_konachan, self.thumb_size, self.preview_size, self.konachan_dict, elem[0], self.siblings_array))
         
         self.service_list.append(self.pixiv_list)
         self.service_list.append(self.danbooru_list)
         self.service_list.append(self.yandere_list)
         self.service_list.append(self.konachan_list)
 
-        # self.path_original = gv.cwd + '/Sourcery/sourced_original/' + self.name_original
-        # self.input_path = input_path
+        self.path_original = gv.cwd + '/Sourcery/sourced_original/' + self.name_original
+        self.input_path = input_path
         
         self.original_image = None
         self.downloaded_image_pixiv = None
@@ -113,54 +99,54 @@ class ImageData():
         self.process_info_imgs_init = False
         self.locked = False
 
-    # def correct_name(self, folder, name):
-    #     """
-    #     Returns corrected given name on success, False otherwise
-    #     """
-    #     try:
-    #         directory = listdir(gv.cwd + '/Sourcery/sourced_progress/' + folder + '/')
-    #     except Exception as e:
-    #         print("ERROR [0041] " + str(e))
-    #         gv.Files.Log.write_to_log("ERROR [0041] " + str(e))
-    #         mb.showerror("ERROR [0041]", "ERROR CODE [0041]\nSomething went wrong while accessing the 'Sourcery/sourced_progress/'" + folder + "folder, please restart Sourcery.")
-    #         return False 
-    #     for elem in directory:
-    #         test = elem.rsplit('.', 1)
-    #         if name == test[0]:
-    #             return elem
-    #     return False
+    def correct_name(self, folder, name):
+        """
+        Returns corrected given name on success, False otherwise
+        """
+        try:
+            directory = listdir(gv.cwd + '/Sourcery/sourced_progress/' + folder + '/')
+        except Exception as e:
+            print("ERROR [0041] " + str(e))
+            gv.Files.Log.write_to_log("ERROR [0041] " + str(e))
+            mb.showerror("ERROR [0041]", "ERROR CODE [0041]\nSomething went wrong while accessing the 'Sourcery/sourced_progress/'" + folder + "folder, please restart Sourcery.")
+            return False 
+        for elem in directory:
+            test = elem.rsplit('.', 1)
+            if name == test[0]:
+                return elem
+        return False
 
-    # def pixiv_clean_dict(self, illust, dict_list):
-    #     """
-    #     Cleans up the dictionary to only include needed information and returns them as a formatted dictionary
-    #     """
-    #     x = None
-    #     for t in dict_list:
-    #         if t['service_name'] == 'Pixiv' and t['illust_id'] == int(illust.id):
-    #             x = t
-    #             break
-    #     if x == None:
-    #         return None
-    #     return {"artist": illust.user.name, "title": illust.title, "caption": illust.caption, "create_date": illust.create_date, "width": illust.width, "height": illust.height, "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": str(tags)}
+    def pixiv_clean_dict(self, illust, dict_list):
+        """
+        Cleans up the dictionary to only include needed information and returns them as a formatted dictionary
+        """
+        x = None
+        for t in dict_list:
+            if t['service_name'] == 'Pixiv' and t['illust_id'] == int(illust.id):
+                x = t
+                break
+        if x == None:
+            return None
+        return {"artist": illust.user.name, "title": illust.title, "caption": illust.caption, "create_date": illust.create_date, "width": illust.width, "height": illust.height, "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": str(tags)}
 
-    # def danbooru_clean_dict(self, illust, dict_list, service):
-    #     """
-    #     Cleans up the dictionary to only include needed information and returns them as a formatted dictionary
-    #     """
-    #     x = None
-    #     for t in dict_list:
-    #         if t['service_name'] == service and t['illust_id'] == int(illust['id']):
-    #             x = t
-    #             break
-    #     if x == None:
-    #         return None
+    def danbooru_clean_dict(self, illust, dict_list, service):
+        """
+        Cleans up the dictionary to only include needed information and returns them as a formatted dictionary
+        """
+        x = None
+        for t in dict_list:
+            if t['service_name'] == service and t['illust_id'] == int(illust['id']):
+                x = t
+                break
+        if x == None:
+            return None
 
-    #     if service == 'Danbooru':
-    #         return {"artist": illust['tag_string_artist'], "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['image_width'], "height": illust['image_height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": illust['tag_string_general']}
-    #     if service == 'Yandere':
-    #         return {"artist": 'None', "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['width'], "height": illust['height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": illust['tag_string_general']}
-    #     if service == 'Konachan':
-    #         return {"artist": 'None', "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['width'], "height": illust['height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": illust['tag_string_general']}
+        if service == 'Danbooru':
+            return {"artist": illust['tag_string_artist'], "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['image_width'], "height": illust['image_height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": illust['tag_string_general']}
+        if service == 'Yandere':
+            return {"artist": 'None', "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['width'], "height": illust['height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": illust['tag_string_general']}
+        if service == 'Konachan':
+            return {"artist": 'None', "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['width'], "height": illust['height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": illust['tag_string_general']}
 
     def forget_all_widgets(self):
         for widget in gv.window.winfo_children():
@@ -176,19 +162,28 @@ class ImageData():
             return True
 
         try:
-            self.original_image = Image.open(self.sub_dill.path)
+            self.original_image = Image.open(self.path_original)
         except Exception as e:
                 print("ERROR [0039] " + str(e))
                 #mb.showerror("ERROR [0039]", "ERROR CODE [0039]\nSomething went wrong while loading an image.")
                 gv.Files.Log.write_to_log("ERROR [0039] " + str(e))
                 return False
         
-        if self.original_image == None:
-            return False
-
         for service in self.service_list:
             for elem in service:
                 elem.load()
+
+        # for elem in self.pixiv_list:
+        #     elem.load()
+
+        # for elem in self.danbooru_list:
+        #     elem.load()
+
+        # for elem in self.yandere_list:
+        #     elem.load()
+        
+        # for elem in self.konachan_list:
+        #     elem.load()
 
         self.load_init = True
         return True
@@ -211,6 +206,17 @@ class ImageData():
                 if elem.load_init:
                     elem.process_results_imgs()
 
+        # for elem in self.pixiv_list:
+        #     elem.process_results_imgs()
+    
+        # for elem in self.danbooru_list:
+        #     elem.process_results_imgs()
+
+        # for elem in self.yandere_list:
+        #     elem.process_results_imgs()
+
+        # for elem in self.konachan_list:
+        #     elem.process_results_imgs()
         self.process_results_imgs_init = True
 
     def modify_results_widgets(self):
@@ -234,13 +240,25 @@ class ImageData():
             indicatoron='false')# sunken, raised, groove, ridge, flat
         self.original_chkbtn.image = self.original_photoImage_thumb
         self.original_wxh_lbl.configure(text = str(self.original_image.size))
-        self.original_type_lbl.configure(text = self.sub_dill.filetype)
-        self.original_cropped_lbl.configure(text = self.sub_dill.name_no_suffix)
+        self.original_type_lbl.configure(text = self.name_original[self.name_original.rfind('.')+1:])
+        self.original_cropped_lbl.configure(text = self.name_original)
 
         for service in self.service_list:
             for elem in service:
                 if elem.load_init:
                     elem.modify_results_widgets()
+
+        # for elem in self.pixiv_list:
+        #     elem.modify_results_widgets()
+
+        # for elem in self.danbooru_list:
+        #     elem.modify_results_widgets()
+
+        # for elem in self.yandere_list:
+        #     elem.modify_results_widgets()
+
+        # for elem in self.konachan_list:
+        #     elem.modify_results_widgets()
 
         gv.res_frame.columnconfigure(0, weight=1)
         gv.res_frame.columnconfigure(1, weight=1)
@@ -375,12 +393,21 @@ class ImageData():
             for elem in service:
                 if elem.load_init:
                     t = elem.display_results(t+1)
+        
+        # for elem in self.pixiv_list:
+        #     t = elem.display_results(t+1)
+        # for elem in self.danbooru_list:
+        #     t = elem.display_results(t+1)
+        # for elem in self.yandere_list:
+        #     t = elem.display_results(t+1)
+        # for elem in self.konachan_list:
+        #     t = elem.display_results(t+1)
 
         return t
 
     def evaluate_weight(self):
         img_weight = 0
-        filetype = self.sub_dill.name.split('.')[-1]
+        filetype = self.name_original.split('.')[-1]
         if filetype == 'png':
             img_weight = img_weight + int(gv.Files.Conf.png_weight)
         elif filetype == 'jpg':
@@ -424,6 +451,15 @@ class ImageData():
                 if elem.load_init:
                     t = elem.display_info(t)
         
+        # for elem in self.pixiv_list:
+        #     t = elem.display_info(t)
+        # for elem in self.danbooru_list:
+        #     t = elem.display_info(t)
+        # for elem in self.yandere_list:
+        #     t = elem.display_info(t)
+        # for elem in self.konachan_list:
+        #     t = elem.display_info(t)
+        
     def display_big_selector(self):
         """
         Displays all widgets corresponding to this image on the big selector page\n
@@ -446,6 +482,15 @@ class ImageData():
                 if elem.load_init:
                     t = elem.display_big_selector(t)
 
+        # for elem in self.pixiv_list:
+        #     t = elem.display_big_selector(t)
+        # for elem in self.danbooru_list:
+        #     t = elem.display_big_selector(t)
+        # for elem in self.yandere_list:
+        #     t = elem.display_big_selector(t)
+        # for elem in self.konachan_list:
+        #     t = elem.display_big_selector(t)
+
         self.original_SubImgData.display_place()
 
     def process_big_imgs(self):
@@ -457,13 +502,25 @@ class ImageData():
         if self.process_big_imgs_init:
             return
 
-        self.original_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path, 'Input', gv.window, None, self.original_image, self.original_var)#ImageTk.PhotoImage(resize(self.original_image))
+        self.original_SubImgData = SubImageData(self.name_original, self.path_original, 'Input', gv.window, None, self.original_image, self.original_var)#ImageTk.PhotoImage(resize(self.original_image))
         self.original_SubImgData.load()
 
         for service in self.service_list:
             for elem in service:
                 if elem.load_init:
                     elem.process_big_imgs()
+
+        # for elem in self.pixiv_list:
+        #     elem.process_big_imgs()
+
+        # for elem in self.danbooru_list:
+        #     elem.process_big_imgs()
+        
+        # for elem in self.yandere_list:
+        #     elem.process_big_imgs()
+        
+        # for elem in self.konachan_list:
+        #     elem.process_big_imgs()
 
         self.process_big_imgs_init = True
 
@@ -526,6 +583,29 @@ class ImageData():
                             break
                         if elem.get_save_status():
                             save_counter += 1
+
+            # for elem in self.pixiv_list:
+            #     if save_counter > 1:
+            #         break
+            #     if elem.get_save_status():
+            #         save_counter += 1
+            # for elem in self.danbooru_list:
+            #     if save_counter > 1:
+            #         break
+            #     if elem.get_save_status():
+            #         save_counter += 1
+            # for elem in self.yandere_list:
+            #     if save_counter > 1:
+            #         break
+            #     if elem.get_save_status():
+            #         save_counter += 1
+            # for elem in self.konachan_list:
+            #     if save_counter > 1:
+            #         break
+            #     if elem.get_save_status():
+            #         save_counter += 1
+            # if self.original_var.get() == 1:
+            #     save_counter += 1
             ##----##
                 
             if save_counter == 0:
@@ -534,13 +614,13 @@ class ImageData():
 
         #--If yes, make a head directory(new_dir, full path) with the original name and save all checked images in it--#
         if save_counter > 1:
-            new_dir = gv.output_dir + '/' + self.sub_dill.name_no_suffix
+            new_dir = gv.output_dir + '/' + self.name_original[:self.name_original.rfind('.')]
             makedirs(new_dir, 0o777, True)
             t = 0
             if self.original_var.get() == 1:
-                new_img_name = self.sub_dill.name_no_suffix + '_' + str(t) + '.' + self.sub_dill.filetype
-                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, new_dir, self.sub_dill.name_no_suffix + '_' + str(t)):
-                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, new_dir, self.sub_dill.name_no_suffix + '_' + str(t))
+                new_img_name = self.name_original[:self.name_original.rfind('.')] + '_' + str(t) + self.name_original[self.name_original.rfind('.'):]
+                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, new_dir, self.name_original[:self.name_original.rfind('.')] + '_' + str(t)):
+                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, new_dir, self.name_original[:self.name_original.rfind('.')] + '_' + str(t))
                 
                 try:
                     move(self.path_original, new_dir + '/' + new_img_name)
@@ -550,26 +630,40 @@ class ImageData():
                     else:
                         print("ERROR [0013] " + str(e))
                         gv.Files.Log.write_to_log("ERROR [0013] " + str(e))
-                        #mb.showerror("ERROR [0013]", "ERROR CODE [0013]\nSomething went wrong while moving the image " + self.sub_dill.path)
+                        #mb.showerror("ERROR [0013]", "ERROR CODE [0013]\nSomething went wrong while moving the image " + self.path_original)
                         return False
+                    
                 t += 1
             else:
-                if self.sub_dill.path not in gv.delete_dirs_array:
-                    gv.delete_dirs_array.append(self.sub_dill.path)
+                if self.path_original not in gv.delete_dirs_array:
+                    gv.delete_dirs_array.append(self.path_original)
             for service in self.service_list:
                 for elem in service:
                     if elem.load_init:
                         elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
                         t += 1
+            # for elem in self.pixiv_list:
+            #     elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
+            #     t += 1
+            # for elem in self.danbooru_list:
+            #     elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
+            #     t += 1
+            # for elem in self.yandere_list:
+            #     elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
+            #     t += 1
+            # for elem in self.konachan_list:
+            #     elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
+            #     t += 1
+            # make folder and save images in it with different names
         ##----##
 
         #--If no, go through all saves, the only one that is checked will be in there--#
         else:
             if self.original_var.get() == 1:
-                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.sub_dill.name_no_suffix):
-                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.sub_dill.name_no_suffix)
+                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.name_original[:self.name_original.rfind('.')]):
+                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.name_original[:self.name_original.rfind('.')])
                 try:
-                    move(self.sub_dill.path, gv.output_dir + '/' + self.sub_dill.name)
+                    move(self.path_original, gv.output_dir + '/' + self.name_original)
                 except Exception as e:
                     if not second_try:
                         return self.save(True, save_counter)
@@ -579,13 +673,25 @@ class ImageData():
                         #mb.showerror("ERROR [0048]", "ERROR CODE [0048]\nSomething went wrong while moving the image " + self.path_original)
                         return False
             else:
-                if self.sub_dill.pathnot in gv.delete_dirs_array:
-                    gv.delete_dirs_array.append(self.sub_dill.path)
+                if self.path_original not in gv.delete_dirs_array:
+                    gv.delete_dirs_array.append(self.path_original)
             for service in self.service_list:
                 for elem in service:
                     if elem.load_init:
                         if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags):
                             return False
+            # for elem in self.pixiv_list:
+            #     if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags):
+            #         return False
+            # for elem in self.danbooru_list:
+            #     if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags):
+            #         return False
+            # for elem in self.yandere_list:
+            #     if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags):
+            #         return False
+            # for elem in self.yandere_list:
+            #     if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags):
+            #         return False
         ##----##
 
         self.forget_results()
@@ -595,7 +701,7 @@ class ImageData():
 
         if gv.Files.Conf.delete_input == '1':
             try:
-                remove(self.sub_dill.input_path)
+                remove(self.input_path)
             except Exception as e:
                 print("ERROR [0014] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
@@ -631,6 +737,15 @@ class ImageData():
                 if elem.load_init:
                     elem.forget_results()
 
+        # for elem in self.pixiv_list:
+        #     elem.forget_results()
+        # for elem in self.danbooru_list:
+        #     elem.forget_results()
+        # for elem in self.yandere_list:
+        #     elem.forget_results()
+        # for elem in self.konachan_list:
+        #     elem.forget_results()
+
     def self_destruct(self):
         if self.original_SubImgData != None:
             self.original_SubImgData.self_destruct()
@@ -645,3 +760,11 @@ class ImageData():
                 if elem.load_init:
                     elem.self_destruct()
 
+        # for elem in self.pixiv_list:
+        #     elem.self_destruct()
+        # for elem in self.danbooru_list:
+        #     elem.self_destruct()
+        # for elem in self.yandere_list:
+        #     elem.self_destruct()
+        # for elem in self.konachan_list:
+        #     elem.self_destruct()

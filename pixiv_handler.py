@@ -23,6 +23,10 @@ class Illustration():
                     self.tags.append({'name': elem['tag'], 'translated_name': None})
             else:
                 self.tags.append({'name': elem['tag'], 'translated_name': None})
+        self.tags.append("title:" + response['body']['title'])
+        self.tags.append("pixiv work:" + str(response['body']['illustId']))
+        self.tags.append("rating:" + str(response['body']['sl']))
+        self.tags.append("creator:" + response['body']['userName'])
         self.user = Artist(response['body']['userName'], response['body']['userId'])
         self.title = response['body']['title']
         self.caption = response['body']['illustComment']
@@ -31,7 +35,7 @@ class Illustration():
         self.width = response['body']['width']
         self.height = response['body']['height']
         self.page_count = response['body']['pageCount']
-        self.sanity_level = response['body']['sl']
+        # self.sanity_level = response['body']['sl']
         
 class Artist():
     """Includes all information on the artist"""
@@ -93,7 +97,7 @@ def pixiv_download(img_name_original, illustration, comm_error_q=None):
     if illustration.page_count > 1:
         return folder_name[:-1]
     else:
-        return new_name.format(page='',format=image_format)[:-1]
+        return new_name.format(page='',format=image_format)
 
 
 def download(pid) :

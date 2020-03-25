@@ -169,20 +169,20 @@ def refresh_startpage(change, answer2):
             pass
     if not img_data_q.empty():
         b = None
-        try:
-            a = img_data_q.get()
-            #print('a')
-            global index
-            b = ImageData(a[0], a[1], a[2], a[3], a[4], a[5], a[6], index)
-            index += 1
-            gv.img_data_array.append(b)
-            #print('b')
-        except Exception as e:
-            if b in gv.img_data_array:
-                gv.img_data_array.remove(b)
-            print("ERROR [0055] " + str(e))
-            gv.Files.Log.write_to_log("ERROR [0055] " + str(e))
-            #mb.showerror("ERROR [0055]", "ERROR CODE [0055]\nImage data could not be loaded, skipped.")
+        # try:
+        a = img_data_q.get()
+        #print('a')
+        global index
+        b = ImageData(a, index)
+        index += 1
+        gv.img_data_array.append(b)
+        #print('b')
+        # except Exception as e:
+        #     if b in gv.img_data_array:
+        #         gv.img_data_array.remove(b)
+        #     print("ERROR [0060] " + str(e))
+        #     gv.Files.Log.write_to_log("ERROR [0060] " + str(e))
+        #     #mb.showerror("ERROR [0060]", "ERROR CODE [0060]\nImage data could not be loaded, skipped.")
     
     for data in gv.img_data_array:
         if not data.placed:
@@ -282,7 +282,7 @@ def duplicate_loop():
         dup_dict = duplicate_p_pipe.recv()
         is_dup = False
         for data in gv.img_data_array: # {'img_name': img, 'minsim': minsim, 'rename_pixiv': gv.Files.Conf.rename_pixiv, 'rename_danbooru': gv.Files.Conf.rename_danbooru}
-            if str(dup_dict['img_name']) == data.name_original and str(dup_dict['minsim']) == str(data.minsim):
+            if str(dup_dict['img_name']) == data.sub_dill.name and str(dup_dict['minsim']) == str(data.sub_dill.minsim):
                 is_dup = True
                 break
         duplicate_p_pipe.send(is_dup)

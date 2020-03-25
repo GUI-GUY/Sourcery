@@ -4,6 +4,7 @@ from shutil import copy
 from saucenao_caller import get_response, decode_response
 from pixiv_handler import pixiv_download, pixiv_fetch_illustration
 from danbooru_handler import danbooru_download, danbooru_fetch_illustration
+from DIllustration import DIllustration
 import global_variables as gv
 
 def die(message, comm_error_q, comm_img_q):
@@ -69,7 +70,10 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
             sleep(10)
         elif res[0] == 200:
             comm_q.put((res[3], res[4]))
-            process_img_data(img, image, res, minsim, img_data_q, comm_error_q)   
+            processed_data = process_img_data_new(img, input_dir, res, minsim, comm_error_q)
+            if processed_data != False:
+                img_data_q.put(create_DIllustration(img, image, cwd + '/Sourcery/sourced_original/' + img, processed_data, minsim, comm_error_q))
+            #process_img_data(img, image, res, minsim, img_data_q, comm_error_q)   
             if res[3] < 1:
                 die('Out of searches for today', comm_error_q, comm_img_q)
             if res[2] < 1:
@@ -85,6 +89,104 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
     comm_img_q.put("Finished")
     exit()
             
+def create_DIllustration(img_name_original, input_path, work_path, img_data, minsim, comm_error_q):
+    """
+    Creates a DIllustration object
+    """
+    d_illust = DIllustration(input_path, 
+        [{"service":'Original', "name":img_name_original, "work_path":work_path}, 
+        img_data[0], img_data[1], img_data[2], img_data[3]], minsim)
+    return d_illust
+
+def process_img_data_new(img_name_original, input_path, res, minsim, comm_error_q):
+    """
+    Downloads the image from pixiv and Danbooru
+    Returns information on the downloads
+    """
+    # dict_list is list of dicts of this format: {"service_name": service_name, "illust_id": illust_id, "source": source}
+    dict_list = decode_response(res[1])
+
+    pixiv_visited = list()
+    pixiv_illustration_list = list()
+
+    danbooru_visited = list()
+    danbooru_illustration_list = list()
+
+    yandere_visited = list()
+    yandere_illustration_list = list()
+
+    konachan_visited = list()
+    konachan_illustration_list = list()
+
+    new_name = img_name_original
+
+    for source in dict_list:
+        if source['illust_id'] != 0:
+            comm_error_q.put('[Sourcery] Attempting to fetch illustration...')
+            pixiv_illustration_list.extend(pixiv_fetcher(img_name_original, source, pixiv_visited, comm_error_q))
+            danbooru_illustration_list.extend(danbooru_fetcher(img_name_original, source, 'Danbooru', danbooru_visited, True, False, False, comm_error_q))
+            yandere_illustration_list.extend(danbooru_fetcher(img_name_original, source, 'Yandere', yandere_visited, False, True, False, comm_error_q))
+            konachan_illustration_list.extend(danbooru_fetcher(img_name_original, source, 'Konachan', konachan_visited, False, False, True, comm_error_q))
+
+        comm_error_q.put('[Sourcery] Downloaded illustration successfully')
+
+    if len(danbooru_illustration_list) == 0 and len(pixiv_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0:
+        comm_error_q.put('None of the requested images were available!')
+        return False
+    return (pixiv_illustration_list, danbooru_illustration_list, yandere_illustration_list, konachan_illustration_list)
+    
+    pixiv_ref_list = list()
+    for elem in pixiv_illustration_list:
+        pixiv_ref_list.append((elem[1], elem[0].id))
+
+    danbooru_ref_list = list()
+    for elem in danbooru_illustration_list:
+        danbooru_ref_list.append((elem[1], elem[0]['id']))
+
+    yandere_ref_list = list()
+    for elem in yandere_illustration_list:
+        yandere_ref_list.append((elem[1], elem[0]['id']))
+
+    konachan_ref_list = list()
+    for elem in konachan_illustration_list:
+        konachan_ref_list.append((elem[1], elem[0]['id']))
+
+
+    gv.Files.Ref.new_reference(img_name_original, pixiv_ref_list, danbooru_ref_list, yandere_ref_list, konachan_ref_list, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, gv.Files.Conf.rename_yandere, gv.Files.Conf.rename_konachan, minsim, dict_list, input_path)
+
+def pixiv_fetcher(img_name_original, source, visited, comm_error_q):
+    illustration_list = list()
+    if source['service_name'] == 'Pixiv':
+        if source['illust_id'] not in visited:
+            pixiv_illustration = pixiv_fetch_illustration(img_name_original, source['illust_id'], comm_error_q)
+            if pixiv_illustration != False:
+                pixiv_name = pixiv_download(img_name_original, pixiv_illustration, comm_error_q)
+            if pixiv_name != False:
+                illustration_list.append((pixiv_illustration, pixiv_name, source))
+                visited.append(source['illust_id'])
+    return illustration_list
+
+def danbooru_fetcher(img_name_original, source, service, visited, danbooru, yandere, konachan, comm_error_q):
+    illustration_list = list()
+    illustration = None
+    if source['service_name'] == service:
+        if source['illust_id'] not in visited:
+            illustration = danbooru_fetch_illustration(source['illust_id'], comm_error_q, danbooru=danbooru, yandere=yandere, konachan=konachan)
+            if illustration != False:
+                if 'parent_id' in illustration:
+                    if illustration['parent_id'] != None and illustration['parent_id'] not in visited:
+                        parent_illustration = danbooru_fetch_illustration(illustration['parent_id'], comm_error_q, danbooru=danbooru, yandere=yandere, konachan=konachan)
+                        if parent_illustration != False:
+                            parent_name = danbooru_download(img_name_original, illustration['parent_id'], parent_illustration, comm_error_q, danbooru=danbooru, yandere=yandere, konachan=konachan)
+                        if parent_name != False:
+                            illustration_list.append((parent_illustration, parent_name, {"service_name": 'Konachan', "member_id": -1, "illust_id": illustration['parent_id'], "source": parent_illustration['source'], "similarity": source['similarity']}))
+                            visited.append(illustration['parent_id'])
+                name = danbooru_download(img_name_original, source['illust_id'], illustration, comm_error_q, danbooru=danbooru, yandere=yandere, konachan=konachan)
+            if name != False:
+                illustration_list.append((illustration, name, source))
+                visited.append(source['illust_id'])
+    return illustration_list
+
 def process_img_data(img_name_original, input_path, res, minsim, img_data_q, comm_error_q):
     """
     Downloads the image from pixiv and Danbooru

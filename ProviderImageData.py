@@ -12,15 +12,11 @@ from SubImageData import SubImageData
 import global_variables as gv
 
 class ProviderImageData():
-    """Includes all information on the sourced images for the given image provider"""
-    def __init__(self, service, name, path, thumb_size, preview_size, dictionary, illustration, siblings_array):
-        self.service = service
-        self.name = name
-        self.path = path
+    """Includes all gui objects"""
+    def __init__(self, sub_dill, dillustration, thumb_size, preview_size, siblings_array):
+        self.sub_dill = sub_dill
         self.thumb_size = thumb_size
         self.preview_size = preview_size
-        self.dict = dictionary
-        self.illustration = illustration
         self.siblings_array = siblings_array
         self.downloaded_image = None
         self.downloaded_image_thumb = None
@@ -42,50 +38,44 @@ class ProviderImageData():
             overrelief='ridge',#no default
             offrelief='flat',#default raised
             indicatoron='false')
-        self.downloaded_lbl = Label(master=gv.res_frame, text = service, style='label.TLabel')
+        self.downloaded_lbl = Label(gv.res_frame, text = self.sub_dill.service, style='label.TLabel')
         try:
-            self.downloaded_wxh_lbl = Label(master=gv.res_frame, text = str(len(listdir(self.path))) + " images", style='label.TLabel')
+            self.downloaded_wxh_lbl = Label(gv.res_frame, text = str(len(listdir(self.sub_dill.path))) + " images", style='label.TLabel')
         except:
-            self.downloaded_wxh_lbl = Label(master=gv.res_frame, text = "More images", style='label.TLabel')
-        self.downloaded_type_lbl = Label(master=gv.res_frame, style='label.TLabel')
+            self.downloaded_wxh_lbl = Label(gv.res_frame, text = "More images", style='label.TLabel')
+        self.downloaded_type_lbl = Label(gv.res_frame, style='label.TLabel')
         self.results_tags_lbl = Label(gv.res_frame, style='label.TLabel')
 
         self.result_not_in_tagfile_var = IntVar(value=0)
         self.result_not_in_tagfile = Checkbutton(gv.res_frame, text='Not in Tagfile', var=self.result_not_in_tagfile_var, style='chkbtn.TCheckbutton')
 
-        self.info_img_lbl = Label(master=gv.info_frame, style='label.TLabel')
-        self.info_provider_lbl = Label(master=gv.info_frame, style='label.TLabel')
-        self.info_artist_lbl = Label(master=gv.info_frame, style='label.TLabel')
-        self.info_title_lbl = Label(master=gv.info_frame, style='label.TLabel')
-        #self.info_imageid_lbl = Label(master=gv.info_frame, style='label.TLabel')
+        self.info_img_lbl = Label(gv.info_frame, style='label.TLabel')
+        self.info_provider_lbl = Label(gv.info_frame, style='label.TLabel')
+        self.info_artist_lbl = Label(gv.info_frame, style='label.TLabel')
+        self.info_title_lbl = Label(gv.info_frame, style='label.TLabel')
+        #self.info_imageid_lbl = Label(gv.info_frame, style='label.TLabel')
         self.info_url_lbl_list = list()
-        #self.info_url_lbl = Label(master=gv.info_frame, style='label.TLabel')
-        self.info_date_lbl = Label(master=gv.info_frame, style='label.TLabel')
-        self.info_caption_lbl = Label(master=gv.info_frame, style='label.TLabel')
-        self.info_wxh_lbl = Label(master=gv.info_frame, style='label.TLabel')
-        self.tags_pixiv_lbl = Label(master=gv.info_frame, text = 'Tags', font=('Arial Bold', 15), style='label.TLabel')
+        #self.info_url_lbl = Label(gv.info_frame, style='label.TLabel')
+        self.info_date_lbl = Label(gv.info_frame, style='label.TLabel')
+        self.info_caption_lbl = Label(gv.info_frame, style='label.TLabel')
+        self.info_wxh_lbl = Label(gv.info_frame, style='label.TLabel')
+        self.tags_pixiv_lbl = Label(gv.info_frame, text = 'Tags', font=('Arial Bold', 15), style='label.TLabel')
         self.tags_lbl_array = list()
-        self.tags = self.get_tags_list(0)
 
-        if self.service == 'Pixiv':
-            self.tags_lbl_array.append((Label(master=gv.info_frame, text = 'Original:', style='label.TLabel', font = ('Arial Bold', 11)), Label(master=gv.info_frame, text = 'Translated:', style='label.TLabel', font = ('Arial Bold', 11))))
-            for tag in self.tags:
+        if self.sub_dill.service == 'Pixiv':
+            self.tags_lbl_array.append((Label(gv.info_frame, text = 'Original:', style='label.TLabel', font = ('Arial Bold', 11)), Label(gv.info_frame, text = 'Translated:', style='label.TLabel', font = ('Arial Bold', 11))))
+            for tag in self.sub_dill.tags:
                 if type(tag) == type(dict()):
-                    self.tags_lbl_array.append((Label(master=gv.info_frame, text = tag['name'], style='label.TLabel'), Label(master=gv.info_frame, text = tag['translated_name'], style='label.TLabel')))
+                    self.tags_lbl_array.append((Label(gv.info_frame, text = tag['name'], style='label.TLabel'), Label(gv.info_frame, text = tag['translated_name'], style='label.TLabel')))
                 else:
-                    self.tags_lbl_array.append((Label(master=gv.info_frame, text = tag, style='label.TLabel'), Label(master=gv.info_frame, text = '', style='label.TLabel')))
+                    self.tags_lbl_array.append((Label(gv.info_frame, text = tag, style='label.TLabel'), Label(gv.info_frame, text = '', style='label.TLabel')))
         else:
-            self.tags_lbl_array.append(Label(master=gv.info_frame, text = 'Tags:', style='label.TLabel', font = ('Arial Bold', 11)))
-            for tag in self.tags:
-                self.tags_lbl_array.append(Label(master=gv.info_frame, text = tag, style='label.TLabel'))
+            self.tags_lbl_array.append(Label(gv.info_frame, text = 'Tags:', style='label.TLabel', font = ('Arial Bold', 11)))
+            for tag in self.sub_dill.tags:
+                self.tags_lbl_array.append(Label(gv.info_frame, text = tag, style='label.TLabel'))
 
-        if type(self.dict['source']) == type(list()):
-            for elem in self.dict['source']:
-                lbl = Label(master=gv.info_frame, text = elem, foreground='#2626ff', cursor='hand2', style='label.TLabel')
-                lbl.bind("<Button-1>", self.hyperlink)
-                self.info_url_lbl_list.append(lbl)
-        else:
-            lbl = Label(master=gv.info_frame, text = self.dict['source'], foreground='#2626ff', cursor='hand2', style='label.TLabel')
+        for elem in self.sub_dill.source:
+            lbl = Label(gv.info_frame, text = elem, foreground='#2626ff', cursor='hand2', style='label.TLabel')
             lbl.bind("<Button-1>", self.hyperlink)
             self.info_url_lbl_list.append(lbl)
 
@@ -104,9 +94,9 @@ class ProviderImageData():
         if self.load_init:
             return True
 
-        if path.isfile(self.path):
+        if not self.sub_dill.is_folder:
             try:
-                self.downloaded_image = Image.open(self.path)
+                self.downloaded_image = Image.open(self.sub_dill.path)
             except Exception as e:
                 if not second_try:
                     return self.load(True)
@@ -115,14 +105,14 @@ class ProviderImageData():
                     #mb.showerror("ERROR [0045]", "ERROR CODE [0045]\nSomething went wrong while loading an image.")
                     gv.Files.Log.write_to_log("ERROR [0045] " + str(e))
                     return False
-        elif path.isdir(self.path):
+        else:
             try:
-                self.sub_dir_array.extend(listdir(self.path))
+                self.sub_dir_array.extend(listdir(self.sub_dill.path))
                 if len(self.sub_dir_array) == 0:
-                    if self.path not in gv.delete_dirs_array:
-                        gv.delete_dirs_array.append(self.path)
+                    if self.sub_dill.path not in gv.delete_dirs_array:
+                        gv.delete_dirs_array.append(self.sub_dill.path)
                 for img in self.sub_dir_array:
-                    data = SubImageData(img, self.path, self.service, gv.window, gv.big_frame, master_folder=self.name, siblings=self.siblings_array)
+                    data = SubImageData(img, self.sub_dill.path, self.sub_dill.service, gv.window, gv.big_frame, master_folder=self.sub_dill.name_no_suffix, siblings=self.siblings_array)
                     if data not in self.sub_dir_img_array:
                         self.sub_dir_img_array.append(data)
                 self.siblings_array.extend(self.sub_dir_img_array)
@@ -139,7 +129,7 @@ class ProviderImageData():
         return True
 
     def is_greater_than_direct_sim(self):
-        if self.dict['similarity'] > int(gv.Files.Conf.direct_replace):
+        if self.sub_dill.similarity > int(gv.Files.Conf.direct_replace):
             return True
         return False
 
@@ -153,11 +143,11 @@ class ProviderImageData():
         if self.process_results_imgs_init:
             return
 
-        if path.isfile(self.path):
+        if not self.sub_dill.is_folder:
             self.downloaded_image_thumb = deepcopy(self.downloaded_image)
-        elif path.isdir(self.path):
+        else:
             try:
-                self.downloaded_image_thumb = Image.open(self.path + '/' + listdir(self.path)[0])
+                self.downloaded_image_thumb = Image.open(self.path + '/' + listdir(self.sub_dill.path)[0])
             except Exception as e:
                 print("ERROR [0047] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0047] " + str(e))
@@ -187,10 +177,10 @@ class ProviderImageData():
                 results_tags = results_tags + elem + '\n' 
         self.results_tags_lbl.configure(text = results_tags)
 
-        if not path.isdir(self.path):
+        if not self.sub_dill.is_folder:
             #self.downloaded_var.set(1)
             self.downloaded_wxh_lbl.configure(text = str(self.downloaded_image.size))
-            self.downloaded_type_lbl.configure(text = self.name[self.name.rfind(".")+1:])
+            self.downloaded_type_lbl.configure(text = self.sub_dill.filetype)
         
         #self.modify_big_widgets_init = False
         self.modify_results_widgets_init = True
@@ -219,13 +209,13 @@ class ProviderImageData():
         """
         self.process_info_imgs()
         self.info_img_lbl.configure(image = self.downloaded_photoImage_preview)
-        self.info_provider_lbl.configure(text = str(self.service), font = ('Arial Bold', 18))
-        self.info_artist_lbl.configure(text = 'by ' + str(self.dict['artist']))
-        self.info_title_lbl.configure(text = str(self.dict['title']), font = ('Arial Bold', 13))
-        self.info_caption_lbl.configure(text = str(self.dict['caption']))
+        self.info_provider_lbl.configure(text = self.sub_dill.service, font = ('Arial Bold', 18))
+        self.info_artist_lbl.configure(text = 'by ' + self.sub_dill.creator)
+        self.info_title_lbl.configure(text = self.sub_dill.title, font = ('Arial Bold', 13))
+        self.info_caption_lbl.configure(text = self.sub_dill.caption)
         #self.info_imageid_lbl.configure(text = 'Image ID: ' + str(self.illust.id))
-        self.info_date_lbl.configure(text = 'Uploaded on: ' + str(self.dict['create_date']), font = ('Arial', 10))
-        self.info_wxh_lbl.configure(text = 'Width x Height: ' + str(self.dict['width']) + ' x ' + str(self.dict['height']), font = ('Arial', 10))
+        self.info_date_lbl.configure(text = 'Uploaded on: ' + self.sub_dill.create_date, font = ('Arial', 10))
+        self.info_wxh_lbl.configure(text = 'Width x Height: ' + self.sub_dill.width + ' x ' + self.sub_dill.height, font = ('Arial', 10))
 
         self.info_img_lbl.grid(column = 0, row = t + 1, rowspan = 9, sticky=W+N)
         self.info_provider_lbl.grid(column = 0, row = t + 0, sticky = W)
@@ -244,7 +234,7 @@ class ProviderImageData():
 
         t = t+12
 
-        if self.service == 'Pixiv':
+        if self.sub_dill.service == 'Pixiv':
             for lbl in self.tags_lbl_array:
                 if lbl[1].cget('text') == '':
                     lbl[0].grid(column = 0, row = t, sticky = W, columnspan=2)
@@ -267,11 +257,11 @@ class ProviderImageData():
         if self.process_info_imgs_init:
             return
 
-        if path.isfile(self.path):
+        if not self.sub_dill.is_folder:
             self.downloaded_image_preview = deepcopy(self.downloaded_image)
-        elif path.isdir(self.path):
+        else:
             try:
-                self.downloaded_image_preview = Image.open(self.path + '/' + listdir(self.path)[0])
+                self.downloaded_image_preview = Image.open(self.path + '/' + listdir(self.sub_dill.path)[0])
             except Exception as e:
                 print("ERROR [0043] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0043] " + str(e))
@@ -295,11 +285,11 @@ class ProviderImageData():
         IMPORTANT:\n
         Call load and process_big_imgs in that order before
         """
-        if path.isfile(self.path):
+        if not self.sub_dill.is_folder:
             self.downloaded_SubImgData.display_grid(t)
             gv.big_frame.grid_rowconfigure(3, weight = 1)
             return t + 4
-        elif path.isdir(self.path):
+        else:
             for elem in self.sub_dir_img_array:
                 elem.display_grid(t)
                 gv.big_frame.grid_rowconfigure(t + 3, weight = 1)
@@ -315,11 +305,11 @@ class ProviderImageData():
         if self.process_big_imgs_init:
             return
 
-        if path.isfile(self.path):
-            self.downloaded_SubImgData = SubImageData(self.name, self.path, self.service, gv.window, gv.big_frame, self.downloaded_image, self.downloaded_var, siblings=self.siblings_array)#ImageTk.PhotoImage(self.downloaded_image_pixiv)
+        if not self.sub_dill.is_folder:
+            self.downloaded_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path, self.sub_dill.service, gv.window, gv.big_frame, self.downloaded_image, self.downloaded_var, siblings=self.siblings_array)#ImageTk.PhotoImage(self.downloaded_image_pixiv) 
             self.downloaded_SubImgData.load()
             self.siblings_array.append(self.downloaded_SubImgData)
-        elif path.isdir(self.path):
+        else:
             for elem in self.sub_dir_img_array:
                 elem.load()
 
@@ -330,15 +320,15 @@ class ProviderImageData():
         #--If only one image is checked, save your image with the name--#
         if t == -1:
             if self.downloaded_var.get() == 1:
-                img_name = ''
-                if path.isfile(self.path):
-                    img_name = self.name[:self.name.rfind('.')]
-                elif path.isdir(self.path):
-                    img_name = self.name
-                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, img_name):
-                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, img_name)
+                # img_name = ''
+                # if not self.sub_dill.is_folder:
+                #     img_name = self.name[:self.name.rfind('.')]
+                # else:
+                #     img_name = self.name
+                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.sub_dill.name):
+                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.sub_dill.name)
                 try:
-                    move(self.path, gv.output_dir + '/' + self.name)
+                    move(self.sub_dill.path, gv.output_dir + '/' + self.sub_dill.name)
                 except Exception as e:
                     if not second_try:
                         return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=t, head_dir=head_dir, second_try=True)
@@ -349,8 +339,8 @@ class ProviderImageData():
                         return False
                 return True
             else:
-                if self.path not in gv.delete_dirs_array:
-                    gv.delete_dirs_array.append(self.path)
+                if self.sub_dill.path not in gv.delete_dirs_array:
+                    gv.delete_dirs_array.append(self.sub_dill.path)
                 for elem in self.sub_dir_img_array:
                     if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags):
                         return False
@@ -360,9 +350,9 @@ class ProviderImageData():
         #--If more than one image is checked, save your image in the new head directory(full path) with name + t + suffix--#
         else:
             if self.downloaded_var.get() == 1:
-                if path.isdir(self.path):
+                if self.sub_dill.is_folder:
                     try:
-                        move(self.path, head_dir + '/' + self.name + '_' + str(t))
+                        move(self.path, head_dir + '/' + self.sub_dill.name + '_' + str(t))
                     except Exception as e:
                         if not second_try:
                             return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=t, head_dir=head_dir, second_try=True)
@@ -372,12 +362,12 @@ class ProviderImageData():
                             #mb.showerror("ERROR [0055]", "ERROR CODE [0055]\nSomething went wrong while moving the image " + self.path)
                             return False
                     for img in self.sub_dir_img_array:
-                        if not img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.name + '_' + str(t), img.name[:img.name.rfind('.')]):
-                            img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.name + '_' + str(t), img.name[:img.name.rfind('.')])
+                        if not img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.sub_dill.name + '_' + str(t), img.name[:img.name.rfind('.')]):
+                            img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.sub_dill.name + '_' + str(t), img.name[:img.name.rfind('.')])
                         
-                elif path.isfile(self.path):
+                else:
                     try:
-                        move(self.path, head_dir + '/' + self.name[:self.name.rfind('.')] + '_' + str(t) + self.name[self.name.rfind('.'):])
+                        move(self.path, head_dir + '/' + self.sub_dill.name_no_suffix + '_' + str(t) + self.sub_dill.filetype)
                     except Exception as e:
                         if not second_try:
                             return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=t, head_dir=head_dir, second_try=True)
@@ -386,12 +376,12 @@ class ProviderImageData():
                             gv.Files.Log.write_to_log("ERROR [0056] " + str(e))
                             #mb.showerror("ERROR [0056]", "ERROR CODE [0056]\nSomething went wrong while moving the image " + self.path)
                             return False
-                    if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir, self.name[:self.name.rfind('.')] + '_' + str(t)):
-                        self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir, self.name[:self.name.rfind('.')] + '_' + str(t))
+                    if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir, self.sub_dill.name_no_suffix + '_' + str(t)):
+                        self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir, self.sub_dill.name_no_suffix + '_' + str(t))
                 return True
             else:
-                if self.path not in gv.delete_dirs_array:
-                    gv.delete_dirs_array.append(self.path)
+                if self.sub_dill.path not in gv.delete_dirs_array:
+                    gv.delete_dirs_array.append(self.sub_dill.path)
                 for elem in self.sub_dir_img_array:
                     elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, head_dir)
                 return True
@@ -456,52 +446,21 @@ class ProviderImageData():
     
     def get_tags_list(self, not_in_file=-1):
         """
-        Returns a string list of all tags of the image from the provider
+        Returns a string list of all tags of the image from the provider\n
+        except when the 'Not in Tagfile' checkbutton was ticked
         """
         if not_in_file == -1:
             not_in_file = self.result_not_in_tagfile_var.get()
         
         if not_in_file == 0:
-            ret_list = list()
-            if self.service == 'Pixiv':
-                for tag in self.illustration.tags:
-                    ret_list.append(tag)
-                ret_list.append('pixiv work:' + str(self.illustration.id))
-                ret_list.append('title:' + self.illustration.title)
-                ret_list.append('rating:' + str(self.illustration.sanity_level))
-            elif self.service == 'Danbooru':
-                for tag in self.illustration['tag_string_general'].strip("'").split():
-                    ret_list.append(tag)
-                for tag in self.illustration['tag_string_character'].strip("'").split():
-                    ret_list.append('character:' + tag)
-                for tag in self.illustration['tag_string_copyright'].strip("'").split():
-                    ret_list.append('copyright:' + tag)
-                for tag in self.illustration['tag_string_artist'].strip("'").split():
-                    ret_list.append('creator:' + tag)
-                for tag in self.illustration['tag_string_meta'].strip("'").split():
-                    ret_list.append('meta:' + tag)
-                ret_list.append('source:' + self.illustration['source'])
-                ret_list.append('rating:' + self.illustration['rating'])
-                ret_list.append('booru:danbooru')
-                if self.illustration['pixiv_id'] != None:
-                    ret_list.append('pixiv work:' + str(self.illustration['pixiv_id']))
-            elif self.service == 'Yandere':
-                for tag in self.illustration['tags'].strip("'").split():
-                    ret_list.append(tag)
-                ret_list.append('rating:' + self.illustration['rating'])
-                ret_list.append('booru:yande.re')
-            elif self.service == 'Konachan':
-                for tag in self.illustration['tags'].strip("'").split():
-                    ret_list.append(tag)
-                ret_list.append('rating:' + self.illustration['rating'])
-                ret_list.append('booru:konachan')
-                
-            return ret_list
+            return self.sub_dill.tags
+
+        return list()
 
     def evaluate_weight(self, original_aspect_ratio, original_width):
         img_weight = 0
         aspect_flag = False
-        filetype = self.name.split('.')[-1]
+        filetype = self.sub_dill.filetype
         if filetype == 'png':
             img_weight = img_weight + int(gv.Files.Conf.png_weight)
         elif filetype == 'jpg':
@@ -515,17 +474,18 @@ class ProviderImageData():
         else:
             img_weight = img_weight + int(gv.Files.Conf.other_weight)
 
-        if self.service == 'Danbooru':
+        service = self.sub_dill.service
+        if service == 'Danbooru':
             img_weight = img_weight + int(gv.Files.Conf.danbooru_weight)
-        elif self.service == 'Pixiv':
+        elif service == 'Pixiv':
             img_weight = img_weight + int(gv.Files.Conf.pixiv_weight)
-        elif self.service == 'Yandere':
+        elif service == 'Yandere':
             img_weight = img_weight + int(gv.Files.Conf.yandere_weight)
-        elif self.service == 'Konachan':
+        elif service == 'Konachan':
             img_weight = img_weight + int(gv.Files.Conf.konachan_weight)
 
-        if original_aspect_ratio == int(self.dict['width'])/int(self.dict['height']):
-            if int(self.dict['width']) > original_width:
+        if original_aspect_ratio == int(self.sub_dill.width)/int(self.sub_dill.height):
+            if int(self.sub_dill.width)> original_width:
                 img_weight = img_weight + int(gv.Files.Conf.higher_resolution_weight)
             else:
                 aspect_flag = True
