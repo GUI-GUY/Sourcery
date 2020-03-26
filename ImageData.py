@@ -456,6 +456,8 @@ class ImageData():
                             break
                         if elem.get_save_status():
                             save_counter += 1
+            if self.original_var.get() == 1:
+                save_counter += 1
             ##----##
                 
             if save_counter == 0:

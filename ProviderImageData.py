@@ -147,7 +147,7 @@ class ProviderImageData():
             self.downloaded_image_thumb = deepcopy(self.downloaded_image)
         else:
             try:
-                self.downloaded_image_thumb = Image.open(self.path + '/' + listdir(self.sub_dill.path)[0])
+                self.downloaded_image_thumb = Image.open(self.sub_dill.path + '/' + listdir(self.sub_dill.path)[0])
             except Exception as e:
                 print("ERROR [0047] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0047] " + str(e))
@@ -280,7 +280,7 @@ class ProviderImageData():
             self.downloaded_image_preview = deepcopy(self.downloaded_image)
         else:
             try:
-                self.downloaded_image_preview = Image.open(self.path + '/' + listdir(self.sub_dill.path)[0])
+                self.downloaded_image_preview = Image.open(self.sub_dill.path + '/' + listdir(self.sub_dill.path)[0])
             except Exception as e:
                 print("ERROR [0043] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0043] " + str(e))
@@ -344,8 +344,8 @@ class ProviderImageData():
                 #     img_name = self.name[:self.name.rfind('.')]
                 # else:
                 #     img_name = self.name
-                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.sub_dill.name):
-                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.sub_dill.name)
+                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.sub_dill.name_no_suffix):
+                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.sub_dill.name_no_suffix)
                 try:
                     move(self.sub_dill.path, gv.output_dir + '/' + self.sub_dill.name)
                 except Exception as e:
@@ -354,7 +354,7 @@ class ProviderImageData():
                     else:
                         print("ERROR [0054] " + str(e))
                         gv.Files.Log.write_to_log("ERROR [0054] " + str(e))
-                        #mb.showerror("ERROR [0054]", "ERROR CODE [0054]\nSomething went wrong while moving the image " + self.path)
+                        #mb.showerror("ERROR [0054]", "ERROR CODE [0054]\nSomething went wrong while moving the image " + self.sub_dill.path)
                         return False
                 return True
             else:
@@ -371,14 +371,14 @@ class ProviderImageData():
             if self.downloaded_var.get() == 1:
                 if self.sub_dill.is_folder:
                     try:
-                        move(self.path, head_dir + '/' + self.sub_dill.name + '_' + str(t))
+                        move(self.sub_dill.path, head_dir + '/' + self.sub_dill.name + '_' + str(t))
                     except Exception as e:
                         if not second_try:
                             return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=t, head_dir=head_dir, second_try=True)
                         else:
                             print("ERROR [0055] " + str(e))
                             gv.Files.Log.write_to_log("ERROR [0055] " + str(e))
-                            #mb.showerror("ERROR [0055]", "ERROR CODE [0055]\nSomething went wrong while moving the image " + self.path)
+                            #mb.showerror("ERROR [0055]", "ERROR CODE [0055]\nSomething went wrong while moving the image " + self.sub_dill.path)
                             return False
                     for img in self.sub_dir_img_array:
                         if not img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.sub_dill.name_no_suffix + '_' + str(t), img.name[:img.name.rfind('.')]):
@@ -386,14 +386,14 @@ class ProviderImageData():
                         
                 else:
                     try:
-                        move(self.path, head_dir + '/' + self.sub_dill.name_no_suffix + '_' + str(t) + self.sub_dill.filetype)
+                        move(self.sub_dill.path, head_dir + '/' + self.sub_dill.name_no_suffix + '_' + str(t) + self.sub_dill.filetype)
                     except Exception as e:
                         if not second_try:
                             return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=t, head_dir=head_dir, second_try=True)
                         else:
                             print("ERROR [0056] " + str(e))
                             gv.Files.Log.write_to_log("ERROR [0056] " + str(e))
-                            #mb.showerror("ERROR [0056]", "ERROR CODE [0056]\nSomething went wrong while moving the image " + self.path)
+                            #mb.showerror("ERROR [0056]", "ERROR CODE [0056]\nSomething went wrong while moving the image " + self.sub_dill.path)
                             return False
                     if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir, self.sub_dill.name_no_suffix + '_' + str(t)):
                         self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir, self.sub_dill.name_no_suffix + '_' + str(t))

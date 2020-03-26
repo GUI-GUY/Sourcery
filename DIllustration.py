@@ -138,8 +138,6 @@ class SubDIllustration():
         self.tags.append('booru:konachan')
 
     def validity_check(self):
-        if not self.name.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
-            return False 
         if self.is_folder:
             if len(listdir(self.path)) <= 0:
                 return False
