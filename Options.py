@@ -238,6 +238,10 @@ class SourceryOptions():
         self.direct_replace_pixiv_chkbtn = Checkbutton(parent, text="Save pixiv images directly", var=self.direct_replace_pixiv_var, style="chkbtn.TCheckbutton")
         self.direct_replace_danbooru_var = IntVar(value = int(gv.Files.Conf.direct_replace_danbooru))
         self.direct_replace_danbooru_chkbtn = Checkbutton(parent, text="Save danbooru images directly", var=self.direct_replace_danbooru_var, style="chkbtn.TCheckbutton")
+        self.direct_replace_yandere_var = IntVar(value = int(gv.Files.Conf.direct_replace_yandere))
+        self.direct_replace_yandere_chkbtn = Checkbutton(parent, text="Save yandere images directly", var=self.direct_replace_danbooru_var, style="chkbtn.TCheckbutton")
+        self.direct_replace_konachan_var = IntVar(value = int(gv.Files.Conf.direct_replace_konachan))
+        self.direct_replace_konachan_chkbtn = Checkbutton(parent, text="Save konachan images directly", var=self.direct_replace_danbooru_var, style="chkbtn.TCheckbutton")
         self.direct_replace_entry = Entry(parent, width=30, style="button.TLabel")
         self.direct_replace_entry.insert(0, gv.Files.Conf.direct_replace)
 
@@ -295,6 +299,8 @@ class SourceryOptions():
         self.direct_replace_entry.place(x = x2, y = y + c * 19)
         self.direct_replace_pixiv_chkbtn.place(x = x1, y = y + c * 20)
         self.direct_replace_danbooru_chkbtn.place(x = x1, y = y + c * 21)
+        self.direct_replace_yandere_chkbtn.place(x = x1, y = y + c * 20)
+        self.direct_replace_konachan_chkbtn.place(x = x1, y = y + c * 21)
 
         self.input_search_depth_lbl.place(x = x1, y = y + c * 25)
         self.input_search_depth_entry.place(x = x2, y = y + c * 25)
@@ -408,6 +414,8 @@ class SourceryOptions():
         gv.Files.Conf.direct_replace = self.direct_replace_entry.get()
         gv.Files.Conf.direct_replace_pixiv = str(self.direct_replace_pixiv_var.get())
         gv.Files.Conf.direct_replace_danbooru = str(self.direct_replace_danbooru_var.get())
+        gv.Files.Conf.direct_replace_yandere = str(self.direct_replace_yandere_var.get())
+        gv.Files.Conf.direct_replace_konachan = str(self.direct_replace_konachan_var.get())
         gv.Files.Conf.input_search_depth = str(self.input_search_depth_entry.get())
         gv.Files.Conf.write_config()
         gv.Files.Log.write_to_log('Saved Sourcery Options')

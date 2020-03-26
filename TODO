@@ -108,8 +108,6 @@ Last Error: 0060
 BUGS:
 imgpp + locked
 create output folder?
-direct save yandere konachan
-big selector next prev switched
 bild_22 weight system chooses wrong image
 stopping (please wait)
 
@@ -137,7 +135,7 @@ big selector text green/red/white if better/worse/same res/datatype?
 link color
 danbooru siblings?
 on numbers cruncher exception write back default value to entry fields
-show 'index' of sourced imaged/all images
+show progress of sourced imaged/all images
 
 beta 0.5?
 queue images instead of 'get source' button?

@@ -481,13 +481,13 @@ class ImageData():
             if data.index > self.index and (data.index < saved_index_bigger[1] or saved_index_bigger[1] == -1):
                 saved_index_bigger = (data, data.index)
         if saved_index_smaller[1] > -1:
-            self.next_btn.configure(state='enabled', command = saved_index_smaller[0].display_big_selector)
-        else:
-            self.next_btn.configure(state='disabled', command=None)
-        if saved_index_bigger[1] > -1:
-            self.prev_btn.configure(state='enabled', command = saved_index_bigger[0].display_big_selector)
+            self.prev_btn.configure(state='enabled', command = saved_index_smaller[0].display_big_selector)
         else:
             self.prev_btn.configure(state='disabled', command=None)
+        if saved_index_bigger[1] > -1:
+            self.next_btn.configure(state='enabled', command = saved_index_bigger[0].display_big_selector)
+        else:
+            self.next_btn.configure(state='disabled', command=None)
        
     def delete_both(self):
         """
