@@ -133,7 +133,6 @@ def process_img_data_new(img_name_original, input_path, res, minsim, comm_error_
     if len(danbooru_illustration_list) == 0 and len(pixiv_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0:
         comm_error_q.put('None of the requested images were available!')
         return False
-    return (pixiv_illustration_list, danbooru_illustration_list, yandere_illustration_list, konachan_illustration_list)
     
     pixiv_ref_list = list()
     for elem in pixiv_illustration_list:
@@ -151,8 +150,10 @@ def process_img_data_new(img_name_original, input_path, res, minsim, comm_error_
     for elem in konachan_illustration_list:
         konachan_ref_list.append((elem[1], elem[0]['id']))
 
-
     gv.Files.Ref.new_reference(img_name_original, pixiv_ref_list, danbooru_ref_list, yandere_ref_list, konachan_ref_list, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, gv.Files.Conf.rename_yandere, gv.Files.Conf.rename_konachan, minsim, dict_list, input_path)
+
+    return (pixiv_illustration_list, danbooru_illustration_list, yandere_illustration_list, konachan_illustration_list)
+
 
 def pixiv_fetcher(img_name_original, source, visited, comm_error_q):
     illustration_list = list()

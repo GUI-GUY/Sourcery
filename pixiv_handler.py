@@ -91,8 +91,12 @@ def pixiv_download(img_name_original, illustration, comm_error_q=None):
         if img_res.status_code != 200 :
             break
         image_format = img_url.split(".")[-1]
-        with open(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + folder_name + new_name.format(page=count,format=image_format),"wb+") as fp :
-            fp.write(img_res.content)
+        if illustration.page_count > 1:
+            with open(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + folder_name + new_name.format(page=count,format=image_format),"wb+") as fp :
+                fp.write(img_res.content)
+        else:
+            with open(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + folder_name + new_name.format(page='',format=image_format),"wb+") as fp :
+                fp.write(img_res.content)
     
     if illustration.page_count > 1:
         return folder_name[:-1]
