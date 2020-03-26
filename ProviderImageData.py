@@ -465,6 +465,8 @@ class ProviderImageData():
             img_weight = img_weight + int(gv.Files.Conf.png_weight)
         elif filetype == 'jpg':
             img_weight = img_weight + int(gv.Files.Conf.jpg_weight)
+        elif filetype == 'jpeg':
+            img_weight = img_weight + int(gv.Files.Conf.jpg_weight)
         elif filetype == 'jfif':
             img_weight = img_weight + int(gv.Files.Conf.jfif_weight)
         elif filetype == 'gif':
@@ -485,8 +487,11 @@ class ProviderImageData():
             img_weight = img_weight + int(gv.Files.Conf.konachan_weight)
 
         if original_aspect_ratio == int(self.sub_dill.width)/int(self.sub_dill.height):
-            if int(self.sub_dill.width)> original_width:
+            if int(self.sub_dill.width) > original_width:
                 img_weight = img_weight + int(gv.Files.Conf.higher_resolution_weight)
+            elif int(self.sub_dill.width) == original_width:
+                img_weight = img_weight + int(gv.Files.Conf.higher_resolution_weight)
+                aspect_flag = True
             else:
                 aspect_flag = True
         
