@@ -528,7 +528,7 @@ class ImageData():
                         #mb.showerror("ERROR [0048]", "ERROR CODE [0048]\nSomething went wrong while moving the image " + self.path_original)
                         return False
             else:
-                if self.sub_dill.pathnot in gv.delete_dirs_array:
+                if self.sub_dill.path not in gv.delete_dirs_array:
                     gv.delete_dirs_array.append(self.sub_dill.path)
             for service in self.service_list:
                 for elem in service:

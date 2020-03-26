@@ -20,6 +20,8 @@ info_ScrollFrame = None
 
 results_tags_danbooru = Files.Conf.tags_danbooru.split()
 results_tags_pixiv = Files.Conf.tags_pixiv.split()
+results_tags_yandere = Files.Conf.tags_yandere.split()
+results_tags_konachan = Files.Conf.tags_konachan.split()
 
 last_occupied_result = 0
 imgpp_sem = None

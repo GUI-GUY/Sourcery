@@ -299,8 +299,8 @@ class SourceryOptions():
         self.direct_replace_entry.place(x = x2, y = y + c * 19)
         self.direct_replace_pixiv_chkbtn.place(x = x1, y = y + c * 20)
         self.direct_replace_danbooru_chkbtn.place(x = x1, y = y + c * 21)
-        self.direct_replace_yandere_chkbtn.place(x = x1, y = y + c * 20)
-        self.direct_replace_konachan_chkbtn.place(x = x1, y = y + c * 21)
+        self.direct_replace_yandere_chkbtn.place(x = x1, y = y + c * 22)
+        self.direct_replace_konachan_chkbtn.place(x = x1, y = y + c * 23)
 
         self.input_search_depth_lbl.place(x = x1, y = y + c * 25)
         self.input_search_depth_entry.place(x = x2, y = y + c * 25)

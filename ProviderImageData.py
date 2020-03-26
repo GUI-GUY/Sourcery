@@ -171,11 +171,30 @@ class ProviderImageData():
         self.downloaded_chkbtn.configure(image=self.downloaded_photoImage_thumb)
         self.downloaded_chkbtn.image = self.downloaded_photoImage_thumb
 
-        results_tags = ''
-        for elem in gv.results_tags_danbooru:
-            if elem in self.tags:
-                results_tags = results_tags + elem + '\n' 
-        self.results_tags_lbl.configure(text = results_tags)
+        if self.sub_dill.service == 'Pixiv':
+            results_tags = ''
+            for elem in gv.results_tags_pixiv:
+                if elem in self.sub_dill.tags:
+                    results_tags = results_tags + elem + '\n' 
+            self.results_tags_lbl.configure(text = results_tags)
+        elif self.sub_dill.service == 'Danbooru':
+            results_tags = ''
+            for elem in gv.results_tags_danbooru:
+                if elem in self.sub_dill.tags:
+                    results_tags = results_tags + elem + '\n' 
+            self.results_tags_lbl.configure(text = results_tags)
+        elif self.sub_dill.service == 'Yandere':
+            results_tags = ''
+            for elem in gv.results_tags_yandere:
+                if elem in self.sub_dill.tags:
+                    results_tags = results_tags + elem + '\n' 
+            self.results_tags_lbl.configure(text = results_tags)
+            results_tags = ''
+        elif self.sub_dill.service == 'Konachan':
+            for elem in gv.results_tags_konachan:
+                if elem in self.sub_dill.tags:
+                    results_tags = results_tags + elem + '\n' 
+            self.results_tags_lbl.configure(text = results_tags)
 
         if not self.sub_dill.is_folder:
             #self.downloaded_var.set(1)
@@ -214,8 +233,8 @@ class ProviderImageData():
         self.info_title_lbl.configure(text = self.sub_dill.title, font = ('Arial Bold', 13))
         self.info_caption_lbl.configure(text = self.sub_dill.caption)
         #self.info_imageid_lbl.configure(text = 'Image ID: ' + str(self.illust.id))
-        self.info_date_lbl.configure(text = 'Uploaded on: ' + self.sub_dill.create_date, font = ('Arial', 10))
-        self.info_wxh_lbl.configure(text = 'Width x Height: ' + self.sub_dill.width + ' x ' + self.sub_dill.height, font = ('Arial', 10))
+        self.info_date_lbl.configure(text = 'Uploaded on: ' + str(self.sub_dill.create_date), font = ('Arial', 10))
+        self.info_wxh_lbl.configure(text = 'Width x Height: ' + str(self.sub_dill.width) + ' x ' + str(self.sub_dill.height), font = ('Arial', 10))
 
         self.info_img_lbl.grid(column = 0, row = t + 1, rowspan = 9, sticky=W+N)
         self.info_provider_lbl.grid(column = 0, row = t + 0, sticky = W)
@@ -399,7 +418,7 @@ class ProviderImageData():
         return False
 
     def gen_tagfile(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gen_dir, name):
-        if self.service == 'Pixiv' and gv.Files.Conf.gen_tagfile_pixiv == '1':
+        if self.sub_dill.service == 'Pixiv' and gv.Files.Conf.gen_tagfile_pixiv == '1':
             all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_pixiv == '1':
                 all_tags.extend(pixiv_tags)
@@ -410,7 +429,7 @@ class ProviderImageData():
             if gv.Files.Conf.tagfile_konachan_pixiv == '1':
                 all_tags.extend(konachan_tags)
             return gen_tagfile(all_tags, gen_dir, name)
-        elif self.service == 'Danbooru' and gv.Files.Conf.gen_tagfile_danbooru == '1':
+        elif self.sub_dill.service == 'Danbooru' and gv.Files.Conf.gen_tagfile_danbooru == '1':
             all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_danbooru == '1':
                 all_tags.extend(pixiv_tags)
@@ -421,7 +440,7 @@ class ProviderImageData():
             if gv.Files.Conf.tagfile_konachan_danbooru == '1':
                 all_tags.extend(konachan_tags)
             return gen_tagfile(all_tags, gen_dir, name)
-        elif self.service == 'Yandere' and gv.Files.Conf.gen_tagfile_yandere == '1':
+        elif self.sub_dill.service == 'Yandere' and gv.Files.Conf.gen_tagfile_yandere == '1':
             all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_yandere == '1':
                 all_tags.extend(pixiv_tags)
@@ -432,7 +451,7 @@ class ProviderImageData():
             if gv.Files.Conf.tagfile_konachan_yandere == '1':
                 all_tags.extend(konachan_tags)
             return gen_tagfile(all_tags, gen_dir, name)
-        elif self.service == 'Konachan' and gv.Files.Conf.gen_tagfile_konachan == '1':
+        elif self.sub_dill.service == 'Konachan' and gv.Files.Conf.gen_tagfile_konachan == '1':
             all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_konachan == '1':
                 all_tags.extend(pixiv_tags)
