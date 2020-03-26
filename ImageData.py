@@ -423,7 +423,7 @@ class ImageData():
         """
         Sets self.locked to false if user does not want to delete all images
         """  
-        self.locked = mb.askyesno('Delete both?', 'Do you really want to delete both images:\n' + self.name_original + '\n')
+        self.locked = mb.askyesno('Delete both?', 'Do you really want to delete both images:\n' + self.sub_dill.name + '\n')
 
     def save(self, second_try=False, save_counter=0):
         """

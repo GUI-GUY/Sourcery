@@ -105,7 +105,7 @@ class SubDIllustration():
         self.tags.append('rating:' + illustration['rating'])
         self.tags.append('booru:danbooru')
         if illustration['pixiv_id'] != None:
-            self.tags.append('pixiv work:' + str(self.illustration['pixiv_id']))
+            self.tags.append('pixiv work:' + str(illustration['pixiv_id']))
 
     def yandere_init(self, data_triple):
         illustration = data_triple[0]

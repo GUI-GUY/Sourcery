@@ -136,18 +136,17 @@ def refresh_startpage(change, answer2):
     images_in_input_count_lbl.configure(text=str(len(input_images_array)))
 
     answer1 = (201, 200)
-    if not comm_q.empty():
-        try:
-            answer1 = comm_q.get()
-            saucenao_requests_count_lbl.configure(text=str(answer1[0]) + "/" + str(answer1[1]))
-        except:
-            pass
+    try:
+        answer1 = comm_q.get(False)
+        saucenao_requests_count_lbl.configure(text=str(answer1[0]) + "/" + str(answer1[1]))
+    except:
+        pass
     if not comm_img_q.empty():
-        if answer1[0] < 1: # TypeError: '<' not supported between instances of 'tuple' and 'int'
+        if answer1[0] < 1:
             answer2 = "Out of requests"
         else:
             try:
-                answer2 = comm_img_q.get()
+                answer2 = comm_img_q.get(False)
                 global currently_processing
                 if answer2 != currently_processing:
                     currently_processing = answer2
@@ -161,17 +160,16 @@ def refresh_startpage(change, answer2):
             load_from_ref_btn.configure(state='enabled')
             stop_btn.configure(state='enabled')
             answer2 = ''
-    if not comm_error_q.empty():
-        try:
-            e = comm_error_q.get()
-            error_lbl.configure(text=e)
-            gv.Files.Log.write_to_log(e)
-        except:
-            pass
+    try:
+        e = comm_error_q.get(False)
+        error_lbl.configure(text=e)
+        gv.Files.Log.write_to_log(e)
+    except:
+        pass
     if not img_data_q.empty():
         b = None
         try:
-            a = img_data_q.get()
+            a = img_data_q.get(False)
             #print('a')
             global index
             b = ImageData(a, index)

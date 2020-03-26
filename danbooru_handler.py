@@ -1,4 +1,4 @@
-from os import getcwd # path manipulation
+from os import getcwd, path # path manipulation
 from urllib.request import urlretrieve
 from requests import get
 #from webbrowser import open_new
@@ -52,15 +52,15 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None,
         if 'file_url' in illustration:
             try:
                 if gv.Files.Conf.rename_danbooru == '1':
-                    urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + illustration['file_url'].split('/')[-1])
-                    new_name = illustration['file_url'].split('/')[-1]
+                    new_name = rename(illustration['file_url'].split('/')[-1], 'danbooru')
                 else:
                     dot = img_name_original.rfind('.')
                     if dot != -1:
                         new_name = img_name_original[:dot] + '.' + illustration['file_ext']
                     else:
                         new_name = img_name_original + '.' + illustration['file_ext']
-                    urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + new_name)
+                    new_name = rename(new_name, 'danbooru')
+                urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + new_name)
                 return new_name
             except Exception as e:
                 print("ERROR [0057] " + str(e))
@@ -75,15 +75,15 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None,
         if 'file_url' in illustration:
             try:
                 if gv.Files.Conf.rename_yandere == '1':
-                    urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/yandere/' + illustration['file_url'].split('/')[-1])
-                    new_name = illustration['file_url'].split('/')[-1]
+                    new_name = rename(illustration['file_url'].split('/')[-1], yandere)
                 else:
                     dot = img_name_original.rfind('.')
                     if dot != -1:
                         new_name = img_name_original[:dot] + '.' + illustration['file_ext']
                     else:
                         new_name = img_name_original + '.' + illustration['file_ext']
-                    urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/yandere/' + new_name)
+                    new_name = rename(new_name, 'yandere')
+                urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/yandere/' + new_name)
                 return new_name
             except Exception as e:
                 print("ERROR [0058] " + str(e))
@@ -98,15 +98,15 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None,
         if 'file_url' in illustration:
             try:
                 if gv.Files.Conf.rename_konachan == '1':
-                    urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/konachan/' + illustration['file_url'].split('/')[-1])
-                    new_name = illustration['file_url'].split('/')[-1]
+                    new_name = rename(illustration['file_url'].split('/')[-1], 'konachan')
                 else:
                     dot = img_name_original.rfind('.')
                     if dot != -1:
                         new_name = img_name_original[:dot] + '.' + illustration['file_ext']
                     else:
                         new_name = img_name_original + '.' + illustration['file_ext']
-                    urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/konachan/' + new_name)
+                    new_name = rename(new_name, 'konachan')
+                urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/konachan/' + new_name)
                 return new_name
             except Exception as e:
                 print("ERROR [0059] " + str(e))
@@ -119,6 +119,27 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None,
         return False
     else:
         return False
+
+def rename(desired_name, service, index=-1, new_name=''):
+    if new_name == '':
+        if path.isfile(getcwd() + '/Sourcery/sourced_progress/' + service + '/' + desired_name) or path.isdir(getcwd() + '/Sourcery/sourced_progress/' + service + '/' + desired_name):
+            index = index+1
+            dot = desired_name.rfind('.')
+            if dot == -1:
+                new_name = desired_name + '_' + str(index)
+            else:
+                new_name = desired_name[:dot] + '_' + str(index) + desired_name[dot:] 
+            return rename(desired_name, service, index, new_name)
+    else:
+        if path.isfile(getcwd() + '/Sourcery/sourced_progress/' + service + '/' + new_name) or path.isdir(getcwd() + '/Sourcery/sourced_progress/' + service + '/' + new_name):
+            index = index+1
+            dot = desired_name.rfind('.')
+            if dot == -1:
+                new_name = desired_name + '_' + str(index)
+            else:
+                new_name = desired_name[:dot] + '_' + str(index) + desired_name[dot:] 
+            return rename(desired_name, service, index, new_name)
+    return desired_name
 
 if __name__ == '__main__':
     danbooru_fetch_illustration(1)

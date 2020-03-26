@@ -77,6 +77,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
             if res[3] < 1:
                 die('Out of searches for today', comm_error_q, comm_img_q)
             if res[2] < 1:
+                comm_error_q.put('[Sourcery] Sleeping 30 seconds because of SauceNao restrictions')
                 sleep(30)
         if not comm_stop_q.empty():
             try:
@@ -122,13 +123,13 @@ def process_img_data_new(img_name_original, input_path, res, minsim, comm_error_
 
     for source in dict_list:
         if source['illust_id'] != 0:
-            comm_error_q.put('[Sourcery] Attempting to fetch illustration...')
+            comm_error_q.put('[Sourcery] Attempting to fetch ' + source['service_name'] + ' illustration...')
             pixiv_illustration_list.extend(pixiv_fetcher(img_name_original, source, pixiv_visited, comm_error_q))
             danbooru_illustration_list.extend(danbooru_fetcher(img_name_original, source, 'Danbooru', danbooru_visited, True, False, False, comm_error_q))
             yandere_illustration_list.extend(danbooru_fetcher(img_name_original, source, 'Yandere', yandere_visited, False, True, False, comm_error_q))
             konachan_illustration_list.extend(danbooru_fetcher(img_name_original, source, 'Konachan', konachan_visited, False, False, True, comm_error_q))
 
-        comm_error_q.put('[Sourcery] Downloaded illustration successfully')
+        comm_error_q.put('[Sourcery] Downloaded ' + source['service_name'] + ' illustration successfully')
 
     if len(danbooru_illustration_list) == 0 and len(pixiv_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0:
         comm_error_q.put('None of the requested images were available!')
@@ -157,6 +158,7 @@ def process_img_data_new(img_name_original, input_path, res, minsim, comm_error_
 
 def pixiv_fetcher(img_name_original, source, visited, comm_error_q):
     illustration_list = list()
+    pixiv_name = False
     if source['service_name'] == 'Pixiv':
         if source['illust_id'] not in visited:
             pixiv_illustration = pixiv_fetch_illustration(img_name_original, source['illust_id'], comm_error_q)
@@ -170,6 +172,8 @@ def pixiv_fetcher(img_name_original, source, visited, comm_error_q):
 def danbooru_fetcher(img_name_original, source, service, visited, danbooru, yandere, konachan, comm_error_q):
     illustration_list = list()
     illustration = None
+    parent_name = False
+    name = False
     if source['service_name'] == service:
         if source['illust_id'] not in visited:
             illustration = danbooru_fetch_illustration(source['illust_id'], comm_error_q, danbooru=danbooru, yandere=yandere, konachan=konachan)

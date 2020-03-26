@@ -64,45 +64,99 @@ def pixiv_download(img_name_original, illustration, comm_error_q=None):
     Download given image and rename it properly\n
     Return the new name on success, False otherwise
     """
-    replace_template = "_p{page}"
     img_url = illustration.response["body"]["urls"]["original"]
-    if gv.Files.Conf.rename_pixiv == '1':
-        folder_name = str(illustration.id) + '/'
-        new_name = str(illustration.id) + '_p{page}.{format}'
-    else:
-        dot = img_name_original.rfind('.')
-        if dot != -1:
-            new_name = img_name_original[:dot] + '{page}.{format}'
-            folder_name = img_name_original[:dot] + '/'
-        else:
-            new_name = img_name_original + '{page}.{format}'
-            folder_name = img_name_original + '/'
-
+    replace_template = "_p{page}"
     if illustration.page_count > 1:
-        makedirs(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + folder_name, 0o777, True)
-    else:
-        folder_name = ''
-
-    image_format = ''
-    for count in range(illustration.page_count):
-        illustration.headers["referer"] = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + str(illustration.id)
-        img_url = img_url.replace(replace_template.format(page=count-1), replace_template.format(page=count))
-        img_res = get(img_url, headers=illustration.headers)
-        if img_res.status_code != 200 :
-            break
-        image_format = img_url.split(".")[-1]
-        if illustration.page_count > 1:
-            with open(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + folder_name + new_name.format(page=count,format=image_format),"wb+") as fp :
-                fp.write(img_res.content)
+        if gv.Files.Conf.rename_pixiv == '1':
+            folder_name = rename(str(illustration.id)) + '/'
+            new_name = str(illustration.id) + '_p{page}.{filetype}'
         else:
-            with open(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + folder_name + new_name.format(page='',format=image_format),"wb+") as fp :
-                fp.write(img_res.content)
-    
-    if illustration.page_count > 1:
+            dot = img_name_original.rfind('.')
+            if dot != -1:
+                new_name = img_name_original[:dot] + '_p{page}.{filetype}'
+                folder_name = rename(img_name_original[:dot]) + '/'
+            else:
+                new_name = img_name_original + '_p{page}.{filetype}'
+                folder_name = rename(img_name_original) + '/'
+            
+        makedirs(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + folder_name, 0o777, False)
+        for count in range(illustration.page_count):
+            illustration.headers["referer"] = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + str(illustration.id)
+            img_url = img_url.replace(replace_template.format(page=count-1), replace_template.format(page=count))
+            img_res = get(img_url, headers=illustration.headers) #TODO Fehlerbehandlung
+            filetype = img_url.split(".")[-1]
+            with open(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + folder_name + new_name.format(page=count,filetype=filetype),"wb+") as f:
+                f.write(img_res.content) #TODO Fehlerbehandlung
         return folder_name[:-1]
     else:
-        return new_name.format(page='',format=image_format)
+        if gv.Files.Conf.rename_pixiv == '1':
+            new_name = str(illustration.id) + '_p0.{filetype}'
+        else:
+            dot = img_name_original.rfind('.')
+            if dot != -1:
+                new_name = img_name_original[:dot] + '.{filetype}'
+            else:
+                new_name = img_name_original + '.{filetype}'
+        filetype = img_url.split['.'][-1]
+        new_name = rename(new_name.format(filetype=filetype))
 
+        illustration.headers["referer"] = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + str(illustration.id)
+        img_res = get(img_url, headers=illustration.headers)
+        with open(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + new_name, "wb+") as f : #TODO Fehlerbehandlung
+            f.write(img_res.content)
+        return new_name
+    
+#________________________________________
+    # replace_template = "_p{page}"
+    # img_url = illustration.response["body"]["urls"]["original"]
+    # if gv.Files.Conf.rename_pixiv == '1':
+    #     folder_name = str(illustration.id) + '/'
+    #     new_name = str(illustration.id) + '_p{page}.{format}'
+    # else:
+    #     dot = img_name_original.rfind('.')
+    #     if dot != -1:
+    #         new_name = img_name_original[:dot] + '{page}.{format}'
+    #         folder_name = img_name_original[:dot] + '/'
+    #     else:
+    #         new_name = img_name_original + '{page}.{format}'
+    #         folder_name = img_name_original + '/'
+
+    # if illustration.page_count > 1:
+    #     makedirs(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + folder_name, 0o777, True)
+    # else:
+    #     folder_name = ''
+
+    # image_format = ''
+    # for count in range(illustration.page_count):
+    #     illustration.headers["referer"] = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + str(illustration.id)
+    #     img_url = img_url.replace(replace_template.format(page=count-1), replace_template.format(page=count))
+    #     img_res = get(img_url, headers=illustration.headers)
+    #     if img_res.status_code != 200 :
+    #         break
+    #     image_format = img_url.split(".")[-1]
+    #     if illustration.page_count > 1:
+    #         name = rename
+    #         with open(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + folder_name + new_name.format(page=count,format=image_format),"wb+") as fp :
+    #             fp.write(img_res.content)
+    #     else:
+    #         with open(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + folder_name + new_name.format(page='',format=image_format),"wb+") as fp :
+    #             fp.write(img_res.content)
+    
+    # if illustration.page_count > 1:
+    #     return folder_name[:-1]
+    # else:
+    #     return new_name.format(page='',format=image_format)
+
+def rename(desired_name, index=-1):
+    if path.isfile(getcwd() + '/Sourcery/sourced_progress/pixiv/' + desired_name) or path.isdir(getcwd() + '/Sourcery/sourced_progress/pixiv/' + desired_name):
+        index = index+1
+        dot = desired_name.rfind('.')
+        if dot == -1:
+            new_name = desired_name + '_' + str(index)
+        else:
+            new_name = desired_name[:dot] + '_' + str(index) + desired_name[dot:] 
+        return rename(new_name, index)
+    return desired_name
 
 def download(pid) :
     referer_template = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id={pid}"
