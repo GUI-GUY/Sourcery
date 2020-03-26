@@ -237,14 +237,14 @@ class ProviderImageData():
         if self.sub_dill.service == 'Pixiv':
             for lbl in self.tags_lbl_array:
                 if lbl[1].cget('text') == '':
-                    lbl[0].grid(column = 0, row = t, sticky = W, columnspan=2)
+                    lbl[0].grid(column = 0, row = t, sticky = W, columnspan=3)
                 else:
                     lbl[0].grid(column = 0, row = t, sticky = W)
                     lbl[1].grid(column = 1, row = t, sticky = W)
                 t += 1
         else:
             for lbl in self.tags_lbl_array:
-                lbl.grid(column = 0, row = t, sticky = W, columnspan = 2)
+                lbl.grid(column = 0, row = t, sticky = W, columnspan = 3)
                 t += 1
         return t
 

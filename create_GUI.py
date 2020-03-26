@@ -22,6 +22,7 @@ from danbooru_handler import danbooru_fetch_illustration
 from Options import Options
 #from image_preloader import preload_main
 from ImageData import ImageData
+from DIllustration import DIllustration
 from ScrollFrame import ScrollFrame
 from Files import Files
 import global_variables as gv
@@ -233,33 +234,49 @@ def load_from_ref():
             visited_ids = list()
             for elem in pixiv_info_list:
                 if elem['id'] not in visited_ids:
-                    pixiv_illustration_list.append((pixiv_fetch_illustration(ref['old_name'], int(elem['id'])), elem['new_name']))
+                    for d in dict_list:
+                        if d['service_name'] == 'Pixiv' and int(d['illust_id']) == int(elem['id']):
+                            x = d
+                            break
+                    pixiv_illustration_list.append((pixiv_fetch_illustration(ref['old_name'], int(elem['id'])), elem['new_name'], x))
                     visited_ids.append(elem['id'])
             
             danb_illustration_list = list()
             visited_ids = list()
             for elem in danb_info_list:
                 if elem['id'] not in visited_ids:
-                    danb_illustration_list.append((danbooru_fetch_illustration(int(elem['id']), danbooru=True), elem['new_name']))
+                    for d in dict_list:
+                        if d['service_name'] == 'Danbooru' and int(d['illust_id']) == int(elem['id']):
+                            x = d
+                            break
+                    danb_illustration_list.append((danbooru_fetch_illustration(int(elem['id']), danbooru=True), elem['new_name'], x))
                     visited_ids.append(elem['id'])
             
             yandere_illustration_list = list()
             visited_ids = list()
             for elem in yandere_info_list:
                 if elem['id'] not in visited_ids:
-                    yandere_illustration_list.append((danbooru_fetch_illustration(int(elem['id']), yandere=True), elem['new_name']))
+                    for d in dict_list:
+                        if d['service_name'] == 'Yandere' and int(d['illust_id']) == int(elem['id']):
+                            x = d
+                            break
+                    yandere_illustration_list.append((danbooru_fetch_illustration(int(elem['id']), yandere=True), elem['new_name'], x))
                     visited_ids.append(elem['id'])
             
             konachan_illustration_list = list()
             visited_ids = list()
             for elem in konachan_info_list:
                 if elem['id'] not in visited_ids:
-                    konachan_illustration_list.append((danbooru_fetch_illustration(int(elem['id']), konachan=True), elem['new_name']))
+                    for d in dict_list:
+                        if d['service_name'] == 'Konachan' and int(d['illust_id']) == int(elem['id']):
+                            x = d
+                            break
+                    konachan_illustration_list.append((danbooru_fetch_illustration(int(elem['id']), konachan=True), elem['new_name'], x))
                     visited_ids.append(elem['id'])
             
             next_img = False
             for data in gv.img_data_array:
-                if str(ref['old_name']) == data.name_original and str(ref['minsim']) == gv.Files.Conf.minsim:
+                if str(ref['old_name']) == data.sub_dill.name and str(ref['minsim']) == gv.Files.Conf.minsim:
                     next_img = True
                     break
             if next_img:
@@ -267,8 +284,10 @@ def load_from_ref():
                 continue
             # # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
 
+            dill = DIllustration(ref['input_path'], [{"service":'Original', "name":str(ref['old_name']), "work_path": gv.cwd + '/Sourcery/sourced_original/' + str(ref['old_name'])}, 
+                pixiv_illustration_list, danb_illustration_list, yandere_illustration_list, konachan_illustration_list], ref['minsim'])
             global index
-            gv.img_data_array.append(ImageData(ref['old_name'], ref['input_path'], dict_list, pixiv_illustration_list, danb_illustration_list, yandere_illustration_list, konachan_illustration_list, index))
+            gv.img_data_array.append(ImageData(dill, index))
             index += 1
         gv.Files.Log.write_to_log('Loaded images from reference file')
     else:
