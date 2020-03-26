@@ -465,7 +465,16 @@ class ImageData():
         #--If yes, make a head directory(new_dir, full path) with the original name and save all checked images in it--#
         if save_counter > 1:
             new_dir = gv.output_dir + '/' + self.sub_dill.name_no_suffix
-            makedirs(new_dir, 0o777, True)
+            try:
+                makedirs(new_dir, 0o777, True)
+            except Exception as e:
+                if not second_try:
+                    return self.save(True, save_counter)
+                else:
+                    print("ERROR [0061] " + str(e))
+                    gv.Files.Log.write_to_log("ERROR [0061] " + str(e))
+                    #mb.showerror("ERROR [0061]", "ERROR CODE [0061]\nSomething went wrong while creating the output folder)
+                    return False
             t = 0
             if self.original_var.get() == 1:
                 new_img_name = self.sub_dill.name_no_suffix + '_' + str(t) + '.' + self.sub_dill.filetype
@@ -495,6 +504,16 @@ class ImageData():
 
         #--If no, go through all saves, the only one that is checked will be in there--#
         else:
+            try:
+                makedirs(gv.output_dir, 0o777, True)
+            except Exception as e:
+                if not second_try:
+                    return self.save(True, save_counter)
+                else:
+                    print("ERROR [0062] " + str(e))
+                    gv.Files.Log.write_to_log("ERROR [0062] " + str(e))
+                    #mb.showerror("ERROR [0062]", "ERROR CODE [0062]\nSomething went wrong while creating the output folder)
+                    return False
             if self.original_var.get() == 1:
                 if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.sub_dill.name_no_suffix):
                     self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.sub_dill.name_no_suffix)
