@@ -107,60 +107,12 @@ class ImageData():
         self.original_SubImgData = None
 
         self.load_init = False
+        self.display_results_init = False
         self.process_results_imgs_init = False
         self.process_big_imgs_init = False
         self.modify_results_widgets_init = False
         self.process_info_imgs_init = False
         self.locked = False
-
-    # def correct_name(self, folder, name):
-    #     """
-    #     Returns corrected given name on success, False otherwise
-    #     """
-    #     try:
-    #         directory = listdir(gv.cwd + '/Sourcery/sourced_progress/' + folder + '/')
-    #     except Exception as e:
-    #         print("ERROR [0041] " + str(e))
-    #         gv.Files.Log.write_to_log("ERROR [0041] " + str(e))
-    #         mb.showerror("ERROR [0041]", "ERROR CODE [0041]\nSomething went wrong while accessing the 'Sourcery/sourced_progress/'" + folder + "folder, please restart Sourcery.")
-    #         return False 
-    #     for elem in directory:
-    #         test = elem.rsplit('.', 1)
-    #         if name == test[0]:
-    #             return elem
-    #     return False
-
-    # def pixiv_clean_dict(self, illust, dict_list):
-    #     """
-    #     Cleans up the dictionary to only include needed information and returns them as a formatted dictionary
-    #     """
-    #     x = None
-    #     for t in dict_list:
-    #         if t['service_name'] == 'Pixiv' and t['illust_id'] == int(illust.id):
-    #             x = t
-    #             break
-    #     if x == None:
-    #         return None
-    #     return {"artist": illust.user.name, "title": illust.title, "caption": illust.caption, "create_date": illust.create_date, "width": illust.width, "height": illust.height, "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": str(tags)}
-
-    # def danbooru_clean_dict(self, illust, dict_list, service):
-    #     """
-    #     Cleans up the dictionary to only include needed information and returns them as a formatted dictionary
-    #     """
-    #     x = None
-    #     for t in dict_list:
-    #         if t['service_name'] == service and t['illust_id'] == int(illust['id']):
-    #             x = t
-    #             break
-    #     if x == None:
-    #         return None
-
-    #     if service == 'Danbooru':
-    #         return {"artist": illust['tag_string_artist'], "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['image_width'], "height": illust['image_height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": illust['tag_string_general']}
-    #     if service == 'Yandere':
-    #         return {"artist": 'None', "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['width'], "height": illust['height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": illust['tag_string_general']}
-    #     if service == 'Konachan':
-    #         return {"artist": 'None', "title": 'None', "caption": 'None', "create_date": illust['created_at'], "width": illust['width'], "height": illust['height'], "service": x['service_name'], "illust_id": x['illust_id'], "source": x['source'], "similarity": float(x['similarity'])}#, "tags": illust['tag_string_general']}
 
     def forget_all_widgets(self):
         for widget in gv.window.winfo_children():
@@ -351,6 +303,7 @@ class ImageData():
                 if elem.load_init:
                     t = elem.display_results(t+1)
 
+        self.display_results_init = True
         return t
 
     def evaluate_weight(self):

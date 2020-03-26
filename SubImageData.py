@@ -204,7 +204,7 @@ class SubImageData():
 
     def get_save_status(self):
         """
-        Returns True if at least on box is checked, False otherwise
+        Returns True if at least one box is checked, False otherwise
         """
         if self.var.get() == 1:
             return True

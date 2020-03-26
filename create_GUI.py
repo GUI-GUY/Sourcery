@@ -169,20 +169,20 @@ def refresh_startpage(change, answer2):
             pass
     if not img_data_q.empty():
         b = None
-        # try:
-        a = img_data_q.get()
-        #print('a')
-        global index
-        b = ImageData(a, index)
-        index += 1
-        gv.img_data_array.append(b)
+        try:
+            a = img_data_q.get()
+            #print('a')
+            global index
+            b = ImageData(a, index)
+            index += 1
+            gv.img_data_array.append(b)
         #print('b')
-        # except Exception as e:
-        #     if b in gv.img_data_array:
-        #         gv.img_data_array.remove(b)
-        #     print("ERROR [0060] " + str(e))
-        #     gv.Files.Log.write_to_log("ERROR [0060] " + str(e))
-        #     #mb.showerror("ERROR [0060]", "ERROR CODE [0060]\nImage data could not be loaded, skipped.")
+        except Exception as e:
+            if b in gv.img_data_array:
+                gv.img_data_array.remove(b)
+            print("ERROR [0060] " + str(e))
+            gv.Files.Log.write_to_log("ERROR [0060] " + str(e))
+            #mb.showerror("ERROR [0060]", "ERROR CODE [0060]\nImage data could not be loaded, skipped.")
     
     for data in gv.img_data_array:
         if not data.placed:
@@ -317,7 +317,7 @@ def lock_save():
     """
     data_list = copy(gv.img_data_array)
     for data in data_list:
-        if data.index != None:
+        if data.display_results_init:
             data.lock()
     save_locked_btn.configure(state='enabled')
     
