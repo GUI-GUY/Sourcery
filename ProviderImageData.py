@@ -381,8 +381,8 @@ class ProviderImageData():
                             #mb.showerror("ERROR [0055]", "ERROR CODE [0055]\nSomething went wrong while moving the image " + self.path)
                             return False
                     for img in self.sub_dir_img_array:
-                        if not img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.sub_dill.name + '_' + str(t), img.name[:img.name.rfind('.')]):
-                            img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.sub_dill.name + '_' + str(t), img.name[:img.name.rfind('.')])
+                        if not img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.sub_dill.name_no_suffix + '_' + str(t), img.name[:img.name.rfind('.')]):
+                            img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.sub_dill.name_no_suffix + '_' + str(t), img.name[:img.name.rfind('.')])
                         
                 else:
                     try:

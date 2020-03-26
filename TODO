@@ -108,7 +108,6 @@ Last Error: 0062
 BUGS:
 stopping (please wait)
 reference takes the first reference so if you source an image with more services later on this will get ignored
-tagfiles wrong name
 
 beta 0.3.5?
 on save: copy all images then delete old ones
