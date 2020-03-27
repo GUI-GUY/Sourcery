@@ -107,8 +107,7 @@ Last Error: 0062
 
 BUGS/Missing critical features:
 reference takes the first reference so if you source an image with more services later on this will get ignored
-save reference for no images available
-save does not delete all folders
+??? save does not delete all folders
 explicit 'in tagfile' checkbutton
 pixiv: include original/translated tags
 original: if only one image is found take these tags

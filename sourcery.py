@@ -133,6 +133,7 @@ def process_img_data_new(img_name_original, input_path, res, minsim, comm_error_
 
     if len(danbooru_illustration_list) == 0 and len(pixiv_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0:
         comm_error_q.put('None of the requested images were available!')
+        gv.Files.Ref.new_reference(img_name_original, [], [], [], [], gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, gv.Files.Conf.rename_yandere, gv.Files.Conf.rename_konachan, minsim, dict_list, input_path)
         return False
     
     pixiv_ref_list = list()
