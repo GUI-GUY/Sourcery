@@ -112,8 +112,6 @@ save does not delete all folders
 explicit 'in tagfile' checkbutton
 pixiv: include original/translated tags
 original: if only one image is found take these tags
-linebreaks Label(wraplength=) checkbutton
-beautify
 
 beta 0.3.5?
 on save: copy all images then delete old ones

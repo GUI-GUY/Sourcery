@@ -107,35 +107,42 @@ class SauceNaoOptions():
         """
         Draw options (API-Key, minsim) for SauceNao:
         """
-        self.saucenao_key_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90*10))
-        self.saucenao_key_number_lbl.place(x = int(gv.width/160*18), y = int(gv.height/90*10))
-        self.saucenao_key_change_btn.place(x = int(gv.width/160*55), y = int(gv.height/90*10))
+        y = int(gv.height/90*10)
+        c = 23
+        x1 = int(gv.width/160*5)
+        x2 = int(gv.width/160*20)
+        x3 = int(gv.width/160*27)
+        x4 = int(gv.width/160*58)
+
+        self.saucenao_key_lbl.place(x = x1, y = y + c * 1)
+        self.saucenao_key_number_lbl.place(x = x2, y = y + c * 1)
+        self.saucenao_key_change_btn.place(x = x4, y = y + c * 1)
         
         
-        self.saucenao_address_1_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90*12.3))
-        self.saucenao_address_2_lbl.place(x = int(gv.width/160*25), y = int(gv.height/90*12.3))
+        self.saucenao_address_1_lbl.place(x = x1, y = y + c * 2)
+        self.saucenao_address_2_lbl.place(x = x3, y = y + c * 2)
 
-        self.saucenao_minsim_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90*20.2))
-        self.saucenao_minsim_entry.place(x = int(gv.width/160*18), y = int(gv.height/90*20.2))
-        self.saucenao_minsim_note_lbl.place(x = int(gv.width/160*25), y = int(gv.height/90*20.2))
+        self.saucenao_minsim_lbl.place(x = x1, y = y + c * 4)
+        self.saucenao_minsim_entry.place(x = x2, y = y + c * 4)
+        self.saucenao_minsim_note_lbl.place(x = x3, y = y + c * 4)
 
-        self.saucenao_returns_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90*22.5))
-        self.saucenao_returns_entry.place(x = int(gv.width/160*18), y = int(gv.height/90*22.5))
-        self.saucenao_returns_note_lbl.place(x = int(gv.width/160*25), y = int(gv.height/90*22.5))
+        self.saucenao_returns_lbl.place(x = x1, y = y + c * 5)
+        self.saucenao_returns_entry.place(x = x2, y = y + c * 5)
+        self.saucenao_returns_note_lbl.place(x = x3, y = y + c * 5)
 
-        self.saucenao_depth_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90*24.8))
-        self.saucenao_depth_entry.place(x = int(gv.width/160*18), y = int(gv.height/90*24.8))
-        self.saucenao_depth_note_lbl.place(x = int(gv.width/160*25), y = int(gv.height/90*24.8))
+        self.saucenao_depth_lbl.place(x = x1, y = y + c * 6)
+        self.saucenao_depth_entry.place(x = x2, y = y + c * 6)
+        self.saucenao_depth_note_lbl.place(x = x3, y = y + c * 6)
 
-        self.saucenao_bias_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90*27.1))
-        self.saucenao_bias_entry.place(x = int(gv.width/160*18), y = int(gv.height/90*27.1))
-        self.saucenao_bias_note_lbl.place(x = int(gv.width/160*25), y = int(gv.height/90*27.1))
+        self.saucenao_bias_lbl.place(x = x1, y = y + c * 7)
+        self.saucenao_bias_entry.place(x = x2, y = y + c * 7)
+        self.saucenao_bias_note_lbl.place(x = x3, y = y + c * 7)
 
-        self.saucenao_biasmin_lbl.place(x = int(gv.width/160*5), y = int(gv.height/90*29.4))
-        self.saucenao_biasmin_entry.place(x = int(gv.width/160*18), y = int(gv.height/90*29.4))
-        self.saucenao_biasmin_note_lbl.place(x = int(gv.width/160*25), y = int(gv.height/90*29.4))
+        self.saucenao_biasmin_lbl.place(x = x1, y = y + c * 8)
+        self.saucenao_biasmin_entry.place(x = x2, y = y + c * 8)
+        self.saucenao_biasmin_note_lbl.place(x = x3, y = y + c * 8)
 
-        self.saucenao_save_btn.place(x = int(gv.width/160*5), y = int(gv.height/90*35))
+        self.saucenao_save_btn.place(x = x1, y = y + c * 10)
     
     def saucenao_change_key(self):
         """
@@ -212,6 +219,8 @@ class SourceryOptions():
 
         self.save_custom_theme_btn = Button(parent, text="Save Custom Theme", command=self.save_custom_theme, style="button.TLabel")
 
+        self.genereal_lbl = Label(parent, text="General", font=("Arial Bold", 14), style="label.TLabel")
+
         self.input_dir_0_lbl = Label(parent, text="Input Directory:", style="label.TLabel")
         self.input_dir_1_lbl = Label(parent, text=gv.input_dir, style="label.TLabel")
         self.input_dir_btn = Button(parent, text='Change', command=self.change_input, style="button.TLabel")
@@ -283,29 +292,35 @@ class SourceryOptions():
 
         self.save_custom_theme_btn.place(x = x1, y = y + c * 12)
 
-        self.images_per_page_lbl.place(x = x1, y = y + c * 15)
-        self.images_per_page_entry.place(x = x2, y = y + c * 15)
+        y = int(gv.height/90*10)
+        c = 23
+        x3 = int(gv.width/160*40)
+        x4 = int(gv.width/160*70)
 
-        self.delete_input_chkbtn.place(x = x1, y = y + c * 16)
+        self.genereal_lbl.place(x = x3, y = y + c * 0)
+        self.images_per_page_lbl.place(x = x3, y = y + c * 1)
+        self.images_per_page_entry.place(x = x4, y = y + c * 1)
 
-        self.input_dir_0_lbl.place(x = x1, y = y + c * 17)
-        self.input_dir_1_lbl.place(x = x2, y = y + c * 17)
-        self.input_dir_btn.place(x = x1+100, y = y + c * 17)
-        self.output_dir_0_lbl.place(x = x1, y = y + c * 18)
-        self.output_dir_1_lbl.place(x = x2, y = y + c * 18)
-        self.output_dir_btn.place(x = x1+100, y = y + c * 18)
+        self.delete_input_chkbtn.place(x = x3, y = y + c * 3)
 
-        self.direct_replace_lbl.place(x = x1, y = y + c * 19)
-        self.direct_replace_entry.place(x = x2, y = y + c * 19)
-        self.direct_replace_pixiv_chkbtn.place(x = x1, y = y + c * 20)
-        self.direct_replace_danbooru_chkbtn.place(x = x1, y = y + c * 21)
-        self.direct_replace_yandere_chkbtn.place(x = x1, y = y + c * 22)
-        self.direct_replace_konachan_chkbtn.place(x = x1, y = y + c * 23)
+        self.input_dir_0_lbl.place(x = x3+100, y = y + c * 5)
+        self.input_dir_1_lbl.place(x = x4, y = y + c * 5)
+        self.input_dir_btn.place(x = x3, y = y + c * 5)
+        self.output_dir_0_lbl.place(x = x3+100, y = y + c * 6)
+        self.output_dir_1_lbl.place(x = x4, y = y + c * 6)
+        self.output_dir_btn.place(x = x3, y = y + c * 6)
 
-        self.input_search_depth_lbl.place(x = x1, y = y + c * 25)
-        self.input_search_depth_entry.place(x = x2, y = y + c * 25)
+        self.direct_replace_lbl.place(x = x3, y = y + c * 8)
+        self.direct_replace_entry.place(x = x4, y = y + c * 8)
+        self.direct_replace_pixiv_chkbtn.place(x = x3, y = y + c * 9)
+        self.direct_replace_danbooru_chkbtn.place(x = x3, y = y + c * 10)
+        self.direct_replace_yandere_chkbtn.place(x = x3, y = y + c * 11)
+        self.direct_replace_konachan_chkbtn.place(x = x3, y = y + c * 12)
 
-        self.sourcery_confirm_btn.place(x = x1, y = y + c * 30)
+        self.input_search_depth_lbl.place(x = x3, y = y + c * 14)
+        self.input_search_depth_entry.place(x = x4, y = y + c * 14)
+
+        self.sourcery_confirm_btn.place(x = x3, y = y + c * 16)
 
     def change_to_dark_theme(self):
         gv.Files.Theme.current_theme = "Dark Theme"
@@ -430,6 +445,7 @@ class ProviderOptions():
         self.KonO = KonachanOptions(parent, self)
         self.Weight = WeightSystem(parent, self)
 
+        self.original_lbl = Label(self.par, text='Original', font=('Arial Bold', 13), style="label.TLabel")
         self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_original))
         self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_original))
         self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_original))
@@ -460,18 +476,24 @@ class ProviderOptions():
         - Yande.re\n
         - Konachan\n
         """
-        self.original_btn.place(x = int(gv.width/12.9), y = int(gv.height/90*8))
-        self.pixiv_btn.place(x = int(gv.width/12.9), y = int(gv.height/90*10))
-        self.danbooru_btn.place(x = int(gv.width/12.9), y = int(gv.height/90*12))
-        self.yandere_btn.place(x = int(gv.width/12.9), y = int(gv.height/90*14))
-        self.konachan_btn.place(x = int(gv.width/12.9), y = int(gv.height/90*16))
-        self.weight_btn.place(x = int(gv.width/12.9), y = int(gv.height/90*18))
+        y = int(gv.height/90*10)
+        c = 23
+        x1 = int(gv.width/160*5)
+        x2 = int(gv.width/160*27)
+
+        self.original_btn.place(x = x1, y = y + c * 1)
+        self.pixiv_btn.place(x = x1, y = y + c * 2)
+        self.danbooru_btn.place(x = x1, y = y + c * 3)
+        self.yandere_btn.place(x = x1, y = y + c * 4)
+        self.konachan_btn.place(x = x1, y = y + c * 5)
+        self.weight_btn.place(x = x1, y = y + c * 7)
         
-        self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
+        self.save_btn.place(x = x2, y = y + c * 26)
 
         self.original_display()
 
     def forget(self):
+        self.original_lbl.place_forget()
         self.gen_tagfile_chkbtn.place_forget()
         self.tagfile_pixiv_chkbtn.place_forget()
         self.tagfile_danbooru_chkbtn.place_forget()
@@ -487,11 +509,17 @@ class ProviderOptions():
         self.KonO.forget()
         self.Weight.forget()
 
-        self.gen_tagfile_chkbtn.place(x = int(gv.width/160*40), y = int(gv.height/90*8))
-        self.tagfile_pixiv_chkbtn.place(x = int(gv.width/160*41), y = int(gv.height/90*10))
-        self.tagfile_danbooru_chkbtn.place(x = int(gv.width/160*41), y = int(gv.height/90*12))
-        self.tagfile_yandere_chkbtn.place(x = int(gv.width/160*41), y = int(gv.height/90*14))
-        self.tagfile_konachan_chkbtn.place(x = int(gv.width/160*41), y = int(gv.height/90*16))
+        y = int(gv.height/90*10)
+        c = 23
+        x1 = int(gv.width/160*27)
+        x2 = int(gv.width/160*28)
+
+        self.original_lbl.place(x = x1, y = y + c * 1)
+        self.gen_tagfile_chkbtn.place(x = x1, y = y + c * 2)
+        self.tagfile_pixiv_chkbtn.place(x = x2, y = y + c * 3)
+        self.tagfile_danbooru_chkbtn.place(x = x2, y = y + c * 4)
+        self.tagfile_yandere_chkbtn.place(x = x2, y = y + c * 5)
+        self.tagfile_konachan_chkbtn.place(x = x2, y = y + c * 6)
 
     def save_all(self):
         self.PixO.pixiv_save()
@@ -554,13 +582,11 @@ class PixivOptions():
         self.lord.KonO.forget()
         self.lord.Weight.forget()
 
-        self.pixiv_display_constant()
-        self.pixiv_lbl.place(x = int(gv.width/160*40), y = int(gv.height/90*8))
-        self.scrollpar.display(x = int(gv.width/160*40), y= int(gv.height/90*10))
+        y = int(gv.height/90*10)
+        c = 23
+        x1 = int(gv.width/160*5)
+        x2 = int(gv.width/160*27)
 
-        #self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)
-
-    def pixiv_display_constant(self):
         self.use_pixiv_chkbtn.grid(row= 0, column= 0, sticky=W, padx=2, pady=1)
 
         self.show_tags_lbl.grid(row= 8, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
@@ -574,6 +600,11 @@ class PixivOptions():
         self.tagfile_konachan_chkbtn.grid(row= 17, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
 
         self.rename_chkbtn.grid(row= 18, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+
+        self.pixiv_lbl.place(x = x2, y = y + c * 1)
+        self.scrollpar.display(x = x2, y= y + c * 2)
+
+        #self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)    
 
     def forget(self):
         self.pixiv_lbl.place_forget()
@@ -648,8 +679,13 @@ class DanbooruOptions():
         self.lord.KonO.forget()
         self.lord.Weight.forget()
 
-        self.danbooru_lbl.place(x = int(gv.width/160*40), y = int(gv.height/90*8))
-        self.scrollpar.display(x = int(gv.width/160*40), y= int(gv.height/90*10))
+        y = int(gv.height/90*10)
+        c = 23
+        x1 = int(gv.width/160*5)
+        x2 = int(gv.width/160*27)
+
+        self.danbooru_lbl.place(x = x2, y = y + c * 1)
+        self.scrollpar.display(x = x2, y= y + c * 2)
 
         self.use_danbooru_chkbtn.grid(row= 1, column= 0, sticky=W, padx=2, pady=1)
         self.show_tags_lbl.grid(row= 3, column= 0, sticky=W, padx=2, pady=1)
@@ -737,8 +773,13 @@ class YandereOptions():
         self.lord.KonO.forget()
         self.lord.Weight.forget()
 
-        self.yandere_lbl.place(x = int(gv.width/160*40), y = int(gv.height/90*8))
-        self.scrollpar.display(x = int(gv.width/160*40), y= int(gv.height/90*10))
+        y = int(gv.height/90*10)
+        c = 23
+        x1 = int(gv.width/160*5)
+        x2 = int(gv.width/160*27)
+
+        self.yandere_lbl.place(x = x2, y = y + c * 1)
+        self.scrollpar.display(x = x2, y= y + c * 2)
 
         self.use_yandere_chkbtn.grid(row= 1, column= 0, sticky=W, padx=2, pady=1)
         self.show_tags_lbl.grid(row= 3, column= 0, sticky=W, padx=2, pady=1)
@@ -827,8 +868,13 @@ class KonachanOptions():
         self.lord.YanO.forget()
         self.lord.Weight.forget()
 
-        self.konachan_lbl.place(x = int(gv.width/160*40), y = int(gv.height/90*8))
-        self.scrollpar.display(x = int(gv.width/160*40), y= int(gv.height/90*10))
+        y = int(gv.height/90*10)
+        c = 23
+        x1 = int(gv.width/160*5)
+        x2 = int(gv.width/160*27)
+
+        self.konachan_lbl.place(x = x2, y = y + c * 1)
+        self.scrollpar.display(x = x2, y= y + c * 2)
 
         self.use_konachan_chkbtn.grid(row= 1, column= 0, sticky=W, padx=2, pady=1)
         self.show_tags_lbl.grid(row= 3, column= 0, sticky=W, padx=2, pady=1)

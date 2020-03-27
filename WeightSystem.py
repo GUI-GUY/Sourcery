@@ -162,9 +162,14 @@ class WeightSystem():
         self.lord.DanO.forget()
         self.lord.YanO.forget()
         self.lord.KonO.forget()
+
+        y = int(gv.height/90*10)
+        c = 23
+        x1 = int(gv.width/160*5)
+        x2 = int(gv.width/160*27)
         
-        self.weight_system_lbl.place(x = int(gv.width/160*40), y = int(gv.height/90*8))
-        self.scrollpar.display(x = int(gv.width/160*40), y= int(gv.height/90*10))
+        self.weight_system_lbl.place(x = x2, y = y + c * 1)
+        self.scrollpar.display(x = x2, y= y + c * 2)
 
         self.filetype_weight_lbl.grid(row=10, column=0, sticky=W, padx=2, pady=1)
         self.png_weight_lbl.grid(row=11, column=0, sticky=W, padx=2, pady=1)

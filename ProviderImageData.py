@@ -247,7 +247,7 @@ class ProviderImageData():
         if len(self.sub_dir_img_array) < 1:
             self.info_wxh_lbl.grid(column = 1, row = t + 6, sticky = W, padx = 5, columnspan = 2)
         for elem in self.info_url_lbl_list:
-            elem.grid(column = 0, row = t + 10, columnspan = 3, sticky = W)
+            elem.grid(column = 0, row = t + 10, columnspan = 4, sticky = W)
             t = t+1
         self.tags_pixiv_lbl.grid(column = 0, row = 11, sticky = W)
 
