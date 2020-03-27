@@ -1,6 +1,6 @@
 from os import path, listdir, remove, makedirs
 from shutil import move, rmtree
-from tkinter import IntVar, W, N
+from tkinter import IntVar, W, N, S
 from tkinter import Checkbutton as cb
 from tkinter import messagebox as mb
 from tkinter.ttk import Checkbutton, Label, Button
@@ -48,6 +48,8 @@ class ProviderImageData():
 
         self.result_not_in_tagfile_var = IntVar(value=0)
         self.result_not_in_tagfile = Checkbutton(gv.res_frame, text='Not in Tagfile', var=self.result_not_in_tagfile_var, style='chkbtn.TCheckbutton')
+        self.result_in_tagfile_var = IntVar(value=0)
+        self.result_in_tagfile = Checkbutton(gv.res_frame, text='Put in Tagfile', var=self.result_in_tagfile_var, style='chkbtn.TCheckbutton')
 
         self.info_img_lbl = Label(gv.info_frame, style='label.TLabel')
         self.info_provider_lbl = Label(gv.info_frame, style='label.TLabel')
@@ -216,7 +218,8 @@ class ProviderImageData():
         self.downloaded_wxh_lbl.grid(column = 3, row = t+2, sticky = W, padx = 10)
         self.downloaded_type_lbl.grid(column = 4, row = t+2, sticky = W, padx = 10)
         self.results_tags_lbl.grid(column = 5, row = t+2, sticky = W, padx = 10, columnspan=2)
-        self.result_not_in_tagfile.grid(column = 7, row = t+2, sticky = W, padx = 10)
+        self.result_not_in_tagfile.grid(column = 7, row = t+2, sticky = W+N, padx = 10)
+        self.result_in_tagfile.grid(column = 7, row = t+2, sticky = W+N, padx = 10, pady = 20)
         
         return t+2
         
@@ -342,33 +345,33 @@ class ProviderImageData():
 
         self.process_big_imgs_init = True
 
-    def save(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=-1, head_dir='', second_try=False):
+    def save(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, t=-1, head_dir='', second_try=False):
         #new_dir = gv.output_dir + '/' + self.name
         #--If only one image is checked, save your image with the name--#
         if t == -1:
             if self.downloaded_var.get() == 1:
-                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.sub_dill.name_no_suffix):
-                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.sub_dill.name_no_suffix)
+                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gv.output_dir, self.sub_dill.name_no_suffix):
+                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gv.output_dir, self.sub_dill.name_no_suffix)
                 try:
                     move(self.sub_dill.path, gv.output_dir + '/' + self.sub_dill.name)
                 except Exception as e:
                     if not second_try:
-                        return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=t, head_dir=head_dir, second_try=True)
+                        return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                     else:
                         print("ERROR [0054] " + str(e))
                         gv.Files.Log.write_to_log("ERROR [0054] " + str(e))
                         #mb.showerror("ERROR [0054]", "ERROR CODE [0054]\nSomething went wrong while moving the image " + self.sub_dill.path)
                         return False
                 for img in self.sub_dir_img_array:
-                    if not img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir + '/' + self.sub_dill.name, img.name[:img.name.rfind('.')]):
-                        img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir + '/' + self.sub_dill.name, img.name[:img.name.rfind('.')])
+                    if not img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gv.output_dir + '/' + self.sub_dill.name, img.name[:img.name.rfind('.')]):
+                        img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gv.output_dir + '/' + self.sub_dill.name, img.name[:img.name.rfind('.')])
                         
                 return True
             else:
                 if self.sub_dill.path not in gv.delete_dirs_array:
                     gv.delete_dirs_array.append(self.sub_dill.path)
                 for elem in self.sub_dir_img_array:
-                    if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags):
+                    if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags):
                         return False
                 return True
         ##----##
@@ -381,35 +384,35 @@ class ProviderImageData():
                         move(self.sub_dill.path, head_dir + '/' + self.sub_dill.name + '_' + str(t))
                     except Exception as e:
                         if not second_try:
-                            return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=t, head_dir=head_dir, second_try=True)
+                            return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                         else:
                             print("ERROR [0055] " + str(e))
                             gv.Files.Log.write_to_log("ERROR [0055] " + str(e))
                             #mb.showerror("ERROR [0055]", "ERROR CODE [0055]\nSomething went wrong while moving the image " + self.sub_dill.path)
                             return False
                     for img in self.sub_dir_img_array:
-                        if not img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.sub_dill.name_no_suffix + '_' + str(t), img.name[:img.name.rfind('.')]):
-                            img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir + '/' + self.sub_dill.name_no_suffix + '_' + str(t), img.name[:img.name.rfind('.')])
+                        if not img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, head_dir + '/' + self.sub_dill.name_no_suffix + '_' + str(t), img.name[:img.name.rfind('.')]):
+                            img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, head_dir + '/' + self.sub_dill.name_no_suffix + '_' + str(t), img.name[:img.name.rfind('.')])
                         
                 else:
                     try:
                         move(self.sub_dill.path, head_dir + '/' + self.sub_dill.name_no_suffix + '_' + str(t) + self.sub_dill.filetype)
                     except Exception as e:
                         if not second_try:
-                            return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t=t, head_dir=head_dir, second_try=True)
+                            return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                         else:
                             print("ERROR [0056] " + str(e))
                             gv.Files.Log.write_to_log("ERROR [0056] " + str(e))
                             #mb.showerror("ERROR [0056]", "ERROR CODE [0056]\nSomething went wrong while moving the image " + self.sub_dill.path)
                             return False
-                    if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir, self.sub_dill.name_no_suffix + '_' + str(t)):
-                        self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, head_dir, self.sub_dill.name_no_suffix + '_' + str(t))
+                    if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, head_dir, self.sub_dill.name_no_suffix + '_' + str(t)):
+                        self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, head_dir, self.sub_dill.name_no_suffix + '_' + str(t))
                 return True
             else:
                 if self.sub_dill.path not in gv.delete_dirs_array:
                     gv.delete_dirs_array.append(self.sub_dill.path)
                 for elem in self.sub_dir_img_array:
-                    elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, head_dir)
+                    elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, t, head_dir)
                 return True
         ##----##
 
@@ -424,7 +427,7 @@ class ProviderImageData():
                 return True
         return False
 
-    def gen_tagfile(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gen_dir, name):
+    def gen_tagfile(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gen_dir, name):
         if self.sub_dill.service == 'Pixiv' and gv.Files.Conf.gen_tagfile_pixiv == '1':
             all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_pixiv == '1':
@@ -435,6 +438,7 @@ class ProviderImageData():
                 all_tags.extend(yandere_tags)
             if gv.Files.Conf.tagfile_konachan_pixiv == '1':
                 all_tags.extend(konachan_tags)
+            all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
         elif self.sub_dill.service == 'Danbooru' and gv.Files.Conf.gen_tagfile_danbooru == '1':
             all_tags = list()
@@ -446,6 +450,7 @@ class ProviderImageData():
                 all_tags.extend(yandere_tags)
             if gv.Files.Conf.tagfile_konachan_danbooru == '1':
                 all_tags.extend(konachan_tags)
+            all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
         elif self.sub_dill.service == 'Yandere' and gv.Files.Conf.gen_tagfile_yandere == '1':
             all_tags = list()
@@ -457,6 +462,7 @@ class ProviderImageData():
                 all_tags.extend(yandere_tags)
             if gv.Files.Conf.tagfile_konachan_yandere == '1':
                 all_tags.extend(konachan_tags)
+            all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
         elif self.sub_dill.service == 'Konachan' and gv.Files.Conf.gen_tagfile_konachan == '1':
             all_tags = list()
@@ -468,6 +474,7 @@ class ProviderImageData():
                 all_tags.extend(yandere_tags)
             if gv.Files.Conf.tagfile_konachan_konachan == '1':
                 all_tags.extend(konachan_tags)
+            all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
     
     def get_tags_list(self, not_in_file=-1):
@@ -478,8 +485,13 @@ class ProviderImageData():
         if not_in_file == -1:
             not_in_file = self.result_not_in_tagfile_var.get()
         
+        exception_tags = list()
+        if self.result_in_tagfile_var.get() == 1:
+            exception_tags = self.sub_dill.tags
+
         if not_in_file == 0:
-            return self.sub_dill.tags
+            return (self.sub_dill.tags, exception_tags)
+
 
         return list()
 

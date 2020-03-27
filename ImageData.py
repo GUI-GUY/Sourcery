@@ -429,21 +429,30 @@ class ImageData():
         """
         "Saves" own checked images and schedules the unchecked images to be deleted 
         """
+        exception_tags = list()
         pixiv_tags = list()
         for elem in self.pixiv_list:
-            pixiv_tags.extend(elem.get_tags_list())
+            tags = elem.get_tags_list()
+            pixiv_tags.extend(tags[0])
+            exception_tags.extend(tags[1])
 
         danbooru_tags = list()
         for elem in self.danbooru_list:
-            danbooru_tags.extend(elem.get_tags_list())
+            tags = elem.get_tags_list()
+            danbooru_tags.extend(tags[0])
+            exception_tags.extend(tags[1])
 
         yandere_tags = list()
         for elem in self.yandere_list:
-            yandere_tags.extend(elem.get_tags_list())
+            tags = elem.get_tags_list()
+            yandere_tags.extend(tags[0])
+            exception_tags.extend(tags[1])
 
         konachan_tags = list()
         for elem in self.konachan_list:
-            konachan_tags.extend(elem.get_tags_list())
+            tags = elem.get_tags_list()
+            konachan_tags.extend(tags[0])
+            exception_tags.extend(tags[1])
 
         if not second_try:
             #--Does the user want to save more than one image?--#
@@ -480,8 +489,8 @@ class ImageData():
             t = 0
             if self.original_var.get() == 1:
                 new_img_name = self.sub_dill.name_no_suffix + '_' + str(t) + '.' + self.sub_dill.filetype
-                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, new_dir, self.sub_dill.name_no_suffix + '_' + str(t)):
-                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, new_dir, self.sub_dill.name_no_suffix + '_' + str(t))
+                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, new_dir, self.sub_dill.name_no_suffix + '_' + str(t)):
+                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, new_dir, self.sub_dill.name_no_suffix + '_' + str(t))
                 
                 try:
                     move(self.path_original, new_dir + '/' + new_img_name)
@@ -500,7 +509,7 @@ class ImageData():
             for service in self.service_list:
                 for elem in service:
                     if elem.load_init:
-                        elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, t, new_dir)
+                        elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, t, new_dir)
                         t += 1
         ##----##
 
@@ -517,8 +526,8 @@ class ImageData():
                     #mb.showerror("ERROR [0062]", "ERROR CODE [0062]\nSomething went wrong while creating the output folder)
                     return False
             if self.original_var.get() == 1:
-                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.sub_dill.name_no_suffix):
-                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.sub_dill.name_no_suffix)
+                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gv.output_dir, self.sub_dill.name_no_suffix):
+                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gv.output_dir, self.sub_dill.name_no_suffix)
                 try:
                     move(self.sub_dill.path, gv.output_dir + '/' + self.sub_dill.name)
                 except Exception as e:
@@ -535,7 +544,7 @@ class ImageData():
             for service in self.service_list:
                 for elem in service:
                     if elem.load_init:
-                        if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags):
+                        if not elem.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags):
                             return False
         ##----##
 
@@ -554,7 +563,7 @@ class ImageData():
         
         return True
 
-    def gen_tagfile(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gen_dir, name):
+    def gen_tagfile(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gen_dir, name):
         if gv.Files.Conf.gen_tagfile_original == '1':
             all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_original == '1':
@@ -565,7 +574,7 @@ class ImageData():
                 all_tags.extend(yandere_tags)
             if gv.Files.Conf.tagfile_konachan_original == '1':
                 all_tags.extend(konachan_tags)
-            
+            all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
 
     def forget_results(self):
