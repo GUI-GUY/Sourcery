@@ -105,13 +105,6 @@ MISC
 + save button in provider options saves all 
 Last Error: 0062
 
-BUGS/Missing critical features:
-reference takes the first reference so if you source an image with more services later on this will get ignored
-??? save does not delete all folders
-
-beta 0.3.5?
-on save: copy all images then delete old ones
-on load reference: download images
 
 beta 0.4
 3rd service
@@ -144,6 +137,11 @@ show progress of sourced imaged/all images
 https://www.reddit.com/r/learnpython/comments/6dndqz/how_would_you_make_text_that_automatically_wraps/
 make own scrollbar class
 https://pypi.org/project/tk-html-widgets/ for pixiv caption
+fix yandere& konachan scrollframe color bug
+reference takes the first reference so if you source an image with more services later on this will get ignored
+on save: copy all images then delete old ones
+on load reference: download images
+
 
 beta 0.5?
 queue images instead of 'get source' button?

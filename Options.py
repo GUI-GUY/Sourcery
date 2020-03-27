@@ -502,6 +502,7 @@ class ProviderOptions():
 
     def forget(self):
         self.original_lbl.place_forget()
+        self.all_services_lbl.place_forget()
         self.gen_tagfile_chkbtn.place_forget()
         self.tagfile_pixiv_chkbtn.place_forget()
         self.tagfile_danbooru_chkbtn.place_forget()

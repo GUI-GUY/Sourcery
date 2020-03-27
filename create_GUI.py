@@ -406,45 +406,80 @@ def enforce_style():
         font=("Arial Bold", 10)) # sunken, raised, groove, ridge, flat
     for elem in window.winfo_children():
         if type(elem) == type(cb()):
-            elem.configure(
-                foreground=gv.Files.Theme.foreground, 
-                background=gv.Files.Theme.background, 
-                selectcolor=gv.Files.Theme.checkbutton_pressed, 
-                activebackground=gv.Files.Theme.button_background_active, 
-                activeforeground=gv.Files.Theme.button_foreground_active, 
-            )
+            try:
+                elem.configure(
+                    foreground=gv.Files.Theme.foreground, 
+                    background=gv.Files.Theme.background, 
+                    selectcolor=gv.Files.Theme.checkbutton_pressed, 
+                    activebackground=gv.Files.Theme.button_background_active, 
+                    activeforeground=gv.Files.Theme.button_foreground_active, 
+                )
+            except:
+                pass
     for elem in gv.res_frame.winfo_children():
         if type(elem) == type(cb()):
-            elem.configure(
-                foreground=gv.Files.Theme.foreground, 
-                background=gv.Files.Theme.background, 
-                selectcolor=gv.Files.Theme.checkbutton_pressed, 
-                activebackground=gv.Files.Theme.button_background_active, 
-                activeforeground=gv.Files.Theme.button_foreground_active, 
-            )
+            try:
+                elem.configure(
+                    foreground=gv.Files.Theme.foreground, 
+                    background=gv.Files.Theme.background, 
+                    selectcolor=gv.Files.Theme.checkbutton_pressed, 
+                    activebackground=gv.Files.Theme.button_background_active, 
+                    activeforeground=gv.Files.Theme.button_foreground_active, 
+                )
+            except:
+                pass
     for elem in gv.big_frame.winfo_children():
         if type(elem) == type(cb()):
-            elem.configure(
-                foreground=gv.Files.Theme.foreground, 
-                background=gv.Files.Theme.background, 
-                selectcolor=gv.Files.Theme.checkbutton_pressed, 
-                activebackground=gv.Files.Theme.button_background_active, 
-                activeforeground=gv.Files.Theme.button_foreground_active, 
-            )
+            try:
+                elem.configure(
+                    foreground=gv.Files.Theme.foreground, 
+                    background=gv.Files.Theme.background, 
+                    selectcolor=gv.Files.Theme.checkbutton_pressed, 
+                    activebackground=gv.Files.Theme.button_background_active, 
+                    activeforeground=gv.Files.Theme.button_foreground_active, 
+                )
+            except:
+                pass
     for elem in Options_Class.ProO.DanO.scrollpar_frame.winfo_children():
         if type(elem) == type(Text()):
-            elem.configure(
-                foreground=gv.Files.Theme.foreground, 
-                background=gv.Files.Theme.background, 
-                font=("Arial Bold", 10)
-            )
+            try:
+                elem.configure(
+                    foreground=gv.Files.Theme.foreground, 
+                    background=gv.Files.Theme.background, 
+                    font=("Arial Bold", 10)
+                )
+            except:
+                pass
     for elem in Options_Class.ProO.PixO.scrollpar_frame.winfo_children():
         if type(elem) == type(Text()):
-            elem.configure(
-                foreground=gv.Files.Theme.foreground, 
-                background=gv.Files.Theme.background, 
-                font=("Arial Bold", 10)
-            )
+            try:
+                elem.configure(
+                    foreground=gv.Files.Theme.foreground, 
+                    background=gv.Files.Theme.background, 
+                    font=("Arial Bold", 10)
+                )
+            except:
+                pass
+    for elem in Options_Class.ProO.YanO.scrollpar_frame.winfo_children():
+        if type(elem) == type(Text()):
+            try:
+                elem.configure(
+                    foreground=gv.Files.Theme.foreground, 
+                    background=gv.Files.Theme.background, 
+                    font=("Arial Bold", 10)
+                )
+            except:
+                pass
+    for elem in Options_Class.ProO.KonO.scrollpar_frame.winfo_children():
+        if type(elem) == type(Text()):
+            try:
+                elem.configure(
+                    foreground=gv.Files.Theme.foreground, 
+                    background=gv.Files.Theme.background, 
+                    font=("Arial Bold", 10)
+                )
+            except:
+                pass
         
     gv.Files.Log.log_text.configure(foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
     
