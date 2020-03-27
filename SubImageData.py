@@ -211,8 +211,11 @@ class SubImageData():
         return False
 
     def gen_tagfile(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gen_dir, name):
+        p_pos = name.rfind('_p')
+        all_tags = list()
+        if p_pos != -1:
+            all_tags.append('page:' + name[p_pos+2:])
         if self.service == 'Pixiv' and gv.Files.Conf.gen_tagfile_pixiv == '1':
-            all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_pixiv == '1':
                 all_tags.extend(pixiv_tags)
             if gv.Files.Conf.tagfile_danbooru_pixiv == '1':
@@ -224,7 +227,6 @@ class SubImageData():
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
         elif self.service == 'Danbooru' and gv.Files.Conf.gen_tagfile_danbooru == '1':
-            all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_danbooru == '1':
                 all_tags.extend(pixiv_tags)
             if gv.Files.Conf.tagfile_danbooru_danbooru == '1':
@@ -236,7 +238,6 @@ class SubImageData():
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
         elif self.service == 'Yandere' and gv.Files.Conf.gen_tagfile_yandere == '1':
-            all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_yandere == '1':
                 all_tags.extend(pixiv_tags)
             if gv.Files.Conf.tagfile_danbooru_yandere == '1':
@@ -248,7 +249,6 @@ class SubImageData():
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
         elif self.service == 'Konachan' and gv.Files.Conf.gen_tagfile_konachan == '1':
-            all_tags = list()
             if gv.Files.Conf.tagfile_pixiv_konachan == '1':
                 all_tags.extend(pixiv_tags)
             if gv.Files.Conf.tagfile_danbooru_konachan == '1':

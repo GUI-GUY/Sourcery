@@ -543,6 +543,7 @@ class ProviderImageData():
         self.downloaded_type_lbl.grid_forget()
         self.result_not_in_tagfile.grid_forget()
         self.results_tags_lbl.grid_forget()
+        self.result_in_tagfile.grid_forget()
 
     def self_destruct(self):
         if self.downloaded_SubImgData != None:

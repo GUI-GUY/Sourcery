@@ -33,6 +33,7 @@ class ImageData():
             self.konachan_list.append(ProviderImageData(elem, dillustration, self.thumb_size, self.preview_size, self.siblings_array))
 
         self.sub_dill = dillustration.original_sub
+        self.dill = dillustration
 
         # # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source, "similarity": sim}
         # for elem in dillustration.pixiv_subdillustration:
@@ -565,7 +566,7 @@ class ImageData():
 
         if gv.Files.Conf.delete_input == '1':
             try:
-                remove(self.sub_dill.input_path)
+                remove(self.dill.input_path)
             except Exception as e:
                 print("ERROR [0014] " + str(e))
                 gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
