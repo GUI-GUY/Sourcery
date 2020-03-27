@@ -218,8 +218,8 @@ class ProviderImageData():
         self.downloaded_wxh_lbl.grid(column = 3, row = t+2, sticky = W, padx = 10)
         self.downloaded_type_lbl.grid(column = 4, row = t+2, sticky = W, padx = 10)
         self.results_tags_lbl.grid(column = 5, row = t+2, sticky = W, padx = 10, columnspan=2)
-        self.result_not_in_tagfile.grid(column = 7, row = t+2, sticky = W+N, padx = 10)
-        self.result_in_tagfile.grid(column = 7, row = t+2, sticky = W+N, padx = 10, pady = 20)
+        self.result_not_in_tagfile.grid(column = 7, row = t+2, sticky = W+N, padx = 5, pady = 3)
+        self.result_in_tagfile.grid(column = 7, row = t+2, sticky = W+N, padx = 5, pady = 23)
         
         return t+2
         

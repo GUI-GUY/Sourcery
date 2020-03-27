@@ -457,6 +457,9 @@ class ProviderOptions():
         self.tagfile_yandere_chkbtn = Checkbutton(self.par, text='Include yandere tags', var=self.tagfile_yandere_var, style="chkbtn.TCheckbutton")
         self.tagfile_konachan_chkbtn = Checkbutton(self.par, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
 
+        self.single_source_in_tagfile_var = IntVar(value=int(gv.Files.Conf.single_source_in_tagfile))
+        self.single_source_in_tagfile_chkbtn = Checkbutton(self.par, text='If only one source is available, include its tags', var=self.single_source_in_tagfile_var, style="chkbtn.TCheckbutton")
+
 
         self.original_btn = Button(self.par, text='Original', command=self.original_display, style ="button.TLabel")
         self.pixiv_btn = Button(self.par, text='Pixiv', command=self.PixO.pixiv_display, style ="button.TLabel")
@@ -499,6 +502,7 @@ class ProviderOptions():
         self.tagfile_danbooru_chkbtn.place_forget()
         self.tagfile_yandere_chkbtn.place_forget()
         self.tagfile_konachan_chkbtn.place_forget()
+        self.single_source_in_tagfile_chkbtn.place_forget()
 
         #self.save_btn.place_forget()
 
@@ -521,6 +525,8 @@ class ProviderOptions():
         self.tagfile_yandere_chkbtn.place(x = x2, y = y + c * 5)
         self.tagfile_konachan_chkbtn.place(x = x2, y = y + c * 6)
 
+        self.single_source_in_tagfile_chkbtn.place(x = x2, y = y + c * 8)
+
     def save_all(self):
         self.PixO.pixiv_save()
         self.DanO.danbooru_save()
@@ -536,6 +542,7 @@ class ProviderOptions():
         gv.Files.Conf.tagfile_danbooru_original = str(self.tagfile_danbooru_var.get())
         gv.Files.Conf.tagfile_yandere_original = str(self.tagfile_yandere_var.get())
         gv.Files.Conf.tagfile_konachan_original = str(self.tagfile_konachan_var.get())
+        gv.Files.Conf.single_source_in_tagfile = str(self.single_source_in_tagfile_var.get())
         gv.Files.Conf.write_config()
         gv.Files.Log.write_to_log('Saved Original options')
 
@@ -568,7 +575,6 @@ class PixivOptions():
         self.tagfile_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
         self.tagfile_yandere_chkbtn = Checkbutton(self.scrollpar_frame, text='Include yandere tags', var=self.tagfile_yandere_var, style="chkbtn.TCheckbutton")
         self.tagfile_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
-
         
         #self.save_btn = Button(parent, text='Save', command=self.pixiv_save, style ="button.TLabel")
 

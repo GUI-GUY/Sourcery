@@ -392,6 +392,7 @@ class ConfigFile():
         self.tagfile_danbooru_original = '0'
         self.tagfile_yandere_original = '0'
         self.tagfile_konachan_original = '0'
+        self.single_source_in_tagfile = '0'
         self.saucenao_returns = '10'
         self.direct_replace = '100'
         self.input_search_depth = '1'
@@ -529,6 +530,8 @@ class ConfigFile():
                 self.tagfile_yandere_original = temp[temp.find('=')+1:-1]
             elif temp.startswith('tagfile_konachan_original='):
                 self.tagfile_konachan_original = temp[temp.find('=')+1:-1]
+            elif temp.startswith('single_source_in_tagfile='):
+                self.single_source_in_tagfile = temp[temp.find('=')+1:-1]
             elif temp.startswith('saucenao_returns='):
                 self.saucenao_returns = temp[temp.find('=')+1:-1]
             elif temp.startswith('direct_replace='):
@@ -629,6 +632,7 @@ class ConfigFile():
                 "\ntagfile_danbooru_original=" + self.tagfile_danbooru_original +
                 "\ntagfile_yandere_original=" + self.tagfile_yandere_original +
                 "\ntagfile_konachan_original=" + self.tagfile_konachan_original +
+                "\nsingle_source_in_tagfile=" + self.single_source_in_tagfile +
                 "\nsaucenao_returns=" + self.saucenao_returns +
                 "\ndirect_replace=" + self.direct_replace +
                 "\ninput_search_depth=" + self.input_search_depth +

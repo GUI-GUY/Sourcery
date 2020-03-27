@@ -454,6 +454,16 @@ class ImageData():
             konachan_tags.extend(tags[0])
             exception_tags.extend(tags[1])
 
+        counter = 0
+        for service in self.service_list:
+            counter += len(service)
+        
+        if counter == 1 and gv.Files.Conf.single_source_in_tagfile == '1':
+            exception_tags.extend(pixiv_tags)
+            exception_tags.extend(danbooru_tags)
+            exception_tags.extend(yandere_tags)
+            exception_tags.extend(konachan_tags)
+
         if not second_try:
             #--Does the user want to save more than one image?--#
             save_counter = 0
