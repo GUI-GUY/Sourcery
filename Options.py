@@ -1,5 +1,5 @@
 from tkinter import IntVar, StringVar, E, W, colorchooser, Text, END
-#from tkinter import messagebox as mb
+from tkinter import messagebox as mb
 from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame, OptionMenu
 from functools import partial
 from webbrowser import open_new
@@ -248,9 +248,9 @@ class SourceryOptions():
         self.direct_replace_danbooru_var = IntVar(value = int(gv.Files.Conf.direct_replace_danbooru))
         self.direct_replace_danbooru_chkbtn = Checkbutton(parent, text="Save danbooru images directly", var=self.direct_replace_danbooru_var, style="chkbtn.TCheckbutton")
         self.direct_replace_yandere_var = IntVar(value = int(gv.Files.Conf.direct_replace_yandere))
-        self.direct_replace_yandere_chkbtn = Checkbutton(parent, text="Save yandere images directly", var=self.direct_replace_danbooru_var, style="chkbtn.TCheckbutton")
+        self.direct_replace_yandere_chkbtn = Checkbutton(parent, text="Save yandere images directly", var=self.direct_replace_yandere_var, style="chkbtn.TCheckbutton")
         self.direct_replace_konachan_var = IntVar(value = int(gv.Files.Conf.direct_replace_konachan))
-        self.direct_replace_konachan_chkbtn = Checkbutton(parent, text="Save konachan images directly", var=self.direct_replace_danbooru_var, style="chkbtn.TCheckbutton")
+        self.direct_replace_konachan_chkbtn = Checkbutton(parent, text="Save konachan images directly", var=self.direct_replace_konachan_var, style="chkbtn.TCheckbutton")
         self.direct_replace_entry = Entry(parent, width=30, style="button.TLabel")
         self.direct_replace_entry.insert(0, gv.Files.Conf.direct_replace)
 
@@ -413,17 +413,21 @@ class SourceryOptions():
 
     def sourcery_save(self):
         gv.Files.Log.write_to_log('Attempting to save Sourcery options...')
-        diff = self.images_per_page_entry.get() - gv.Files.Conf.imgpp
+        diff = 0
+        try:
+            diff = int(self.images_per_page_entry.get()) - int(gv.Files.Conf.imgpp)
+        except Exception as e:
+            mb.showerror('Invalid Value', 'Please insert a positive integer value into the Images per page option')
         if diff > 0:
             for num in range(diff):
                 gv.imgpp_sem.release()
-        else:
+        elif diff != 0:
             for num in range(diff, 0):
                 gv.imgpp_sem.acquire(False)#TODO problem when more images are being displayed than imgpp
             y = int(gv.height/90*10)
             c = 23
             x3 = int(gv.width/160*50)
-            self.restart_gui_lbl.place(x = x3, y = y + c * 15)
+            self.restart_gui_lbl.place(x = x3, y = y + c * 17)
         gv.Files.Conf.imgpp = self.images_per_page_entry.get()
         gv.Files.Conf.delete_input = str(self.delete_input_var.get())
         gv.Files.Conf.direct_replace = self.direct_replace_entry.get()
@@ -446,6 +450,7 @@ class ProviderOptions():
         self.Weight = WeightSystem(parent, self)
 
         self.original_lbl = Label(self.par, text='Original', font=('Arial Bold', 13), style="label.TLabel")
+        self.all_services_lbl = Label(self.par, text='All Services', font=('Arial Bold', 13), style="label.TLabel")
         self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_original))
         self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_original))
         self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_original))
@@ -525,7 +530,8 @@ class ProviderOptions():
         self.tagfile_yandere_chkbtn.place(x = x2, y = y + c * 5)
         self.tagfile_konachan_chkbtn.place(x = x2, y = y + c * 6)
 
-        self.single_source_in_tagfile_chkbtn.place(x = x2, y = y + c * 8)
+        self.all_services_lbl.place(x = x2, y = y + c * 8)
+        self.single_source_in_tagfile_chkbtn.place(x = x2, y = y + c * 9)
 
     def save_all(self):
         self.PixO.pixiv_save()

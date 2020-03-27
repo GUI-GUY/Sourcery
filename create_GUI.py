@@ -196,7 +196,7 @@ def refresh_startpage(change, answer2):
                     data.modify_results_widgets()
                     x = data.display_results(gv.last_occupied_result+1)
                     if x == -1:# This means direct replace has triggered
-                        gv.Files.Log.write_to_log('Attempting to save image:' + data.name_original + '...' )
+                        gv.Files.Log.write_to_log('Attempting to save image:' + data.sub_dill.name + '...' )
                         if data.save():
                             gv.Files.Log.write_to_log('Successfully saved image')
                             data.self_destruct()

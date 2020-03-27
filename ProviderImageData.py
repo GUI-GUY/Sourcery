@@ -350,8 +350,9 @@ class ProviderImageData():
         #--If only one image is checked, save your image with the name--#
         if t == -1:
             if self.downloaded_var.get() == 1:
-                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gv.output_dir, self.sub_dill.name_no_suffix):
-                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gv.output_dir, self.sub_dill.name_no_suffix)
+                if not self.sub_dill.is_folder:
+                    if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gv.output_dir, self.sub_dill.name_no_suffix):
+                        self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gv.output_dir, self.sub_dill.name_no_suffix)
                 try:
                     move(self.sub_dill.path, gv.output_dir + '/' + self.sub_dill.name)
                 except Exception as e:
@@ -396,7 +397,7 @@ class ProviderImageData():
                         
                 else:
                     try:
-                        move(self.sub_dill.path, head_dir + '/' + self.sub_dill.name_no_suffix + '_' + str(t) + self.sub_dill.filetype)
+                        move(self.sub_dill.path, head_dir + '/' + self.sub_dill.name_no_suffix + '_' + str(t) + '.' + self.sub_dill.filetype)
                     except Exception as e:
                         if not second_try:
                             return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
