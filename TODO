@@ -105,19 +105,19 @@ MISC
 + save button in provider options saves all 
 Last Error: 0062
 
-BUGS:
-stopping (please wait)
+BUGS/Missing critical features:
 reference takes the first reference so if you source an image with more services later on this will get ignored
 save reference for no images available
-?? x/200 shows too high of a number
-sometimes only input image is shown (76259..., 6560..., 79916..., 78820, 7676..., 7625...) most of them have only pixiv folders
-show imgname in big selector
-on download tell user 
 save does not delete all folders
+explicit 'in tagfile' checkbutton
+pixiv: include original/translated tags
+original: if only one image is found take these tags
+linebreaks Label(wraplength=) checkbutton
+beautify
 
 beta 0.3.5?
 on save: copy all images then delete old ones
-on load reference download images
+on load reference: download images
 
 beta 0.4
 3rd service
@@ -133,6 +133,9 @@ preload next x images?
 preview/thumbnail scaling/options
 Notification rework
     save: feedback message
+    on download tell user
+    stopping (please wait)
+    show imgname in big selector
 bind keys
 import configparser
 pixiv gif support
@@ -144,6 +147,9 @@ link color
 danbooru siblings?
 on numbers cruncher exception write back default value to entry fields
 show progress of sourced imaged/all images
+https://www.reddit.com/r/learnpython/comments/6dndqz/how_would_you_make_text_that_automatically_wraps/
+make own scrollbar class
+https://pypi.org/project/tk-html-widgets/ for pixiv caption
 
 beta 0.5?
 queue images instead of 'get source' button?

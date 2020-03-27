@@ -1,5 +1,5 @@
-from tkinter import Canvas
-from tkinter.ttk import Frame, Scrollbar
+from tkinter import Canvas, Scrollbar
+from tkinter.ttk import Frame
 import global_variables as gv
 
 class ScrollFrame():
@@ -11,6 +11,20 @@ class ScrollFrame():
         self.canvas = Canvas(self.sub_frame, width=width, height=height, background=gv.Files.Theme.background, highlightthickness=0)
         self.frame = Frame(self.canvas, width=width, height=height, style="frame.TFrame")
         self.scrollbar = Scrollbar(self.sub_frame, orient="vertical", command=self.canvas.yview)
+            # activebackground=gv.Files.Theme.background,
+            # activerelief='flat', 
+            # background='yellow', 
+            # borderwidth=50, 
+            # elementborderwidth=20, 
+            # highlightbackground='green', 
+            # highlightcolor='orange', 
+            # highlightthickness=30, 
+            # relief='flat', 
+            # # repeatdelay, 
+            # # repeatinterval, 
+            # # takefocus, 
+            # troughcolor='blue', 
+            # )
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
         #https://stackoverflow.com/questions/17355902/python-tkinter-binding-mousewheel-to-scrollbar
         self.scrollbar.pack(side="right",fill="y")

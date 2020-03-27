@@ -139,6 +139,7 @@ def rename(desired_name, service, index=-1, new_name=''):
             else:
                 new_name = desired_name[:dot] + '_' + str(index) + desired_name[dot:] 
             return rename(desired_name, service, index, new_name)
+        return new_name
     return desired_name
 
 if __name__ == '__main__':

@@ -147,15 +147,26 @@ def pixiv_download(img_name_original, illustration, comm_error_q=None):
     # else:
     #     return new_name.format(page='',format=image_format)
 
-def rename(desired_name, index=-1):
-    if path.isfile(getcwd() + '/Sourcery/sourced_progress/pixiv/' + desired_name) or path.isdir(getcwd() + '/Sourcery/sourced_progress/pixiv/' + desired_name):
-        index = index+1
-        dot = desired_name.rfind('.')
-        if dot == -1:
-            new_name = desired_name + '_' + str(index)
-        else:
-            new_name = desired_name[:dot] + '_' + str(index) + desired_name[dot:] 
-        return rename(new_name, index)
+def rename(desired_name, index=-1, new_name=''):
+    if new_name == '':
+        if path.isfile(getcwd() + '/Sourcery/sourced_progress/pixiv/' + desired_name) or path.isdir(getcwd() + '/Sourcery/sourced_progress/pixiv/' + desired_name):
+            index = index+1
+            dot = desired_name.rfind('.')
+            if dot == -1:
+                new_name = desired_name + '_' + str(index)
+            else:
+                new_name = desired_name[:dot] + '_' + str(index) + desired_name[dot:] 
+            return rename(desired_name, index, new_name)
+    else:
+        if path.isfile(getcwd() + '/Sourcery/sourced_progress/pixiv/' + new_name) or path.isdir(getcwd() + '/Sourcery/sourced_progress/pixiv/' + new_name):
+            index = index+1
+            dot = desired_name.rfind('.')
+            if dot == -1:
+                new_name = desired_name + '_' + str(index)
+            else:
+                new_name = desired_name[:dot] + '_' + str(index) + desired_name[dot:] 
+            return rename(desired_name, index, new_name)
+        return new_name
     return desired_name
 
 def download(pid) :

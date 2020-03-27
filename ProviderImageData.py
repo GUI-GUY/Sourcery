@@ -51,13 +51,13 @@ class ProviderImageData():
 
         self.info_img_lbl = Label(gv.info_frame, style='label.TLabel')
         self.info_provider_lbl = Label(gv.info_frame, style='label.TLabel')
-        self.info_artist_lbl = Label(gv.info_frame, style='label.TLabel')
-        self.info_title_lbl = Label(gv.info_frame, style='label.TLabel')
+        self.info_artist_lbl = Label(gv.info_frame, wraplength=gv.info_frame_width*0.55, style='label.TLabel')
+        self.info_title_lbl = Label(gv.info_frame, wraplength=gv.info_frame_width*0.55, style='label.TLabel')
         #self.info_imageid_lbl = Label(gv.info_frame, style='label.TLabel')
         self.info_url_lbl_list = list()
         #self.info_url_lbl = Label(gv.info_frame, style='label.TLabel')
         self.info_date_lbl = Label(gv.info_frame, style='label.TLabel')
-        self.info_caption_lbl = Label(gv.info_frame, style='label.TLabel')
+        self.info_caption_lbl = Label(gv.info_frame, wraplength=gv.info_frame_width*0.55, style='label.TLabel')
         self.info_wxh_lbl = Label(gv.info_frame, style='label.TLabel')
         self.tags_pixiv_lbl = Label(gv.info_frame, text = 'Tags', font=('Arial Bold', 15), style='label.TLabel')
         self.tags_lbl_array = list()
@@ -66,13 +66,13 @@ class ProviderImageData():
             self.tags_lbl_array.append((Label(gv.info_frame, text = 'Original:', style='label.TLabel', font = ('Arial Bold', 11)), Label(gv.info_frame, text = 'Translated:', style='label.TLabel', font = ('Arial Bold', 11))))
             for tag in self.sub_dill.tags:
                 if type(tag) == type(dict()):
-                    self.tags_lbl_array.append((Label(gv.info_frame, text = tag['name'], style='label.TLabel'), Label(gv.info_frame, text = tag['translated_name'], style='label.TLabel')))
+                    self.tags_lbl_array.append((Label(gv.info_frame, text = tag['name'], wraplength=gv.info_frame_width/2.1, style='label.TLabel'), Label(gv.info_frame, text = tag['translated_name'], wraplength=gv.info_frame_width/2.1, style='label.TLabel',)))
                 else:
-                    self.tags_lbl_array.append((Label(gv.info_frame, text = tag, style='label.TLabel'), Label(gv.info_frame, text = '', style='label.TLabel')))
+                    self.tags_lbl_array.append((Label(gv.info_frame, text = tag, wraplength=gv.info_frame_width/2.1, style='label.TLabel'), Label(gv.info_frame, text = '', wraplength=gv.info_frame_width/2.1, style='label.TLabel')))
         else:
             self.tags_lbl_array.append(Label(gv.info_frame, text = 'Tags:', style='label.TLabel', font = ('Arial Bold', 11)))
             for tag in self.sub_dill.tags:
-                self.tags_lbl_array.append(Label(gv.info_frame, text = tag, style='label.TLabel'))
+                self.tags_lbl_array.append(Label(gv.info_frame, text = tag, wraplength=gv.info_frame_width/2.1, style='label.TLabel'))
 
         for elem in self.sub_dill.source:
             lbl = Label(gv.info_frame, text = elem, foreground='#2626ff', cursor='hand2', style='label.TLabel')
@@ -237,15 +237,15 @@ class ProviderImageData():
         self.info_wxh_lbl.configure(text = 'Width x Height: ' + str(self.sub_dill.width) + ' x ' + str(self.sub_dill.height), font = ('Arial', 10))
 
         self.info_img_lbl.grid(column = 0, row = t + 1, rowspan = 9, sticky=W+N)
-        self.info_provider_lbl.grid(column = 0, row = t + 0, sticky = W)
-        self.info_title_lbl.grid(column = 1, row = t + 1, sticky = W, padx = 5)
-        self.info_caption_lbl.grid(column = 1, row = t + 2, sticky = W, padx = 5)
-        self.info_artist_lbl.grid(column = 1, row = t + 3, sticky = W, padx = 5)
+        self.info_provider_lbl.grid(column = 0, row = t + 0, sticky = W, columnspan = 2)
+        self.info_title_lbl.grid(column = 1, row = t + 1, sticky = W, padx = 5, columnspan = 2)
+        self.info_caption_lbl.grid(column = 1, row = t + 2, sticky = W, padx = 5, columnspan = 2)
+        self.info_artist_lbl.grid(column = 1, row = t + 3, sticky = W, padx = 5, columnspan = 2)
         #self.info_imageid_lbl.grid(column = 1, row = t + 4, sticky = W, padx = 5)
-        self.info_date_lbl.grid(column = 1, row = t + 5, sticky = W, padx = 5)
+        self.info_date_lbl.grid(column = 1, row = t + 5, sticky = W, padx = 5, columnspan = 2)
         
         if len(self.sub_dir_img_array) < 1:
-            self.info_wxh_lbl.grid(column = 1, row = t + 6, sticky = W, padx = 5)
+            self.info_wxh_lbl.grid(column = 1, row = t + 6, sticky = W, padx = 5, columnspan = 2)
         for elem in self.info_url_lbl_list:
             elem.grid(column = 0, row = t + 10, columnspan = 3, sticky = W)
             t = t+1
@@ -258,12 +258,20 @@ class ProviderImageData():
                 if lbl[1].cget('text') == '':
                     lbl[0].grid(column = 0, row = t, sticky = W, columnspan=3)
                 else:
-                    lbl[0].grid(column = 0, row = t, sticky = W)
-                    lbl[1].grid(column = 1, row = t, sticky = W)
+                    lbl[0].grid(column = 0, row = t, sticky = W, columnspan = 2)
+                    lbl[1].grid(column = 2, row = t, sticky = W)
                 t += 1
         else:
+            second_row = False
             for lbl in self.tags_lbl_array:
-                lbl.grid(column = 0, row = t, sticky = W, columnspan = 3)
+                if second_row:
+                    lbl.grid(column = 2, row = t, sticky = W)
+                    second_row = False
+                    t -= 1
+                else:
+                    lbl.grid(column = 0, row = t, sticky = W, columnspan = 2)
+                    second_row = True
+                
                 t += 1
         return t
 
@@ -339,11 +347,6 @@ class ProviderImageData():
         #--If only one image is checked, save your image with the name--#
         if t == -1:
             if self.downloaded_var.get() == 1:
-                # img_name = ''
-                # if not self.sub_dill.is_folder:
-                #     img_name = self.name[:self.name.rfind('.')]
-                # else:
-                #     img_name = self.name
                 if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.sub_dill.name_no_suffix):
                     self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir, self.sub_dill.name_no_suffix)
                 try:
@@ -356,6 +359,10 @@ class ProviderImageData():
                         gv.Files.Log.write_to_log("ERROR [0054] " + str(e))
                         #mb.showerror("ERROR [0054]", "ERROR CODE [0054]\nSomething went wrong while moving the image " + self.sub_dill.path)
                         return False
+                for img in self.sub_dir_img_array:
+                    if not img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir + '/' + self.sub_dill.name, img.name[:img.name.rfind('.')]):
+                        img.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gv.output_dir + '/' + self.sub_dill.name, img.name[:img.name.rfind('.')])
+                        
                 return True
             else:
                 if self.sub_dill.path not in gv.delete_dirs_array:

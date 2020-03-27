@@ -466,12 +466,14 @@ if __name__ == '__main__':
     window.state('zoomed')
     height = gv.height = window.winfo_screenheight()
     width = gv.width = window.winfo_screenwidth()
-    results_frame_height = int(height*7/9)
-    results_frame_width = int(width/3)
-    info_frame_height = int(height*7/9)
-    info_frame_width = int(width/3)
-    big_selector_frame_height = int(height*7/9) # height-620
-    big_selector_frame_width = int(width*0.12) # width-620
+    startpage_frame_height = int(height/3)
+    startpage_frame_width = int(width/5)
+    gv.res_frame_height = results_frame_height = int(height*7/9)
+    gv.res_frame_width = results_frame_width = int(width/3)
+    gv.info_frame_height = info_frame_height = int(height*7/9)
+    gv.info_frame_width = info_frame_width = int(width/3)
+    gv.big_frame_height = big_selector_frame_height = int(height*7/9) # height-620
+    gv.big_frame_width = big_selector_frame_width = int(width*0.12) # width-620
     #window.geometry(str(width-500) + 'x' + str(height-500))
     #dateS =  time.strftime("20%y-%m-%d")
 
@@ -490,9 +492,9 @@ if __name__ == '__main__':
     gv.Files.Log.init_log()
     gv.Files.Log.write_to_log('Initialising variables...')
 
-    sub_frame_startpage = Frame(window, width=width/5, height=height/5, style="frame.TFrame")
-    canvas_startpage = Canvas(sub_frame_startpage, width=width/5, height=height/5, background=gv.Files.Theme.background, highlightthickness=0)
-    frame_startpage = Frame(canvas_startpage, width=width/5, height=height/5, style="frame.TFrame")
+    sub_frame_startpage = Frame(window, width=startpage_frame_width, height=startpage_frame_height, style="frame.TFrame")
+    canvas_startpage = Canvas(sub_frame_startpage, width=startpage_frame_width, height=startpage_frame_height, background=gv.Files.Theme.background, highlightthickness=0)
+    frame_startpage = Frame(canvas_startpage, width=startpage_frame_width, height=startpage_frame_height, style="frame.TFrame")
     canvas_startpage.pack(side="left")
     canvas_startpage.create_window((0,0),window=frame_startpage,anchor='nw')
 
@@ -506,12 +508,12 @@ if __name__ == '__main__':
     images_in_input_lbl = Label(frame_startpage, text="Images in Input folder:", style="label.TLabel")
     images_in_input_count_lbl = Label(frame_startpage, text="Number here", style="label.TLabel")
     currently_sourcing_lbl = Label(frame_startpage, text="Currently Sourcing:", style="label.TLabel")
-    currently_sourcing_img_lbl = Label(frame_startpage, text="None", style="label.TLabel")
+    currently_sourcing_img_lbl = Label(frame_startpage, text="None", wraplength=startpage_frame_width/2.4, style="label.TLabel")
     remaining_searches_lbl = Label(frame_startpage, text="Remaining SauceNao\nsearches today:", style="label.TLabel")
     saucenao_requests_count_lbl = Label(frame_startpage, text="???/200", style="label.TLabel")
     #elapsed_time_lbl = Label(frame_startpage, text="Elapsed time:", style="label.TLabel")
     #eta_lbl = Label(frame_startpage, text="ETA:", style="label.TLabel")
-    error_lbl = Label(frame_startpage, text="", style="label.TLabel")
+    error_lbl = Label(frame_startpage, text="", wraplength=startpage_frame_width-10, style="label.TLabel")
 
     images_in_input_lbl.grid(row=0, column=0, sticky=W)
     images_in_input_count_lbl.grid(row=0, column=1, sticky=W, padx = 10)
