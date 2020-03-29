@@ -2,7 +2,7 @@
 Automagically pulls source images from the internet to your PC
 
 How to use:
-1. Create a SauceNao account, without it this application does not work
+1. Create a [SauceNao](https://saucenao.com/user.php) account, without it this application does not work
 3. Go to options->SauceNao and insert your API-Key
 4. Put the images you want to source in the input folder
 5. Press the "Get Sources" Button
