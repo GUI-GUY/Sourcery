@@ -97,13 +97,13 @@ class ThemeFile():
         self.button_background_pressed = '#111'
         self.button_foreground_pressed = 'white'
         self.checkbutton_pressed = 'green'
-        self.custom_background = '#101010'
+        self.custom_background = '#1f1f1f'
         self.custom_foreground = 'white'
         self.custom_button_background = 'purple'
-        self.custom_button_background_active = 'yellow'
+        self.custom_button_background_active = '#dd64d3'
         self.custom_button_foreground_active = 'black'
         self.custom_button_background_pressed = '#fff'
-        self.custom_button_foreground_pressed = 'green'
+        self.custom_button_foreground_pressed = 'blue'
         self.custom_checkbutton_pressed = 'green'
         if self.read_theme():
             self.write_theme('Dark Theme')

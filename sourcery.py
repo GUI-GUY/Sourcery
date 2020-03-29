@@ -7,13 +7,16 @@ from danbooru_handler import danbooru_download, danbooru_fetch_illustration
 from DIllustration import DIllustration
 import global_variables as gv
 
-def die(message, comm_error_q, comm_img_q):
+def die(message, comm_error_q, comm_img_q, terminate_c_pipe):
     comm_error_q.put('[Sourcery] ' + message)
     comm_img_q.put('Stopped')
     #mb.showerror('ERROR', message)
-    exit()
+    terminate_c_pipe.send(True)
+    while not terminate_c_pipe.recv():
+        terminate_c_pipe.send(True)
+    #exit()
 
-def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, duplicate_c_pipe):
+def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, duplicate_c_pipe, terminate_c_pipe):
     """
     1. for all images in input folder:
     2. get SauceNao information
@@ -34,7 +37,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
             comm_error_q.put('[Sourcery] Moving image to working directory')
             copy(image, cwd + '/Sourcery/sourced_original')
         except Exception as e:
-            die(str(e), comm_error_q, comm_img_q)
+            die(str(e), comm_error_q, comm_img_q, terminate_c_pipe)
         
         res = get_response(img, cwd, saucenao_key, minsim, comm_error_q)
         if res[0] == 401:
@@ -43,22 +46,22 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
             continue
         elif res[0] == 403:
             # Incorrect or Invalid API Key!
-            die(res[1], comm_error_q, comm_img_q)
+            die(res[1], comm_error_q, comm_img_q, terminate_c_pipe)
         elif res[0] == 2:
             # generally non 200 statuses are due to either overloaded servers or the user is out of searches
-            die(res[1] + '\nSauceNao servers are overloaded\nor you are out of searches.\nTry again tomorrow.', comm_error_q, comm_img_q)
+            die(res[1] + '\nSauceNao servers are overloaded\nor you are out of searches.\nTry again tomorrow.', comm_error_q, comm_img_q, terminate_c_pipe)
         elif res[0] == 600:
             # One or more indexes are having an issue.
             # This search is considered partially successful, even if all indexes failed, so is still counted against your limit.
             # The error may be transient, but because we don't want to waste searches, allow time for recovery.
             comm_q.put((res[3], res[4]))
-            die(res[1] + '\nSauceNao gave a response but there was a problem on their end.\nStopped further processing of images to give the server time to recover.\nTry again in a few minutes.', comm_error_q, comm_img_q)
+            die(res[1] + '\nSauceNao gave a response but there was a problem on their end.\nStopped further processing of images to give the server time to recover.\nTry again in a few minutes.', comm_error_q, comm_img_q, terminate_c_pipe)
         elif res[0] == 41:
             # Problem with search as submitted, bad image, or impossible request.
             # Issue is unclear, so don't flood requests.
             comm_q.put((res[3], res[4]))
             if res[3] < 1:
-                die(res[1] + ' + Out of searches for today', comm_error_q, comm_img_q)
+                die(res[1] + ' + Out of searches for today', comm_error_q, comm_img_q, terminate_c_pipe)
             else:
                 comm_error_q.put('[Sourcery] ' + res[1])
             if res[2] < 1:
@@ -75,7 +78,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
                 img_data_q.put(create_DIllustration(img, image, cwd + '/Sourcery/sourced_original/' + img, processed_data, minsim, comm_error_q))
             #process_img_data(img, image, res, minsim, img_data_q, comm_error_q)   
             if res[3] < 1:
-                die('Out of searches for today', comm_error_q, comm_img_q)
+                die('Out of searches for today', comm_error_q, comm_img_q, terminate_c_pipe)
             if res[2] < 1:
                 comm_error_q.put('[Sourcery] Sleeping 30 seconds because of SauceNao restrictions')
                 sleep(30)
@@ -88,7 +91,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
             except:
                 pass
     comm_img_q.put("Finished")
-    exit()
+    terminate_c_pipe.send(True)
             
 def create_DIllustration(img_name_original, input_path, work_path, img_data, minsim, comm_error_q):
     """
