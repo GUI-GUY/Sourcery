@@ -103,7 +103,7 @@ MISC
 + reference repair
 + weights default
 + save button in provider options saves all 
-Last Error: 0063
+Last Error: 0067
 
 
 beta 0.4
@@ -141,6 +141,7 @@ fix yandere& konachan scrollframe color bug
 reference takes the first reference so if you source an image with more services later on this will get ignored
 on save: copy all images then delete old ones
 on load reference: download images
+
 
 
 beta 0.5?

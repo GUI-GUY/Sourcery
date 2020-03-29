@@ -73,7 +73,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
             sleep(10)
         elif res[0] == 200:
             comm_q.put((res[3], res[4]))
-            processed_data = process_img_data_new(img, input_dir, res, minsim, comm_error_q)
+            processed_data = process_img_data_new(img, cwd + '/Sourcery/sourced_original/' + img, input_dir, res, minsim, comm_error_q)
             if processed_data != False:
                 img_data_q.put(create_DIllustration(img, image, cwd + '/Sourcery/sourced_original/' + img, processed_data, minsim, comm_error_q))
             #process_img_data(img, image, res, minsim, img_data_q, comm_error_q)   
@@ -102,7 +102,7 @@ def create_DIllustration(img_name_original, input_path, work_path, img_data, min
         img_data[0], img_data[1], img_data[2], img_data[3]], minsim)
     return d_illust
 
-def process_img_data_new(img_name_original, input_path, res, minsim, comm_error_q):
+def process_img_data_new(img_name_original, img_path, input_path, res, minsim, comm_error_q):
     """
     Downloads the image from pixiv and Danbooru
     Returns information on the downloads
@@ -136,6 +136,7 @@ def process_img_data_new(img_name_original, input_path, res, minsim, comm_error_
 
     if len(danbooru_illustration_list) == 0 and len(pixiv_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0:
         comm_error_q.put('None of the requested images were available!')
+        comm_error_q.put('DELETE' + img_path)
         gv.Files.Ref.new_reference(img_name_original, [], [], [], [], gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, gv.Files.Conf.rename_yandere, gv.Files.Conf.rename_konachan, minsim, dict_list, input_path)
         return False
     

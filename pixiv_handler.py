@@ -83,10 +83,28 @@ def pixiv_download(img_name_original, illustration, comm_error_q=None):
         for count in range(illustration.page_count):
             illustration.headers["referer"] = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + str(illustration.id)
             img_url = img_url.replace(replace_template.format(page=count-1), replace_template.format(page=count))
-            img_res = get(img_url, headers=illustration.headers) #TODO Fehlerbehandlung
+            try:
+                img_res = get(img_url, headers=illustration.headers)
+            except Exception as e:
+                print("ERROR [0066] " + str(e))
+                if comm_error_q != None:
+                    comm_error_q.put("[Sourcery] ERROR [0066] " + str(e))
+                    return False
+                else:
+                    gv.Files.Log.write_to_log("ERROR [0066] " + str(e))
+                #mb.showerror("ERROR [0066]", "ERROR CODE [0066]\nImage could not be downloaded")
             filetype = img_url.split(".")[-1]
-            with open(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + folder_name + new_name.format(page=count,filetype=filetype),"wb+") as f:
-                f.write(img_res.content) #TODO Fehlerbehandlung
+            try:
+                with open(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + folder_name + new_name.format(page=count,filetype=filetype),"wb+") as f:
+                    f.write(img_res.content)
+            except Exception as e:
+                print("ERROR [0065] " + str(e))
+                if comm_error_q != None:
+                    comm_error_q.put("[Sourcery] ERROR [0065] " + str(e))
+                    return False
+                else:
+                    gv.Files.Log.write_to_log("ERROR [0065] " + str(e))
+                #mb.showerror("ERROR [0065]", "ERROR CODE [0065]\nImage could not be downloaded")
         return folder_name[:-1]
     else:
         if gv.Files.Conf.rename_pixiv == '1':
@@ -97,13 +115,22 @@ def pixiv_download(img_name_original, illustration, comm_error_q=None):
                 new_name = img_name_original[:dot] + '.{filetype}'
             else:
                 new_name = img_name_original + '.{filetype}'
-        filetype = img_url.split['.'][-1]
+        filetype = img_url.split('.')[-1]
         new_name = rename(new_name.format(filetype=filetype))
 
         illustration.headers["referer"] = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + str(illustration.id)
         img_res = get(img_url, headers=illustration.headers)
-        with open(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + new_name, "wb+") as f : #TODO Fehlerbehandlung
-            f.write(img_res.content)
+        try:
+            with open(gv.cwd + '/Sourcery/sourced_progress/pixiv/' + new_name, "wb+") as f :
+                f.write(img_res.content)
+        except Exception as e:
+            print("ERROR [0064] " + str(e))
+            if comm_error_q != None:
+                comm_error_q.put("[Sourcery] ERROR [0064] " + str(e))
+                return False
+            else:
+                gv.Files.Log.write_to_log("ERROR [0064] " + str(e))
+            #mb.showerror("ERROR [0064]", "ERROR CODE [0064]\nImage could not be downloaded")
         return new_name
     
 #________________________________________

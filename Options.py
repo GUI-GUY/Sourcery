@@ -148,10 +148,16 @@ class SauceNaoOptions():
         """
         Unlock API-Key widget for SauceNao, so that you can change your API-Key. 
         """
+        y = int(gv.height/90*10)
+        c = 23
+        x1 = int(gv.width/160*5)
+        x2 = int(gv.width/160*20)
+        x3 = int(gv.width/160*27)
+        x4 = int(gv.width/160*58)
         self.saucenao_key_change_btn.place_forget()
         self.saucenao_key_number_lbl.place_forget()
-        self.saucenao_key_confirm_btn.place(x = int(gv.width/160*55), y = int(gv.height/90*10))
-        self.saucenao_key_entry.place(x = int(gv.width/160*18), y = int(gv.height/90*10))
+        self.saucenao_key_confirm_btn.place(x = x4, y = y + c * 1)
+        self.saucenao_key_entry.place(x = x2, y = y + c * 1)
         self.saucenao_key_entry.delete(0, len(gv.Files.Cred.saucenao_api_key))
         self.saucenao_key_entry.insert(0, gv.Files.Cred.saucenao_api_key)
         
@@ -159,6 +165,12 @@ class SauceNaoOptions():
         """
         Save SauceNao API-Key and revert the widget to being uneditable.
         """
+        y = int(gv.height/90*10)
+        c = 23
+        x1 = int(gv.width/160*5)
+        x2 = int(gv.width/160*20)
+        x3 = int(gv.width/160*27)
+        x4 = int(gv.width/160*58)
         gv.Files.Log.write_to_log('Attempting to save SauceNao API-Key')
         gv.Files.Cred.saucenao_api_key = self.saucenao_key_entry.get()
         e = gv.Files.Cred.write_credentials()
@@ -168,9 +180,9 @@ class SauceNaoOptions():
             gv.Files.Log.write_to_log('Failed to save SauceNao API-Key')
         self.saucenao_key_confirm_btn.place_forget()
         self.saucenao_key_entry.place_forget()
-        self.saucenao_key_change_btn.place(x = int(gv.width/160*55), y = int(gv.height/90*10))
+        self.saucenao_key_change_btn.place(x = x4, y = y + c * 1)
         self.saucenao_key_number_lbl.configure(text=gv.Files.Cred.saucenao_api_key)
-        self.saucenao_key_number_lbl.place(x = int(gv.width/160*18), y = int(gv.height/90*10))
+        self.saucenao_key_number_lbl.place(x = x2, y = y + c * 1)
 
     def saucenao_save(self):
         gv.Files.Log.write_to_log('Attempting to save SauceNAO options...')

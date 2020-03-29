@@ -162,8 +162,19 @@ def refresh_startpage(change, answer2):
             answer2 = ''
     try:
         e = comm_error_q.get(False)
-        error_lbl.configure(text=e)
-        gv.Files.Log.write_to_log(e)
+        if e.startswith('DELETE'):
+            try:
+                if path.isdir(e[6:]):
+                    rmtree(e[6:])
+                elif path.isfile(e[6:]):
+                    remove(e[6:])
+            except Exception as e:
+                print('ERROR [0067] ' + str(e))
+                gv.Files.Log.write_to_log("ERROR [0067] " + str(e))
+                #mb.showerror("ERROR", "ERROR CODE [0067]\nSomething went wrong while removing the image " + element)
+        else:
+            error_lbl.configure(text=e)
+            gv.Files.Log.write_to_log(e)
     except:
         pass
     if not img_data_q.empty():
@@ -623,6 +634,6 @@ if __name__ == '__main__':
     index = 0
     gv.Files.Log.write_to_log('Variables initialised')
     duplicate_loop()
-    termintate_loop()
+    terminate_loop()
     display_startpage()
     window.mainloop()
