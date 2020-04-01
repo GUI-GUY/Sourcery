@@ -180,21 +180,30 @@ def rename(desired_name, index=-1, new_name=''):
             index = index+1
             dot = desired_name.rfind('.')
             if dot == -1:
+                desired_name = rename_length(desired_name)
                 new_name = desired_name + '_' + str(index)
             else:
-                new_name = desired_name[:dot] + '_' + str(index) + desired_name[dot:] 
+                pre_name = rename_length(desired_name[:dot])
+                new_name = pre_name + '_' + str(index) + desired_name[dot:] 
             return rename(desired_name, index, new_name)
     else:
         if path.isfile(getcwd() + '/Sourcery/sourced_progress/pixiv/' + new_name) or path.isdir(getcwd() + '/Sourcery/sourced_progress/pixiv/' + new_name):
             index = index+1
             dot = desired_name.rfind('.')
             if dot == -1:
+                desired_name = rename_length(desired_name)
                 new_name = desired_name + '_' + str(index)
             else:
-                new_name = desired_name[:dot] + '_' + str(index) + desired_name[dot:] 
+                pre_name = rename_length(desired_name[:dot])
+                new_name = pre_name + '_' + str(index) + desired_name[dot:] 
             return rename(desired_name, index, new_name)
         return new_name
     return desired_name
+
+def rename_length(name):
+    if len(name) > 165:
+        name = name[:165]
+    return name
 
 def download(pid) :
     referer_template = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id={pid}"

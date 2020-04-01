@@ -276,6 +276,7 @@ class ProviderImageData():
                     second_row = True
                 
                 t += 1
+        #gv.res_frame.columnconfigure(1, weight=1)
         return t
 
     def process_info_imgs(self):
@@ -525,7 +526,7 @@ class ProviderImageData():
         elif service == 'Konachan':
             img_weight = img_weight + int(gv.Files.Conf.konachan_weight)
 
-        if original_aspect_ratio == int(self.sub_dill.width)/int(self.sub_dill.height):
+        if original_aspect_ratio == round(int(self.sub_dill.width)/int(self.sub_dill.height), 1):
             if int(self.sub_dill.width) > original_width:
                 img_weight = img_weight + int(gv.Files.Conf.higher_resolution_weight)
             elif int(self.sub_dill.width) == original_width:

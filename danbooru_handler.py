@@ -126,21 +126,30 @@ def rename(desired_name, service, index=-1, new_name=''):
             index = index+1
             dot = desired_name.rfind('.')
             if dot == -1:
+                desired_name = rename_length(desired_name)
                 new_name = desired_name + '_' + str(index)
             else:
-                new_name = desired_name[:dot] + '_' + str(index) + desired_name[dot:] 
+                pre_name = rename_length(desired_name[:dot])
+                new_name = pre_name + '_' + str(index) + desired_name[dot:] 
             return rename(desired_name, service, index, new_name)
     else:
         if path.isfile(getcwd() + '/Sourcery/sourced_progress/' + service + '/' + new_name) or path.isdir(getcwd() + '/Sourcery/sourced_progress/' + service + '/' + new_name):
             index = index+1
             dot = desired_name.rfind('.')
             if dot == -1:
+                desired_name = rename_length(desired_name)
                 new_name = desired_name + '_' + str(index)
             else:
-                new_name = desired_name[:dot] + '_' + str(index) + desired_name[dot:] 
+                pre_name = rename_length(desired_name[:dot])
+                new_name = pre_name + '_' + str(index) + desired_name[dot:] 
             return rename(desired_name, service, index, new_name)
         return new_name
     return desired_name
+
+def rename_length(name):
+    if len(name) > 170:
+        name = name[:165]
+    return name
 
 if __name__ == '__main__':
     danbooru_fetch_illustration(1)

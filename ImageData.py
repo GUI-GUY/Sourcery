@@ -214,6 +214,7 @@ class ImageData():
         IMPORTANT:\n
         Call load, process_results_imgs and modify_results_widgets in that order before
         """
+        #TODO display_results_init skip?
         flag = False
         if gv.Files.Conf.direct_replace_pixiv == '1':
             for elem in self.pixiv_list:
@@ -273,7 +274,7 @@ class ImageData():
         for service in self.service_list:
             for elem in service:
                 if elem.load_init:
-                    weight, a_flag = elem.evaluate_weight(self.original_image.size[0]/self.original_image.size[1], self.original_image.size[0])
+                    weight, a_flag = elem.evaluate_weight(round(self.original_image.size[0]/self.original_image.size[1], 1), self.original_image.size[0])
                     if not a_flag:
                         aspect_flag = False
                     if weight > highest_weight[1]:
@@ -407,9 +408,9 @@ class ImageData():
         saved_index_smaller = (None, -1)
         saved_index_bigger = (None, -1)
         for data in gv.img_data_array:
-            if data.index < self.index and data.index > saved_index_smaller[1]:
+            if data.display_results_init and data.index < self.index and data.index > saved_index_smaller[1]:
                 saved_index_smaller = (data, data.index)
-            if data.index > self.index and (data.index < saved_index_bigger[1] or saved_index_bigger[1] == -1):
+            if data.display_results_init and data.index > self.index and (data.index < saved_index_bigger[1] or saved_index_bigger[1] == -1):
                 saved_index_bigger = (data, data.index)
         if saved_index_smaller[1] > -1:
             self.prev_btn.configure(state='enabled', command = saved_index_smaller[0].display_big_selector)
@@ -420,11 +421,11 @@ class ImageData():
         else:
             self.next_btn.configure(state='disabled', command=None)
        
-    def delete_both(self):
-        """
-        Sets self.locked to false if user does not want to delete all images
-        """  
-        self.locked = mb.askyesno('Delete both?', 'Do you really want to delete both images:\n' + self.sub_dill.name + '\n')
+    # def delete_both(self):
+    #     """
+    #     Sets self.locked to false if user does not want to delete all images
+    #     """  
+    #     return mb.askyesno('Delete all?', 'Delete all images related to:\n' + self.sub_dill.name + '\n')
 
     def save(self, second_try=False, save_counter=0):
         """
@@ -466,7 +467,7 @@ class ImageData():
             exception_tags.extend(konachan_tags)
 
         if not second_try:
-            #--Does the user want to save more than one image?--#
+            #--Does the user want to save more than one image?...--#
             save_counter = 0
             
             for service in self.service_list:
@@ -481,10 +482,14 @@ class ImageData():
             ##----##
                 
             if save_counter == 0:
-                self.delete_both()
-                return False
+                if gv.Files.Conf.delete_input == '1':
+                    if not mb.askyesno('Delete all?', 'Delete all images(INcluding image in input folder) related to:\n' + self.sub_dill.name + '\n'):
+                        return False
+                else:
+                    if not mb.askyesno('Delete all?', 'Delete all images(EXcluding image in input folder) related to:\n' + self.sub_dill.name + '\n'):
+                        return False
 
-        #--If yes, make a head directory(new_dir, full path) with the original name and save all checked images in it--#
+        #--...If yes, make a head directory(new_dir, full path) with the original name and save all checked images in it--#
         if save_counter > 1:
             new_dir = gv.output_dir + '/' + self.sub_dill.name_no_suffix
             try:
@@ -524,7 +529,7 @@ class ImageData():
                         t += 1
         ##----##
 
-        #--If no, go through all saves, the only one that is checked will be in there--#
+        #--...If no, go through all saves, the only one that is checked will be in there--#
         else:
             try:
                 makedirs(gv.output_dir, 0o777, True)

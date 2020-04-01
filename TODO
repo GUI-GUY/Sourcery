@@ -103,14 +103,8 @@ MISC
 + reference repair
 + weights default
 + save button in provider options saves all 
-Last Error: 0067
-
-BUGS
-big selector shows one image too much
-lock selected locks too much
-delete images on prompt does not work, throws "error on save"
-if one image has not been checked and not been deleted only a reload of the startpage will show it
-max filename length
+Last Error: 0068
+ 
 
 beta 0.4
 3rd service

@@ -47,6 +47,9 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
         elif res[0] == 403:
             # Incorrect or Invalid API Key!
             die(res[1], comm_error_q, comm_img_q, terminate_c_pipe)
+        elif res[0] == 666:
+            # Request failed!
+            die(res[1], comm_error_q, comm_img_q, terminate_c_pipe)
         elif res[0] == 2:
             # generally non 200 statuses are due to either overloaded servers or the user is out of searches
             die(res[1] + '\nSauceNao servers are overloaded\nor you are out of searches.\nTry again tomorrow.', comm_error_q, comm_img_q, terminate_c_pipe)

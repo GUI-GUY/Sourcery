@@ -84,8 +84,8 @@ def display_startpage():
     #display_info()
     display_logfile()
 
-    test_btn = Button(master=window, text='test', command=test)
-    #test_btn.place(x = 800, y = 60)
+    test_btn = Button(master=window, text='test', command=test, style='button.TLabel')
+    test_btn.place(x = 800, y = 60)
     display_info_btn.place(x = int(width*0.7), y = int(height/90*6))
     display_logfile_btn.place(x = int(width*0.8), y = int(height/90*6))
 
@@ -95,6 +95,11 @@ def test():
     global input_images_array
     print(gv.img_data_array)
     print(input_images_array)
+    counter = 0
+    for data in gv.img_data_array:
+        if data.locked:
+            counter += 1
+    print("Locked:", counter)
     gv.Files.Log.write_to_log('this is a test')
 
 def list_input(directory_list, directory, depth):
@@ -342,7 +347,7 @@ def display_logfile():
 def forget_all_widgets():
     for widget in window.winfo_children():
         widget.place_forget()
-
+11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 def stop():
     """
     Stop further search for images and halt the magic process.
@@ -373,6 +378,7 @@ def save_locked():
         gv.Files.Log.write_to_log('Saved images')
     else:
         gv.Files.Log.write_to_log('Cancelled saving images')
+    results_ScrollFrame.display(x = int(width/16*4), y = int(height/9))
     leftovers()
     save_locked_btn.configure(state='disabled')
 
@@ -601,7 +607,7 @@ if __name__ == '__main__':
     
     do_sourcery_btn.grid(row= 3, column= 0, sticky=W, pady = 1)
     stop_btn.grid(row= 4, column= 0, sticky=W, pady = 1)
-    #load_from_ref_btn.grid(row= 5, column= 0, sticky=W, pady = 1, columnspan=2)
+    load_from_ref_btn.grid(row= 5, column= 0, sticky=W, pady = 1, columnspan=2)
 
     frame_startpage.columnconfigure(2, weight=1)
 

@@ -1,0 +1,9 @@
+Update 0.3.1
+
+Bugfixes:
+- request errors to SauceNao were not handled
+- weight system would choose wrong image because aspect ratio of two images differed slightly after the comma
+- big selector no longer shows images that weren't shown on the results screen
+- if you checked none of the images in one set and told the program to delete them, it wouldn't do it, now it does
+- results screen now jumps back to the top after saving to avoid confusion
+- filenamelength now (hopefully) cannot overshoot the limit set by Windows 10

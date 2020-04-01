@@ -86,8 +86,16 @@ def get_response(image_name, cwd, api_key, minsim, comm_error_q=None):
     files = {'file': ("image.png", imageData.getvalue())}
     imageData.close()
     
-    
-    r = post(url, files=files)
+    try:
+        r = post(url, files=files)
+    except Exception as e:
+        print('ERROR [0068] ' + str(e))
+        if comm_error_q != None:
+            comm_error_q.put('[Sourcery] ERROR [0068] ' + str(e))
+        else:
+            gv.Files.Log.write_to_log('ERROR [0068] ' + str(e))
+        #mb.showerror("ERROR CODE [0068]\nSomething went wrong while requesting data from SauceNAO)
+        return [666, 'Something went wrong while requesting data from SauceNAO:\n' + str(e)]
     if r.status_code != 200:
         if r.status_code == 403:
             return [403, 'Incorrect or Invalid API Key!\nGo to Options->SauceNao->SauceNao API-Key and insert a Key']
