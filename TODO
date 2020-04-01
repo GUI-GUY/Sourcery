@@ -105,6 +105,12 @@ MISC
 + save button in provider options saves all 
 Last Error: 0067
 
+BUGS
+big selector shows one image too much
+lock selected locks too much
+delete images on prompt does not work, throws "error on save"
+if one image has not been checked and not been deleted only a reload of the startpage will show it
+max filename length
 
 beta 0.4
 3rd service
@@ -123,6 +129,7 @@ Notification rework
     on download tell user
     stopping (please wait)
     show imgname in big selector
+    tell user how many images have been sourced successfully/unsuccessfully
 bind keys
 import configparser
 pixiv gif support
@@ -141,7 +148,8 @@ fix yandere& konachan scrollframe color bug
 reference takes the first reference so if you source an image with more services later on this will get ignored
 on save: copy all images then delete old ones
 on load reference: download images
-
+show tags in results screen doesn't work after images have been displayed
+move sourced/unsources input images into [folder]
 
 
 beta 0.5?

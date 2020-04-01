@@ -45,6 +45,7 @@ def save():
             gv.Files.Log.write_to_log('Attempting to save image:' + data.sub_dill.name + '...' )
             if not data.save():
                 print('error while saving')
+                gv.Files.Log.write_to_log('error while saving')
                 continue
             gv.Files.Log.write_to_log('Successfully saved image')
             data.forget_results()
