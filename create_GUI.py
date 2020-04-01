@@ -347,7 +347,7 @@ def display_logfile():
 def forget_all_widgets():
     for widget in window.winfo_children():
         widget.place_forget()
-11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+        
 def stop():
     """
     Stop further search for images and halt the magic process.
