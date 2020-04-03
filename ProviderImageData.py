@@ -44,7 +44,7 @@ class ProviderImageData():
         except:
             self.downloaded_wxh_lbl = Label(gv.res_frame, text = "More images", style='label.TLabel')
         self.downloaded_type_lbl = Label(gv.res_frame, style='label.TLabel')
-        self.results_tags_lbl = Label(gv.res_frame, style='label.TLabel')
+        self.results_tags_lbl = Label(gv.res_frame, wraplength=gv.res_frame_width/6, style='label.TLabel')
 
         self.result_not_in_tagfile_var = IntVar(value=0)
         self.result_not_in_tagfile = Checkbutton(gv.res_frame, text='Not in Tagfile', var=self.result_not_in_tagfile_var, style='chkbtn.TCheckbutton')
@@ -214,12 +214,12 @@ class ProviderImageData():
         """
         #self.index = int(t/3)
         self.downloaded_chkbtn.grid(column = 0, row = t+2, sticky = W)
-        self.downloaded_lbl.grid(column = 2, row = t+2, sticky = W, padx = 10)
-        self.downloaded_wxh_lbl.grid(column = 3, row = t+2, sticky = W, padx = 10)
-        self.downloaded_type_lbl.grid(column = 4, row = t+2, sticky = W, padx = 10)
-        self.results_tags_lbl.grid(column = 5, row = t+2, sticky = W, padx = 10, columnspan=2)
-        self.result_not_in_tagfile.grid(column = 7, row = t+2, sticky = W+N, padx = 5, pady = 3)
-        self.result_in_tagfile.grid(column = 7, row = t+2, sticky = W+N, padx = 5, pady = 23)
+        self.downloaded_lbl.grid(column = 2, row = t+2, sticky = W, padx = 7)
+        self.downloaded_wxh_lbl.grid(column = 3, row = t+2, sticky = W, padx = 7)
+        self.downloaded_type_lbl.grid(column = 4, row = t+2, sticky = W, padx = 7)
+        self.results_tags_lbl.grid(column = 5, row = t+2, sticky = W, padx = 7)
+        self.result_not_in_tagfile.grid(column = 6, row = t+2, sticky = W+N, padx = 7, pady = 3)
+        self.result_in_tagfile.grid(column = 6, row = t+2, sticky = W+N, padx = 7, pady = 23)
         
         return t+2
         

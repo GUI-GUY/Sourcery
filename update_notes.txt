@@ -7,3 +7,8 @@ Bugfixes:
 - if you checked none of the images in one set and told the program to delete them, it wouldn't do it, now it does
 - results screen now jumps back to the top after saving to avoid confusion
 - filenamelength now (hopefully) cannot overshoot the limit set by Windows 10
+
+Update 0.3.2
+
+- Reduced padding in the results screen to better fit smaller screens
+- Removed test button

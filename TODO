@@ -107,6 +107,9 @@ Last Error: 0068
  
 
 beta 0.4
+REMOVE TEST AND REFERENCE BUTTON
+timeout and continue prompt if one service takes too long to download
+gui lags with too many images in input
 3rd service
 Hydrus
 DCP

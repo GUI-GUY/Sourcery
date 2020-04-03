@@ -85,7 +85,7 @@ def display_startpage():
     display_logfile()
 
     test_btn = Button(master=window, text='test', command=test, style='button.TLabel')
-    test_btn.place(x = 800, y = 60)
+    #test_btn.place(x = 800, y = 60)
     display_info_btn.place(x = int(width*0.7), y = int(height/90*6))
     display_logfile_btn.place(x = int(width*0.8), y = int(height/90*6))
 

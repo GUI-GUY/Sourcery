@@ -291,12 +291,12 @@ class ImageData():
 
         #self.index = int(t/4)
         self.original_chkbtn.grid(column = 0, row = t+1, sticky = W)
-        self.original_lbl.grid(column = 2, row = t+1, sticky = W, padx = 10)
-        self.original_wxh_lbl.grid(column = 3, row = t+1, sticky = W, padx = 10)
-        self.original_type_lbl.grid(column = 4, row = t+1, sticky = W, padx = 10)
-        self.info_btn.grid(column = 6, row = t+1, sticky = W, padx = 10)
-        self.original_cropped_lbl.grid(column = 1, row = t, columnspan=6, sticky = W, padx = 10)
-        self.big_selector_btn.grid(column = 5, row = t+1, sticky = W, padx = 10)
+        self.original_lbl.grid(column = 2, row = t+1, sticky = W, padx = 7)
+        self.original_wxh_lbl.grid(column = 3, row = t+1, sticky = W, padx = 7)
+        self.original_type_lbl.grid(column = 4, row = t+1, sticky = W, padx = 7)
+        self.info_btn.grid(column = 6, row = t+1, sticky = W, padx = 7)
+        self.original_cropped_lbl.grid(column = 1, row = t, columnspan=6, sticky = W, padx = 7)
+        self.big_selector_btn.grid(column = 5, row = t+1, sticky = W, padx = 7)
 
         t += 1
 
