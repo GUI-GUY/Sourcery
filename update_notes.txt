@@ -12,3 +12,8 @@ Update 0.3.2
 
 - Reduced padding in the results screen to better fit smaller screens
 - Removed test button
+- Fixed Index out of bounds error in second process
+- Fixed konachan not giving a file ext in its response
+- Fixed error where nonexistent path_original variable was called
+- No more empty tagfile generation
+- Fixed reference not holding the right input_path

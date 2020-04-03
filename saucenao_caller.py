@@ -111,11 +111,11 @@ def get_response(image_name, cwd, api_key, minsim, comm_error_q=None):
                 #One or more indexes are having an issue.
                 #This search is considered partially successful, even if all indexes failed, so is still counted against your limit.
                 #The error may be transient, but because we don't want to waste searches, allow time for recovery.
-                return [600, 'API Error.', results['header']['short_remaining'], results['header']['long_remaining']]
+                return [600, 'API Error.', results['header']['short_remaining'], results['header']['long_remaining'], results['header']['long_limit']]
             elif int(results['header']['status'])<0:
                 #Problem with search as submitted, bad image, or impossible request.
                 #Issue is unclear, so don't flood requests.
-                return [41, 'Bad image or other request error.', results['header']['short_remaining'], results['header']['long_remaining']]
+                return [41, 'Bad image or other request error.', results['header']['short_remaining'], results['header']['long_remaining'], results['header']['long_limit']]
         else:
             #General issue, api did not respond. Normal site took over for this error state.
             #Issue is unclear, so don't flood requests.

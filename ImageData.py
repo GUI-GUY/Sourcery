@@ -509,7 +509,7 @@ class ImageData():
                     self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, new_dir, self.sub_dill.name_no_suffix + '_' + str(t))
                 
                 try:
-                    move(self.path_original, new_dir + '/' + new_img_name)
+                    move(self.sub_dill.path, new_dir + '/' + new_img_name)
                 except Exception as e:
                     if not second_try:
                         return self.save(True, save_counter)
@@ -570,12 +570,14 @@ class ImageData():
             widget.grid_forget()
 
         if gv.Files.Conf.delete_input == '1':
-            try:
-                remove(self.dill.input_path)
-            except Exception as e:
-                print("ERROR [0014] " + str(e))
-                gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
-                #mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.input_dir + self.name_original)
+            #print(self.dill.input_path)
+            gv.delete_dirs_array.append(self.dill.input_path)
+            # try:
+            #     remove(self.dill.input_path)
+            # except Exception as e:
+            #     print("ERROR [0014] " + str(e))
+            #     gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
+            #     #mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.input_dir + self.name_original)
         
         return True
 

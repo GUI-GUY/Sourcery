@@ -69,6 +69,8 @@ def gen_tagfile(tags, gen_dir, name):
                 counter = counter + 1
         for t in range(counter):
             tags.remove(tag)
+    if len(tags) == 0:
+        return True
     try:
         f = open(gen_dir + '/' + name + '.txt', 'a', encoding='utf8')
         for tag in tags:

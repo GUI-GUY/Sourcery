@@ -76,7 +76,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
             sleep(10)
         elif res[0] == 200:
             comm_q.put((res[3], res[4]))
-            processed_data = process_img_data_new(img, cwd + '/Sourcery/sourced_original/' + img, input_dir, res, minsim, comm_error_q)
+            processed_data = process_img_data_new(img, cwd + '/Sourcery/sourced_original/' + img, image, res, minsim, comm_error_q)
             if processed_data != False:
                 img_data_q.put(create_DIllustration(img, image, cwd + '/Sourcery/sourced_original/' + img, processed_data, minsim, comm_error_q))
             #process_img_data(img, image, res, minsim, img_data_q, comm_error_q)   
@@ -200,7 +200,7 @@ def danbooru_fetcher(img_name_original, source, service, visited, danbooru, yand
                 visited.append(source['illust_id'])
     return illustration_list
 
-def process_img_data(img_name_original, input_path, res, minsim, img_data_q, comm_error_q):
+def process_img_data_deprecated(img_name_original, input_path, res, minsim, img_data_q, comm_error_q):
     """
     Downloads the image from pixiv and Danbooru
     Returns information on the downloads

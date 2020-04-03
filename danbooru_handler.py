@@ -102,9 +102,9 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None,
                 else:
                     dot = img_name_original.rfind('.')
                     if dot != -1:
-                        new_name = img_name_original[:dot] + '.' + illustration['file_ext']
+                        new_name = img_name_original[:dot] + '.' + illustration['file_url'].split('.')[-1]
                     else:
-                        new_name = img_name_original + '.' + illustration['file_ext']
+                        new_name = img_name_original + '.' + illustration['file_url'].split('.')[-1]
                     new_name = rename(new_name, 'konachan')
                 urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/konachan/' + new_name)
                 return new_name
