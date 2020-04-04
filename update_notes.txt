@@ -27,4 +27,5 @@ Features:
 
 - Reduced padding in the results screen to better fit smaller screens
 - Removed test button
-- References will now be deleted one by one instead of wiping the whole reference file 
+- References will now be deleted one by one instead of wiping the whole reference file
+- Added ability to choose how many images to load from reference

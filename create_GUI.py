@@ -6,7 +6,7 @@ from os import listdir, path, remove
 from sys import stderr
 from copy import copy
 import time
-from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END, W
+from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END, W, simpledialog
 from tkinter import Checkbutton as cb
 from tkinter.ttk import Label, Button, Style, Entry, Frame
 #from tkinter import messagebox as mb
@@ -238,12 +238,13 @@ def refresh_startpage():
         load_image_data()
 
 def load_from_ref():
-    ref_thread = Thread(target=load_from_ref_run)
+    c = simpledialog.askinteger(title='How many?', prompt='How many images would you like to load?')
+    ref_thread = Thread(target=load_from_ref_run, args=[c])
     ref_thread.start()
     do_sourcery_btn.configure(state='disabled')
     load_from_ref_btn.configure(state='disabled')
 
-def load_from_ref_run():
+def load_from_ref_run(c):
     """
     Loads images whose info has been saved in the reference file
     """
@@ -251,7 +252,9 @@ def load_from_ref_run():
     #refs = deepcopy()#gv.Files.Ref.read_reference()
     gv.Files.Log.write_to_log('Loading images from reference file...')
     for ref in gv.Files.Ref.refs:
-
+        if c == 0:
+            break
+        c -= 1
         pixiv_info_list = list(ref['pixiv'])
 
         danb_info_list = list(ref['danbooru'])
