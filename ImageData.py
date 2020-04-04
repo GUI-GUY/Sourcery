@@ -135,6 +135,13 @@ class ImageData():
                 #mb.showerror("ERROR [0039]", "ERROR CODE [0039]\nSomething went wrong while loading an image.")
                 gv.Files.Log.write_to_log("ERROR [0039] " + str(e))
                 return False
+        try:
+            self.original_image_thumb = Image.open(self.sub_dill.path)
+        except Exception as e:
+                print("ERROR [0069] " + str(e))
+                #mb.showerror("ERROR [0069]", "ERROR CODE [0069]\nSomething went wrong while loading an image.")
+                gv.Files.Log.write_to_log("ERROR [0069] " + str(e))
+                return False
         
         if self.original_image == None:
             return False
@@ -154,7 +161,7 @@ class ImageData():
         """
         if self.process_results_imgs_init:
             return
-        self.original_image_thumb = deepcopy(self.original_image)
+        
         self.original_image_thumb.thumbnail(self.thumb_size, resample=Image.ANTIALIAS)
         self.original_photoImage_thumb = ImageTk.PhotoImage(self.original_image_thumb)
         self.original_image_thumb.close()

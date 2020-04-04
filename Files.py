@@ -789,7 +789,10 @@ class ConfigFile():
 class ReferenceFile():
     """Includes methods to add a new reference, read these from the reference file or delete its contents"""
     def __init__(self, log):
-        self.Log = log # TODO self.refs to delete duplicate refs
+        self.Log = log
+        self.refs = list()
+        if self.read_reference():
+            self.write_reference()
 
     def new_reference(self, old_name, pixiv_list, danbooru_list, yandere_list, konachan_list, rename_pixiv, rename_danbooru, rename_yandere, rename_konachan, minsim, dict_list, input_path):
         """
@@ -848,9 +851,27 @@ class ReferenceFile():
                 ", \"dict_list\" : " + str(dict_list).replace("'", "\"").replace("\\", "/") +
                 ", \"input_path\" : \"" + input_path.replace("\\", "/") +
                 "\"}\n")
+        
+        self.refs.append(loads(ref))
+        self.append_reference(ref)
+    
+    def append_reference(self, ref):
         try:
             f = open(cwd + '/Sourcery/reference', 'a')
             f.write(ref)
+        except Exception as e:
+            print("ERROR [0033] " + str(e))
+            #self.Log.write_to_log("ERROR [0033] " + str(e))
+            #mb.showerror("ERROR [0033]", "ERROR CODE [0033]\nSomething went wrong while accessing a configuration file(reference).")
+            return
+        f.close()
+
+    def write_reference(self):
+        self.clean_reference()
+        try:
+            f = open(cwd + '/Sourcery/reference', 'a')
+            for ref in self.refs:
+                f.write(str(ref).replace("'", "\"") + '\n')
         except Exception as e:
             print("ERROR [0033] " + str(e))
             #self.Log.write_to_log("ERROR [0033] " + str(e))
@@ -870,18 +891,20 @@ class ReferenceFile():
             #self.Log.write_to_log("ERROR [0034] " + str(e))
             #mb.showerror("ERROR [0034]", "ERROR CODE [0034]\nSomething went wrong while accessing a configuration file(reference), please try again.")
             return False
-        return_array = list()
 
         temp = f.readline()
         if not temp.startswith('{'):
             f.close()
             return False
         while (temp.startswith('{')):
-            return_array.append(loads(temp[:-1]))
+            ref = loads(temp[:-1])
+            if ref not in self.refs:
+                self.refs.append(ref)
             temp = f.readline()
         f.close()
+        return True
         #print(str(return_array))
-        return return_array
+        #return return_array
 
     def clean_reference(self):
         """

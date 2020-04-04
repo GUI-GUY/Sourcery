@@ -107,6 +107,16 @@ class ProviderImageData():
                     #mb.showerror("ERROR [0045]", "ERROR CODE [0045]\nSomething went wrong while loading an image.")
                     gv.Files.Log.write_to_log("ERROR [0045] " + str(e))
                     return False
+            try:
+                self.downloaded_image_thumb = Image.open(self.sub_dill.path)
+            except Exception as e:
+                if not second_try:
+                    return self.load(True)
+                else:
+                    print("ERROR [0070] " + str(e))
+                    #mb.showerror("ERROR [0070]", "ERROR CODE [0070]\nSomething went wrong while loading an image.")
+                    gv.Files.Log.write_to_log("ERROR [0070] " + str(e))
+                    return False
         else:
             try:
                 self.sub_dir_array.extend(listdir(self.sub_dill.path))
@@ -126,6 +136,13 @@ class ProviderImageData():
                     #mb.showerror("ERROR [0046]", "ERROR CODE [0046]\nSomething went wrong while loading an image.")
                     gv.Files.Log.write_to_log("ERROR [0046] " + str(e))
                     return False
+            try:
+                self.downloaded_image_thumb = Image.open(self.sub_dill.path + '/' + listdir(self.sub_dill.path)[0])
+            except Exception as e:
+                print("ERROR [0047] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0047] " + str(e))
+                mb.showerror("ERROR [0047]", "ERROR CODE [0047]\nSomething went wrong while accessing an image, please restart Sourcery.")
+                return False
         
         self.load_init = True
         return True
@@ -145,16 +162,6 @@ class ProviderImageData():
         if self.process_results_imgs_init:
             return
 
-        if not self.sub_dill.is_folder:
-            self.downloaded_image_thumb = deepcopy(self.downloaded_image)
-        else:
-            try:
-                self.downloaded_image_thumb = Image.open(self.sub_dill.path + '/' + listdir(self.sub_dill.path)[0])
-            except Exception as e:
-                print("ERROR [0047] " + str(e))
-                gv.Files.Log.write_to_log("ERROR [0047] " + str(e))
-                mb.showerror("ERROR [0047]", "ERROR CODE [0047]\nSomething went wrong while accessing an image, please restart Sourcery.")
-                return
         self.downloaded_image_thumb.thumbnail(self.thumb_size, resample=Image.ANTIALIAS)
         self.downloaded_photoImage_thumb = ImageTk.PhotoImage(self.downloaded_image_thumb)
         self.downloaded_image_thumb.close()

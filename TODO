@@ -103,7 +103,7 @@ MISC
 + reference repair
 + weights default
 + save button in provider options saves all 
-Last Error: 0068
+Last Error: 0070
  
 
 beta 0.4
@@ -114,7 +114,7 @@ reference packs all loaded images in the left top corner for large amounts
 only input is sometimes shown on reference load
 big selector: show image picked by weight system
 gui lags hard on huge data loaded
-
+ATTEMPTING
 3rd service
 Hydrus
 DCP

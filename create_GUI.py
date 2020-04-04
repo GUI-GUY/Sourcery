@@ -13,8 +13,10 @@ from tkinter.ttk import Label, Button, Style, Entry, Frame
 #from tkinter.filedialog import askdirectory
 #from functools import partial
 from shutil import rmtree
+from copy import deepcopy
 #from distutils.util import strtobool
 from multiprocessing import Process, freeze_support, Queue, Pipe, Lock, Semaphore
+from threading import Thread
 from file_operations import is_image, save, open_input, open_output, display_statistics, change_input, change_output
 from sourcery import do_sourcery
 from pixiv_handler import pixiv_fetch_illustration
@@ -89,7 +91,8 @@ def display_startpage():
     display_info_btn.place(x = int(width*0.7), y = int(height/90*6))
     display_logfile_btn.place(x = int(width*0.8), y = int(height/90*6))
 
-    refresh_startpage(1, '')
+    startpage_update_thread = Thread(target=refresh_startpage, daemon=True)
+    startpage_update_thread.start()
     
 def test():
     global input_images_array
@@ -111,7 +114,131 @@ def list_input(directory_list, directory, depth):
             add.extend(list_input(listdir(directory + '/' + elem), directory + '/' + elem, depth-1))
     return add
 
-def refresh_startpage(change, answer2):
+def count_input():
+    input_lock.acquire()
+    try:
+        input_images_array = list_input(listdir(gv.input_dir), gv.input_dir, int(gv.Files.Conf.input_search_depth))
+        input_images_array.extend(listdir(gv.input_dir))
+    except Exception as e:
+        print('ERROR [0040] ' + str(e))
+        gv.Files.Log.write_to_log('ERROR [0040] ' + str(e))
+        #mb.showerror("ERROR [0040]", "ERROR CODE [0040]\nSomething went wrong while accessing a the 'Input' folder, please restart Sourcery.")
+    delete = list()
+    for img in input_images_array:
+        if (not is_image(img)) or not path.isfile(img):
+            delete.append(img)
+    for elem in delete:
+        if elem in input_images_array:
+            input_images_array.remove(elem)
+    input_lock.release()
+    images_in_input_count_lbl.configure(text=str(len(input_images_array)))
+
+def make_image_data():
+    if not img_data_q.empty():
+        b = None
+        try:
+            a = img_data_q.get(False)
+            #print('a')
+            global index
+            b = ImageData(a, index)
+            index += 1
+            gv.img_data_array.append(b)
+        #print('b')
+        except Exception as e:
+            if b in gv.img_data_array:
+                gv.img_data_array.remove(b)
+            print("ERROR [0060] " + str(e))
+            gv.Files.Log.write_to_log("ERROR [0060] " + str(e))
+            #mb.showerror("ERROR [0060]", "ERROR CODE [0060]\nImage data could not be loaded, skipped.")
+        
+def load_image_data():
+    for data in gv.img_data_array:
+        if not data.placed:
+            if gv.imgpp_sem.acquire(False):
+                load = data.load()
+                if not load:
+                    data.self_destruct()
+                    gv.img_data_array.remove(data)
+                    gv.Files.Log.write_to_log('Problem while loading images, skipped')
+                elif load:
+                    data.process_results_imgs()
+                    data.modify_results_widgets()
+                    x = data.display_results(gv.last_occupied_result+1)
+                    if x == -1:# This means direct replace has triggered
+                        gv.Files.Log.write_to_log('Attempting to save image:' + data.sub_dill.name + '...' )
+                        if data.save():
+                            gv.Files.Log.write_to_log('Successfully saved image')
+                            data.self_destruct()
+                        else:
+                            gv.Files.Log.write_to_log('Did not save image')# TODO delete reference
+                        gv.img_data_array.remove(data)
+                    else:
+                        gv.last_occupied_result = x
+                    data.placed = True
+
+def get_processing_status(answer2):
+    answer1 = (201, 200)
+    try:
+        answer1 = comm_q.get(False)
+        saucenao_requests_count_lbl.configure(text=str(answer1[0]) + "/" + str(answer1[1]))
+    except:
+        pass
+    if not comm_img_q.empty():
+        if answer1[0] < 1:
+            answer2 = "Out of requests"
+        else:
+            try:
+                answer2 = comm_img_q.get(False)
+                global currently_processing
+                if answer2 != currently_processing:
+                    currently_processing = answer2
+            except:
+                pass
+        currently_sourcing_img_lbl.configure(text=answer2)
+    if answer2 == 'Stopped' or answer2 == 'Finished':
+        if comm_error_q.empty():
+            gv.Files.Log.write_to_log('Sourcing process was stopped or is finished')
+            do_sourcery_btn.configure(state='enabled')
+            load_from_ref_btn.configure(state='enabled')
+            stop_btn.configure(state='enabled')
+            answer2 = ''
+    try:
+        e = comm_error_q.get(False)
+        if e.startswith('DELETE'):
+            try:
+                if path.isdir(e[6:]):
+                    rmtree(e[6:])
+                elif path.isfile(e[6:]):
+                    remove(e[6:])
+            except Exception as e:
+                print('ERROR [0067] ' + str(e))
+                gv.Files.Log.write_to_log("ERROR [0067] " + str(e))
+                #mb.showerror("ERROR", "ERROR CODE [0067]\nSomething went wrong while removing the image " + element)
+        else:
+            error_lbl.configure(text=e)
+            gv.Files.Log.write_to_log(e)
+    except:
+        pass
+    return answer2
+
+def refresh_startpage():
+    """
+    Updates these startpage widgets:
+    - Images in Input folder
+    - Remaining searches on SauceNao
+    - Current image that is being processed
+    Creates ImageData classes from the information the magic process gives
+    Displays all results
+    """
+    global input_images_array
+    answer2 = ''
+    while True:
+        count_input()
+        answer2 = get_processing_status(answer2)
+        make_image_data()
+        load_image_data()
+
+def refresh_startpage_old(change, answer2):
     """
     Updates these startpage widgets:
     - Images in Input folder
@@ -226,86 +353,101 @@ def refresh_startpage(change, answer2):
     window.after(100, refresh_startpage, change, answer2)
 
 def load_from_ref():
+    ref_thread = Thread(target=load_from_ref_run)
+    ref_thread.start()
+    do_sourcery_btn.configure(state='disabled')
+    load_from_ref_btn.configure(state='disabled')
+
+def load_from_ref_run():
     """
     Loads images whose info has been saved in the reference file
     """
-    refs = gv.Files.Ref.read_reference()
-    if refs:
-        gv.Files.Log.write_to_log('Loading images from reference file...')
-        for ref in refs:
+    gv.Files.Ref.read_reference()
+    #refs = deepcopy()#gv.Files.Ref.read_reference()
+    gv.Files.Log.write_to_log('Loading images from reference file...')
+    for ref in gv.Files.Ref.refs:
 
-            pixiv_info_list = list(ref['pixiv'])
+        pixiv_info_list = list(ref['pixiv'])
 
-            danb_info_list = list(ref['danbooru'])
+        danb_info_list = list(ref['danbooru'])
 
-            yandere_info_list = list(ref['yandere'])
+        yandere_info_list = list(ref['yandere'])
 
-            konachan_info_list = list(ref['konachan'])
+        konachan_info_list = list(ref['konachan'])
 
-            dict_list = ref['dict_list']
+        dict_list = ref['dict_list']
 
-            pixiv_illustration_list = list()
-            visited_ids = list()
-            for elem in pixiv_info_list:
-                if elem['id'] not in visited_ids:
-                    for d in dict_list:
-                        if d['service_name'] == 'Pixiv' and int(d['illust_id']) == int(elem['id']):
-                            x = d
-                            break
+        pixiv_illustration_list = list()
+        visited_ids = list()
+        for elem in pixiv_info_list:
+            if elem['id'] not in visited_ids:
+                x = None
+                for d in dict_list:
+                    if d['service_name'] == 'Pixiv' and int(d['illust_id']) == int(elem['id']):
+                        x = d
+                        break
+                if x != None:
                     pixiv_illustration_list.append((pixiv_fetch_illustration(ref['old_name'], int(elem['id'])), elem['new_name'], x))
-                    visited_ids.append(elem['id'])
-            
-            danb_illustration_list = list()
-            visited_ids = list()
-            for elem in danb_info_list:
-                if elem['id'] not in visited_ids:
-                    for d in dict_list:
-                        if d['service_name'] == 'Danbooru' and int(d['illust_id']) == int(elem['id']):
-                            x = d
-                            break
+                visited_ids.append(elem['id'])
+        
+        danb_illustration_list = list()
+        visited_ids = list()
+        for elem in danb_info_list:
+            if elem['id'] not in visited_ids:
+                x = None
+                for d in dict_list:
+                    if d['service_name'] == 'Danbooru' and int(d['illust_id']) == int(elem['id']):
+                        x = d
+                        break
+                if x != None:
                     danb_illustration_list.append((danbooru_fetch_illustration(int(elem['id']), danbooru=True), elem['new_name'], x))
-                    visited_ids.append(elem['id'])
-            
-            yandere_illustration_list = list()
-            visited_ids = list()
-            for elem in yandere_info_list:
-                if elem['id'] not in visited_ids:
-                    for d in dict_list:
-                        if d['service_name'] == 'Yandere' and int(d['illust_id']) == int(elem['id']):
-                            x = d
-                            break
+                visited_ids.append(elem['id'])
+        
+        yandere_illustration_list = list()
+        visited_ids = list()
+        for elem in yandere_info_list:
+            if elem['id'] not in visited_ids:
+                x = None
+                for d in dict_list:
+                    if d['service_name'] == 'Yandere' and int(d['illust_id']) == int(elem['id']):
+                        x = d
+                        break
+                if x != None:
                     yandere_illustration_list.append((danbooru_fetch_illustration(int(elem['id']), yandere=True), elem['new_name'], x))
-                    visited_ids.append(elem['id'])
-            
-            konachan_illustration_list = list()
-            visited_ids = list()
-            for elem in konachan_info_list:
-                if elem['id'] not in visited_ids:
-                    for d in dict_list:
-                        if d['service_name'] == 'Konachan' and int(d['illust_id']) == int(elem['id']):
-                            x = d
-                            break
+                visited_ids.append(elem['id'])
+        
+        konachan_illustration_list = list()
+        visited_ids = list()
+        for elem in konachan_info_list:
+            if elem['id'] not in visited_ids:
+                x = None
+                for d in dict_list:
+                    if d['service_name'] == 'Konachan' and int(d['illust_id']) == int(elem['id']):
+                        x = d
+                        break
+                if x != None:
                     konachan_illustration_list.append((danbooru_fetch_illustration(int(elem['id']), konachan=True), elem['new_name'], x))
-                    visited_ids.append(elem['id'])
-            
-            next_img = False
-            for data in gv.img_data_array:
-                if str(ref['old_name']) == data.sub_dill.name and str(ref['minsim']) == gv.Files.Conf.minsim:
-                    next_img = True
-                    break
-            if next_img:
-                gv.Files.Log.write_to_log('Image ' + str(ref['old_name']) + ' already sourced')
-                continue
-            # # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
-
+                visited_ids.append(elem['id'])
+        
+        next_img = False
+        for data in gv.img_data_array:
+            if str(ref['old_name']) == data.sub_dill.name and str(ref['minsim']) == gv.Files.Conf.minsim:
+                next_img = True
+                break
+        if len(pixiv_illustration_list) == 0 and len(danb_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0:
+            next_img = True
+        if not next_img:
+            # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
             dill = DIllustration(ref['input_path'], [{"service":'Original', "name":str(ref['old_name']), "work_path": gv.cwd + '/Sourcery/sourced_original/' + str(ref['old_name'])}, 
                 pixiv_illustration_list, danb_illustration_list, yandere_illustration_list, konachan_illustration_list], ref['minsim'])
             global index
             gv.img_data_array.append(ImageData(dill, index))
             index += 1
-        gv.Files.Log.write_to_log('Loaded images from reference file')
-    else:
-        gv.Files.Log.write_to_log('Reference file is empty')
+        else:
+            gv.Files.Log.write_to_log('Image ' + str(ref['old_name']) + ' already sourced or no sources found')
+    gv.Files.Log.write_to_log('Loaded images from reference file or Reference file is empty')
+    do_sourcery_btn.configure(state='enabled')
+    load_from_ref_btn.configure(state='enabled')
 
 def duplicate_loop():
     """

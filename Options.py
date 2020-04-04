@@ -266,7 +266,7 @@ class SourceryOptions():
         self.direct_replace_entry = Entry(parent, width=30, style="button.TLabel")
         self.direct_replace_entry.insert(0, gv.Files.Conf.direct_replace)
 
-        self.restart_gui_lbl = Label(parent, text="Restart of Sourcery recommended!", font=("Arial Bold", 10), style="label.TLabel")
+        self.restart_gui_lbl = Label(parent, text="Restart of Sourcery required(Images per page)!", font=("Arial Bold", 10), style="label.TLabel")
 
         self.sourcery_confirm_btn = Button(parent, text="Save", command=self.sourcery_save, style="button.TLabel")
 
@@ -430,12 +430,12 @@ class SourceryOptions():
             diff = int(self.images_per_page_entry.get()) - int(gv.Files.Conf.imgpp)
         except Exception as e:
             mb.showerror('Invalid Value', 'Please insert a positive integer value into the Images per page option')
-        if diff > 0:
-            for num in range(diff):
-                gv.imgpp_sem.release()
-        elif diff != 0:
-            for num in range(diff, 0):
-                gv.imgpp_sem.acquire(False)#TODO problem when more images are being displayed than imgpp
+        # if diff > 0:
+        #     for num in range(diff):
+        #         gv.imgpp_sem.release()
+        if diff != 0:
+            # for num in range(diff, 0):
+            #     gv.imgpp_sem.acquire(False)#TODO problem when more images are being displayed than imgpp
             y = int(gv.height/90*10)
             c = 23
             x3 = int(gv.width/160*50)
