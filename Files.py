@@ -854,6 +854,7 @@ class ReferenceFile():
         
         self.refs.append(loads(ref))
         self.append_reference(ref)
+        return loads(ref)
     
     def append_reference(self, ref):
         try:

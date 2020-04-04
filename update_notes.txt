@@ -1,20 +1,30 @@
 Update 0.3.1
 
 Bugfixes:
-- request errors to SauceNao were not handled
-- weight system would choose wrong image because aspect ratio of two images differed slightly after the comma
-- big selector no longer shows images that weren't shown on the results screen
-- if you checked none of the images in one set and told the program to delete them, it wouldn't do it, now it does
-- results screen now jumps back to the top after saving to avoid confusion
-- filenamelength now (hopefully) cannot overshoot the limit set by Windows 10
+- Request errors to SauceNao were not handled
+- Weight system would choose wrong image because aspect ratio of two images differed slightly after the comma
+- Big selector no longer shows images that weren't shown on the results screen
+- If you checked none of the images in one set and told the program to delete them, it wouldn't do it, now it does
+- Results screen now jumps back to the top after saving to avoid confusion
+- Filenamelength now (hopefully) cannot overshoot the limit set by Windows 10
 
 Update 0.3.2
 
-- Reduced padding in the results screen to better fit smaller screens
-- Removed test button
+Bugfixes:
+
 - Fixed Index out of bounds error in second process
 - Fixed konachan not giving a file ext in its response
 - Fixed error where nonexistent path_original variable was called
 - No more empty tagfile generation
 - Fixed reference not holding the right input_path
 - Fixed reference showing only input images when no sources were found
+- Removed ability to change "Images per page" while gui is open since it produced a weird error
+- Reworked reference loading. Uses a thread now which prevents the gui from freezing
+- Put the update loop inside a thread to prevent the gui from lagging
+- Fixed issue where all sourced images would be loaded into memory despite not putting them on screen (results screen)
+
+Features:
+
+- Reduced padding in the results screen to better fit smaller screens
+- Removed test button
+- References will now be deleted one by one instead of wiping the whole reference file 

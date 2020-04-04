@@ -102,7 +102,7 @@ def create_DIllustration(img_name_original, input_path, work_path, img_data, min
     """
     d_illust = DIllustration(input_path, 
         [{"service":'Original', "name":img_name_original, "work_path":work_path}, 
-        img_data[0], img_data[1], img_data[2], img_data[3]], minsim)
+        img_data[0], img_data[1], img_data[2], img_data[3]], img_data[4], minsim)
     return d_illust
 
 def process_img_data_new(img_name_original, img_path, input_path, res, minsim, comm_error_q):
@@ -159,9 +159,9 @@ def process_img_data_new(img_name_original, img_path, input_path, res, minsim, c
     for elem in konachan_illustration_list:
         konachan_ref_list.append((elem[1], elem[0]['id']))
 
-    gv.Files.Ref.new_reference(img_name_original, pixiv_ref_list, danbooru_ref_list, yandere_ref_list, konachan_ref_list, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, gv.Files.Conf.rename_yandere, gv.Files.Conf.rename_konachan, minsim, dict_list, input_path)
+    ref = gv.Files.Ref.new_reference(img_name_original, pixiv_ref_list, danbooru_ref_list, yandere_ref_list, konachan_ref_list, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, gv.Files.Conf.rename_yandere, gv.Files.Conf.rename_konachan, minsim, dict_list, input_path)
 
-    return (pixiv_illustration_list, danbooru_illustration_list, yandere_illustration_list, konachan_illustration_list)
+    return (pixiv_illustration_list, danbooru_illustration_list, yandere_illustration_list, konachan_illustration_list, ref)
 
 
 def pixiv_fetcher(img_name_original, source, visited, comm_error_q):

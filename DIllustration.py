@@ -3,8 +3,9 @@ from PIL import Image
 
 class DIllustration():
     """Includes all meta information on the downloaded image such as names, locations..."""
-    def __init__(self, input_path, illustration_list, minsim):
+    def __init__(self, input_path, illustration_list, reference, minsim):
         self.input_path = input_path # Path to the image in the input folder
+        self.reference = reference
         self.original_sub = SubDIllustration(illustration_list[0]['service'], (None, illustration_list[0]['name'], {"path":illustration_list[0]['work_path'], "source":[], "similarity":0}), minsim)
         self.pixiv_subdillustration = list()
         for elem in illustration_list[1]:

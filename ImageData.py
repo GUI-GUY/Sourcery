@@ -585,7 +585,11 @@ class ImageData():
             #     print("ERROR [0014] " + str(e))
             #     gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
             #     #mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.input_dir + self.name_original)
-        
+        try:
+            gv.Files.Ref.refs.remove(self.dill.reference)
+            gv.Files.Ref.write_reference()
+        except:
+            pass
         return True
 
     def gen_tagfile(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gen_dir, name):
