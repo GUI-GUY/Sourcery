@@ -1,4 +1,6 @@
 from os import path, listdir, remove, makedirs
+from threading import Thread, Lock
+from time import sleep
 from shutil import move, rmtree
 from tkinter import IntVar, W, N
 from tkinter import Checkbutton as cb
@@ -35,54 +37,10 @@ class ImageData():
         self.sub_dill = dillustration.original_sub
         self.dill = dillustration
 
-        # # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source, "similarity": sim}
-        # for elem in dillustration.pixiv_subdillustration:
-        #     # name = elem[1]
-        #     # path_pixiv = gv.cwd + '/Sourcery/sourced_progress/pixiv/' + name
-        #     # self.pixiv_dict = self.pixiv_clean_dict(elem[0], dict_list)
-        #     # if self.pixiv_dict == None:
-        #     #     gv.Files.Log.write_to_log('Error while parsing pixiv dict, skipped image')
-        #     #     continue
-        #     self.pixiv_list.append(ProviderImageData(elem, dillustration))
-        #     #self.pixiv_list.append(ProviderImageData('Pixiv', name, path_pixiv, self.thumb_size, self.preview_size, self.pixiv_dict, elem[0], self.siblings_array))
-        
-        # self.danbooru_list = list()
-        # for elem in danbooru_illust_list:
-        #     name = elem[1]
-        #     path_danb = gv.cwd + '/Sourcery/sourced_progress/danbooru/' + name
-        #     self.danbooru_dict = self.danbooru_clean_dict(elem[0], dict_list,'Danbooru')
-        #     if self.danbooru_dict == None:
-        #         gv.Files.Log.write_to_log('Error while parsing danbooru dict, skipped image')
-        #         continue
-        #     self.danbooru_list.append(ProviderImageData('Danbooru', name, path_danb, self.thumb_size, self.preview_size, self.danbooru_dict, elem[0], self.siblings_array))
-        
-        # self.yandere_list = list()
-        # for elem in yandere_illust_list:
-        #     name = elem[1]
-        #     path_yandere = gv.cwd + '/Sourcery/sourced_progress/yandere/' + name
-        #     self.yandere_dict = self.danbooru_clean_dict(elem[0], dict_list, 'Yandere')
-        #     if self.yandere_dict == None:
-        #         gv.Files.Log.write_to_log('Error while parsing yandere dict, skipped image')
-        #         continue
-        #     self.yandere_list.append(ProviderImageData('Yandere', name, path_yandere, self.thumb_size, self.preview_size, self.yandere_dict, elem[0], self.siblings_array))
-        
-        # self.konachan_list = list()
-        # for elem in konachan_illust_list:
-        #     name = elem[1]
-        #     path_konachan = gv.cwd + '/Sourcery/sourced_progress/konachan/' + name
-        #     self.danbooru_dict = self.danbooru_clean_dict(elem[0], dict_list, 'Konachan')
-        #     if self.konachan_dict == None:
-        #         gv.Files.Log.write_to_log('Error while parsing konachan dict, skipped image')
-        #         continue
-        #     self.danbooru_list.append(ProviderImageData('Konachan', name, path_konachan, self.thumb_size, self.preview_size, self.konachan_dict, elem[0], self.siblings_array))
-        
         self.service_list.append(self.pixiv_list)
         self.service_list.append(self.danbooru_list)
         self.service_list.append(self.yandere_list)
         self.service_list.append(self.konachan_list)
-
-        # self.path_original = gv.cwd + '/Sourcery/sourced_original/' + self.name_original
-        # self.input_path = input_path
         
         self.original_image = None
         self.downloaded_image_pixiv = None
@@ -97,15 +55,20 @@ class ImageData():
         self.original_type_lbl = Label(master=gv.res_frame, style='label.TLabel')
         self.original_cropped_lbl = Label(master=gv.res_frame, style='label.TLabel')
 
+        #self.big_selector_thread = Thread(target=self.display_big_selector)
         self.big_selector_btn = Button(master=gv.res_frame, command=self.display_big_selector, text='Big Selector', style='button.TLabel')
         self.info_btn = Button(master=gv.res_frame, command=self.display_info, text='More Info', style='button.TLabel')        
         self.back_btn = Button(gv.window, text = 'Back', command = self.display_view_results, style = 'button.TLabel')
         self.next_btn = Button(gv.window, text = 'Next', style = 'button.TLabel')
         self.prev_btn = Button(gv.window, text = 'Previous', style = 'button.TLabel')
         self.index = index
+        self.prev_imgdata = None
+        self.next_imgdata = None
         self.placed = False
 
-        self.original_SubImgData = None
+        #self.original_SubImgData = None
+        self.original_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path[:self.sub_dill.path.rfind('/')], 'Input', gv.window, None, self.original_image, self.original_var)
+        self.big_lock = Lock()
 
         self.load_init = False
         self.display_results_init = False
@@ -369,7 +332,9 @@ class ImageData():
         IMPORTANT:\n
         Call load before
         """
-        self.process_big_imgs()
+        
+        # t = Thread(target=self.process_big_imgs)
+        # t.start()
         self.modify_big_widgets()
         self.forget_all_widgets()
         gv.big_selector_frame.place(x = round(gv.width*0.86), y = int(gv.height/90*9))
@@ -377,35 +342,36 @@ class ImageData():
         self.back_btn.place(x = round(gv.width*0.86), y = int(gv.height/90*4))
         self.prev_btn.place(x = round(gv.width*0.90), y = int(gv.height/90*4))
         self.next_btn.place(x = round(gv.width*0.94), y = int(gv.height/90*4))
-
-        t = 0
-
-        for service in self.service_list:
-            for elem in service:
-                if elem.load_init:
-                    t = elem.display_big_selector(t)
-
-        self.original_SubImgData.display_place()
-
-    def process_big_imgs(self):
+        self.process_big_imgs(True)
+        
+    def process_big_imgs(self, display=False):
         """
         Turns images into usable photoimages for tkinter\n
         IMPORTANT:\n
         Call load before
         """
-        if self.process_big_imgs_init:
-            return
+        
+        if not self.process_big_imgs_init:
+            self.original_SubImgData.load()
+            
+            for service in self.service_list:
+                for elem in service:
+                    if elem.load_init:
+                        elem.process_big_imgs()
+            self.process_big_imgs_init = True
 
-        self.original_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path, 'Input', gv.window, None, self.original_image, self.original_var)#ImageTk.PhotoImage(resize(self.original_image))
-        self.original_SubImgData.load()
-
+        if display:
+            self.display_big_selector_imgs()
+        
+    def display_big_selector_imgs(self):
+        t = 0
+        self.original_SubImgData.display_place()
         for service in self.service_list:
             for elem in service:
                 if elem.load_init:
-                    elem.process_big_imgs()
+                    t = elem.display_big_selector(t)
 
-        self.process_big_imgs_init = True
-
+        
     def modify_big_widgets(self):
         """
         Sets up next and previous buttons for the big selector screen\n
@@ -421,12 +387,23 @@ class ImageData():
                 saved_index_bigger = (data, data.index)
         if saved_index_smaller[1] > -1:
             self.prev_btn.configure(state='enabled', command = saved_index_smaller[0].display_big_selector)
+            self.prev_imgdata = saved_index_smaller[0]
         else:
             self.prev_btn.configure(state='disabled', command=None)
+            self.prev_imgdata = None
         if saved_index_bigger[1] > -1:
             self.next_btn.configure(state='enabled', command = saved_index_bigger[0].display_big_selector)
+            self.next_imgdata = saved_index_bigger[0]
         else:
             self.next_btn.configure(state='disabled', command=None)
+            self.next_imgdata = None
+        
+        if self.prev_imgdata != None:
+            t = Thread(target=self.prev_imgdata.process_big_imgs)
+            t.start()
+        if self.next_imgdata != None:
+            x = Thread(target=self.next_imgdata.process_big_imgs)
+            x.start()
        
     # def delete_both(self):
     #     """

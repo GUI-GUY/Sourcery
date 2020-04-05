@@ -90,9 +90,6 @@ def display_startpage():
     #test_btn.place(x = 800, y = 60)
     display_info_btn.place(x = int(width*0.7), y = int(height/90*6))
     display_logfile_btn.place(x = int(width*0.8), y = int(height/90*6))
-
-    startpage_update_thread = Thread(target=refresh_startpage, daemon=True)
-    startpage_update_thread.start()
     
 def test():
     global input_images_array
@@ -671,5 +668,7 @@ if __name__ == '__main__':
     gv.Files.Log.write_to_log('Variables initialised')
     duplicate_loop()
     terminate_loop()
+    startpage_update_thread = Thread(target=refresh_startpage, daemon=True)
+    startpage_update_thread.start()
     display_startpage()
     window.mainloop()

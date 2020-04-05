@@ -1,5 +1,6 @@
 from os import path, listdir, remove, makedirs
 from shutil import move, rmtree
+from threading import Lock
 from tkinter import IntVar, W, N, S
 from tkinter import Checkbutton as cb
 from tkinter import messagebox as mb
@@ -82,7 +83,10 @@ class ProviderImageData():
             self.info_url_lbl_list.append(lbl)
 
         self.downloaded_SubImgData = None
-
+        if not self.sub_dill.is_folder:
+            self.downloaded_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path[:self.sub_dill.path.rfind('/')], self.sub_dill.service, gv.window, gv.big_frame, self.downloaded_image, self.downloaded_var, siblings=self.siblings_array)#ImageTk.PhotoImage(self.downloaded_image_pixiv) 
+            
+        self.big_lock = Lock()
         self.load_init = False
         self.process_results_imgs_init = False
         self.modify_results_widgets_init = False
@@ -344,7 +348,7 @@ class ProviderImageData():
             return
 
         if not self.sub_dill.is_folder:
-            self.downloaded_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path, self.sub_dill.service, gv.window, gv.big_frame, self.downloaded_image, self.downloaded_var, siblings=self.siblings_array)#ImageTk.PhotoImage(self.downloaded_image_pixiv) 
+            #self.downloaded_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path, self.sub_dill.service, gv.window, gv.big_frame, self.downloaded_image, self.downloaded_var, siblings=self.siblings_array)#ImageTk.PhotoImage(self.downloaded_image_pixiv) 
             self.downloaded_SubImgData.load()
             self.siblings_array.append(self.downloaded_SubImgData)
         else:
