@@ -112,6 +112,7 @@ def list_input(directory_list, directory, depth):
     return add
 
 def count_input():
+    global input_images_array
     input_lock.acquire()
     try:
         input_images_array = list_input(listdir(gv.input_dir), gv.input_dir, int(gv.Files.Conf.input_search_depth))
