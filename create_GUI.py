@@ -252,7 +252,7 @@ def load_from_ref_run(c):
     for ref in gv.Files.Ref.refs:
         if c == 0:
             break
-        c -= 1
+        
         pixiv_info_list = list(ref['pixiv'])
 
         danb_info_list = list(ref['danbooru'])
@@ -330,6 +330,7 @@ def load_from_ref_run(c):
             b = ImageData(dill, index)
             gv.img_data_array.append(b)
             index += 1
+            c -= 1
         else:
             gv.Files.Log.write_to_log('Image ' + str(ref['old_name']) + ' already sourced or no sources found')
     gv.Files.Log.write_to_log('Loaded images from reference file or Reference file is empty')
