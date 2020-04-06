@@ -122,21 +122,21 @@ def open_output():
 def display_statistics():
     pass
 
-def resize(image):
+def resize(new_image):
     """
     Resizes given image to a third of the screen width and to the screen height*0.87 and returns it as a new object.
     """
 
-    oldwidth = image.width
-    oldheight = image.height
+    oldwidth = new_image.width
+    oldheight = new_image.height
 
-    new_image = deepcopy(image)
+    #new_image = deepcopy(image)
 
     if oldwidth > gv.width/3:
         newwidth = int(gv.width*0.4)
         newheight = int(newwidth/(oldwidth/oldheight))
         newsize = newwidth, newheight
-        new_image = image.resize(newsize, Image.ANTIALIAS)
+        new_image = new_image.resize(newsize, Image.ANTIALIAS)
     if new_image.height > gv.height*0.87:
         newheight = int(gv.height*0.87)
         newwidth = int(newheight/(oldheight/oldwidth))

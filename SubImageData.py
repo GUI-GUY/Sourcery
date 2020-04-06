@@ -58,8 +58,11 @@ class SubImageData():
                     gv.Files.Log.write_to_log("ERROR [0044] " + str(e))
                     mb.showerror("ERROR [0044]", "ERROR CODE [0044]\nSomething went wrong while accessing an image, please restart Sourcery.")
                     return False
-        self.size = self.img_obj.size
-        self.photoImg = ImageTk.PhotoImage(resize(self.img_obj))
+        self.size = deepcopy(self.img_obj.size)
+        self.img_obj = resize(self.img_obj)
+        self.photoImg = ImageTk.PhotoImage(self.img_obj)
+        self.img_obj.close()
+        self.img_obj = None
         
         if self.var == None:
             self.var = IntVar()
@@ -83,9 +86,20 @@ class SubImageData():
         self.show_btn = Button(self.scrollpar, command=self.show, text='Show', style='button.TLabel')
 
         if self.scrollpar != None:
-            img_obj_thumb = deepcopy(self.img_obj)
+            try:
+                img_obj_thumb = Image.open(self.path)
+            except Exception as e:
+                if not second_try:
+                    return self.load(True)
+                else:
+                    print("ERROR [0071] " + str(e))
+                    gv.Files.Log.write_to_log("ERROR [0071] " + str(e))
+                    mb.showerror("ERROR [0071]", "ERROR CODE [0071]\nSomething went wrong while accessing an image, please restart Sourcery.")
+                    return False
+            #img_obj_thumb = deepcopy(self.img_obj)
             img_obj_thumb.thumbnail((70, 70), resample=Image.ANTIALIAS)
             self.photoImg_thumb = ImageTk.PhotoImage(img_obj_thumb)
+            img_obj_thumb.close()
             self.thumb_chkbtn = cb(self.scrollpar, image=self.photoImg_thumb, var=self.var,
                 foreground=gv.Files.Theme.foreground, 
                 background=gv.Files.Theme.background, 
@@ -99,10 +113,6 @@ class SubImageData():
                 offrelief='flat',#default raised
                 indicatoron='false')# style="chkbtn.TCheckbutton")
             self.thumb_chkbtn.image = self.photoImg_thumb
-            img_obj_thumb.close()
-
-        if flag:
-            self.img_obj.close()
 
         self.load_init = True
         return True
@@ -259,6 +269,10 @@ class SubImageData():
                 all_tags.extend(konachan_tags)
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
+
+    def unload_big_imgs(self):
+        self.self_destruct()
+        self.load_init = False
 
     def self_destruct(self):
         self.photoImg = None

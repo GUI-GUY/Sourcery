@@ -290,30 +290,44 @@ class ProviderImageData():
         #gv.res_frame.columnconfigure(1, weight=1)
         return t
 
-    def process_info_imgs(self):
+    def process_info_imgs(self, second_try=False):
         """
         Turns images into usable photoimages for tkinter\n
         IMPORTANT:\n
         Call load before
         """
         if self.process_info_imgs_init:
-            return
+            return True
 
         if not self.sub_dill.is_folder:
-            self.downloaded_image_preview = deepcopy(self.downloaded_image)
+            try:
+                self.downloaded_image = Image.open(self.sub_dill.path)
+            except Exception as e:
+                if not second_try:
+                    return self.load(True)
+                else:
+                    print("ERROR [0072] " + str(e))
+                    #mb.showerror("ERROR [0072]", "ERROR CODE [0072]\nSomething went wrong while loading an image.")
+                    gv.Files.Log.write_to_log("ERROR [0072] " + str(e))
+                    return False
+            #self.downloaded_image_preview = deepcopy(self.downloaded_image)
         else:
             try:
                 self.downloaded_image_preview = Image.open(self.sub_dill.path + '/' + listdir(self.sub_dill.path)[0])
             except Exception as e:
-                print("ERROR [0043] " + str(e))
-                gv.Files.Log.write_to_log("ERROR [0043] " + str(e))
-                mb.showerror("ERROR [0043]", "ERROR CODE [0043]\nSomething went wrong while accessing an image, please restart Sourcery.")
-                return
+                if not second_try:
+                    return self.load(True)
+                else:
+                    print("ERROR [0043] " + str(e))
+                    gv.Files.Log.write_to_log("ERROR [0043] " + str(e))
+                    mb.showerror("ERROR [0043]", "ERROR CODE [0043]\nSomething went wrong while accessing an image, please restart Sourcery.")
+                    return False
         self.downloaded_image_preview.thumbnail(self.preview_size, resample=Image.ANTIALIAS)
         self.downloaded_photoImage_preview = ImageTk.PhotoImage(self.downloaded_image_preview)
         self.downloaded_image_preview.close()
 
         self.process_info_imgs_init = True
+        return True
 
     def hyperlink(self, event):
         """
@@ -556,6 +570,13 @@ class ProviderImageData():
         self.result_not_in_tagfile.grid_forget()
         self.results_tags_lbl.grid_forget()
         self.result_in_tagfile.grid_forget()
+
+    def unload_big_imgs(self):
+        if self.downloaded_SubImgData != None:
+            self.downloaded_SubImgData.unload_big_imgs()
+        for elem in self.sub_dir_img_array:
+                elem.unload_big_imgs()
+        self.process_big_imgs_init = False
 
     def self_destruct(self):
         if self.downloaded_SubImgData != None:

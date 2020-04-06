@@ -22,6 +22,7 @@ Bugfixes:
 - Reworked reference loading. Uses a thread now which prevents the gui from freezing
 - Put the update loop inside a thread to prevent the gui from lagging
 - Fixed issue where all sourced images would be loaded into memory despite not putting them on screen (results screen)
+- Fixed error not being handled on pixiv api call
 
 Features:
 
@@ -29,3 +30,5 @@ Features:
 - Removed test button
 - References will now be deleted one by one instead of wiping the whole reference file
 - Added ability to choose how many images to load from reference
+- Added preloading into the big selector (The next/previous batch of images will now be loaded while you look at the current one)
+- Added unloading of visited big selector sites to keep RAM usage down at the expense of a little more loading time

@@ -326,7 +326,8 @@ def load_from_ref_run(c):
             dill = DIllustration(ref['input_path'], [{"service":'Original', "name":str(ref['old_name']), "work_path": gv.cwd + '/Sourcery/sourced_original/' + str(ref['old_name'])}, 
                 pixiv_illustration_list, danb_illustration_list, yandere_illustration_list, konachan_illustration_list], ref, ref['minsim'])
             global index
-            gv.img_data_array.append(ImageData(dill, index))
+            b = ImageData(dill, index)
+            gv.img_data_array.append(b)
             index += 1
         else:
             gv.Files.Log.write_to_log('Image ' + str(ref['old_name']) + ' already sourced or no sources found')

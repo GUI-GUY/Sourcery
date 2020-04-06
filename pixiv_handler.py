@@ -50,7 +50,16 @@ def pixiv_fetch_illustration(img_name_original, imgid, comm_error_q=None):
     """
     global headers
     img_info_url = "https://www.pixiv.net/ajax/illust/" + str(imgid)
-    res = get(img_info_url, headers=headers)
+    try:
+        res = get(img_info_url, headers=headers)
+    except Exception as e:
+        print("ERROR [0073] " + str(e))
+        if comm_error_q != None:
+            comm_error_q.put("[Sourcery] ERROR [0073] " + str(e))
+        else:
+            gv.Files.Log.write_to_log("ERROR [0073] " + str(e))
+        return False
+        #mb.showerror("ERROR [0073]", "ERROR CODE [0073]\nImage data could not be retrieved")
     js = loads(res.text)# {'error': True, 'message': '該当作品は削除されたか、存在しない作品IDです。', 'body': []}
     
     if js['error'] == False:

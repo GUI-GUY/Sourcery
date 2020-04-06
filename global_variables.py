@@ -41,6 +41,12 @@ delete_dirs_array = list() # For empty directories or dirs where no original is 
 img_data_array = list() # For all ImageData instances
 free_space = list()
 
+def class_parallel_loader(method, lock, display=False):
+    with lock:
+        if not display:
+            method()
+        else:
+            method(display)
 
 # COLORS = ['white', 'snow', 'ghost white', 'white smoke', 'gainsboro', 'floral white', 'old lace',
 #     'linen', 'antique white', 'papaya whip', 'blanched almond', 'bisque', 'peach puff',

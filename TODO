@@ -103,17 +103,17 @@ MISC
 + reference repair
 + weights default
 + save button in provider options saves all 
-Last Error: 0070
+Last Error: 0073
  
 
 beta 0.4
 REMOVE TEST AND REFERENCE BUTTON
 timeout and continue prompt if one service takes too long to download
-gui lags with too many images in input
+? gui lags with too many images in input
 reference packs all loaded images in the left top corner for large amounts
-only input is sometimes shown on reference load
++ only input is sometimes shown on reference load
 big selector: show image picked by weight system
-gui lags hard on huge data loaded
+? gui lags hard on huge data loaded
 ATTEMPTING
 3rd service
 Hydrus
