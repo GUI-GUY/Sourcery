@@ -31,6 +31,7 @@ results_tags_konachan = Files.Conf.tags_konachan.split()
 
 last_occupied_result = 0
 imgpp_sem = None
+img_data_sem = None
 
 width = 0
 height = 0
@@ -39,6 +40,8 @@ height = 0
 # input_images_array = list() # For all images in Input folder
 delete_dirs_array = list() # For empty directories or dirs where no original is present
 img_data_array = list() # For all ImageData instances
+img_data_array1 = list()
+img_data_array2 = list()
 free_space = list()
 
 def class_parallel_loader(method, lock, display=False):

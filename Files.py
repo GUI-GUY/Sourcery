@@ -682,11 +682,11 @@ class ConfigFile():
             self.direct_replace = '100'
         try:
             temp_num = int(self.imgpp)
-            if temp_num < 1 or temp_num > 1000:
-                mb.showerror('Invalid Value', 'Please insert a value between 1 and 1000 into the Images per page option')
+            if temp_num < 1 or temp_num > 50:
+                mb.showerror('Invalid Value', 'Please insert a value between 1 and 50 into the Images per page option')
                 self.imgpp = '12'
         except Exception as e:
-            mb.showerror('Invalid Value', 'Please insert a value between 1 and 1000 into the Images per page option')
+            mb.showerror('Invalid Value', 'Please insert a value between 1 and 50 into the Images per page option')
             self.imgpp = '12'
         try:
             temp_num = int(self.saucenao_returns)

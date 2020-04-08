@@ -246,7 +246,7 @@ class SourceryOptions():
         self.delete_input_var = IntVar(value=int(gv.Files.Conf.delete_input))
         self.delete_input_chkbtn = Checkbutton(parent, var=self.delete_input_var, text="Delete sourced images from the Input folder on save?", style="chkbtn.TCheckbutton")
 
-        self.images_per_page_lbl = Label(parent, text="Images per page", font=("Arial Bold", 10), style="label.TLabel")
+        self.images_per_page_lbl = Label(parent, text="Images per page(Max:50, Restart required)", font=("Arial Bold", 10), style="label.TLabel")
         self.images_per_page_entry = Entry(parent, width=30, style="button.TLabel")
         self.images_per_page_entry.insert(0, gv.Files.Conf.imgpp)
 
@@ -433,13 +433,13 @@ class SourceryOptions():
         # if diff > 0:
         #     for num in range(diff):
         #         gv.imgpp_sem.release()
-        if diff != 0:
+        # if diff != 0:
             # for num in range(diff, 0):
             #     gv.imgpp_sem.acquire(False)#TODO problem when more images are being displayed than imgpp
-            y = int(gv.height/90*10)
-            c = 23
-            x3 = int(gv.width/160*50)
-            self.restart_gui_lbl.place(x = x3, y = y + c * 17)
+            # y = int(gv.height/90*10)
+            # c = 23
+            # x3 = int(gv.width/160*50)
+            # self.restart_gui_lbl.place(x = x3, y = y + c * 17)
         gv.Files.Conf.imgpp = self.images_per_page_entry.get()
         gv.Files.Conf.delete_input = str(self.delete_input_var.get())
         gv.Files.Conf.direct_replace = self.direct_replace_entry.get()

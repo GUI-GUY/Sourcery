@@ -87,14 +87,15 @@ def display_startpage():
     display_logfile()
 
     test_btn = Button(master=window, text='test', command=test, style='button.TLabel')
-    #test_btn.place(x = 800, y = 60)
+    test_btn.place(x = 800, y = 60)
     display_info_btn.place(x = int(width*0.7), y = int(height/90*6))
     display_logfile_btn.place(x = int(width*0.8), y = int(height/90*6))
     
 def test():
     global input_images_array
-    print(gv.img_data_array)
-    print(input_images_array)
+    #print(gv.img_data_array)
+    print("Len:", len(gv.img_data_array))
+    #print(input_images_array)
     counter = 0
     for data in gv.img_data_array:
         if data.locked:
@@ -133,21 +134,23 @@ def count_input():
 
 def make_image_data():
     if not img_data_q.empty():
-        b = None
-        try:
-            a = img_data_q.get(False)
-            #print('a')
-            global index
-            b = ImageData(a, index)
-            index += 1
-            gv.img_data_array.append(b)
-        #print('b')
-        except Exception as e:
-            if b in gv.img_data_array:
-                gv.img_data_array.remove(b)
-            print("ERROR [0060] " + str(e))
-            gv.Files.Log.write_to_log("ERROR [0060] " + str(e))
-            #mb.showerror("ERROR [0060]", "ERROR CODE [0060]\nImage data could not be loaded, skipped.")
+        if gv.img_data_sem.acquire(False):
+            b = None
+            try:
+                a = img_data_q.get(False)
+                #print('a')
+                global index
+                b = ImageData(a, index)
+                index += 1
+                gv.img_data_array.append(b)
+                
+            #print('b')
+            except Exception as e:
+                if b in gv.img_data_array:
+                    gv.img_data_array.remove(b)
+                print("ERROR [0060] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0060] " + str(e))
+                #mb.showerror("ERROR [0060]", "ERROR CODE [0060]\nImage data could not be loaded, skipped.")
         
 def load_image_data():
     for data in gv.img_data_array:
@@ -237,7 +240,7 @@ def refresh_startpage():
 
 def load_from_ref():
     c = simpledialog.askinteger(title='How many?', prompt='How many images would you like to load?')
-    ref_thread = Thread(target=load_from_ref_run, args=[c])
+    ref_thread = Thread(target=load_from_ref_run, args=[c], daemon=True)
     ref_thread.start()
     do_sourcery_btn.configure(state='disabled')
     load_from_ref_btn.configure(state='disabled')
@@ -252,7 +255,7 @@ def load_from_ref_run(c):
     for ref in gv.Files.Ref.refs:
         if c == 0:
             break
-        c -= 1
+        
         pixiv_info_list = list(ref['pixiv'])
 
         danb_info_list = list(ref['danbooru'])
@@ -325,13 +328,16 @@ def load_from_ref_run(c):
         if not next_img:
             # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
             dill = DIllustration(ref['input_path'], [{"service":'Original', "name":str(ref['old_name']), "work_path": gv.cwd + '/Sourcery/sourced_original/' + str(ref['old_name'])}, 
-                pixiv_illustration_list, danb_illustration_list, yandere_illustration_list, konachan_illustration_list], ref, ref['minsim'])
+            pixiv_illustration_list, danb_illustration_list, yandere_illustration_list, konachan_illustration_list], ref, ref['minsim'])
             global index
-            b = ImageData(dill, index)
-            gv.img_data_array.append(b)
-            index += 1
-        else:
-            gv.Files.Log.write_to_log('Image ' + str(ref['old_name']) + ' already sourced or no sources found')
+            #b = ImageData(dill, index)
+            # if len(gv.img_data_array) < 49:
+            #     gv.img_data_array.append(b)
+            #     index += 1
+            img_data_q.put(dill)
+            c -= 1
+        # else:
+        #     gv.Files.Log.write_to_log('Image ' + str(ref['old_name']) + ' already sourced or no sources found')
     gv.Files.Log.write_to_log('Loaded images from reference file or Reference file is empty')
     do_sourcery_btn.configure(state='enabled')
     load_from_ref_btn.configure(state='enabled')
@@ -665,6 +671,7 @@ if __name__ == '__main__':
     input_lock = Lock()
     #sem = Semaphore(12)
     gv.imgpp_sem = Semaphore(int(gv.Files.Conf.imgpp))
+    gv.img_data_sem = Semaphore(50)
     #image_preloader()
     index = 0
     gv.Files.Log.write_to_log('Variables initialised')

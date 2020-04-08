@@ -23,6 +23,8 @@ Bugfixes:
 - Put the update loop inside a thread to prevent the gui from lagging
 - Fixed issue where all sourced images would be loaded into memory despite not putting them on screen (results screen)
 - Fixed error not being handled on pixiv api call
+- Capped amount of img_data instances to 50 because a lot of instances caused the big selector page to behave weirdly
+- Capped images per page to 50 because more class instances can't exist now 
 
 Features:
 
