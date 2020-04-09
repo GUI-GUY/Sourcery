@@ -111,6 +111,8 @@ second process just stops idk
 
 beta 0.4
 REMOVE TEST AND REFERENCE BUTTON
+make duplicate loop not check for existing classes but for references
+make button to jump to newest log entry
 timeout and continue prompt if one service takes too long to download
 ? gui lags with too many images in input
 + only input is sometimes shown on reference load

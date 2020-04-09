@@ -301,7 +301,7 @@ class ProviderImageData():
 
         if not self.sub_dill.is_folder:
             try:
-                self.downloaded_image = Image.open(self.sub_dill.path)
+                self.downloaded_image_preview = Image.open(self.sub_dill.path)
             except Exception as e:
                 if not second_try:
                     return self.load(True)
