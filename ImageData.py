@@ -42,8 +42,7 @@ class ImageData():
         self.service_list.append(self.yandere_list)
         self.service_list.append(self.konachan_list)
         
-        self.original_image = None
-        self.downloaded_image_pixiv = None
+        self.size = None
         
         self.original_image_thumb = None
         self.original_photoImage_thumb = None
@@ -67,7 +66,7 @@ class ImageData():
         self.placed = False
 
         #self.original_SubImgData = None
-        self.original_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path[:self.sub_dill.path.rfind('/')], 'Input', gv.window, None, self.original_image, self.original_var)
+        self.original_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path[:self.sub_dill.path.rfind('/')], 'Input', gv.window, None, None, self.original_var)
         self.big_lock = Lock()
         self.big_active = False
 
@@ -93,13 +92,6 @@ class ImageData():
             return True
 
         try:
-            self.original_image = Image.open(self.sub_dill.path)
-        except Exception as e:
-                print("ERROR [0039] " + str(e))
-                #mb.showerror("ERROR [0039]", "ERROR CODE [0039]\nSomething went wrong while loading an image.")
-                gv.Files.Log.write_to_log("ERROR [0039] " + str(e))
-                return False
-        try:
             self.original_image_thumb = Image.open(self.sub_dill.path)
         except Exception as e:
                 print("ERROR [0069] " + str(e))
@@ -107,9 +99,9 @@ class ImageData():
                 gv.Files.Log.write_to_log("ERROR [0069] " + str(e))
                 return False
         
-        if self.original_image == None:
+        if self.original_image_thumb == None:
             return False
-
+        self.size = (self.original_image_thumb.width, self.original_image_thumb.height)
         for service in self.service_list:
             for elem in service:
                 elem.load()
@@ -157,7 +149,7 @@ class ImageData():
             offrelief='flat',#default raised
             indicatoron='false')# sunken, raised, groove, ridge, flat
         self.original_chkbtn.image = self.original_photoImage_thumb
-        self.original_wxh_lbl.configure(text = str(self.original_image.size))
+        self.original_wxh_lbl.configure(text = str(self.size))
         self.original_type_lbl.configure(text = self.sub_dill.filetype)
         self.original_cropped_lbl.configure(text = self.sub_dill.name_no_suffix)
 
@@ -253,7 +245,7 @@ class ImageData():
         for service in self.service_list:
             for elem in service:
                 if elem.load_init:
-                    weight, a_flag = elem.evaluate_weight(round(self.original_image.size[0]/self.original_image.size[1], 1), self.original_image.size[0])
+                    weight, a_flag = elem.evaluate_weight(round(self.size[0]/self.size[1], 1), self.size[0])
                     if not a_flag:
                         aspect_flag = False
                     if weight > highest_weight[1]:
@@ -432,12 +424,6 @@ class ImageData():
                 y = Thread(target=gv.class_parallel_loader, args=[self.next_imgdata.next_imgdata.unload_big_imgs, self.next_imgdata.next_imgdata.big_lock], name=self.next_imgdata.next_imgdata.sub_dill.name_no_suffix, daemon=True)
                 y.start()
        
-    # def delete_both(self):
-    #     """
-    #     Sets self.locked to false if user does not want to delete all images
-    #     """  
-    #     return mb.askyesno('Delete all?', 'Delete all images related to:\n' + self.sub_dill.name + '\n')
-
     def save(self, second_try=False, save_counter=0):
         """
         "Saves" own checked images and schedules the unchecked images to be deleted 
@@ -581,14 +567,7 @@ class ImageData():
             widget.grid_forget()
 
         if gv.Files.Conf.delete_input == '1':
-            #print(self.dill.input_path)
             gv.delete_dirs_array.append(self.dill.input_path)
-            # try:
-            #     remove(self.dill.input_path)
-            # except Exception as e:
-            #     print("ERROR [0014] " + str(e))
-            #     gv.Files.Log.write_to_log("ERROR [0014] " + str(e))
-            #     #mb.showerror("ERROR [0014]", "ERROR CODE [0014]\nSomething went wrong while removing the image " + gv.input_dir + self.name_original)
         try:
             gv.Files.Ref.refs.remove(self.dill.reference)
             gv.Files.Ref.write_reference()
@@ -627,8 +606,6 @@ class ImageData():
     def self_destruct(self):
         if self.original_SubImgData != None:
             self.original_SubImgData.self_destruct()
-        if self.original_image != None:
-            self.original_image.close()
         self.original_photoImage_thumb = None
 
         self.original_chkbtn.image = None
