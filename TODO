@@ -108,10 +108,13 @@ Last Error: 0073
 BUGS
 + big selector packs all loaded images in the left top corner when many images (between/above 100-150) are existent
 second process just stops idk
-threads don't exit even if they are daemon
+one or more threads do not exit after closing the gui when more than 50ish images are loaded even when all threads are daemons
++ save not possible
 
 beta 0.4
 REMOVE TEST AND REFERENCE BUTTON
+make duplicate loop not check for existing classes but for references
+make button to jump to newest log entry
 timeout and continue prompt if one service takes too long to download
 + gui lags with too many images in input
 + only input is sometimes shown on reference load
