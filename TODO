@@ -110,6 +110,8 @@ BUGS
 second process just stops idk
 one or more threads do not exit after closing the gui when more than 50ish images are loaded even when all threads are daemons
 + save not possible
+massive top left corner after about 50 images have been shown on screen(tkinter probably the problem)
+delete working stuff when reference is empty
 
 beta 0.4
 REMOVE TEST AND REFERENCE BUTTON

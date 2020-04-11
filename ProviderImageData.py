@@ -138,7 +138,7 @@ class ProviderImageData():
                 mb.showerror("ERROR [0047]", "ERROR CODE [0047]\nSomething went wrong while accessing an image, please restart Sourcery.")
                 return False
 
-            self.size = deepcopy(self.downloaded_image_thumb.size)
+        self.size = deepcopy(self.downloaded_image_thumb.size)
         
         self.load_init = True
         return True
@@ -194,8 +194,8 @@ class ProviderImageData():
                 if elem in self.sub_dill.tags:
                     results_tags = results_tags + elem + '\n' 
             self.results_tags_lbl.configure(text = results_tags)
-            results_tags = ''
         elif self.sub_dill.service == 'Konachan':
+            results_tags = ''
             for elem in gv.results_tags_konachan:
                 if elem in self.sub_dill.tags:
                     results_tags = results_tags + elem + '\n' 
