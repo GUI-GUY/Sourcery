@@ -12,13 +12,13 @@ import global_variables as gv
 
 class SubImageData():
     """Includes information for images in subdirectories of downloads"""
-    def __init__(self, name, path, service, parent, scrollparent, img=None, var=None, master_folder='', siblings=list()):
+    def __init__(self, name, path, service, parent, scrollparent, var=None, master_folder='', siblings=list()):
         self.name = name
         self.path = path + '/' + name
         self.service = service
         self.par = parent
         self.scrollpar = scrollparent
-        self.img_obj = img
+        self.img_obj = None
         self.photoImg_thumb = None
         self.photoImg = None
         self.size = None
@@ -45,19 +45,17 @@ class SubImageData():
         """
         if self.load_init:
             return True
-        flag = False
-        if self.img_obj == None:
-            flag = True
-            try:
-                self.img_obj = Image.open(self.path)
-            except Exception as e:
-                if not second_try:
-                    return self.load(True)
-                else:
-                    print("ERROR [0044] " + str(e))
-                    gv.Files.Log.write_to_log("ERROR [0044] " + str(e))
-                    mb.showerror("ERROR [0044]", "ERROR CODE [0044]\nSomething went wrong while accessing an image, please restart Sourcery.")
-                    return False
+
+        try:
+            self.img_obj = Image.open(self.path)
+        except Exception as e:
+            if not second_try:
+                return self.load(True)
+            else:
+                print("ERROR [0044] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0044] " + str(e))
+                mb.showerror("ERROR [0044]", "ERROR CODE [0044]\nSomething went wrong while accessing an image, please restart Sourcery.")
+                return False
         self.size = deepcopy(self.img_obj.size)
         self.img_obj = resize(self.img_obj)
         self.photoImg = ImageTk.PhotoImage(self.img_obj)

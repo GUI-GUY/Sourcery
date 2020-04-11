@@ -106,16 +106,17 @@ MISC
 Last Error: 0073
 
 BUGS
-big selector packs all loaded images in the left top corner when many images (between/above 100-150) are existent
++ big selector packs all loaded images in the left top corner when many images (between/above 100-150) are existent
 second process just stops idk
+threads don't exit even if they are daemon
 
 beta 0.4
 REMOVE TEST AND REFERENCE BUTTON
 timeout and continue prompt if one service takes too long to download
-? gui lags with too many images in input
++ gui lags with too many images in input
 + only input is sometimes shown on reference load
 big selector: show image picked by weight system
-? gui lags hard on huge data loaded
++ gui lags hard on huge data loaded
 ATTEMPTING
 3rd service
 Hydrus

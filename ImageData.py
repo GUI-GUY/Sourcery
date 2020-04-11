@@ -66,7 +66,7 @@ class ImageData():
         self.placed = False
 
         #self.original_SubImgData = None
-        self.original_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path[:self.sub_dill.path.rfind('/')], 'Input', gv.window, None, None, self.original_var)
+        self.original_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path[:self.sub_dill.path.rfind('/')], 'Input', gv.window, None, var=self.original_var)
         self.big_lock = Lock()
         self.big_active = False
 

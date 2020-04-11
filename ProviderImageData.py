@@ -19,7 +19,6 @@ class ProviderImageData():
         self.thumb_size = thumb_size
         self.preview_size = preview_size
         self.siblings_array = siblings_array
-        self.downloaded_image = None
         self.downloaded_image_thumb = None
         self.downloaded_photoImage_thumb = None
         self.downloaded_photoImage_preview = None
@@ -46,6 +45,7 @@ class ProviderImageData():
             self.downloaded_wxh_lbl = Label(gv.res_frame, text = "More images", style='label.TLabel')
         self.downloaded_type_lbl = Label(gv.res_frame, style='label.TLabel')
         self.results_tags_lbl = Label(gv.res_frame, wraplength=gv.res_frame_width/6, style='label.TLabel')
+        self.size = None
 
         self.result_not_in_tagfile_var = IntVar(value=0)
         self.result_not_in_tagfile = Checkbutton(gv.res_frame, text='Not in Tagfile', var=self.result_not_in_tagfile_var, style='chkbtn.TCheckbutton')
@@ -84,7 +84,7 @@ class ProviderImageData():
 
         self.downloaded_SubImgData = None
         if not self.sub_dill.is_folder:
-            self.downloaded_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path[:self.sub_dill.path.rfind('/')], self.sub_dill.service, gv.window, gv.big_frame, self.downloaded_image, self.downloaded_var, siblings=self.siblings_array)#ImageTk.PhotoImage(self.downloaded_image_pixiv) 
+            self.downloaded_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path[:self.sub_dill.path.rfind('/')], self.sub_dill.service, gv.window, gv.big_frame, var=self.downloaded_var, siblings=self.siblings_array)
             
         self.big_lock = Lock()
         self.load_init = False
@@ -101,16 +101,6 @@ class ProviderImageData():
             return True
 
         if not self.sub_dill.is_folder:
-            try:
-                self.downloaded_image = Image.open(self.sub_dill.path)
-            except Exception as e:
-                if not second_try:
-                    return self.load(True)
-                else:
-                    print("ERROR [0045] " + str(e))
-                    #mb.showerror("ERROR [0045]", "ERROR CODE [0045]\nSomething went wrong while loading an image.")
-                    gv.Files.Log.write_to_log("ERROR [0045] " + str(e))
-                    return False
             try:
                 self.downloaded_image_thumb = Image.open(self.sub_dill.path)
             except Exception as e:
@@ -147,6 +137,8 @@ class ProviderImageData():
                 gv.Files.Log.write_to_log("ERROR [0047] " + str(e))
                 mb.showerror("ERROR [0047]", "ERROR CODE [0047]\nSomething went wrong while accessing an image, please restart Sourcery.")
                 return False
+
+            self.size = deepcopy(self.downloaded_image_thumb.size)
         
         self.load_init = True
         return True
@@ -210,11 +202,9 @@ class ProviderImageData():
             self.results_tags_lbl.configure(text = results_tags)
 
         if not self.sub_dill.is_folder:
-            #self.downloaded_var.set(1)
-            self.downloaded_wxh_lbl.configure(text = str(self.downloaded_image.size))
+            self.downloaded_wxh_lbl.configure(text = str(self.size))
             self.downloaded_type_lbl.configure(text = self.sub_dill.filetype)
         
-        #self.modify_big_widgets_init = False
         self.modify_results_widgets_init = True
             
     def display_results(self, t):
@@ -301,7 +291,7 @@ class ProviderImageData():
 
         if not self.sub_dill.is_folder:
             try:
-                self.downloaded_image = Image.open(self.sub_dill.path)
+                self.downloaded_image_preview = Image.open(self.sub_dill.path)
             except Exception as e:
                 if not second_try:
                     return self.load(True)
@@ -310,7 +300,6 @@ class ProviderImageData():
                     #mb.showerror("ERROR [0072]", "ERROR CODE [0072]\nSomething went wrong while loading an image.")
                     gv.Files.Log.write_to_log("ERROR [0072] " + str(e))
                     return False
-            #self.downloaded_image_preview = deepcopy(self.downloaded_image)
         else:
             try:
                 self.downloaded_image_preview = Image.open(self.sub_dill.path + '/' + listdir(self.sub_dill.path)[0])
@@ -362,7 +351,6 @@ class ProviderImageData():
             return
 
         if not self.sub_dill.is_folder:
-            #self.downloaded_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path, self.sub_dill.service, gv.window, gv.big_frame, self.downloaded_image, self.downloaded_var, siblings=self.siblings_array)#ImageTk.PhotoImage(self.downloaded_image_pixiv) 
             self.downloaded_SubImgData.load()
             self.siblings_array.append(self.downloaded_SubImgData)
         else:
@@ -581,8 +569,6 @@ class ProviderImageData():
     def self_destruct(self):
         if self.downloaded_SubImgData != None:
             self.downloaded_SubImgData.self_destruct()
-        if self.downloaded_image != None:
-            self.downloaded_image.close()
         for img in self.sub_dir_img_array:
             img.self_destruct()
         self.downloaded_photoImage_thumb = None
