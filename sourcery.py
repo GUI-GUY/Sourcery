@@ -179,7 +179,7 @@ def pixiv_fetcher(img_name_original, source, visited, comm_error_q):
 
 def danbooru_fetcher(img_name_original, source, service, visited, danbooru, yandere, konachan, comm_error_q):
     illustration_list = list()
-    illustration = None
+    illustration = False
     parent_name = False
     name = False
     if source['service_name'] == service:

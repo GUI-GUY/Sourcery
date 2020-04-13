@@ -48,15 +48,15 @@ class ImageData():
         self.original_photoImage_thumb = None
 
         self.original_var = IntVar(value=0)
-        self.original_chkbtn = cb(master=gv.res_frame, var=self.original_var)
-        self.original_lbl = Label(master=gv.res_frame, text = "Input", style='label.TLabel')
-        self.original_wxh_lbl = Label(master=gv.res_frame, style='label.TLabel')
-        self.original_type_lbl = Label(master=gv.res_frame, style='label.TLabel')
-        self.original_cropped_lbl = Label(master=gv.res_frame, style='label.TLabel')
+        self.original_chkbtn = cb(gv.res_frame, var=self.original_var)
+        self.original_lbl = Label(gv.res_frame, text = "Input", style='label.TLabel')
+        self.original_wxh_lbl = Label(gv.res_frame, style='label.TLabel')
+        self.original_type_lbl = Label(gv.res_frame, style='label.TLabel')
+        self.original_cropped_lbl = Label(gv.res_frame, style='label.TLabel')
 
         #self.big_selector_thread = Thread(target=self.display_big_selector)
-        self.big_selector_btn = Button(master=gv.res_frame, command=self.display_big_selector, text='Big Selector', style='button.TLabel')
-        self.info_btn = Button(master=gv.res_frame, command=self.display_info, text='More Info', style='button.TLabel')        
+        self.big_selector_btn = Button(gv.res_frame, command=self.display_big_selector, text='Big Selector', style='button.TLabel')
+        self.info_btn = Button(gv.res_frame, command=self.display_info, text='More Info', style='button.TLabel')        
         self.back_btn = Button(gv.window, text = 'Back', command = self.display_view_results, style = 'button.TLabel')
         self.next_btn = Button(gv.window, text = 'Next', style = 'button.TLabel')
         self.prev_btn = Button(gv.window, text = 'Previous', style = 'button.TLabel')

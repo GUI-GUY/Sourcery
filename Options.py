@@ -11,7 +11,7 @@ import global_variables as gv
 
 class Options():
     """Hosts all Options classes and methods to switch between the options views"""
-    def __init__(self, parent, display_startpage, enforce_style):
+    def __init__(self, parent, enforce_style):
         self.par = parent
         self.NAOO = SauceNaoOptions(parent)
         self.SouO = SourceryOptions(parent, enforce_style)
@@ -22,7 +22,7 @@ class Options():
         self.saucenao_options_btn = Button(parent, text="SauceNao", command=self.display_saucenao_options, style="button.TLabel")
         self.sourcery_options_btn = Button(parent, text="Sourcery", command=self.display_sourcery_options, style="button.TLabel")
 
-        self.options_back_btn = Button(parent, text="Back", command=display_startpage, style="button.TLabel")
+        self.options_back_btn = Button(parent, text="Back", command=gv.display_startpage, style="button.TLabel")
 
     def display_saucenao_options(self):
         """
