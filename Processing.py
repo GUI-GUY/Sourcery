@@ -1,4 +1,5 @@
 from multiprocessing import Process, Queue, Pipe, Semaphore
+from threading import Thread
 from sourcery import do_sourcery
 import global_variables as gv
 
@@ -31,30 +32,35 @@ class Processing():
         """
         Looks if a requested image has already been sourced with the same options and notifies the magic process
         """
-        if self.duplicate_p_pipe.poll():
-            dup_dict = self.duplicate_p_pipe.recv()
-            is_dup = False
-            for data in gv.img_data_array: # {'img_name': img, 'minsim': minsim, 'rename_pixiv': gv.Files.Conf.rename_pixiv, 'rename_danbooru': gv.Files.Conf.rename_danbooru}
-                if str(dup_dict['img_name']) == data.sub_dill.name and str(dup_dict['minsim']) == str(data.sub_dill.minsim):
-                    is_dup = True
-                    break
-            self.duplicate_p_pipe.send(is_dup)
-        self.parent.window.after(1, self.duplicate_loop)
+        Thread(target=run, daemon=True, name="duplicate_loop").start()
+        def run():
+            while True:
+                if self.duplicate_p_pipe.poll():
+                    dup_dict = self.duplicate_p_pipe.recv()
+                    is_dup = False
+                    for data in gv.img_data_array: # {'img_name': img, 'minsim': minsim, 'rename_pixiv': gv.Files.Conf.rename_pixiv, 'rename_danbooru': gv.Files.Conf.rename_danbooru}
+                        if str(dup_dict['img_name']) == data.sub_dill.name and str(dup_dict['minsim']) == str(data.sub_dill.minsim):
+                            is_dup = True
+                            break
+                    self.duplicate_p_pipe.send(is_dup)
+
 
     def terminate_loop(self):
         """
         Terminates second process on signal receive from terminate pipe
         """
-        if self.terminate_p_pipe.poll():
-            if self.terminate_p_pipe.recv():
-                try:
-                    self.process.terminate()
-                except Exception as e:
-                    print('ERROR [0063] ' + str(e))
-                    gv.Files.Log.write_to_log('ERROR [0063] ' + str(e))
-                    self.terminate_p_pipe.send(False)
-                    #mb.showerror("ERROR [0063]", "ERROR CODE [0063]\nSomething went wrong while accessing a the 'Input' folder, please restart Sourcery.")
-        self.parent.window.after(1, self.terminate_loop)
+        Thread(target=run, daemon=True, name="terminate_loop").start()
+        def run():
+            while True:
+                if self.terminate_p_pipe.poll():
+                    if self.terminate_p_pipe.recv():
+                        try:
+                            self.process.terminate()
+                        except Exception as e:
+                            print('ERROR [0063] ' + str(e))
+                            gv.Files.Log.write_to_log('ERROR [0063] ' + str(e))
+                            self.terminate_p_pipe.send(False)
+                            #mb.showerror("ERROR [0063]", "ERROR CODE [0063]\nSomething went wrong while accessing a the 'Input' folder, please restart Sourcery.")
 
     def stop(self):
         """
