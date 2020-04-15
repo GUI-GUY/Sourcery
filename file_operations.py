@@ -1,4 +1,4 @@
-from os import startfile
+from os import startfile, path
 from copy import deepcopy
 from PIL import Image
 #from tkinter import messagebox as mb
@@ -144,6 +144,68 @@ def resize(new_image):
         newsize = newwidth, newheight
         new_image = new_image.resize(newsize, Image.ANTIALIAS)
     return new_image
+
+def init_config():
+
+    gv.config.add_section('Original')
+    gv.config.add_section('Pixiv')
+    gv.config.add_section('Danbooru')
+    gv.config.add_section('Yandere')
+    gv.config.add_section('Konachan')
+    gv.config.add_section('Weight')
+    gv.config.add_section('SauceNAO')
+    gv.config.add_section('Sourcery')
+    
+    gv.config['Weight'] = {
+        "png" : '10',
+        "jpg" : '7',
+        "jfif" : '1',
+        "gif" : '10',
+        "bmp" : '5',
+        "other" : '0',
+        "higher_resolution" : '10',
+        "pixiv" : '8',
+        "danbooru" : '10',
+        "yandere" : '0',
+        "konachan" : '0',
+        "original" : '5'
+    }
+    
+    gv.config['SauceNao'] = {
+        "api_key" : '',
+        "minsim" : '80',
+        "returns" : '10',
+        "depth" : '128',
+        "bias" : '15',
+        "biasmin" : '70'
+    }
+
+    gv.config['Sourcery'] = {
+        "imgpp" : '12',
+        "input_dir" : gv.cwd + '/Input',
+        "output_dir" : gv.cwd + '/Output',
+        "delete_input" : '0',
+        "direct_replace" : '100',
+        "input_search_depth" : '1'
+    }
+
+    gv.config['Original'] : {
+        "single_source_in_tagfile" : '0'
+    }
+
+    if path.isfile(gv.cwd + '/Sourcery/config.cfg'):
+        gv.config.read_file(open(gv.cwd + '/Sourcery/config.cfg'))
+    
+    gv.config.write(open(gv.cwd + '/Sourcery/config.cfg', 'w'))
+    
+def is_input_int_digit(P, negative=False, min=-1, max=10000000000):
+    if str.isdigit(P) or P == "" or (negative and P[0] == '-' and (str.isdigit(P[1:]) or P[1:] == "")): # if P is '' or '-' or negative/positive number
+        if P != '' and ((P[0] == '-' and len(P) > 1) or P[0] != '-') and (int(P) < int(min) or int(P) > int(max)): # if P is negative/positive number and within min/max
+            return False
+        return True
+    else:
+        return False
+
 
 if __name__ == '__main__':
     #gv.Files.Log.write_to_log()

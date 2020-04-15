@@ -32,7 +32,6 @@ class Processing():
         """
         Looks if a requested image has already been sourced with the same options and notifies the magic process
         """
-        Thread(target=run, daemon=True, name="duplicate_loop").start()
         def run():
             while True:
                 if self.duplicate_p_pipe.poll():
@@ -43,13 +42,12 @@ class Processing():
                             is_dup = True
                             break
                     self.duplicate_p_pipe.send(is_dup)
-
+        Thread(target=run, daemon=True, name="duplicate_loop").start()
 
     def terminate_loop(self):
         """
         Terminates second process on signal receive from terminate pipe
         """
-        Thread(target=run, daemon=True, name="terminate_loop").start()
         def run():
             while True:
                 if self.terminate_p_pipe.poll():
@@ -61,7 +59,8 @@ class Processing():
                             gv.Files.Log.write_to_log('ERROR [0063] ' + str(e))
                             self.terminate_p_pipe.send(False)
                             #mb.showerror("ERROR [0063]", "ERROR CODE [0063]\nSomething went wrong while accessing a the 'Input' folder, please restart Sourcery.")
-
+        Thread(target=run, daemon=True, name="terminate_loop").start()
+        
     def stop(self):
         """
         Stop further search for images and halt the magic process.

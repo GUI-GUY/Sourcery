@@ -4,7 +4,7 @@ from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame, OptionM
 from functools import partial
 from webbrowser import open_new
 #from pixiv_handler import pixiv_login
-from file_operations import change_input, change_output
+from file_operations import change_input, change_output, is_input_int_digit
 from WeightSystem import WeightSystem
 from ScrollFrame import ScrollFrame
 import global_variables as gv
@@ -69,6 +69,7 @@ class SauceNaoOptions():
     """Includes all widgets for SauceNao and methods to display and modify them"""
     def __init__(self, parent):
         self.par = parent
+        vcmd = (parent.register(is_input_int_digit))
         self.saucenao_key_lbl = Label(parent, text="SauceNao API-Key", style="label.TLabel")
         self.saucenao_key_number_lbl = Label(parent, width=50, text=gv.Files.Cred.saucenao_api_key, style="button.TLabel")
         self.saucenao_key_entry = Entry(parent, width=52, style="button.TLabel")
@@ -76,7 +77,7 @@ class SauceNaoOptions():
         self.saucenao_key_confirm_btn = Button(parent, text="Confirm", command=self.saucenao_set_key, style="button.TLabel")
         self.saucenao_minsim_lbl = Label(parent, text="Minimum similarity:", style="label.TLabel")
         self.saucenao_minsim_note_lbl = Label(parent, text="[default: 80]", style="label.TLabel")
-        self.saucenao_minsim_entry = Entry(parent, width=10, style="button.TLabel")
+        self.saucenao_minsim_entry = Entry(parent, width=10, validate='all', validatecommand=(vcmd, '%P', False, 0, 100), style="button.TLabel")
         self.saucenao_minsim_entry.insert(0, gv.Files.Conf.minsim)
         self.saucenao_save_btn = Button(parent, text="Save", command=self.saucenao_save, style="button.TLabel")
 
@@ -87,7 +88,7 @@ class SauceNaoOptions():
 
         self.saucenao_returns_lbl = Label(parent, text="Results:", font=("Arial Bold", 10), style="label.TLabel")
         self.saucenao_returns_note_lbl = Label(parent, text="[default: 10] Number of results to return. More results is slower. Should be at least 2 times the services you use.", font=("Arial Bold", 10), style="label.TLabel")
-        self.saucenao_returns_entry = Entry(parent, width=10, style="button.TLabel")
+        self.saucenao_returns_entry = Entry(parent, width=10, validate='all', validatecommand=(vcmd, '%P'), style="button.TLabel")
         self.saucenao_returns_entry.insert(0, gv.Files.Conf.saucenao_returns)
 
         self.saucenao_depth_lbl = Label(parent, text="Depth:", style="label.TLabel")
@@ -96,11 +97,11 @@ class SauceNaoOptions():
         self.saucenao_depth_note_lbl = Label(parent, text="[default: 128] Search depth, deeper searches are slower but can pull out additional matches.", style="label.TLabel")
         self.saucenao_bias_note_lbl = Label(parent, text="[default: 15] Max similarity yield modifier.", style="label.TLabel")
         self.saucenao_biasmin_note_lbl = Label(parent, text="[default: 70] Min similarity to activate priority yield mode.", style="label.TLabel")
-        self.saucenao_depth_entry = Entry(parent, width=10, style="button.TLabel")
+        self.saucenao_depth_entry = Entry(parent, width=10, validate='all', validatecommand=(vcmd, '%P'), style="button.TLabel")
         self.saucenao_depth_entry.insert(0, gv.Files.Conf.saucenao_depth)
-        self.saucenao_bias_entry = Entry(parent, width=10, style="button.TLabel")
+        self.saucenao_bias_entry = Entry(parent, width=10, validate='all', validatecommand=(vcmd, '%P'), style="button.TLabel")
         self.saucenao_bias_entry.insert(0, gv.Files.Conf.saucenao_bias)
-        self.saucenao_biasmin_entry = Entry(parent, width=10, style="button.TLabel")
+        self.saucenao_biasmin_entry = Entry(parent, width=10, validate='all', validatecommand=(vcmd, '%P'), style="button.TLabel")
         self.saucenao_biasmin_entry.insert(0, gv.Files.Conf.saucenao_biasmin)
     
     def display(self):
@@ -246,12 +247,13 @@ class SourceryOptions():
         self.delete_input_var = IntVar(value=int(gv.Files.Conf.delete_input))
         self.delete_input_chkbtn = Checkbutton(parent, var=self.delete_input_var, text="Delete sourced images from the Input folder on save?", style="chkbtn.TCheckbutton")
 
+        vcmd = (parent.register(is_input_int_digit))
         self.images_per_page_lbl = Label(parent, text="Images per page(Max:50, Restart required)", font=("Arial Bold", 10), style="label.TLabel")
-        self.images_per_page_entry = Entry(parent, width=30, style="button.TLabel")
+        self.images_per_page_entry = Entry(parent, width=30, validate='all', validatecommand=(vcmd, '%P', False, 1, 50), style="button.TLabel")
         self.images_per_page_entry.insert(0, gv.Files.Conf.imgpp)
 
         self.input_search_depth_lbl = Label(parent, text="Input search depth", font=("Arial Bold", 10), style="label.TLabel")
-        self.input_search_depth_entry = Entry(parent, width=30, style="button.TLabel")
+        self.input_search_depth_entry = Entry(parent, width=30, validate='all', validatecommand=(vcmd, '%P', True), style="button.TLabel")
         self.input_search_depth_entry.insert(0, gv.Files.Conf.input_search_depth)
 
         self.direct_replace_lbl = Label(parent, text="Save images directly if similarity is over:", font=("Arial Bold", 10), style="label.TLabel")
@@ -263,7 +265,7 @@ class SourceryOptions():
         self.direct_replace_yandere_chkbtn = Checkbutton(parent, text="Save yandere images directly", var=self.direct_replace_yandere_var, style="chkbtn.TCheckbutton")
         self.direct_replace_konachan_var = IntVar(value = int(gv.Files.Conf.direct_replace_konachan))
         self.direct_replace_konachan_chkbtn = Checkbutton(parent, text="Save konachan images directly", var=self.direct_replace_konachan_var, style="chkbtn.TCheckbutton")
-        self.direct_replace_entry = Entry(parent, width=30, style="button.TLabel")
+        self.direct_replace_entry = Entry(parent, width=30, validate='all', validatecommand=(vcmd, '%P', False, 0, 100), style="button.TLabel")
         self.direct_replace_entry.insert(0, gv.Files.Conf.direct_replace)
 
         self.restart_gui_lbl = Label(parent, text="Restart of Sourcery required(Images per page)!", font=("Arial Bold", 10), style="label.TLabel")

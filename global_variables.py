@@ -1,5 +1,6 @@
 from os import getcwd
 from multiprocessing import Semaphore
+from configparser import ConfigParser
 from copy import copy
 from Files import Files
 # Every variable that can be "outmoduled" and appears in at least two modules
@@ -9,6 +10,8 @@ Files = Files()
 input_dir = Files.Conf.input_dir
 output_dir = Files.Conf.output_dir
 
+width = 0
+height = 0
 res_frame = None # ScrollFrame for results to put widgets in
 big_frame = None # ScrollFrame for big selector to put widgets in
 info_frame = None # ScrollFrame for info to put widgets in
@@ -25,25 +28,20 @@ display_startpage = None
 log_text = None
 info_ScrollFrame = None
 
-results_tags_danbooru = Files.Conf.tags_danbooru.split()
-results_tags_pixiv = Files.Conf.tags_pixiv.split()
-results_tags_yandere = Files.Conf.tags_yandere.split()
-results_tags_konachan = Files.Conf.tags_konachan.split()
-
 last_occupied_result = 0
 imgpp_sem = Semaphore(int(Files.Conf.imgpp))
 img_data_sem = Semaphore(50)
 
-width = 0
-height = 0
+default_dict = {"rename":'0', "tags":'', "gen_tagfile":'0', "tagfile_pixiv":'0', "tagfile_danbooru":'0', "tagfile_yandere":'0', "tagfile_konachan":'0', "direct_replace":'0', "use":'1'}
+config = ConfigParser(defaults=default_dict)
 
-# global arrays
-# input_images_array = list() # For all images in Input folder
+# global lists
 delete_dirs_array = list() # For empty directories or dirs where no original is present
 img_data_array = list() # For all ImageData instances
-#img_data_array1 = list()
-#img_data_array2 = list()
-#free_space = list()
+results_tags_danbooru = Files.Conf.tags_danbooru.split()
+results_tags_pixiv = Files.Conf.tags_pixiv.split()
+results_tags_yandere = Files.Conf.tags_yandere.split()
+results_tags_konachan = Files.Conf.tags_konachan.split()
 
 def class_parallel_loader(method, lock, display=False):
     with lock:

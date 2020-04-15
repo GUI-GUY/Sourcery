@@ -17,7 +17,7 @@ from shutil import rmtree
 from copy import deepcopy
 #from distutils.util import strtobool
 from threading import Thread
-from file_operations import is_image, save, open_input, open_output, display_statistics, change_input, change_output
+from file_operations import is_image, save, open_input, open_output, display_statistics, change_input, change_output, init_config
 from sourcery import do_sourcery
 from pixiv_handler import pixiv_fetch_illustration
 from danbooru_handler import danbooru_fetch_illustration
@@ -325,4 +325,5 @@ if __name__ == '__main__':
     Startpage_Class.Processing_Class.terminate_loop()
     startpage_update_thread.start()
     Startpage_Class.display_startpage()
+    init_config()
     window.mainloop()
