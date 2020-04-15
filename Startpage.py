@@ -151,7 +151,7 @@ class Startpage():
     def count_input(self):
         self.input_lock.acquire()
         try:
-            self.input_images_array = self.list_input(listdir(gv.input_dir), gv.input_dir, int(gv.Files.Conf.input_search_depth))
+            self.input_images_array = self.list_input(listdir(gv.input_dir), gv.input_dir, gv.config.getint('Sourcery', 'input_search_depth'))
             self.input_images_array.extend(listdir(gv.input_dir))
         except Exception as e:
             print('ERROR [0040] ' + str(e))

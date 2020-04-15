@@ -51,7 +51,7 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None,
     if danbooru:
         if 'file_url' in illustration:
             try:
-                if gv.Files.Conf.rename_danbooru == '1':
+                if gv.config['Danbooru']['rename'] == '1':
                     new_name = rename(illustration['file_url'].split('/')[-1], 'danbooru')
                 else:
                     dot = img_name_original.rfind('.')
@@ -74,7 +74,7 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None,
     elif yandere:
         if 'file_url' in illustration:
             try:
-                if gv.Files.Conf.rename_yandere == '1':
+                if gv.config['Yandere']['rename'] == '1':
                     new_name = rename(illustration['file_url'].split('/')[-1], yandere)
                 else:
                     dot = img_name_original.rfind('.')
@@ -97,7 +97,7 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None,
     elif konachan:
         if 'file_url' in illustration:
             try:
-                if gv.Files.Conf.rename_konachan == '1':
+                if gv.config['Konachan']['rename'] == '1':
                     new_name = rename(illustration['file_url'].split('/')[-1], 'konachan')
                 else:
                     dot = img_name_original.rfind('.')

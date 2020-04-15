@@ -17,7 +17,7 @@ from shutil import rmtree
 from copy import deepcopy
 #from distutils.util import strtobool
 from threading import Thread
-from file_operations import is_image, save, open_input, open_output, display_statistics, change_input, change_output, init_config
+from file_operations import is_image, save, open_input, open_output, display_statistics, change_input, change_output
 from sourcery import do_sourcery
 from pixiv_handler import pixiv_fetch_illustration
 from danbooru_handler import danbooru_fetch_illustration
@@ -110,7 +110,7 @@ def load_from_ref_run(c):
         
         next_img = False
         for data in gv.img_data_array:
-            if str(ref['old_name']) == data.sub_dill.name and str(ref['minsim']) == gv.Files.Conf.minsim:
+            if str(ref['old_name']) == data.sub_dill.name and str(ref['minsim']) == gv.config.getint('SauceNao', 'minsim'):
                 next_img = True
                 break
         if len(pixiv_illustration_list) == 0 and len(danb_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0:
@@ -325,5 +325,5 @@ if __name__ == '__main__':
     Startpage_Class.Processing_Class.terminate_loop()
     startpage_update_thread.start()
     Startpage_Class.display_startpage()
-    init_config()
+    
     window.mainloop()

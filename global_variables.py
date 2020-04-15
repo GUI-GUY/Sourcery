@@ -1,14 +1,74 @@
-from os import getcwd
+from os import getcwd, path
 from multiprocessing import Semaphore
 from configparser import ConfigParser
 from copy import copy
 from Files import Files
 # Every variable that can be "outmoduled" and appears in at least two modules
 
+def init_config():
+
+    config.add_section('Original')
+    config.add_section('Pixiv')
+    config.add_section('Danbooru')
+    config.add_section('Yandere')
+    config.add_section('Konachan')
+    config.add_section('Weight')
+    config.add_section('SauceNAO')
+    config.add_section('Sourcery')
+    
+    config['Weight'] = {
+        "png" : '10',
+        "jpg" : '7',
+        "jfif" : '1',
+        "gif" : '10',
+        "bmp" : '5',
+        "other" : '0',
+        "higher_resolution" : '10',
+        "pixiv" : '8',
+        "danbooru" : '10',
+        "yandere" : '0',
+        "konachan" : '0',
+        "original" : '5'
+    }
+    
+    config['SauceNAO'] = {
+        "api_key" : '',
+        "minsim" : '80',
+        "returns" : '10',
+        "depth" : '128',
+        "bias" : '15',
+        "biasmin" : '70'
+    }
+
+    config['Sourcery'] = {
+        "imgpp" : '12',
+        "input_dir" : cwd + '/Input',
+        "output_dir" : cwd + '/Output',
+        "delete_input" : '0',
+        "direct_replace" : '100',
+        "input_search_depth" : '1'
+    }
+
+    config['Original'] = {
+        "single_source_in_tagfile" : '0'
+    }
+
+    if path.isfile(cwd + '/Sourcery/config.cfg'):
+        config.read_file(open(cwd + '/Sourcery/config.cfg'))#TODO
+    
+    write_config()
+
+def write_config():
+    config.write(open(cwd + '/Sourcery/config.cfg', 'w'))#TODO
+
+
 cwd = getcwd()
 Files = Files()
-input_dir = Files.Conf.input_dir
-output_dir = Files.Conf.output_dir
+default_dict = {"rename":'0', "tags":'', "gen_tagfile":'0', "tagfile_pixiv":'0', "tagfile_danbooru":'0', "tagfile_yandere":'0', "tagfile_konachan":'0', "direct_replace":'0', "use":'1'}
+config = ConfigParser(defaults=default_dict)
+init_config()
+input_dir = config['Sourcery']['input_dir']
+output_dir = config['Sourcery']['output_dir']
 
 width = 0
 height = 0
@@ -29,19 +89,16 @@ log_text = None
 info_ScrollFrame = None
 
 last_occupied_result = 0
-imgpp_sem = Semaphore(int(Files.Conf.imgpp))
+imgpp_sem = Semaphore(config.getint('Sourcery', 'imgpp'))
 img_data_sem = Semaphore(50)
-
-default_dict = {"rename":'0', "tags":'', "gen_tagfile":'0', "tagfile_pixiv":'0', "tagfile_danbooru":'0', "tagfile_yandere":'0', "tagfile_konachan":'0', "direct_replace":'0', "use":'1'}
-config = ConfigParser(defaults=default_dict)
 
 # global lists
 delete_dirs_array = list() # For empty directories or dirs where no original is present
 img_data_array = list() # For all ImageData instances
-results_tags_danbooru = Files.Conf.tags_danbooru.split()
-results_tags_pixiv = Files.Conf.tags_pixiv.split()
-results_tags_yandere = Files.Conf.tags_yandere.split()
-results_tags_konachan = Files.Conf.tags_konachan.split()
+results_tags_danbooru = config['Danbooru']['tags'].split()
+results_tags_pixiv = config['Pixiv']['tags'].split()
+results_tags_yandere = config['Yandere']['tags'].split()
+results_tags_konachan = config['Konachan']['tags'].split()
 
 def class_parallel_loader(method, lock, display=False):
     with lock:
@@ -49,6 +106,8 @@ def class_parallel_loader(method, lock, display=False):
             method()
         else:
             method(display)
+
+
 
 # COLORS = ['white', 'snow', 'ghost white', 'white smoke', 'gainsboro', 'floral white', 'old lace',
 #     'linen', 'antique white', 'papaya whip', 'blanched almond', 'bisque', 'peach puff',

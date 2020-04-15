@@ -144,7 +144,7 @@ class ProviderImageData():
         return True
 
     def is_greater_than_direct_sim(self):
-        if self.sub_dill.similarity > int(gv.Files.Conf.direct_replace):
+        if self.sub_dill.similarity > gv.config.getint('Sourcery', 'direct_replace'):
             return True
         return False
 
@@ -443,51 +443,51 @@ class ProviderImageData():
         return False
 
     def gen_tagfile(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gen_dir, name):
-        if self.sub_dill.service == 'Pixiv' and gv.Files.Conf.gen_tagfile_pixiv == '1':
+        if self.sub_dill.service == 'Pixiv' and gv.config['Pixiv']['gen_tagfile'] == '1':
             all_tags = list()
-            if gv.Files.Conf.tagfile_pixiv_pixiv == '1':
+            if gv.config['Pixiv']['tagfile_pixiv'] == '1':
                 all_tags.extend(pixiv_tags)
-            if gv.Files.Conf.tagfile_danbooru_pixiv == '1':
+            if gv.config['Pixiv']['tagfile_danbooru'] == '1':
                 all_tags.extend(danbooru_tags)
-            if gv.Files.Conf.tagfile_yandere_pixiv == '1':
+            if gv.config['Pixiv']['tagfile_yandere'] == '1':
                 all_tags.extend(yandere_tags)
-            if gv.Files.Conf.tagfile_konachan_pixiv == '1':
+            if gv.config['Pixiv']['tagfile_konachan'] == '1':
                 all_tags.extend(konachan_tags)
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
-        elif self.sub_dill.service == 'Danbooru' and gv.Files.Conf.gen_tagfile_danbooru == '1':
+        elif self.sub_dill.service == 'Danbooru' and gv.config['Danbooru']['gen_tagfile'] == '1':
             all_tags = list()
-            if gv.Files.Conf.tagfile_pixiv_danbooru == '1':
+            if gv.config['Danbooru']['tagfile_pixiv'] == '1':
                 all_tags.extend(pixiv_tags)
-            if gv.Files.Conf.tagfile_danbooru_danbooru == '1':
+            if gv.config['Danbooru']['tagfile_danbooru'] == '1':
                 all_tags.extend(danbooru_tags)
-            if gv.Files.Conf.tagfile_yandere_danbooru == '1':
+            if gv.config['Danbooru']['tagfile_yandere'] == '1':
                 all_tags.extend(yandere_tags)
-            if gv.Files.Conf.tagfile_konachan_danbooru == '1':
+            if gv.config['Danbooru']['tagfile_konachan'] == '1':
                 all_tags.extend(konachan_tags)
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
-        elif self.sub_dill.service == 'Yandere' and gv.Files.Conf.gen_tagfile_yandere == '1':
+        elif self.sub_dill.service == 'Yandere' and gv.config['Yandere']['gen_tagfile'] == '1':
             all_tags = list()
-            if gv.Files.Conf.tagfile_pixiv_yandere == '1':
+            if gv.config['Yandere']['tagfile_pixiv'] == '1':
                 all_tags.extend(pixiv_tags)
-            if gv.Files.Conf.tagfile_danbooru_yandere == '1':
+            if gv.config['Yandere']['tagfile_danbooru'] == '1':
                 all_tags.extend(danbooru_tags)
-            if gv.Files.Conf.tagfile_yandere_yandere == '1':
+            if gv.config['Yandere']['tagfile_yandere'] == '1':
                 all_tags.extend(yandere_tags)
-            if gv.Files.Conf.tagfile_konachan_yandere == '1':
+            if gv.config['Yandere']['tagfile_konachan'] == '1':
                 all_tags.extend(konachan_tags)
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
-        elif self.sub_dill.service == 'Konachan' and gv.Files.Conf.gen_tagfile_konachan == '1':
+        elif self.sub_dill.service == 'Konachan' and gv.config['Konachan']['gen_tagfile'] == '1':
             all_tags = list()
-            if gv.Files.Conf.tagfile_pixiv_konachan == '1':
+            if gv.config['Konachan']['tagfile_pixiv'] == '1':
                 all_tags.extend(pixiv_tags)
-            if gv.Files.Conf.tagfile_danbooru_konachan == '1':
+            if gv.config['Konachan']['tagfile_danbooru'] == '1':
                 all_tags.extend(danbooru_tags)
-            if gv.Files.Conf.tagfile_yandere_konachan == '1':
+            if gv.config['Konachan']['tagfile_yandere'] == '1':
                 all_tags.extend(yandere_tags)
-            if gv.Files.Conf.tagfile_konachan_konachan == '1':
+            if gv.config['Konachan']['tagfile_konachan'] == '1':
                 all_tags.extend(konachan_tags)
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
@@ -513,37 +513,29 @@ class ProviderImageData():
     def evaluate_weight(self, original_aspect_ratio, original_width):
         img_weight = 0
         aspect_flag = False
-        filetype = self.sub_dill.filetype
-        if filetype == 'png':
-            img_weight = img_weight + int(gv.Files.Conf.png_weight)
-        elif filetype == 'jpg':
-            img_weight = img_weight + int(gv.Files.Conf.jpg_weight)
-        elif filetype == 'jpeg':
-            img_weight = img_weight + int(gv.Files.Conf.jpg_weight)
-        elif filetype == 'jfif':
-            img_weight = img_weight + int(gv.Files.Conf.jfif_weight)
-        elif filetype == 'gif':
-            img_weight = img_weight + int(gv.Files.Conf.gif_weight)
-        elif filetype == 'bmp':
-            img_weight = img_weight + int(gv.Files.Conf.bmp_weight)
-        else:
-            img_weight = img_weight + int(gv.Files.Conf.other_weight)
+        switch = {
+            'png': gv.config.getint('Weight', 'png'),
+            'jpg': gv.config.getint('Weight', 'jpg'),
+            'jpeg': gv.config.getint('Weight', 'jpg'),
+            'jfif': gv.config.getint('Weight', 'jfif'),
+            'gif': gv.config.getint('Weight', 'gif'),
+            'bmp': gv.config.getint('Weight', 'bmp')
+        }
+        img_weight += switch.get(self.sub_dill.filetype, gv.config.getint('Weight', 'other'))
 
-        service = self.sub_dill.service
-        if service == 'Danbooru':
-            img_weight = img_weight + int(gv.Files.Conf.danbooru_weight)
-        elif service == 'Pixiv':
-            img_weight = img_weight + int(gv.Files.Conf.pixiv_weight)
-        elif service == 'Yandere':
-            img_weight = img_weight + int(gv.Files.Conf.yandere_weight)
-        elif service == 'Konachan':
-            img_weight = img_weight + int(gv.Files.Conf.konachan_weight)
+        switch = {
+            'Danbooru': gv.config.getint('Weight', 'danbooru'),
+            'Pixiv': gv.config.getint('Weight', 'pixiv'),
+            'Yandere': gv.config.getint('Weight', 'yandere'),
+            'Konachan': gv.config.getint('Weight', 'konachan'),
+        }
+        img_weight += switch.get(self.sub_dill.service, 0)
 
         if original_aspect_ratio == round(int(self.sub_dill.width)/int(self.sub_dill.height), 1):
             if int(self.sub_dill.width) > original_width:
-                img_weight = img_weight + int(gv.Files.Conf.higher_resolution_weight)
+                img_weight = img_weight + gv.config.getint('Weight', 'higher_resolution')
             elif int(self.sub_dill.width) == original_width:
-                img_weight = img_weight + int(gv.Files.Conf.higher_resolution_weight)
+                img_weight = img_weight + gv.config.getint('Weight', 'higher_resolution')
                 aspect_flag = True
             else:
                 aspect_flag = True

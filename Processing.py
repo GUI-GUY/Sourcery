@@ -24,7 +24,7 @@ class Processing():
         self.parent.load_from_ref_btn.configure(state='disabled')
         gv.Files.Log.write_to_log('Starting second process for sourcing images')
         self.parent.input_lock.acquire()
-        self.process = Process(target=do_sourcery, args=(gv.cwd, self.parent.input_images_array, gv.Files.Cred.saucenao_api_key, gv.Files.Conf.minsim, gv.input_dir, self.comm_q, self.comm_img_q, self.comm_stop_q, self.comm_error_q, self.img_data_q, self.duplicate_c_pipe, self.terminate_c_pipe, ))
+        self.process = Process(target=do_sourcery, args=(gv.cwd, self.parent.input_images_array, gv.Files.Cred.saucenao_api_key, gv.config['SauceNAO']['minsim'], gv.input_dir, self.comm_q, self.comm_img_q, self.comm_stop_q, self.comm_error_q, self.img_data_q, self.duplicate_c_pipe, self.terminate_c_pipe, ))
         self.process.start()
         self.parent.input_lock.release()
 
@@ -37,7 +37,7 @@ class Processing():
                 if self.duplicate_p_pipe.poll():
                     dup_dict = self.duplicate_p_pipe.recv()
                     is_dup = False
-                    for data in gv.img_data_array: # {'img_name': img, 'minsim': minsim, 'rename_pixiv': gv.Files.Conf.rename_pixiv, 'rename_danbooru': gv.Files.Conf.rename_danbooru}
+                    for data in gv.img_data_array: # {'img_name': img, 'minsim': minsim, 'rename_pixiv': gv.config['Pixiv']['rename'], 'rename_danbooru': gv.config['Danbooru']['rename']}
                         if str(dup_dict['img_name']) == data.sub_dill.name and str(dup_dict['minsim']) == str(data.sub_dill.minsim):
                             is_dup = True
                             break

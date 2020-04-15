@@ -187,50 +187,50 @@ class ImageData():
         """
         #TODO display_results_init skip?
         flag = False
-        if gv.Files.Conf.direct_replace_pixiv == '1':
+        if gv.config['Pixiv']['direct_replace'] == '1':
             for elem in self.pixiv_list:
                 if elem.load_init:
                     if elem.is_greater_than_direct_sim():
                         flag = True
-        if gv.Files.Conf.direct_replace_danbooru == '1':
+        if gv.config['Danbooru']['direct_replace'] == '1':
             for elem in self.danbooru_list:
                 if elem.load_init:
                     if elem.is_greater_than_direct_sim():
                         flag = True
-        if gv.Files.Conf.direct_replace_yandere == '1':
+        if gv.config['Yandere']['direct_replace'] == '1':
             for elem in self.yandere_list:
                 if elem.load_init:
                     if elem.is_greater_than_direct_sim():
                         flag = True
-        if gv.Files.Conf.direct_replace_konachan == '1':
+        if gv.config['Konachan']['direct_replace'] == '1':
             for elem in self.konachan_list:
                 if elem.load_init:
                     if elem.is_greater_than_direct_sim():
                         flag = True
 
         if flag:
-            if gv.Files.Conf.direct_replace_pixiv == '1':
+            if gv.config['Pixiv']['direct_replace'] == '1':
                 for elem in self.pixiv_list:
                     if elem.load_init:
                         if elem.is_greater_than_direct_sim():
                             elem.downloaded_var.set(1)
                         else:
                             elem.downloaded_var.set(0)
-            if gv.Files.Conf.direct_replace_danbooru == '1':
+            if gv.config['Danbooru']['direct_replace'] == '1':
                 for elem in self.danbooru_list:
                     if elem.load_init:
                         if elem.is_greater_than_direct_sim():
                             elem.downloaded_var.set(1)
                         else:
                             elem.downloaded_var.set(0)
-            if gv.Files.Conf.direct_replace_yandere == '1':
+            if gv.config['Yandere']['direct_replace'] == '1':
                 for elem in self.yandere_list:
                     if elem.load_init:
                         if elem.is_greater_than_direct_sim():
                             elem.downloaded_var.set(1)
                         else:
                             elem.downloaded_var.set(0)
-            if gv.Files.Conf.direct_replace_konachan == '1':
+            if gv.config['Konachan']['direct_replace'] == '1':
                 for elem in self.konachan_list:
                     if elem.load_init:
                         if elem.is_greater_than_direct_sim():
@@ -254,7 +254,7 @@ class ImageData():
         original_weight = self.evaluate_weight()
 
         if aspect_flag:
-            original_weight = original_weight + int(gv.Files.Conf.higher_resolution_weight)
+            original_weight = original_weight + gv.config.getint('Weight', 'higher_resolution')
         if original_weight > highest_weight[1]:
             self.original_var.set(1)
         else:
@@ -282,22 +282,17 @@ class ImageData():
     def evaluate_weight(self):
         img_weight = 0
         filetype = self.sub_dill.filetype
-        if filetype == 'png':
-            img_weight = img_weight + int(gv.Files.Conf.png_weight)
-        elif filetype == 'jpg':
-            img_weight = img_weight + int(gv.Files.Conf.jpg_weight)
-        elif filetype == 'jpeg':
-            img_weight = img_weight + int(gv.Files.Conf.jpg_weight)
-        elif filetype == 'jfif':
-            img_weight = img_weight + int(gv.Files.Conf.jfif_weight)
-        elif filetype == 'gif':
-            img_weight = img_weight + int(gv.Files.Conf.gif_weight)
-        elif filetype == 'bmp':
-            img_weight = img_weight + int(gv.Files.Conf.bmp_weight)
-        else:
-            img_weight = img_weight + int(gv.Files.Conf.other_weight)
+        switch = {
+            'png': gv.config.getint('Weight', 'png'),
+            'jpg': gv.config.getint('Weight', 'jpg'),
+            'jpeg': gv.config.getint('Weight', 'jpg'),
+            'jfif': gv.config.getint('Weight', 'jfif'),
+            'gif': gv.config.getint('Weight', 'gif'),
+            'bmp': gv.config.getint('Weight', 'bmp')
+        }
+        img_weight += switch.get(filetype, gv.config.getint('Weight', 'other'))
 
-        img_weight = img_weight + int(gv.Files.Conf.original_weight)
+        img_weight += gv.config.getint('Weight', 'original')
         
         return img_weight
 
@@ -457,7 +452,7 @@ class ImageData():
         for service in self.service_list:
             counter += len(service)
         
-        if counter == 1 and gv.Files.Conf.single_source_in_tagfile == '1':
+        if counter == 1 and gv.config['Original']['single_source_in_tagfile'] == '1':
             exception_tags.extend(pixiv_tags)
             exception_tags.extend(danbooru_tags)
             exception_tags.extend(yandere_tags)
@@ -479,7 +474,7 @@ class ImageData():
             ##----##
                 
             if save_counter == 0:
-                if gv.Files.Conf.delete_input == '1':
+                if gv.config['Sourcery']['delete_input'] == '1':
                     if not mb.askyesno('Delete all?', 'Delete all images(INcluding image in input folder) related to:\n' + self.sub_dill.name + '\n'):
                         return False
                 else:
@@ -566,7 +561,7 @@ class ImageData():
         for widget in gv.info_frame.winfo_children():
             widget.grid_forget()
 
-        if gv.Files.Conf.delete_input == '1':
+        if gv.config['Sourcery']['delete_input'] == '1':
             gv.delete_dirs_array.append(self.dill.input_path)
         try:
             gv.Files.Ref.refs.remove(self.dill.reference)
@@ -576,15 +571,15 @@ class ImageData():
         return True
 
     def gen_tagfile(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gen_dir, name):
-        if gv.Files.Conf.gen_tagfile_original == '1':
+        if gv.config['Original']['gen_tagfile'] == '1':
             all_tags = list()
-            if gv.Files.Conf.tagfile_pixiv_original == '1':
+            if gv.config['Original']['tagfile_pixiv'] == '1':
                 all_tags.extend(pixiv_tags)
-            if gv.Files.Conf.tagfile_danbooru_original == '1':
+            if gv.config['Original']['tagfile_danbooru'] == '1':
                 all_tags.extend(danbooru_tags)
-            if gv.Files.Conf.tagfile_yandere_original == '1':
+            if gv.config['Original']['tagfile_yandere'] == '1':
                 all_tags.extend(yandere_tags)
-            if gv.Files.Conf.tagfile_konachan_original == '1':
+            if gv.config['Original']['tagfile_konachan'] == '1':
                 all_tags.extend(konachan_tags)
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
