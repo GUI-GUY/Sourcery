@@ -26,8 +26,8 @@ def init_config():
         "higher_resolution" : '10',
         "pixiv" : '8',
         "danbooru" : '10',
-        "yandere" : '0',
-        "konachan" : '0',
+        "yandere" : '5',
+        "konachan" : '5',
         "original" : '5'
     }
     
@@ -106,8 +106,6 @@ def class_parallel_loader(method, lock, display=False):
             method()
         else:
             method(display)
-
-
 
 # COLORS = ['white', 'snow', 'ghost white', 'white smoke', 'gainsboro', 'floral white', 'old lace',
 #     'linen', 'antique white', 'papaya whip', 'blanched almond', 'bisque', 'peach puff',

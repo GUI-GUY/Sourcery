@@ -1,6 +1,7 @@
 from os import listdir, path, remove
 from shutil import rmtree
 from multiprocessing import Lock
+import time
 from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END, W, simpledialog
 from tkinter import Checkbutton as cb
 from tkinter.ttk import Label, Button, Style, Entry, Frame
@@ -80,6 +81,7 @@ class Startpage():
         self.lock_save_btn = Button(window, text="Lock selected", command=lock_save, style="button.TLabel")
         self.save_locked_btn = Button(window, text="Save selected images", command=save_locked, state = 'disabled', style="button.TLabel")
 
+        self.test_btn = Button(self.window, text='test', command=self.test, style='button.TLabel')
         self.index = 0
         self.input_lock = Lock()
 
@@ -123,7 +125,6 @@ class Startpage():
 
         self.display_logfile()
 
-        self.test_btn = Button(self.window, text='test', command=self.test, style='button.TLabel')
         self.test_btn.place(x = 800, y = 60)
         self.display_info_btn.place(x = int(gv.width*0.7), y = int(gv.height/90*6))
         self.display_logfile_btn.place(x = int(gv.width*0.8), y = int(gv.height/90*6))
@@ -137,6 +138,7 @@ class Startpage():
             if data.locked:
                 counter += 1
         print("Locked:", counter)
+        print("Children:", len(self.window.winfo_children()))
         gv.Files.Log.write_to_log('this is a test')
 
     def list_input(self, directory_list, directory, depth):
@@ -270,6 +272,7 @@ class Startpage():
             answer2, currently_processing = self.get_processing_status(answer2, currently_processing)
             self.make_image_data()
             self.load_image_data()
+            time.sleep(0.3)
 
     def display_info(self):
         gv.Files.Log.log_text.place_forget()

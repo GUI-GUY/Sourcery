@@ -48,7 +48,17 @@ class ImageData():
         self.original_photoImage_thumb = None
 
         self.original_var = IntVar(value=0)
-        self.original_chkbtn = cb(gv.res_frame, var=self.original_var)
+        self.original_chkbtn = cb(gv.res_frame, var=self.original_var,
+            foreground=gv.Files.Theme.foreground, 
+            background=gv.Files.Theme.background, 
+            borderwidth = 1, 
+            selectcolor=gv.Files.Theme.checkbutton_pressed, 
+            activebackground=gv.Files.Theme.button_background_active, 
+            activeforeground=gv.Files.Theme.button_foreground_active, 
+            relief='flat',#default flat
+            overrelief='ridge',#no default
+            offrelief='flat',#default raised
+            indicatoron='false')# sunken, raised, groove, ridge, flat)
         self.original_lbl = Label(gv.res_frame, text = "Input", style='label.TLabel')
         self.original_wxh_lbl = Label(gv.res_frame, style='label.TLabel')
         self.original_type_lbl = Label(gv.res_frame, style='label.TLabel')
@@ -137,17 +147,7 @@ class ImageData():
         """
         if self.modify_results_widgets_init:
             return
-        self.original_chkbtn.configure(image=self.original_photoImage_thumb, 
-            foreground=gv.Files.Theme.foreground, 
-            background=gv.Files.Theme.background, 
-            borderwidth = 1, 
-            selectcolor=gv.Files.Theme.checkbutton_pressed, 
-            activebackground=gv.Files.Theme.button_background_active, 
-            activeforeground=gv.Files.Theme.button_foreground_active, 
-            relief='flat',#default flat
-            overrelief='ridge',#no default
-            offrelief='flat',#default raised
-            indicatoron='false')# sunken, raised, groove, ridge, flat
+        self.original_chkbtn.configure(image=self.original_photoImage_thumb)
         self.original_chkbtn.image = self.original_photoImage_thumb
         self.original_wxh_lbl.configure(text = str(self.size))
         self.original_type_lbl.configure(text = self.sub_dill.filetype)
@@ -609,4 +609,18 @@ class ImageData():
             for elem in service:
                 if elem.load_init:
                     elem.self_destruct()
+        
+        del self.original_image_thumb
+        del self.original_photoImage_thumb
 
+        del self.original_chkbtn
+        del self.original_lbl
+        del self.original_wxh_lbl
+        del self.original_type_lbl
+        del self.original_cropped_lbl
+
+        del self.big_selector_btn
+        del self.info_btn
+        del self.back_btn
+        del self.next_btn
+        del self.prev_btn

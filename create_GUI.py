@@ -34,10 +34,11 @@ import global_variables as gv
 
 def load_from_ref():
     c = simpledialog.askinteger(title='How many?', prompt='How many images would you like to load?')
-    ref_thread = Thread(target=load_from_ref_run, args=[c], daemon=True)
-    ref_thread.start()
-    Startpage_Class.do_sourcery_btn.configure(state='disabled')
-    Startpage_Class.load_from_ref_btn.configure(state='disabled')
+    if c != None:
+        ref_thread = Thread(target=load_from_ref_run, args=[c], daemon=True)
+        ref_thread.start()
+        Startpage_Class.do_sourcery_btn.configure(state='disabled')
+        Startpage_Class.load_from_ref_btn.configure(state='disabled')
 
 def load_from_ref_run(c):
     """
@@ -110,7 +111,7 @@ def load_from_ref_run(c):
         
         next_img = False
         for data in gv.img_data_array:
-            if str(ref['old_name']) == data.sub_dill.name and str(ref['minsim']) == gv.config.getint('SauceNao', 'minsim'):
+            if str(ref['old_name']) == data.sub_dill.name and str(ref['minsim']) == gv.config.getint('SauceNAO', 'minsim'):
                 next_img = True
                 break
         if len(pixiv_illustration_list) == 0 and len(danb_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0:
@@ -150,7 +151,7 @@ def save_locked():
         gv.Files.Log.write_to_log('Saved images')
     else:
         gv.Files.Log.write_to_log('Cancelled saving images')
-    gv.results_ScrollFrame.display(x = int(width/16*4), y = int(height/9))
+    Startpage_Class.results_ScrollFrame.display(x = int(width/16*4), y = int(height/9))
     leftovers()
     Startpage_Class.save_locked_btn.configure(state='disabled')
 

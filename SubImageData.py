@@ -26,14 +26,36 @@ class SubImageData():
             self.var = IntVar(value=0)
         else:
             self.var = var
-        self.chkbtn = None
-        self.thumb_chkbtn = None
-        self.lbl = None
-        self.lbl2 = None
-        self.wxh_lbl = None
-        self.type_lbl = None
+        self.chkbtn = cb(self.par, var=self.var,
+            foreground=gv.Files.Theme.foreground, 
+            background=gv.Files.Theme.background, 
+            borderwidth = 1,
+            highlightthickness = 6, 
+            selectcolor=gv.Files.Theme.checkbutton_pressed, 
+            activebackground=gv.Files.Theme.button_background_active, 
+            activeforeground=gv.Files.Theme.button_foreground_active, 
+            relief='flat',#default flat
+            overrelief='ridge',#no default
+            offrelief='flat',#default raised
+            indicatoron='false')# sunken, raised, groove, ridge, flat, style="chkbtn.TCheckbutton"
+        self.thumb_chkbtn = cb(self.scrollpar, var=self.var,
+                foreground=gv.Files.Theme.foreground, 
+                background=gv.Files.Theme.background, 
+                borderwidth = 1,
+                highlightthickness = 1, 
+                selectcolor=gv.Files.Theme.checkbutton_pressed, 
+                activebackground=gv.Files.Theme.button_background_active, 
+                activeforeground=gv.Files.Theme.button_foreground_active, 
+                relief='flat',#default flat
+                overrelief='ridge',#no default
+                offrelief='flat',#default raised
+                indicatoron='false')
+        self.lbl = Label(self.scrollpar, text=self.service, style='label.TLabel')
+        self.lbl2 = Label(self.par, text=self.service, style='label.TLabel')
+        self.wxh_lbl = Label(self.scrollpar, style='label.TLabel')
+        self.type_lbl = Label(self.scrollpar, style='label.TLabel')
         self.folder = master_folder
-        self.show_btn = None
+        self.show_btn = Button(self.scrollpar, command=self.show, text='Show', style='button.TLabel')
 
         self.siblings_array = siblings
 
@@ -62,26 +84,10 @@ class SubImageData():
         self.img_obj.close()
         self.img_obj = None
         
-        if self.var == None:
-            self.var = IntVar()
-        self.chkbtn = cb(self.par, image=self.photoImg, var=self.var,
-            foreground=gv.Files.Theme.foreground, 
-            background=gv.Files.Theme.background, 
-            borderwidth = 1,
-            highlightthickness = 6, 
-            selectcolor=gv.Files.Theme.checkbutton_pressed, 
-            activebackground=gv.Files.Theme.button_background_active, 
-            activeforeground=gv.Files.Theme.button_foreground_active, 
-            relief='flat',#default flat
-            overrelief='ridge',#no default
-            offrelief='flat',#default raised
-            indicatoron='false')# sunken, raised, groove, ridge, flat)#, style="chkbtn.TCheckbutton")
+        self.chkbtn.configure(image=self.photoImg)
         self.chkbtn.image = self.photoImg
-        self.lbl = Label(self.scrollpar, text=self.service, style='label.TLabel')
-        self.lbl2 = Label(self.par, text=self.service, style='label.TLabel')
-        self.wxh_lbl = Label(self.scrollpar, text=self.size, style='label.TLabel')
-        self.type_lbl = Label(self.scrollpar, text=self.name[self.name.rfind(".")+1:], style='label.TLabel')
-        self.show_btn = Button(self.scrollpar, command=self.show, text='Show', style='button.TLabel')
+        self.wxh_lbl.configure(text=self.size)
+        self.type_lbl.configure(text=self.name[self.name.rfind(".")+1:])
 
         if self.scrollpar != None:
             try:
@@ -98,18 +104,7 @@ class SubImageData():
             img_obj_thumb.thumbnail((70, 70), resample=Image.ANTIALIAS)
             self.photoImg_thumb = ImageTk.PhotoImage(img_obj_thumb)
             img_obj_thumb.close()
-            self.thumb_chkbtn = cb(self.scrollpar, image=self.photoImg_thumb, var=self.var,
-                foreground=gv.Files.Theme.foreground, 
-                background=gv.Files.Theme.background, 
-                borderwidth = 1,
-                highlightthickness = 1, 
-                selectcolor=gv.Files.Theme.checkbutton_pressed, 
-                activebackground=gv.Files.Theme.button_background_active, 
-                activeforeground=gv.Files.Theme.button_foreground_active, 
-                relief='flat',#default flat
-                overrelief='ridge',#no default
-                offrelief='flat',#default raised
-                indicatoron='false')# style="chkbtn.TCheckbutton")
+            self.thumb_chkbtn.configure(image=self.photoImg_thumb)
             self.thumb_chkbtn.image = self.photoImg_thumb
 
         self.load_init = True
@@ -269,13 +264,27 @@ class SubImageData():
             return gen_tagfile(all_tags, gen_dir, name)
 
     def unload_big_imgs(self):
-        self.self_destruct()
-        self.load_init = False
-
-    def self_destruct(self):
-        self.photoImg = None
-        self.photoImg_thumb = None
         if self.chkbtn != None:
             self.chkbtn.image = None
         if self.thumb_chkbtn != None:
             self.thumb_chkbtn.image = None
+        self.photoImg_thumb = None
+        self.photoImg = None
+        self.load_init = False
+
+    def self_destruct(self):
+        if self.chkbtn != None:
+            self.chkbtn.image = None
+        if self.thumb_chkbtn != None:
+            self.thumb_chkbtn.image = None
+        del self.photoImg_thumb
+        del self.photoImg
+        del self.chkbtn
+        del self.thumb_chkbtn
+        del self.lbl
+        del self.lbl2
+        del self.wxh_lbl
+        del self.type_lbl
+        del self.folder
+        del self.show_btn
+

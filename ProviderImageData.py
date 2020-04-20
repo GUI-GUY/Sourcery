@@ -507,7 +507,6 @@ class ProviderImageData():
         if not_in_file == 0:
             return (self.sub_dill.tags, exception_tags)
 
-
         return list()
 
     def evaluate_weight(self, original_aspect_ratio, original_width):
@@ -563,7 +562,39 @@ class ProviderImageData():
             self.downloaded_SubImgData.self_destruct()
         for img in self.sub_dir_img_array:
             img.self_destruct()
-        self.downloaded_photoImage_thumb = None
-        self.downloaded_photoImage_preview = None
+        del self.downloaded_photoImage_thumb
+        del self.downloaded_photoImage_preview
 
         self.downloaded_chkbtn.image = None
+
+        del self.downloaded_chkbtn
+        del self.downloaded_lbl
+        del self.downloaded_wxh_lbl
+        del self.downloaded_type_lbl
+        del self.results_tags_lbl
+
+        del self.result_not_in_tagfile
+        del self.result_in_tagfile
+
+        del self.info_img_lbl
+        del self.info_provider_lbl
+        del self.info_artist_lbl
+        del self.info_title_lbl
+        #del self.info_imageid_lbl
+        #del self.info_url_lbl
+        del self.info_date_lbl
+        del self.info_caption_lbl
+        del self.info_wxh_lbl
+        del self.tags_pixiv_lbl
+        if self.sub_dill.service == 'Pixiv':
+            for elem in self.tags_lbl_array:
+                a = elem[0]
+                del a
+                b = elem[1]
+                del b
+        else:
+            for elem in self.tags_lbl_array:
+                del elem
+
+        for elem in self.info_url_lbl_list:
+            del elem

@@ -110,6 +110,8 @@ BUGS
 second process just stops idk
 one or more threads do not exit after closing the gui when more than 50ish images are loaded even when all threads are daemons
 + save not possible
+ref duplicate detection does not work?
+widgets do not get deleted
 
 beta 0.4
 REMOVE TEST AND REFERENCE BUTTON
