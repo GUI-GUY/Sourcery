@@ -603,6 +603,7 @@ class ImageData():
             self.original_SubImgData.self_destruct()
         self.original_photoImage_thumb = None
 
+        self.original_chkbtn.configure(image=None)
         self.original_chkbtn.image = None
 
         for service in self.service_list:
@@ -613,14 +614,14 @@ class ImageData():
         del self.original_image_thumb
         del self.original_photoImage_thumb
 
-        del self.original_chkbtn
-        del self.original_lbl
-        del self.original_wxh_lbl
-        del self.original_type_lbl
-        del self.original_cropped_lbl
+        self.original_chkbtn.destroy()
+        self.original_lbl.destroy()
+        self.original_wxh_lbl.destroy()
+        self.original_type_lbl.destroy()
+        self.original_cropped_lbl.destroy()
 
-        del self.big_selector_btn
-        del self.info_btn
-        del self.back_btn
-        del self.next_btn
-        del self.prev_btn
+        self.big_selector_btn.destroy()
+        self.info_btn.destroy()
+        self.back_btn.destroy()
+        self.next_btn.destroy()
+        self.prev_btn.destroy()

@@ -48,9 +48,9 @@ class ProviderImageData():
         self.size = None
 
         self.result_not_in_tagfile_var = IntVar(value=0)
-        self.result_not_in_tagfile = Checkbutton(gv.res_frame, text='Not in Tagfile', var=self.result_not_in_tagfile_var, style='chkbtn.TCheckbutton')
+        self.result_not_in_tagfile_chkbtn = Checkbutton(gv.res_frame, text='Not in Tagfile', var=self.result_not_in_tagfile_var, style='chkbtn.TCheckbutton')
         self.result_in_tagfile_var = IntVar(value=0)
-        self.result_in_tagfile = Checkbutton(gv.res_frame, text='Put in Tagfile', var=self.result_in_tagfile_var, style='chkbtn.TCheckbutton')
+        self.result_in_tagfile_chkbtn = Checkbutton(gv.res_frame, text='Put in Tagfile', var=self.result_in_tagfile_var, style='chkbtn.TCheckbutton')
 
         self.info_img_lbl = Label(gv.info_frame, style='label.TLabel')
         self.info_provider_lbl = Label(gv.info_frame, style='label.TLabel')
@@ -219,8 +219,8 @@ class ProviderImageData():
         self.downloaded_wxh_lbl.grid(column = 3, row = t+2, sticky = W, padx = 7)
         self.downloaded_type_lbl.grid(column = 4, row = t+2, sticky = W, padx = 7)
         self.results_tags_lbl.grid(column = 5, row = t+2, sticky = W, padx = 7)
-        self.result_not_in_tagfile.grid(column = 6, row = t+2, sticky = W+N, padx = 7, pady = 3)
-        self.result_in_tagfile.grid(column = 6, row = t+2, sticky = W+N, padx = 7, pady = 23)
+        self.result_not_in_tagfile_chkbtn.grid(column = 6, row = t+2, sticky = W+N, padx = 7, pady = 3)
+        self.result_in_tagfile_chkbtn.grid(column = 6, row = t+2, sticky = W+N, padx = 7, pady = 23)
         
         return t+2
         
@@ -546,9 +546,9 @@ class ProviderImageData():
         self.downloaded_lbl.grid_forget()
         self.downloaded_wxh_lbl.grid_forget()
         self.downloaded_type_lbl.grid_forget()
-        self.result_not_in_tagfile.grid_forget()
+        self.result_not_in_tagfile_chkbtn.grid_forget()
         self.results_tags_lbl.grid_forget()
-        self.result_in_tagfile.grid_forget()
+        self.result_in_tagfile_chkbtn.grid_forget()
 
     def unload_big_imgs(self):
         if self.downloaded_SubImgData != None:
@@ -565,36 +565,35 @@ class ProviderImageData():
         del self.downloaded_photoImage_thumb
         del self.downloaded_photoImage_preview
 
+        self.downloaded_chkbtn.configure(image=None)
         self.downloaded_chkbtn.image = None
 
-        del self.downloaded_chkbtn
-        del self.downloaded_lbl
-        del self.downloaded_wxh_lbl
-        del self.downloaded_type_lbl
-        del self.results_tags_lbl
+        self.downloaded_chkbtn.destroy()
+        self.downloaded_lbl.destroy()
+        self.downloaded_wxh_lbl.destroy()
+        self.downloaded_type_lbl.destroy()
+        self.results_tags_lbl.destroy()
 
-        del self.result_not_in_tagfile
-        del self.result_in_tagfile
+        self.result_not_in_tagfile_chkbtn.destroy()
+        self.result_in_tagfile_chkbtn.destroy()
 
-        del self.info_img_lbl
-        del self.info_provider_lbl
-        del self.info_artist_lbl
-        del self.info_title_lbl
-        #del self.info_imageid_lbl
-        #del self.info_url_lbl
-        del self.info_date_lbl
-        del self.info_caption_lbl
-        del self.info_wxh_lbl
-        del self.tags_pixiv_lbl
+        self.info_img_lbl.destroy()
+        self.info_provider_lbl.destroy()
+        self.info_artist_lbl.destroy()
+        self.info_title_lbl.destroy()
+        #self.info_imageid_lbl.destroy()
+        #self.info_url_lbl.destroy()
+        self.info_date_lbl.destroy()
+        self.info_caption_lbl.destroy()
+        self.info_wxh_lbl.destroy()
+        self.tags_pixiv_lbl.destroy()
         if self.sub_dill.service == 'Pixiv':
             for elem in self.tags_lbl_array:
-                a = elem[0]
-                del a
-                b = elem[1]
-                del b
+                elem[0].destroy()
+                elem[1].destroy()
         else:
             for elem in self.tags_lbl_array:
-                del elem
+                elem.destroy()
 
         for elem in self.info_url_lbl_list:
-            del elem
+            elem.destroy()

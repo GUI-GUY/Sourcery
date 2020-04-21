@@ -265,8 +265,10 @@ class SubImageData():
 
     def unload_big_imgs(self):
         if self.chkbtn != None:
+            self.chkbtn.configure(image=None)
             self.chkbtn.image = None
         if self.thumb_chkbtn != None:
+            self.thumb_chkbtn.configure(image=None)
             self.thumb_chkbtn.image = None
         self.photoImg_thumb = None
         self.photoImg = None
@@ -274,17 +276,18 @@ class SubImageData():
 
     def self_destruct(self):
         if self.chkbtn != None:
+            self.chkbtn.configure(image=None)
             self.chkbtn.image = None
         if self.thumb_chkbtn != None:
+            self.thumb_chkbtn.configure(image=None)
             self.thumb_chkbtn.image = None
         del self.photoImg_thumb
         del self.photoImg
-        del self.chkbtn
-        del self.thumb_chkbtn
-        del self.lbl
-        del self.lbl2
-        del self.wxh_lbl
-        del self.type_lbl
-        del self.folder
-        del self.show_btn
+        self.chkbtn.destroy()
+        self.thumb_chkbtn.destroy()
+        self.lbl.destroy()
+        self.lbl2.destroy()
+        self.wxh_lbl.destroy()
+        self.type_lbl.destroy()
+        self.show_btn.destroy()
 
