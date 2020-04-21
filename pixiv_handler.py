@@ -76,7 +76,7 @@ def pixiv_download(img_name_original, illustration, comm_error_q=None):
     img_url = illustration.response["body"]["urls"]["original"]
     replace_template = "_p{page}"
     if illustration.page_count > 1:
-        if gv.Files.Conf.rename_pixiv == '1':
+        if gv.config['Pixiv']['rename'] == '1':
             folder_name = rename(str(illustration.id)) + '/'
             new_name = str(illustration.id) + '_p{page}.{filetype}'
         else:
@@ -116,7 +116,7 @@ def pixiv_download(img_name_original, illustration, comm_error_q=None):
                 #mb.showerror("ERROR [0065]", "ERROR CODE [0065]\nImage could not be downloaded")
         return folder_name[:-1]
     else:
-        if gv.Files.Conf.rename_pixiv == '1':
+        if gv.config['Pixiv']['rename'] == '1':
             new_name = str(illustration.id) + '_p0.{filetype}'
         else:
             dot = img_name_original.rfind('.')
@@ -145,7 +145,7 @@ def pixiv_download(img_name_original, illustration, comm_error_q=None):
 #________________________________________
     # replace_template = "_p{page}"
     # img_url = illustration.response["body"]["urls"]["original"]
-    # if gv.Files.Conf.rename_pixiv == '1':
+    # if gv.config['Pixiv']['rename'] == '1':
     #     folder_name = str(illustration.id) + '/'
     #     new_name = str(illustration.id) + '_p{page}.{format}'
     # else:

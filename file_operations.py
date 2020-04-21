@@ -1,4 +1,4 @@
-from os import startfile
+from os import startfile, path
 from copy import deepcopy
 from PIL import Image
 #from tkinter import messagebox as mb
@@ -37,7 +37,7 @@ def save():
     
     remove_later_list = list()
     for data in gv.img_data_array:
-        if gv.img_data_array.index(data) > int(gv.Files.Conf.imgpp):
+        if gv.img_data_array.index(data) > gv.config.getint('Sourcery', 'imgpp'):
             break
         if data.locked:
             # if not data.delete_both():
@@ -96,8 +96,8 @@ def gen_tagfile(tags, gen_dir, name):
 
 def change_input():
     gv.input_dir = fd.askdirectory()
-    gv.Files.Conf.input_dir = gv.input_dir
-    gv.Files.Conf.write_config()
+    gv.config['Sourcery']['input_dir'] = gv.input_dir
+    gv.write_config()
 
 def open_input():
     try:
@@ -109,8 +109,8 @@ def open_input():
 
 def change_output():
     gv.output_dir = fd.askdirectory()
-    gv.Files.Conf.output_dir = gv.output_dir
-    gv.Files.Conf.write_config()
+    gv.config['Sourcery']['output_dir'] = gv.output_dir
+    gv.write_config()
 
 def open_output():
     try:
@@ -144,6 +144,15 @@ def resize(new_image):
         newsize = newwidth, newheight
         new_image = new_image.resize(newsize, Image.ANTIALIAS)
     return new_image
+
+def is_input_int_digit(P, negative=False, min=-1, max=10000000000):
+    if str.isdigit(P) or P == "" or (negative and P[0] == '-' and (str.isdigit(P[1:]) or P[1:] == "")): # if P is '' or '-' or negative/positive number
+        if P != '' and ((P[0] == '-' and len(P) > 1) or P[0] != '-') and (int(P) < int(min) or int(P) > int(max)): # if P is negative/positive number and within min/max
+            return False
+        return True
+    else:
+        return False
+
 
 if __name__ == '__main__':
     #gv.Files.Log.write_to_log()

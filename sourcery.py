@@ -28,7 +28,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
         comm_img_q.put(img)
         comm_error_q.put('[Sourcery] Sourcing: ' + img)
         # if an ImageData instance with the same original name, minsim and rename options already exists, skip
-        duplicate_c_pipe.send({'img_name': img, 'minsim': minsim, 'rename_pixiv': gv.Files.Conf.rename_pixiv, 'rename_danbooru': gv.Files.Conf.rename_danbooru})
+        duplicate_c_pipe.send({'img_name': img, 'minsim': minsim, 'rename_pixiv': gv.config['Pixiv']['rename'], 'rename_danbooru': gv.config['Danbooru']['rename']}) # TODO yandere konachan rename
         next_img = duplicate_c_pipe.recv()
         if next_img:
             comm_error_q.put('[Sourcery] Image has already been sourced')
@@ -140,7 +140,7 @@ def process_img_data_new(img_name_original, img_path, input_path, res, minsim, c
     if len(danbooru_illustration_list) == 0 and len(pixiv_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0:
         comm_error_q.put('None of the requested images were available!')
         comm_error_q.put('DELETE' + img_path)
-        gv.Files.Ref.new_reference(img_name_original, [], [], [], [], gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, gv.Files.Conf.rename_yandere, gv.Files.Conf.rename_konachan, minsim, dict_list, input_path)
+        gv.Files.Ref.new_reference(img_name_original, [], [], [], [], gv.config['Pixiv']['rename'], gv.config['Danbooru']['rename'], gv.config['Yandere']['rename'], gv.config['Konachan']['rename'], minsim, dict_list, input_path)
         return False
     
     pixiv_ref_list = list()
@@ -159,7 +159,7 @@ def process_img_data_new(img_name_original, img_path, input_path, res, minsim, c
     for elem in konachan_illustration_list:
         konachan_ref_list.append((elem[1], elem[0]['id']))
 
-    ref = gv.Files.Ref.new_reference(img_name_original, pixiv_ref_list, danbooru_ref_list, yandere_ref_list, konachan_ref_list, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, gv.Files.Conf.rename_yandere, gv.Files.Conf.rename_konachan, minsim, dict_list, input_path)
+    ref = gv.Files.Ref.new_reference(img_name_original, pixiv_ref_list, danbooru_ref_list, yandere_ref_list, konachan_ref_list, gv.config['Pixiv']['rename'], gv.config['Danbooru']['rename'], gv.config['Yandere']['rename'], gv.config['Konachan']['rename'], minsim, dict_list, input_path)
 
     return (pixiv_illustration_list, danbooru_illustration_list, yandere_illustration_list, konachan_illustration_list, ref)
 
@@ -179,7 +179,7 @@ def pixiv_fetcher(img_name_original, source, visited, comm_error_q):
 
 def danbooru_fetcher(img_name_original, source, service, visited, danbooru, yandere, konachan, comm_error_q):
     illustration_list = list()
-    illustration = None
+    illustration = False
     parent_name = False
     name = False
     if source['service_name'] == service:
@@ -320,5 +320,5 @@ def process_img_data_deprecated(img_name_original, input_path, res, minsim, img_
         konachan_ref_list.append((elem[1], elem[0]['id']))
 
 
-    gv.Files.Ref.new_reference(img_name_original, pixiv_ref_list, danbooru_ref_list, yandere_ref_list, konachan_ref_list, gv.Files.Conf.rename_pixiv, gv.Files.Conf.rename_danbooru, gv.Files.Conf.rename_yandere, gv.Files.Conf.rename_konachan, minsim, dict_list, input_path)
+    gv.Files.Ref.new_reference(img_name_original, pixiv_ref_list, danbooru_ref_list, yandere_ref_list, konachan_ref_list, gv.config['Pixiv']['rename'], gv.config['Danbooru']['rename'], gv.config['Yandere']['rename'], gv.config['Konachan']['rename'], minsim, dict_list, input_path)
 

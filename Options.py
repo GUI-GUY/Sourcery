@@ -4,14 +4,14 @@ from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame, OptionM
 from functools import partial
 from webbrowser import open_new
 #from pixiv_handler import pixiv_login
-from file_operations import change_input, change_output
+from file_operations import change_input, change_output, is_input_int_digit
 from WeightSystem import WeightSystem
 from ScrollFrame import ScrollFrame
 import global_variables as gv
 
 class Options():
     """Hosts all Options classes and methods to switch between the options views"""
-    def __init__(self, parent, display_startpage, enforce_style):
+    def __init__(self, parent, enforce_style):
         self.par = parent
         self.NAOO = SauceNaoOptions(parent)
         self.SouO = SourceryOptions(parent, enforce_style)
@@ -22,7 +22,7 @@ class Options():
         self.saucenao_options_btn = Button(parent, text="SauceNao", command=self.display_saucenao_options, style="button.TLabel")
         self.sourcery_options_btn = Button(parent, text="Sourcery", command=self.display_sourcery_options, style="button.TLabel")
 
-        self.options_back_btn = Button(parent, text="Back", command=display_startpage, style="button.TLabel")
+        self.options_back_btn = Button(parent, text="Back", command=gv.display_startpage, style="button.TLabel")
 
     def display_saucenao_options(self):
         """
@@ -69,15 +69,16 @@ class SauceNaoOptions():
     """Includes all widgets for SauceNao and methods to display and modify them"""
     def __init__(self, parent):
         self.par = parent
+        vcmd = (parent.register(is_input_int_digit))
         self.saucenao_key_lbl = Label(parent, text="SauceNao API-Key", style="label.TLabel")
-        self.saucenao_key_number_lbl = Label(parent, width=50, text=gv.Files.Cred.saucenao_api_key, style="button.TLabel")
+        self.saucenao_key_number_lbl = Label(parent, width=50, text=gv.config['SauceNAO']['api_key'], style="button.TLabel")
         self.saucenao_key_entry = Entry(parent, width=52, style="button.TLabel")
         self.saucenao_key_change_btn = Button(parent, text="Change", command=self.saucenao_change_key, style="button.TLabel")
         self.saucenao_key_confirm_btn = Button(parent, text="Confirm", command=self.saucenao_set_key, style="button.TLabel")
         self.saucenao_minsim_lbl = Label(parent, text="Minimum similarity:", style="label.TLabel")
         self.saucenao_minsim_note_lbl = Label(parent, text="[default: 80]", style="label.TLabel")
-        self.saucenao_minsim_entry = Entry(parent, width=10, style="button.TLabel")
-        self.saucenao_minsim_entry.insert(0, gv.Files.Conf.minsim)
+        self.saucenao_minsim_entry = Entry(parent, width=10, validate='all', validatecommand=(vcmd, '%P', False, 0, 100), style="button.TLabel")
+        self.saucenao_minsim_entry.insert(0, gv.config['SauceNAO']['minsim'])
         self.saucenao_save_btn = Button(parent, text="Save", command=self.saucenao_save, style="button.TLabel")
 
         self.saucenao_address_1_lbl = Label(parent, text="Your API-Key can be found here:", style="label.TLabel")
@@ -87,8 +88,8 @@ class SauceNaoOptions():
 
         self.saucenao_returns_lbl = Label(parent, text="Results:", font=("Arial Bold", 10), style="label.TLabel")
         self.saucenao_returns_note_lbl = Label(parent, text="[default: 10] Number of results to return. More results is slower. Should be at least 2 times the services you use.", font=("Arial Bold", 10), style="label.TLabel")
-        self.saucenao_returns_entry = Entry(parent, width=10, style="button.TLabel")
-        self.saucenao_returns_entry.insert(0, gv.Files.Conf.saucenao_returns)
+        self.saucenao_returns_entry = Entry(parent, width=10, validate='all', validatecommand=(vcmd, '%P'), style="button.TLabel")
+        self.saucenao_returns_entry.insert(0, gv.config['SauceNAO']['returns'])
 
         self.saucenao_depth_lbl = Label(parent, text="Depth:", style="label.TLabel")
         self.saucenao_bias_lbl = Label(parent, text="Bias:", style="label.TLabel")
@@ -96,12 +97,12 @@ class SauceNaoOptions():
         self.saucenao_depth_note_lbl = Label(parent, text="[default: 128] Search depth, deeper searches are slower but can pull out additional matches.", style="label.TLabel")
         self.saucenao_bias_note_lbl = Label(parent, text="[default: 15] Max similarity yield modifier.", style="label.TLabel")
         self.saucenao_biasmin_note_lbl = Label(parent, text="[default: 70] Min similarity to activate priority yield mode.", style="label.TLabel")
-        self.saucenao_depth_entry = Entry(parent, width=10, style="button.TLabel")
-        self.saucenao_depth_entry.insert(0, gv.Files.Conf.saucenao_depth)
-        self.saucenao_bias_entry = Entry(parent, width=10, style="button.TLabel")
-        self.saucenao_bias_entry.insert(0, gv.Files.Conf.saucenao_bias)
-        self.saucenao_biasmin_entry = Entry(parent, width=10, style="button.TLabel")
-        self.saucenao_biasmin_entry.insert(0, gv.Files.Conf.saucenao_biasmin)
+        self.saucenao_depth_entry = Entry(parent, width=10, validate='all', validatecommand=(vcmd, '%P'), style="button.TLabel")
+        self.saucenao_depth_entry.insert(0, gv.config['SauceNAO']['depth'])
+        self.saucenao_bias_entry = Entry(parent, width=10, validate='all', validatecommand=(vcmd, '%P'), style="button.TLabel")
+        self.saucenao_bias_entry.insert(0, gv.config['SauceNAO']['bias'])
+        self.saucenao_biasmin_entry = Entry(parent, width=10, validate='all', validatecommand=(vcmd, '%P'), style="button.TLabel")
+        self.saucenao_biasmin_entry.insert(0, gv.config['SauceNAO']['biasmin'])
     
     def display(self):
         """
@@ -158,8 +159,8 @@ class SauceNaoOptions():
         self.saucenao_key_number_lbl.place_forget()
         self.saucenao_key_confirm_btn.place(x = x4, y = y + c * 1)
         self.saucenao_key_entry.place(x = x2, y = y + c * 1)
-        self.saucenao_key_entry.delete(0, len(gv.Files.Cred.saucenao_api_key))
-        self.saucenao_key_entry.insert(0, gv.Files.Cred.saucenao_api_key)
+        self.saucenao_key_entry.delete(0, len(gv.config['SauceNAO']['api_key']))
+        self.saucenao_key_entry.insert(0, gv.config['SauceNAO']['api_key'])
         
     def saucenao_set_key(self):
         """
@@ -171,9 +172,9 @@ class SauceNaoOptions():
         x2 = int(gv.width/160*20)
         x3 = int(gv.width/160*27)
         x4 = int(gv.width/160*58)
-        gv.Files.Log.write_to_log('Attempting to save SauceNao API-Key')
-        gv.Files.Cred.saucenao_api_key = self.saucenao_key_entry.get()
-        e = gv.Files.Cred.write_credentials()
+        gv.Files.Log.write_to_log('Saving SauceNao API-Key')
+        gv.config['SauceNAO']['api_key'] = self.saucenao_key_entry.get()
+        e = gv.write_config()
         if e == None:
             gv.Files.Log.write_to_log('Saved SauceNao API-Key successfully')
         else:
@@ -181,17 +182,17 @@ class SauceNaoOptions():
         self.saucenao_key_confirm_btn.place_forget()
         self.saucenao_key_entry.place_forget()
         self.saucenao_key_change_btn.place(x = x4, y = y + c * 1)
-        self.saucenao_key_number_lbl.configure(text=gv.Files.Cred.saucenao_api_key)
+        self.saucenao_key_number_lbl.configure(text=gv.config['SauceNAO']['api_key'])
         self.saucenao_key_number_lbl.place(x = x2, y = y + c * 1)
 
     def saucenao_save(self):
-        gv.Files.Log.write_to_log('Attempting to save SauceNAO options...')
-        gv.Files.Conf.minsim = self.saucenao_minsim_entry.get()
-        gv.Files.Conf.saucenao_returns = self.saucenao_returns_entry.get()
-        gv.Files.Conf.saucenao_depth = self.saucenao_depth_entry.get()
-        gv.Files.Conf.saucenao_bias = self.saucenao_bias_entry.get()
-        gv.Files.Conf.saucenao_biasmin = self.saucenao_biasmin_entry.get()
-        gv.Files.Conf.write_config()
+        gv.Files.Log.write_to_log('Saving SauceNAO options...')
+        gv.config['SauceNAO']['minsim'] = self.saucenao_minsim_entry.get()
+        gv.config['SauceNAO']['returns'] = self.saucenao_returns_entry.get()
+        gv.config['SauceNAO']['depth'] = self.saucenao_depth_entry.get()
+        gv.config['SauceNAO']['bias'] = self.saucenao_bias_entry.get()
+        gv.config['SauceNAO']['biasmin'] = self.saucenao_biasmin_entry.get()
+        gv.write_config()
         gv.Files.Log.write_to_log('Saved SauceNao Options')
 
     def hyperlink(self, event):
@@ -240,31 +241,32 @@ class SourceryOptions():
         self.output_dir_1_lbl = Label(parent, text=gv.output_dir, style="label.TLabel")
         self.output_dir_btn = Button(parent, text='Change', command=self.change_output, style="button.TLabel")
 
-        if gv.Files.Conf.delete_input == '':
-            gv.Files.Conf.delete_input = '0'
-            gv.Files.Conf.write_config()
-        self.delete_input_var = IntVar(value=int(gv.Files.Conf.delete_input))
+        if gv.config['Sourcery']['delete_input'] == '':
+            gv.config['Sourcery']['delete_input'] = '0'
+            gv.write_config()
+        self.delete_input_var = IntVar(value=gv.config.getint('Sourcery', 'delete_input'))
         self.delete_input_chkbtn = Checkbutton(parent, var=self.delete_input_var, text="Delete sourced images from the Input folder on save?", style="chkbtn.TCheckbutton")
 
+        vcmd = (parent.register(is_input_int_digit))
         self.images_per_page_lbl = Label(parent, text="Images per page(Max:50, Restart required)", font=("Arial Bold", 10), style="label.TLabel")
-        self.images_per_page_entry = Entry(parent, width=30, style="button.TLabel")
-        self.images_per_page_entry.insert(0, gv.Files.Conf.imgpp)
+        self.images_per_page_entry = Entry(parent, width=30, validate='all', validatecommand=(vcmd, '%P', False, 1, 50), style="button.TLabel")
+        self.images_per_page_entry.insert(0, gv.config['Sourcery']['imgpp'])
 
         self.input_search_depth_lbl = Label(parent, text="Input search depth", font=("Arial Bold", 10), style="label.TLabel")
-        self.input_search_depth_entry = Entry(parent, width=30, style="button.TLabel")
-        self.input_search_depth_entry.insert(0, gv.Files.Conf.input_search_depth)
+        self.input_search_depth_entry = Entry(parent, width=30, validate='all', validatecommand=(vcmd, '%P', True), style="button.TLabel")
+        self.input_search_depth_entry.insert(0, gv.config['Sourcery']['input_search_depth'])
 
         self.direct_replace_lbl = Label(parent, text="Save images directly if similarity is over:", font=("Arial Bold", 10), style="label.TLabel")
-        self.direct_replace_pixiv_var = IntVar(value = int(gv.Files.Conf.direct_replace_pixiv))
+        self.direct_replace_pixiv_var = IntVar(value = gv.config.getint('Pixiv', 'direct_replace'))
         self.direct_replace_pixiv_chkbtn = Checkbutton(parent, text="Save pixiv images directly", var=self.direct_replace_pixiv_var, style="chkbtn.TCheckbutton")
-        self.direct_replace_danbooru_var = IntVar(value = int(gv.Files.Conf.direct_replace_danbooru))
+        self.direct_replace_danbooru_var = IntVar(value = gv.config.getint('Danbooru', 'direct_replace'))
         self.direct_replace_danbooru_chkbtn = Checkbutton(parent, text="Save danbooru images directly", var=self.direct_replace_danbooru_var, style="chkbtn.TCheckbutton")
-        self.direct_replace_yandere_var = IntVar(value = int(gv.Files.Conf.direct_replace_yandere))
+        self.direct_replace_yandere_var = IntVar(value = gv.config.getint('Yandere', 'direct_replace'))
         self.direct_replace_yandere_chkbtn = Checkbutton(parent, text="Save yandere images directly", var=self.direct_replace_yandere_var, style="chkbtn.TCheckbutton")
-        self.direct_replace_konachan_var = IntVar(value = int(gv.Files.Conf.direct_replace_konachan))
+        self.direct_replace_konachan_var = IntVar(value = gv.config.getint('Konachan', 'direct_replace'))
         self.direct_replace_konachan_chkbtn = Checkbutton(parent, text="Save konachan images directly", var=self.direct_replace_konachan_var, style="chkbtn.TCheckbutton")
-        self.direct_replace_entry = Entry(parent, width=30, style="button.TLabel")
-        self.direct_replace_entry.insert(0, gv.Files.Conf.direct_replace)
+        self.direct_replace_entry = Entry(parent, width=30, validate='all', validatecommand=(vcmd, '%P', False, 0, 100), style="button.TLabel")
+        self.direct_replace_entry.insert(0, gv.config['Sourcery']['direct_replace'])
 
         self.restart_gui_lbl = Label(parent, text="Restart of Sourcery required(Images per page)!", font=("Arial Bold", 10), style="label.TLabel")
 
@@ -424,10 +426,10 @@ class SourceryOptions():
         self.output_dir_1_lbl.configure(text=gv.output_dir)
 
     def sourcery_save(self):
-        gv.Files.Log.write_to_log('Attempting to save Sourcery options...')
+        gv.Files.Log.write_to_log('Saving Sourcery options...')
         diff = 0
         try:
-            diff = int(self.images_per_page_entry.get()) - int(gv.Files.Conf.imgpp)
+            diff = int(self.images_per_page_entry.get()) - gv.config.getint('Sourcery', 'imgpp')
         except Exception as e:
             mb.showerror('Invalid Value', 'Please insert a positive integer value into the Images per page option')
         # if diff > 0:
@@ -440,15 +442,15 @@ class SourceryOptions():
             # c = 23
             # x3 = int(gv.width/160*50)
             # self.restart_gui_lbl.place(x = x3, y = y + c * 17)
-        gv.Files.Conf.imgpp = self.images_per_page_entry.get()
-        gv.Files.Conf.delete_input = str(self.delete_input_var.get())
-        gv.Files.Conf.direct_replace = self.direct_replace_entry.get()
-        gv.Files.Conf.direct_replace_pixiv = str(self.direct_replace_pixiv_var.get())
-        gv.Files.Conf.direct_replace_danbooru = str(self.direct_replace_danbooru_var.get())
-        gv.Files.Conf.direct_replace_yandere = str(self.direct_replace_yandere_var.get())
-        gv.Files.Conf.direct_replace_konachan = str(self.direct_replace_konachan_var.get())
-        gv.Files.Conf.input_search_depth = str(self.input_search_depth_entry.get())
-        gv.Files.Conf.write_config()
+        gv.config['Sourcery']['imgpp'] = self.images_per_page_entry.get()
+        gv.config['Sourcery']['delete_input'] = str(self.delete_input_var.get())
+        gv.config['Sourcery']['direct_replace'] = self.direct_replace_entry.get()
+        gv.config['Pixiv']['direct_replace'] = str(self.direct_replace_pixiv_var.get())
+        gv.config['Danbooru']['direct_replace'] = str(self.direct_replace_danbooru_var.get())
+        gv.config['Yandere']['direct_replace'] = str(self.direct_replace_yandere_var.get())
+        gv.config['Konachan']['direct_replace'] = str(self.direct_replace_konachan_var.get())
+        gv.config['Sourcery']['input_search_depth'] = str(self.input_search_depth_entry.get())
+        gv.write_config()
         gv.Files.Log.write_to_log('Saved Sourcery Options')
 
 class ProviderOptions():
@@ -463,18 +465,18 @@ class ProviderOptions():
 
         self.original_lbl = Label(self.par, text='Original', font=('Arial Bold', 13), style="label.TLabel")
         self.all_services_lbl = Label(self.par, text='All Services', font=('Arial Bold', 13), style="label.TLabel")
-        self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_original))
-        self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_original))
-        self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_original))
-        self.tagfile_yandere_var = IntVar(value=int(gv.Files.Conf.tagfile_yandere_original))
-        self.tagfile_konachan_var = IntVar(value=int(gv.Files.Conf.tagfile_konachan_original))
+        self.gen_tagfile_var = IntVar(value=gv.config.getint('Original', 'gen_tagfile'))
+        self.tagfile_pixiv_var = IntVar(value=gv.config.getint('Original', 'tagfile_pixiv'))
+        self.tagfile_danbooru_var = IntVar(value=gv.config.getint('Original', 'tagfile_danbooru'))
+        self.tagfile_yandere_var = IntVar(value=gv.config.getint('Original', 'tagfile_yandere'))
+        self.tagfile_konachan_var = IntVar(value=gv.config.getint('Original', 'tagfile_konachan'))
         self.gen_tagfile_chkbtn = Checkbutton(self.par, text='Generate tagfiles for original images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
         self.tagfile_pixiv_chkbtn = Checkbutton(self.par, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
         self.tagfile_danbooru_chkbtn = Checkbutton(self.par, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
         self.tagfile_yandere_chkbtn = Checkbutton(self.par, text='Include yandere tags', var=self.tagfile_yandere_var, style="chkbtn.TCheckbutton")
         self.tagfile_konachan_chkbtn = Checkbutton(self.par, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
 
-        self.single_source_in_tagfile_var = IntVar(value=int(gv.Files.Conf.single_source_in_tagfile))
+        self.single_source_in_tagfile_var = IntVar(value=gv.config.getint('Original', 'single_source_in_tagfile'))
         self.single_source_in_tagfile_chkbtn = Checkbutton(self.par, text='If only one source is available, include its tags', var=self.single_source_in_tagfile_var, style="chkbtn.TCheckbutton")
 
 
@@ -555,14 +557,14 @@ class ProviderOptions():
         self.original_save()
 
     def original_save(self):
-        gv.Files.Log.write_to_log('Attempting to save Original options...')
-        gv.Files.Conf.gen_tagfile_original = str(self.gen_tagfile_var.get())
-        gv.Files.Conf.tagfile_pixiv_original = str(self.tagfile_pixiv_var.get())
-        gv.Files.Conf.tagfile_danbooru_original = str(self.tagfile_danbooru_var.get())
-        gv.Files.Conf.tagfile_yandere_original = str(self.tagfile_yandere_var.get())
-        gv.Files.Conf.tagfile_konachan_original = str(self.tagfile_konachan_var.get())
-        gv.Files.Conf.single_source_in_tagfile = str(self.single_source_in_tagfile_var.get())
-        gv.Files.Conf.write_config()
+        gv.Files.Log.write_to_log('Saving Original options...')
+        gv.config['Original']['gen_tagfile'] = str(self.gen_tagfile_var.get())
+        gv.config['Original']['tagfile_pixiv'] = str(self.tagfile_pixiv_var.get())
+        gv.config['Original']['tagfile_danbooru'] = str(self.tagfile_danbooru_var.get())
+        gv.config['Original']['tagfile_yandere'] = str(self.tagfile_yandere_var.get())
+        gv.config['Original']['tagfile_konachan'] = str(self.tagfile_konachan_var.get())
+        gv.config['Original']['single_source_in_tagfile'] = str(self.single_source_in_tagfile_var.get())
+        gv.write_config()
         gv.Files.Log.write_to_log('Saved Original options')
 
 class PixivOptions():
@@ -572,23 +574,23 @@ class PixivOptions():
         self.lord = lord
         self.scrollpar = ScrollFrame(self.par, gv.width/3, gv.height*0.6)
         self.scrollpar_frame = self.scrollpar.frame
-        self.use_pixiv_var = IntVar(value=int(gv.Files.Conf.use_pixiv))
+        self.use_pixiv_var = IntVar(value=gv.config.getint('Pixiv', 'use'))
         self.use_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Use pixiv', var=self.use_pixiv_var, style="chkbtn.TCheckbutton")
         self.pixiv_lbl = Label(parent, text="Pixiv", font=('Arial Bold', 13), style="label.TLabel")
-        self.rename_var = IntVar(value=int(gv.Files.Conf.rename_pixiv))
+        self.rename_var = IntVar(value=gv.config.getint('Pixiv', 'rename'))
         self.rename_chkbtn = Checkbutton(self.scrollpar_frame, text='Rename images from pixiv to pixiv name', var=self.rename_var, style="chkbtn.TCheckbutton")
 
         self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
         self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
 
-        self.show_tags_txt.insert(END, gv.Files.Conf.tags_pixiv)
+        self.show_tags_txt.insert(END, gv.config['Pixiv']['tags'])
         self.tags = None
 
-        self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_pixiv))
-        self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_pixiv))
-        self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_pixiv))
-        self.tagfile_yandere_var = IntVar(value=int(gv.Files.Conf.tagfile_yandere_pixiv))
-        self.tagfile_konachan_var = IntVar(value=int(gv.Files.Conf.tagfile_konachan_pixiv))
+        self.gen_tagfile_var = IntVar(value=gv.config.getint('Pixiv', 'gen_tagfile'))
+        self.tagfile_pixiv_var = IntVar(value=gv.config.getint('Pixiv', 'tagfile_pixiv'))
+        self.tagfile_danbooru_var = IntVar(value=gv.config.getint('Pixiv', 'tagfile_danbooru'))
+        self.tagfile_yandere_var = IntVar(value=gv.config.getint('Pixiv', 'tagfile_yandere'))
+        self.tagfile_konachan_var = IntVar(value=gv.config.getint('Pixiv', 'tagfile_konachan'))
         self.gen_tagfile_chkbtn = Checkbutton(self.scrollpar_frame, text='Generate tagfiles for pixiv images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
         self.tagfile_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
         self.tagfile_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
@@ -648,17 +650,17 @@ class PixivOptions():
         #self.save_btn.place_forget()
 
     def pixiv_save(self):
-        gv.Files.Log.write_to_log('Attempting to save Pixiv options...')
-        gv.Files.Conf.rename_pixiv = str(self.rename_var.get())
+        gv.Files.Log.write_to_log('Saving Pixiv options...')
+        gv.config['Pixiv']['rename'] = str(self.rename_var.get())
         self.tags = self.show_tags_txt.get('1.0', END)
-        gv.Files.Conf.tags_pixiv = self.tags
-        gv.Files.Conf.gen_tagfile_pixiv = str(self.gen_tagfile_var.get())
-        gv.Files.Conf.tagfile_pixiv_pixiv = str(self.tagfile_pixiv_var.get())
-        gv.Files.Conf.tagfile_danbooru_pixiv = str(self.tagfile_danbooru_var.get())
-        gv.Files.Conf.tagfile_yandere_pixiv = str(self.tagfile_yandere_var.get())
-        gv.Files.Conf.tagfile_konachan_pixiv = str(self.tagfile_konachan_var.get())
-        gv.Files.Conf.use_pixiv = str(self.use_pixiv_var.get())
-        gv.Files.Conf.write_config()
+        gv.config['Pixiv']['tags'] = self.tags
+        gv.config['Pixiv']['gen_tagfile'] = str(self.gen_tagfile_var.get())
+        gv.config['Pixiv']['tagfile_pixiv'] = str(self.tagfile_pixiv_var.get())
+        gv.config['Pixiv']['tagfile_danbooru'] = str(self.tagfile_danbooru_var.get())
+        gv.config['Pixiv']['tagfile_yandere'] = str(self.tagfile_yandere_var.get())
+        gv.config['Pixiv']['tagfile_konachan'] = str(self.tagfile_konachan_var.get())
+        gv.config['Pixiv']['use'] = str(self.use_pixiv_var.get())
+        gv.write_config()
         gv.results_tags_pixiv = self.tags.split()
         gv.Files.Log.write_to_log('Saved Pixiv options')
 
@@ -669,23 +671,23 @@ class DanbooruOptions():
         self.lord = lord
         self.scrollpar = ScrollFrame(self.par, gv.width/3, gv.height*0.6)
         self.scrollpar_frame = self.scrollpar.frame
-        self.use_danbooru_var = IntVar(value=int(gv.Files.Conf.use_danbooru))
+        self.use_danbooru_var = IntVar(value=gv.config.getint('Danbooru', 'use'))
         self.use_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Use danbooru', var=self.use_danbooru_var, style="chkbtn.TCheckbutton")
         self.danbooru_lbl = Label(parent, text="Danbooru", font=('Arial Bold', 13), style="label.TLabel")
         self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
         self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
         
-        self.rename_var = IntVar(value=int(gv.Files.Conf.rename_danbooru))
+        self.rename_var = IntVar(value=gv.config.getint('Danbooru', 'rename'))
         self.rename_chkbtn = Checkbutton(self.scrollpar_frame, text='Rename images from danbooru to danbooru name', var=self.rename_var, style="chkbtn.TCheckbutton")
 
-        self.show_tags_txt.insert(END, gv.Files.Conf.tags_danbooru)
+        self.show_tags_txt.insert(END, gv.config['Danbooru']['tags'])
         self.tags = None
 
-        self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_danbooru))
-        self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_danbooru))
-        self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_danbooru))
-        self.tagfile_yandere_var = IntVar(value=int(gv.Files.Conf.tagfile_yandere_danbooru))
-        self.tagfile_konachan_var = IntVar(value=int(gv.Files.Conf.tagfile_konachan_danbooru))
+        self.gen_tagfile_var = IntVar(value=gv.config.getint('Danbooru', 'gen_tagfile'))
+        self.tagfile_pixiv_var = IntVar(value=gv.config.getint('Danbooru', 'tagfile_pixiv'))
+        self.tagfile_danbooru_var = IntVar(value=gv.config.getint('Danbooru', 'tagfile_danbooru'))
+        self.tagfile_yandere_var = IntVar(value=gv.config.getint('Danbooru', 'tagfile_yandere'))
+        self.tagfile_konachan_var = IntVar(value=gv.config.getint('Danbooru', 'tagfile_konachan'))
         self.gen_tagfile_chkbtn = Checkbutton(self.scrollpar_frame, text='Generate tagfiles for danbooru images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
         self.tagfile_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
         self.tagfile_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
@@ -743,16 +745,16 @@ class DanbooruOptions():
         #self.save_btn.place_forget()
 
     def danbooru_save(self):
-        gv.Files.Log.write_to_log('Attempting to save Danbooru options...')
+        gv.Files.Log.write_to_log('Saving Danbooru options...')
         self.tags = self.show_tags_txt.get('1.0', END)
-        gv.Files.Conf.tags_danbooru = self.tags
-        gv.Files.Conf.gen_tagfile_danbooru = str(self.gen_tagfile_var.get())
-        gv.Files.Conf.tagfile_pixiv_danbooru = str(self.tagfile_pixiv_var.get())
-        gv.Files.Conf.tagfile_danbooru_danbooru = str(self.tagfile_danbooru_var.get())
-        gv.Files.Conf.tagfile_yandere_danbooru = str(self.tagfile_yandere_var.get())
-        gv.Files.Conf.tagfile_konachan_danbooru = str(self.tagfile_konachan_var.get())
-        gv.Files.Conf.use_danbooru = str(self.use_danbooru_var.get())
-        gv.Files.Conf.write_config()
+        gv.config['Danbooru']['tags'] = self.tags
+        gv.config['Danbooru']['gen_tagfile'] = str(self.gen_tagfile_var.get())
+        gv.config['Danbooru']['tagfile_pixiv'] = str(self.tagfile_pixiv_var.get())
+        gv.config['Danbooru']['tagfile_danbooru'] = str(self.tagfile_danbooru_var.get())
+        gv.config['Danbooru']['tagfile_yandere'] = str(self.tagfile_yandere_var.get())
+        gv.config['Danbooru']['tagfile_konachan'] = str(self.tagfile_konachan_var.get())
+        gv.config['Danbooru']['use'] = str(self.use_danbooru_var.get())
+        gv.write_config()
         gv.results_tags_danbooru = self.tags.split()
         gv.Files.Log.write_to_log('Saved Danbooru options')
 
@@ -763,23 +765,23 @@ class YandereOptions():
         self.lord = lord
         self.scrollpar = ScrollFrame(self.par, gv.width/3, gv.height*0.6)
         self.scrollpar_frame = self.scrollpar.frame
-        self.use_yandere_var = IntVar(value=int(gv.Files.Conf.use_yandere))
+        self.use_yandere_var = IntVar(value=gv.config.getint('Yandere', 'use'))
         self.use_yandere_chkbtn = Checkbutton(self.scrollpar_frame, text='Use yandere', var=self.use_yandere_var, style="chkbtn.TCheckbutton")
         self.yandere_lbl = Label(parent, text="Yande.re", font=('Arial Bold', 13), style="label.TLabel")
         self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
         self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
         
-        self.rename_var = IntVar(value=int(gv.Files.Conf.rename_yandere))
+        self.rename_var = IntVar(value=gv.config.getint('Yandere', 'rename'))
         self.rename_chkbtn = Checkbutton(self.scrollpar_frame, text='Rename images from yandere to yandere name', var=self.rename_var, style="chkbtn.TCheckbutton")
 
-        self.show_tags_txt.insert(END, gv.Files.Conf.tags_yandere)
+        self.show_tags_txt.insert(END, gv.config['Yandere']['tags'])
         self.tags = None
 
-        self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_yandere))
-        self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_yandere))
-        self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_yandere))
-        self.tagfile_yandere_var = IntVar(value=int(gv.Files.Conf.tagfile_yandere_yandere))
-        self.tagfile_konachan_var = IntVar(value=int(gv.Files.Conf.tagfile_konachan_yandere))
+        self.gen_tagfile_var = IntVar(value=gv.config.getint('Yandere', 'gen_tagfile'))
+        self.tagfile_pixiv_var = IntVar(value=gv.config.getint('Yandere', 'tagfile_pixiv'))
+        self.tagfile_danbooru_var = IntVar(value=gv.config.getint('Yandere', 'tagfile_danbooru'))
+        self.tagfile_yandere_var = IntVar(value=gv.config.getint('Yandere', 'tagfile_yandere'))
+        self.tagfile_konachan_var = IntVar(value=gv.config.getint('Yandere', 'tagfile_konachan'))
         self.gen_tagfile_chkbtn = Checkbutton(self.scrollpar_frame, text='Generate tagfiles for yandere images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
         self.tagfile_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
         self.tagfile_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
@@ -838,16 +840,16 @@ class YandereOptions():
         #self.save_btn.place_forget()
 
     def yandere_save(self):
-        gv.Files.Log.write_to_log('Attempting to save Yande.re options...')
+        gv.Files.Log.write_to_log('Saving Yande.re options...')
         self.tags = self.show_tags_txt.get('1.0', END)
-        gv.Files.Conf.tags_yandere = self.tags
-        gv.Files.Conf.gen_tagfile_yandere = str(self.gen_tagfile_var.get())
-        gv.Files.Conf.tagfile_pixiv_yandere = str(self.tagfile_pixiv_var.get())
-        gv.Files.Conf.tagfile_danbooru_yandere = str(self.tagfile_danbooru_var.get())
-        gv.Files.Conf.tagfile_yandere_yandere = str(self.tagfile_yandere_var.get())
-        gv.Files.Conf.tagfile_konachan_yandere = str(self.tagfile_konachan_var.get())
-        gv.Files.Conf.use_yandere = str(self.use_yandere_var.get())
-        gv.Files.Conf.write_config()
+        gv.config['Yandere']['tags'] = self.tags
+        gv.config['Yandere']['gen_tagfile'] = str(self.gen_tagfile_var.get())
+        gv.config['Yandere']['tagfile_pixiv'] = str(self.tagfile_pixiv_var.get())
+        gv.config['Yandere']['tagfile_danbooru'] = str(self.tagfile_danbooru_var.get())
+        gv.config['Yandere']['tagfile_yandere'] = str(self.tagfile_yandere_var.get())
+        gv.config['Yandere']['tagfile_konachan'] = str(self.tagfile_konachan_var.get())
+        gv.config['Yandere']['use'] = str(self.use_yandere_var.get())
+        gv.write_config()
         gv.results_tags_yandere = self.tags.split()
         gv.Files.Log.write_to_log('Saved Yande.re options')
 
@@ -858,23 +860,23 @@ class KonachanOptions():
         self.lord = lord
         self.scrollpar = ScrollFrame(self.par, gv.width/3, gv.height*0.6)
         self.scrollpar_frame = self.scrollpar.frame
-        self.use_konachan_var = IntVar(value=int(gv.Files.Conf.use_konachan))
+        self.use_konachan_var = IntVar(value=gv.config.getint('Konachan', 'use'))
         self.use_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Use konachan', var=self.use_konachan_var, style="chkbtn.TCheckbutton")
         self.konachan_lbl = Label(parent, text="Konachan", font=('Arial Bold', 13), style="label.TLabel")
         self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
         self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
         
-        self.rename_var = IntVar(value=int(gv.Files.Conf.rename_konachan))
+        self.rename_var = IntVar(value=gv.config.getint('Konachan', 'rename'))
         self.rename_chkbtn = Checkbutton(self.scrollpar_frame, text='Rename images from konachan to konachan name', var=self.rename_var, style="chkbtn.TCheckbutton")
 
-        self.show_tags_txt.insert(END, gv.Files.Conf.tags_konachan)
+        self.show_tags_txt.insert(END, gv.config['Konachan']['tags'])
         self.tags = None
 
-        self.gen_tagfile_var = IntVar(value=int(gv.Files.Conf.gen_tagfile_konachan))
-        self.tagfile_pixiv_var = IntVar(value=int(gv.Files.Conf.tagfile_pixiv_konachan))
-        self.tagfile_danbooru_var = IntVar(value=int(gv.Files.Conf.tagfile_danbooru_konachan))
-        self.tagfile_yandere_var = IntVar(value=int(gv.Files.Conf.tagfile_yandere_konachan))
-        self.tagfile_konachan_var = IntVar(value=int(gv.Files.Conf.tagfile_konachan_konachan))
+        self.gen_tagfile_var = IntVar(value=gv.config.getint('Konachan', 'gen_tagfile'))
+        self.tagfile_pixiv_var = IntVar(value=gv.config.getint('Konachan', 'tagfile_pixiv'))
+        self.tagfile_danbooru_var = IntVar(value=gv.config.getint('Konachan', 'tagfile_danbooru'))
+        self.tagfile_yandere_var = IntVar(value=gv.config.getint('Konachan', 'tagfile_yandere'))
+        self.tagfile_konachan_var = IntVar(value=gv.config.getint('Konachan', 'tagfile_konachan'))
         self.gen_tagfile_chkbtn = Checkbutton(self.scrollpar_frame, text='Generate tagfiles for konachan images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
         self.tagfile_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
         self.tagfile_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
@@ -932,16 +934,16 @@ class KonachanOptions():
         #self.save_btn.place_forget()
 
     def konachan_save(self):
-        gv.Files.Log.write_to_log('Attempting to save Konachan options...')
+        gv.Files.Log.write_to_log('Saving Konachan options...')
         self.tags = self.show_tags_txt.get('1.0', END)
-        gv.Files.Conf.tags_konachan = self.tags
-        gv.Files.Conf.gen_tagfile_konachan = str(self.gen_tagfile_var.get())
-        gv.Files.Conf.tagfile_pixiv_konachan = str(self.tagfile_pixiv_var.get())
-        gv.Files.Conf.tagfile_danbooru_konachan = str(self.tagfile_danbooru_var.get())
-        gv.Files.Conf.tagfile_yandere_konachan = str(self.tagfile_yandere_var.get())
-        gv.Files.Conf.tagfile_konachan_konachan = str(self.tagfile_konachan_var.get())
-        gv.Files.Conf.use_konachan = str(self.use_konachan_var.get())
-        gv.Files.Conf.write_config()
+        gv.config['Konachan']['tags'] = self.tags
+        gv.config['Konachan']['gen_tagfile'] = str(self.gen_tagfile_var.get())
+        gv.config['Konachan']['tagfile_pixiv'] = str(self.tagfile_pixiv_var.get())
+        gv.config['Konachan']['tagfile_danbooru'] = str(self.tagfile_danbooru_var.get())
+        gv.config['Konachan']['tagfile_yandere'] = str(self.tagfile_yandere_var.get())
+        gv.config['Konachan']['tagfile_konachan'] = str(self.tagfile_konachan_var.get())
+        gv.config['Konachan']['use'] = str(self.use_konachan_var.get())
+        gv.write_config()
         gv.results_tags_konachan = self.tags.split()
         gv.Files.Log.write_to_log('Saved Konachan options')
 

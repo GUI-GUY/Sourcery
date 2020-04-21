@@ -48,9 +48,9 @@ class ProviderImageData():
         self.size = None
 
         self.result_not_in_tagfile_var = IntVar(value=0)
-        self.result_not_in_tagfile = Checkbutton(gv.res_frame, text='Not in Tagfile', var=self.result_not_in_tagfile_var, style='chkbtn.TCheckbutton')
+        self.result_not_in_tagfile_chkbtn = Checkbutton(gv.res_frame, text='Not in Tagfile', var=self.result_not_in_tagfile_var, style='chkbtn.TCheckbutton')
         self.result_in_tagfile_var = IntVar(value=0)
-        self.result_in_tagfile = Checkbutton(gv.res_frame, text='Put in Tagfile', var=self.result_in_tagfile_var, style='chkbtn.TCheckbutton')
+        self.result_in_tagfile_chkbtn = Checkbutton(gv.res_frame, text='Put in Tagfile', var=self.result_in_tagfile_var, style='chkbtn.TCheckbutton')
 
         self.info_img_lbl = Label(gv.info_frame, style='label.TLabel')
         self.info_provider_lbl = Label(gv.info_frame, style='label.TLabel')
@@ -144,7 +144,7 @@ class ProviderImageData():
         return True
 
     def is_greater_than_direct_sim(self):
-        if self.sub_dill.similarity > int(gv.Files.Conf.direct_replace):
+        if self.sub_dill.similarity > gv.config.getint('Sourcery', 'direct_replace'):
             return True
         return False
 
@@ -219,8 +219,8 @@ class ProviderImageData():
         self.downloaded_wxh_lbl.grid(column = 3, row = t+2, sticky = W, padx = 7)
         self.downloaded_type_lbl.grid(column = 4, row = t+2, sticky = W, padx = 7)
         self.results_tags_lbl.grid(column = 5, row = t+2, sticky = W, padx = 7)
-        self.result_not_in_tagfile.grid(column = 6, row = t+2, sticky = W+N, padx = 7, pady = 3)
-        self.result_in_tagfile.grid(column = 6, row = t+2, sticky = W+N, padx = 7, pady = 23)
+        self.result_not_in_tagfile_chkbtn.grid(column = 6, row = t+2, sticky = W+N, padx = 7, pady = 3)
+        self.result_in_tagfile_chkbtn.grid(column = 6, row = t+2, sticky = W+N, padx = 7, pady = 23)
         
         return t+2
         
@@ -443,51 +443,51 @@ class ProviderImageData():
         return False
 
     def gen_tagfile(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gen_dir, name):
-        if self.sub_dill.service == 'Pixiv' and gv.Files.Conf.gen_tagfile_pixiv == '1':
+        if self.sub_dill.service == 'Pixiv' and gv.config['Pixiv']['gen_tagfile'] == '1':
             all_tags = list()
-            if gv.Files.Conf.tagfile_pixiv_pixiv == '1':
+            if gv.config['Pixiv']['tagfile_pixiv'] == '1':
                 all_tags.extend(pixiv_tags)
-            if gv.Files.Conf.tagfile_danbooru_pixiv == '1':
+            if gv.config['Pixiv']['tagfile_danbooru'] == '1':
                 all_tags.extend(danbooru_tags)
-            if gv.Files.Conf.tagfile_yandere_pixiv == '1':
+            if gv.config['Pixiv']['tagfile_yandere'] == '1':
                 all_tags.extend(yandere_tags)
-            if gv.Files.Conf.tagfile_konachan_pixiv == '1':
+            if gv.config['Pixiv']['tagfile_konachan'] == '1':
                 all_tags.extend(konachan_tags)
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
-        elif self.sub_dill.service == 'Danbooru' and gv.Files.Conf.gen_tagfile_danbooru == '1':
+        elif self.sub_dill.service == 'Danbooru' and gv.config['Danbooru']['gen_tagfile'] == '1':
             all_tags = list()
-            if gv.Files.Conf.tagfile_pixiv_danbooru == '1':
+            if gv.config['Danbooru']['tagfile_pixiv'] == '1':
                 all_tags.extend(pixiv_tags)
-            if gv.Files.Conf.tagfile_danbooru_danbooru == '1':
+            if gv.config['Danbooru']['tagfile_danbooru'] == '1':
                 all_tags.extend(danbooru_tags)
-            if gv.Files.Conf.tagfile_yandere_danbooru == '1':
+            if gv.config['Danbooru']['tagfile_yandere'] == '1':
                 all_tags.extend(yandere_tags)
-            if gv.Files.Conf.tagfile_konachan_danbooru == '1':
+            if gv.config['Danbooru']['tagfile_konachan'] == '1':
                 all_tags.extend(konachan_tags)
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
-        elif self.sub_dill.service == 'Yandere' and gv.Files.Conf.gen_tagfile_yandere == '1':
+        elif self.sub_dill.service == 'Yandere' and gv.config['Yandere']['gen_tagfile'] == '1':
             all_tags = list()
-            if gv.Files.Conf.tagfile_pixiv_yandere == '1':
+            if gv.config['Yandere']['tagfile_pixiv'] == '1':
                 all_tags.extend(pixiv_tags)
-            if gv.Files.Conf.tagfile_danbooru_yandere == '1':
+            if gv.config['Yandere']['tagfile_danbooru'] == '1':
                 all_tags.extend(danbooru_tags)
-            if gv.Files.Conf.tagfile_yandere_yandere == '1':
+            if gv.config['Yandere']['tagfile_yandere'] == '1':
                 all_tags.extend(yandere_tags)
-            if gv.Files.Conf.tagfile_konachan_yandere == '1':
+            if gv.config['Yandere']['tagfile_konachan'] == '1':
                 all_tags.extend(konachan_tags)
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
-        elif self.sub_dill.service == 'Konachan' and gv.Files.Conf.gen_tagfile_konachan == '1':
+        elif self.sub_dill.service == 'Konachan' and gv.config['Konachan']['gen_tagfile'] == '1':
             all_tags = list()
-            if gv.Files.Conf.tagfile_pixiv_konachan == '1':
+            if gv.config['Konachan']['tagfile_pixiv'] == '1':
                 all_tags.extend(pixiv_tags)
-            if gv.Files.Conf.tagfile_danbooru_konachan == '1':
+            if gv.config['Konachan']['tagfile_danbooru'] == '1':
                 all_tags.extend(danbooru_tags)
-            if gv.Files.Conf.tagfile_yandere_konachan == '1':
+            if gv.config['Konachan']['tagfile_yandere'] == '1':
                 all_tags.extend(yandere_tags)
-            if gv.Files.Conf.tagfile_konachan_konachan == '1':
+            if gv.config['Konachan']['tagfile_konachan'] == '1':
                 all_tags.extend(konachan_tags)
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
@@ -507,43 +507,34 @@ class ProviderImageData():
         if not_in_file == 0:
             return (self.sub_dill.tags, exception_tags)
 
-
         return list()
 
     def evaluate_weight(self, original_aspect_ratio, original_width):
         img_weight = 0
         aspect_flag = False
-        filetype = self.sub_dill.filetype
-        if filetype == 'png':
-            img_weight = img_weight + int(gv.Files.Conf.png_weight)
-        elif filetype == 'jpg':
-            img_weight = img_weight + int(gv.Files.Conf.jpg_weight)
-        elif filetype == 'jpeg':
-            img_weight = img_weight + int(gv.Files.Conf.jpg_weight)
-        elif filetype == 'jfif':
-            img_weight = img_weight + int(gv.Files.Conf.jfif_weight)
-        elif filetype == 'gif':
-            img_weight = img_weight + int(gv.Files.Conf.gif_weight)
-        elif filetype == 'bmp':
-            img_weight = img_weight + int(gv.Files.Conf.bmp_weight)
-        else:
-            img_weight = img_weight + int(gv.Files.Conf.other_weight)
+        switch = {
+            'png': gv.config.getint('Weight', 'png'),
+            'jpg': gv.config.getint('Weight', 'jpg'),
+            'jpeg': gv.config.getint('Weight', 'jpg'),
+            'jfif': gv.config.getint('Weight', 'jfif'),
+            'gif': gv.config.getint('Weight', 'gif'),
+            'bmp': gv.config.getint('Weight', 'bmp')
+        }
+        img_weight += switch.get(self.sub_dill.filetype, gv.config.getint('Weight', 'other'))
 
-        service = self.sub_dill.service
-        if service == 'Danbooru':
-            img_weight = img_weight + int(gv.Files.Conf.danbooru_weight)
-        elif service == 'Pixiv':
-            img_weight = img_weight + int(gv.Files.Conf.pixiv_weight)
-        elif service == 'Yandere':
-            img_weight = img_weight + int(gv.Files.Conf.yandere_weight)
-        elif service == 'Konachan':
-            img_weight = img_weight + int(gv.Files.Conf.konachan_weight)
+        switch = {
+            'Danbooru': gv.config.getint('Weight', 'danbooru'),
+            'Pixiv': gv.config.getint('Weight', 'pixiv'),
+            'Yandere': gv.config.getint('Weight', 'yandere'),
+            'Konachan': gv.config.getint('Weight', 'konachan'),
+        }
+        img_weight += switch.get(self.sub_dill.service, 0)
 
         if original_aspect_ratio == round(int(self.sub_dill.width)/int(self.sub_dill.height), 1):
             if int(self.sub_dill.width) > original_width:
-                img_weight = img_weight + int(gv.Files.Conf.higher_resolution_weight)
+                img_weight = img_weight + gv.config.getint('Weight', 'higher_resolution')
             elif int(self.sub_dill.width) == original_width:
-                img_weight = img_weight + int(gv.Files.Conf.higher_resolution_weight)
+                img_weight = img_weight + gv.config.getint('Weight', 'higher_resolution')
                 aspect_flag = True
             else:
                 aspect_flag = True
@@ -555,9 +546,9 @@ class ProviderImageData():
         self.downloaded_lbl.grid_forget()
         self.downloaded_wxh_lbl.grid_forget()
         self.downloaded_type_lbl.grid_forget()
-        self.result_not_in_tagfile.grid_forget()
+        self.result_not_in_tagfile_chkbtn.grid_forget()
         self.results_tags_lbl.grid_forget()
-        self.result_in_tagfile.grid_forget()
+        self.result_in_tagfile_chkbtn.grid_forget()
 
     def unload_big_imgs(self):
         if self.downloaded_SubImgData != None:
@@ -571,7 +562,38 @@ class ProviderImageData():
             self.downloaded_SubImgData.self_destruct()
         for img in self.sub_dir_img_array:
             img.self_destruct()
-        self.downloaded_photoImage_thumb = None
-        self.downloaded_photoImage_preview = None
+        del self.downloaded_photoImage_thumb
+        del self.downloaded_photoImage_preview
 
+        self.downloaded_chkbtn.configure(image=None)
         self.downloaded_chkbtn.image = None
+
+        self.downloaded_chkbtn.destroy()
+        self.downloaded_lbl.destroy()
+        self.downloaded_wxh_lbl.destroy()
+        self.downloaded_type_lbl.destroy()
+        self.results_tags_lbl.destroy()
+
+        self.result_not_in_tagfile_chkbtn.destroy()
+        self.result_in_tagfile_chkbtn.destroy()
+
+        self.info_img_lbl.destroy()
+        self.info_provider_lbl.destroy()
+        self.info_artist_lbl.destroy()
+        self.info_title_lbl.destroy()
+        #self.info_imageid_lbl.destroy()
+        #self.info_url_lbl.destroy()
+        self.info_date_lbl.destroy()
+        self.info_caption_lbl.destroy()
+        self.info_wxh_lbl.destroy()
+        self.tags_pixiv_lbl.destroy()
+        if self.sub_dill.service == 'Pixiv':
+            for elem in self.tags_lbl_array:
+                elem[0].destroy()
+                elem[1].destroy()
+        else:
+            for elem in self.tags_lbl_array:
+                elem.destroy()
+
+        for elem in self.info_url_lbl_list:
+            elem.destroy()
