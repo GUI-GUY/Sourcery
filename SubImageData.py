@@ -26,6 +26,14 @@ class SubImageData():
             self.var = IntVar(value=0)
         else:
             self.var = var
+        
+        self.folder = master_folder
+
+        self.siblings_array = siblings
+
+        self.load_init = False
+    
+    def init_widgets(self):
         self.chkbtn = cb(self.par, var=self.var,
             foreground=gv.Files.Theme.foreground, 
             background=gv.Files.Theme.background, 
@@ -54,12 +62,8 @@ class SubImageData():
         self.lbl2 = Label(self.par, text=self.service, style='label.TLabel')
         self.wxh_lbl = Label(self.scrollpar, style='label.TLabel')
         self.type_lbl = Label(self.scrollpar, style='label.TLabel')
-        self.folder = master_folder
         self.show_btn = Button(self.scrollpar, command=self.show, text='Show', style='button.TLabel')
 
-        self.siblings_array = siblings
-
-        self.load_init = False
 
     def load(self, second_try=False):
         """
@@ -89,7 +93,7 @@ class SubImageData():
             self.chkbtn.image = self.photoImg
             self.wxh_lbl.configure(text=self.size)
             self.type_lbl.configure(text=self.name[self.name.rfind(".")+1:])
-        self.chkbtn.after(1, assign)
+        self.par.after(1, assign)
 
         if self.scrollpar != None:
             try:

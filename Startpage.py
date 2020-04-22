@@ -1,7 +1,7 @@
 from os import listdir, path, remove
 from shutil import rmtree
 from multiprocessing import Lock
-from threading import Thread
+from threading import Thread, enumerate as enu
 import time
 from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END, W, simpledialog
 from tkinter import Checkbutton as cb
@@ -173,23 +173,24 @@ class Startpage():
         self.window.after(0, update, str(len(self.input_images_array)))
 
     def make_image_data(self):
+        #print(enu())
         if not self.Processing_Class.img_data_q.empty():
-            if gv.img_data_sem.acquire(False):
-                b = None
-                try:
-                    a = self.Processing_Class.img_data_q.get(False)
-                    #print('a')
-                    b = ImageData(a, self.index)
-                    self.index += 1
-                    gv.img_data_array.append(b)
-                    
-                #print('b')
-                except Exception as e:
-                    if b in gv.img_data_array:
-                        gv.img_data_array.remove(b)
-                    print("ERROR [0060] " + str(e))
-                    gv.Files.Log.write_to_log("ERROR [0060] " + str(e))
-                    #mb.showerror("ERROR [0060]", "ERROR CODE [0060]\nImage data could not be loaded, skipped.")
+            #if gv.img_data_sem.acquire(False):
+            b = None
+            try:
+                a = self.Processing_Class.img_data_q.get(False)
+                #print('a')
+                b = ImageData(a, self.index)
+                self.index += 1
+                gv.img_data_array.append(b)
+                
+            #print('b')
+            except Exception as e:
+                if b in gv.img_data_array:
+                    gv.img_data_array.remove(b)
+                print("ERROR [0060] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0060] " + str(e))
+                #mb.showerror("ERROR [0060]", "ERROR CODE [0060]\nImage data could not be loaded, skipped.")
         self.window.after(100, self.make_image_data)
             
     def load_image_data(self):
@@ -201,6 +202,7 @@ class Startpage():
                     gv.img_data_array.remove(data)
                     gv.Files.Log.write_to_log('Problem while loading images, skipped')
                 elif load:
+                    data.init_widgets()
                     data.process_results_imgs()
                     data.modify_results_widgets()
                     x = data.display_results(gv.last_occupied_result+1)

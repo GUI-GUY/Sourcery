@@ -47,7 +47,26 @@ class ImageData():
         self.original_image_thumb = None
         self.original_photoImage_thumb = None
 
+        self.index = index
+        self.prev_imgdata = None
+        self.next_imgdata = None
+        self.placed = False
+
         self.original_var = IntVar(value=0)
+        #self.original_SubImgData = None
+        self.original_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path[:self.sub_dill.path.rfind('/')], 'Input', gv.window, None, var=self.original_var)
+        self.big_lock = Lock()
+        self.big_active = False
+
+        self.load_init = False
+        self.display_results_init = False
+        self.process_results_imgs_init = False
+        self.process_big_imgs_init = False
+        self.modify_results_widgets_init = False
+        self.process_info_imgs_init = False
+        self.locked = False
+
+    def init_widgets(self):
         self.original_chkbtn = cb(gv.res_frame, var=self.original_var,
             foreground=gv.Files.Theme.foreground, 
             background=gv.Files.Theme.background, 
@@ -64,30 +83,18 @@ class ImageData():
         self.original_type_lbl = Label(gv.res_frame, style='label.TLabel')
         self.original_cropped_lbl = Label(gv.res_frame, style='label.TLabel')
 
-        #self.big_selector_thread = Thread(target=self.display_big_selector)
         self.big_selector_btn = Button(gv.res_frame, command=self.display_big_selector, text='Big Selector', style='button.TLabel')
         self.info_btn = Button(gv.res_frame, command=self.display_info, text='More Info', style='button.TLabel')        
         self.back_btn = Button(gv.window, text = 'Back', command = self.display_view_results, style = 'button.TLabel')
         self.next_btn = Button(gv.window, text = 'Next', style = 'button.TLabel')
         self.prev_btn = Button(gv.window, text = 'Previous', style = 'button.TLabel')
-        self.index = index
-        self.prev_imgdata = None
-        self.next_imgdata = None
-        self.placed = False
 
-        #self.original_SubImgData = None
-        self.original_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path[:self.sub_dill.path.rfind('/')], 'Input', gv.window, None, var=self.original_var)
-        self.big_lock = Lock()
-        self.big_active = False
-
-        self.load_init = False
-        self.display_results_init = False
-        self.process_results_imgs_init = False
-        self.process_big_imgs_init = False
-        self.modify_results_widgets_init = False
-        self.process_info_imgs_init = False
-        self.locked = False
-
+        self.original_SubImgData.init_widgets()
+        
+        for service in self.service_list:
+            for elem in service:
+                elem.init_widgets()
+        
     def forget_all_widgets(self):
         for widget in gv.window.winfo_children():
             widget.place_forget()
@@ -169,14 +176,14 @@ class ImageData():
 
     def display_view_results(self):
         self.forget_all_widgets()
-        if self.prev_imgdata != None:
-            z = Thread(target=gv.class_parallel_loader, args=[self.prev_imgdata.unload_big_imgs, self.prev_imgdata.big_lock], name=self.prev_imgdata.sub_dill.name_no_suffix, daemon=True)
-            z.start()
-        if self.next_imgdata != None:
-            y = Thread(target=gv.class_parallel_loader, args=[self.next_imgdata.unload_big_imgs, self.next_imgdata.big_lock], name=self.next_imgdata.sub_dill.name_no_suffix, daemon=True)
-            y.start()
-        x = Thread(target=gv.class_parallel_loader, args=[self.unload_big_imgs, self.big_lock], name=self.sub_dill.name_no_suffix, daemon=True)
-        x.start()
+        # if self.prev_imgdata != None:
+        #     z = Thread(target=gv.class_parallel_loader, args=[self.prev_imgdata.unload_big_imgs, self.prev_imgdata.big_lock], name=self.prev_imgdata.sub_dill.name_no_suffix, daemon=True)
+        #     z.start()
+        # if self.next_imgdata != None:
+        #     y = Thread(target=gv.class_parallel_loader, args=[self.next_imgdata.unload_big_imgs, self.next_imgdata.big_lock], name=self.next_imgdata.sub_dill.name_no_suffix, daemon=True)
+        #     y.start()
+        # x = Thread(target=gv.class_parallel_loader, args=[self.unload_big_imgs, self.big_lock], name=self.sub_dill.name_no_suffix, daemon=True)
+        # x.start()
         gv.display_startpage()
 
     def display_results(self, t):
@@ -341,8 +348,9 @@ class ImageData():
         self.back_btn.place(x = round(gv.width*0.86), y = int(gv.height/90*4))
         self.prev_btn.place(x = round(gv.width*0.90), y = int(gv.height/90*4))
         self.next_btn.place(x = round(gv.width*0.94), y = int(gv.height/90*4))
-        x = Thread(target=gv.class_parallel_loader, args=[self.process_big_imgs, self.big_lock, True], name=self.sub_dill.name_no_suffix, daemon=True)
-        x.start()
+        # x = Thread(target=gv.class_parallel_loader, args=[self.process_big_imgs, self.big_lock, True], name=self.sub_dill.name_no_suffix, daemon=True)
+        # x.start()
+        self.back_btn.after(0, self.process_big_imgs, True)
         
     def process_big_imgs(self, display=False):
         """
@@ -406,18 +414,18 @@ class ImageData():
             self.next_btn.configure(state='disabled', command=None)
             self.next_imgdata = None
         
-        if self.prev_imgdata != None:
-            t = Thread(target=gv.class_parallel_loader, args=[self.prev_imgdata.process_big_imgs, self.prev_imgdata.big_lock], name=self.prev_imgdata.sub_dill.name_no_suffix, daemon=True)
-            t.start()
-            if self.prev_imgdata.prev_imgdata != None:
-                z = Thread(target=gv.class_parallel_loader, args=[self.prev_imgdata.prev_imgdata.unload_big_imgs, self.prev_imgdata.prev_imgdata.big_lock], name=self.prev_imgdata.prev_imgdata.sub_dill.name_no_suffix, daemon=True)
-                z.start()
-        if self.next_imgdata != None:
-            x = Thread(target=gv.class_parallel_loader, args=[self.next_imgdata.process_big_imgs, self.next_imgdata.big_lock], name=self.next_imgdata.sub_dill.name_no_suffix, daemon=True)
-            x.start()
-            if self.next_imgdata.next_imgdata != None:
-                y = Thread(target=gv.class_parallel_loader, args=[self.next_imgdata.next_imgdata.unload_big_imgs, self.next_imgdata.next_imgdata.big_lock], name=self.next_imgdata.next_imgdata.sub_dill.name_no_suffix, daemon=True)
-                y.start()
+        # if self.prev_imgdata != None:
+        #     t = Thread(target=gv.class_parallel_loader, args=[self.prev_imgdata.process_big_imgs, self.prev_imgdata.big_lock], name=self.prev_imgdata.sub_dill.name_no_suffix, daemon=True)
+        #     t.start()
+        #     if self.prev_imgdata.prev_imgdata != None:
+        #         z = Thread(target=gv.class_parallel_loader, args=[self.prev_imgdata.prev_imgdata.unload_big_imgs, self.prev_imgdata.prev_imgdata.big_lock], name=self.prev_imgdata.prev_imgdata.sub_dill.name_no_suffix, daemon=True)
+        #         z.start()
+        # if self.next_imgdata != None:
+        #     x = Thread(target=gv.class_parallel_loader, args=[self.next_imgdata.process_big_imgs, self.next_imgdata.big_lock], name=self.next_imgdata.sub_dill.name_no_suffix, daemon=True)
+        #     x.start()
+        #     if self.next_imgdata.next_imgdata != None:
+        #         y = Thread(target=gv.class_parallel_loader, args=[self.next_imgdata.next_imgdata.unload_big_imgs, self.next_imgdata.next_imgdata.big_lock], name=self.next_imgdata.next_imgdata.sub_dill.name_no_suffix, daemon=True)
+        #         y.start()
        
     def save(self, second_try=False, save_counter=0):
         """

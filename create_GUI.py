@@ -16,7 +16,7 @@ from tkinter.ttk import Label, Button, Style, Entry, Frame
 from shutil import rmtree
 from copy import deepcopy
 #from distutils.util import strtobool
-from threading import Thread
+from threading import Thread, enumerate as enu
 from file_operations import is_image, save, open_input, open_output, display_statistics, change_input, change_output
 from sourcery import do_sourcery
 from pixiv_handler import pixiv_fetch_illustration
@@ -29,6 +29,7 @@ from ScrollFrame import ScrollFrame
 from Startpage import Startpage
 from Files import Files
 import global_variables as gv
+from atexit import register
 
 #stderr = gv.Files.Log
 
@@ -37,6 +38,7 @@ def load_from_ref():
     if c != None:
         ref_thread = Thread(target=load_from_ref_run, args=[c], daemon=True)
         ref_thread.start()
+        #window.after(0, load_from_ref_run, c)
         Startpage_Class.do_sourcery_btn.configure(state='disabled')
         Startpage_Class.load_from_ref_btn.configure(state='disabled')
 
@@ -111,7 +113,7 @@ def load_from_ref_run(c):
         
         next_img = False
         for data in gv.img_data_array:
-            if str(ref['old_name']) == data.sub_dill.name and str(ref['minsim']) == gv.config.getint('SauceNAO', 'minsim'):
+            if str(ref['old_name']) == data.sub_dill.name and int(ref['minsim']) == gv.config.getint('SauceNAO', 'minsim'):
                 next_img = True
                 break
         if len(pixiv_illustration_list) == 0 and len(danb_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0:
@@ -324,5 +326,10 @@ if __name__ == '__main__':
     Startpage_Class.Processing_Class.terminate_loop()
     Startpage_Class.refresh_startpage()
     Startpage_Class.display_startpage()
-    
+    # def enum():
+    #     while not (Startpage_Class.Processing_Class.img_data_q.empty()):
+    #         Startpage_Class.Processing_Class.img_data_q.get(False)
+    #         print(enu())
+    # register(enum)
+
     window.mainloop()

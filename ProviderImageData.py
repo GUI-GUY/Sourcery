@@ -26,6 +26,19 @@ class ProviderImageData():
         self.sub_dir_array = list()
         self.sub_dir_img_array = list()
         self.downloaded_var = IntVar(value=0)
+
+        self.downloaded_SubImgData = None
+        if not self.sub_dill.is_folder:
+            self.downloaded_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path[:self.sub_dill.path.rfind('/')], self.sub_dill.service, gv.window, gv.big_frame, var=self.downloaded_var, siblings=self.siblings_array)
+            
+        self.big_lock = Lock()
+        self.load_init = False
+        self.process_results_imgs_init = False
+        self.modify_results_widgets_init = False
+        self.process_info_imgs_init = False
+        self.process_big_imgs_init = False
+
+    def init_widgets(self):
         self.downloaded_chkbtn = cb(master = gv.res_frame, var=self.downloaded_var,
             foreground=gv.Files.Theme.foreground, 
             background=gv.Files.Theme.background, 
@@ -82,16 +95,11 @@ class ProviderImageData():
             lbl.bind("<Button-1>", self.hyperlink)
             self.info_url_lbl_list.append(lbl)
 
-        self.downloaded_SubImgData = None
         if not self.sub_dill.is_folder:
-            self.downloaded_SubImgData = SubImageData(self.sub_dill.name, self.sub_dill.path[:self.sub_dill.path.rfind('/')], self.sub_dill.service, gv.window, gv.big_frame, var=self.downloaded_var, siblings=self.siblings_array)
-            
-        self.big_lock = Lock()
-        self.load_init = False
-        self.process_results_imgs_init = False
-        self.modify_results_widgets_init = False
-        self.process_info_imgs_init = False
-        self.process_big_imgs_init = False
+            self.downloaded_SubImgData.init_widgets()
+        
+        for elem in self.sub_dir_img_array:
+            elem.init_widgets()
 
     def load(self, second_try=False):
         """
