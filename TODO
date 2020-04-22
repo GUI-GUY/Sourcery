@@ -108,15 +108,17 @@ Last Error: 0073
 BUGS
 + big selector packs all loaded images in the left top corner when many images (between/above 100-150) are existent
 second process just stops idk
-one or more threads do not exit after closing the gui when more than 50ish images are loaded even when all threads are daemons
+? one or more threads do not exit after closing the gui when more than 50ish images are loaded even when all threads are daemons
 + save not possible
 ? massive top left corner after about 50 images have been shown on screen(tkinter probably the problem)
 delete working stuff when reference is empty
 ref duplicate detection does not work?
 + widgets do not get deleted
+fakeuseragent error handling
+3.2.x does not show more than 2 classes
 
 beta 0.4
-REMOVE TEST AND REFERENCE BUTTON
+REMOVE TEST BUTTON
 config parser on theme file
 increase CPU performance
 make duplicate loop not check for existing classes but for references

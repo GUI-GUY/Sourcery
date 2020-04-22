@@ -360,7 +360,7 @@ class ImageData():
             self.process_big_imgs_init = True
 
         if display:
-            self.display_big_selector_imgs()
+            gv.res_frame.after(0, self.display_big_selector_imgs)
         
     def display_big_selector_imgs(self):
         if not self.big_active:

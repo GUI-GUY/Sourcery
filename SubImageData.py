@@ -84,10 +84,12 @@ class SubImageData():
         self.img_obj.close()
         self.img_obj = None
         
-        self.chkbtn.configure(image=self.photoImg)
-        self.chkbtn.image = self.photoImg
-        self.wxh_lbl.configure(text=self.size)
-        self.type_lbl.configure(text=self.name[self.name.rfind(".")+1:])
+        def assign():
+            self.chkbtn.configure(image=self.photoImg)
+            self.chkbtn.image = self.photoImg
+            self.wxh_lbl.configure(text=self.size)
+            self.type_lbl.configure(text=self.name[self.name.rfind(".")+1:])
+        self.chkbtn.after(1, assign)
 
         if self.scrollpar != None:
             try:
@@ -104,8 +106,10 @@ class SubImageData():
             img_obj_thumb.thumbnail((70, 70), resample=Image.ANTIALIAS)
             self.photoImg_thumb = ImageTk.PhotoImage(img_obj_thumb)
             img_obj_thumb.close()
-            self.thumb_chkbtn.configure(image=self.photoImg_thumb)
-            self.thumb_chkbtn.image = self.photoImg_thumb
+            def assign2():
+                self.thumb_chkbtn.configure(image=self.photoImg_thumb)
+                self.thumb_chkbtn.image = self.photoImg_thumb
+            self.thumb_chkbtn.after(1, assign2)
 
         self.load_init = True
         return True

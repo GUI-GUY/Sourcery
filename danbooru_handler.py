@@ -2,7 +2,7 @@ from os import getcwd, path # path manipulation
 from urllib.request import urlretrieve
 from requests import get
 #from webbrowser import open_new
-from fake_useragent import UserAgent
+#from fake_useragent import UserAgent
 import global_variables as gv
 
 # https://github.com/uncountablecat/danbooru-grabber

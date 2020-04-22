@@ -1,6 +1,7 @@
 from os import listdir, path, remove
 from shutil import rmtree
 from multiprocessing import Lock
+from threading import Thread
 import time
 from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END, W, simpledialog
 from tkinter import Checkbutton as cb
@@ -167,7 +168,9 @@ class Startpage():
             if elem in self.input_images_array:
                 self.input_images_array.remove(elem)
         self.input_lock.release()
-        self.images_in_input_count_lbl.configure(text=str(len(self.input_images_array)))
+        def update(text):
+            self.images_in_input_count_lbl.configure(text=text)
+        self.window.after(0, update, str(len(self.input_images_array)))
 
     def make_image_data(self):
         if not self.Processing_Class.img_data_q.empty():
@@ -187,6 +190,7 @@ class Startpage():
                     print("ERROR [0060] " + str(e))
                     gv.Files.Log.write_to_log("ERROR [0060] " + str(e))
                     #mb.showerror("ERROR [0060]", "ERROR CODE [0060]\nImage data could not be loaded, skipped.")
+        self.window.after(100, self.make_image_data)
             
     def load_image_data(self):
         for data in gv.img_data_array:
@@ -211,8 +215,9 @@ class Startpage():
                     else:
                         gv.last_occupied_result = x
                     data.placed = True
+        self.window.after(100, self.load_image_data)
 
-    def get_processing_status(self, answer2, currently_processing):
+    def get_processing_status(self, answer2='', currently_processing=''):
         answer1 = (201, 200)
         try:
             answer1 = self.Processing_Class.comm_q.get(False)
@@ -254,7 +259,8 @@ class Startpage():
                 gv.Files.Log.write_to_log(e)
         except:
             pass
-        return answer2, currently_processing
+        self.window.after(100, self.get_processing_status, answer2, currently_processing)
+        #return answer2, currently_processing
 
     def refresh_startpage(self):
         """
@@ -265,14 +271,15 @@ class Startpage():
         Creates ImageData classes from the information the magic process gives
         Displays all results
         """
-        answer2 = ''
-        currently_processing = ''
-        while True:
-            self.count_input()
-            answer2, currently_processing = self.get_processing_status(answer2, currently_processing)
-            self.make_image_data()
-            self.load_image_data()
-            time.sleep(0.3)
+        self.window.after(1, self.get_processing_status)
+        self.window.after(1, self.make_image_data)
+        self.window.after(1, self.load_image_data)
+
+        def update():
+            while True:
+                self.count_input()
+                time.sleep(0.3)
+        Thread(target=update, daemon=True, name="startpage_update").start()
 
     def display_info(self):
         gv.Files.Log.log_text.place_forget()

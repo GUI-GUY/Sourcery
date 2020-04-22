@@ -319,12 +319,10 @@ if __name__ == '__main__':
     
     enforce_style() 
 
-    startpage_update_thread = Thread(target=Startpage_Class.refresh_startpage, daemon=True, name="startpage_update")
-
     gv.Files.Log.write_to_log('Variables initialised')
     Startpage_Class.Processing_Class.duplicate_loop()
     Startpage_Class.Processing_Class.terminate_loop()
-    startpage_update_thread.start()
+    Startpage_Class.refresh_startpage()
     Startpage_Class.display_startpage()
     
     window.mainloop()
