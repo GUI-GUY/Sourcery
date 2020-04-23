@@ -1,3 +1,4 @@
+from os import listdir
 from tkinter import IntVar, StringVar, E, W, colorchooser, Text, END
 from tkinter import messagebox as mb
 from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame, OptionMenu
@@ -11,10 +12,10 @@ import global_variables as gv
 
 class Options():
     """Hosts all Options classes and methods to switch between the options views"""
-    def __init__(self, parent, enforce_style):
+    def __init__(self, parent, enforce_style, leftovers):
         self.par = parent
         self.NAOO = SauceNaoOptions(parent)
-        self.SouO = SourceryOptions(parent, enforce_style)
+        self.SouO = SourceryOptions(parent, enforce_style, leftovers)
         self.ProO = ProviderOptions(parent)
         self.options_lbl = Label(parent, text="Options", font=("Arial Bold", 20), style="label.TLabel")
 
@@ -203,9 +204,10 @@ class SauceNaoOptions():
 
 class SourceryOptions():
     """Includes all widgets for Sourcery and methods to display and modify them"""
-    def __init__(self, parent, enforce_style):
+    def __init__(self, parent, enforce_style, leftovers):
         self.par = parent
         self.en_s = enforce_style
+        self.leftovers = leftovers
         self.theme_lbl = Label(parent, text="Theme", font=("Arial Bold", 14), style="label.TLabel")
         self.dark_theme_btn = Button(parent, text="Dark Theme", command=self.change_to_dark_theme, style="button.TLabel")
         self.light_theme_btn = Button(parent, text="Light Theme", command=self.change_to_light_theme, style="button.TLabel")
@@ -269,6 +271,17 @@ class SourceryOptions():
         self.direct_replace_entry.insert(0, gv.config['Sourcery']['direct_replace'])
 
         self.restart_gui_lbl = Label(parent, text="Restart of Sourcery required(Images per page)!", font=("Arial Bold", 10), style="label.TLabel")
+
+        self.cleanup_lbl = Label(parent, text="Cleanup", font=("Arial Bold", 14), style="label.TLabel")
+        self.reference_entries_lbl = Label(parent, text="Reference entries", font=("Arial Bold", 10), style="label.TLabel")
+        self.originals_lbl = Label(parent, text="Originals", font=("Arial Bold", 10), style="label.TLabel")
+        self.downloaded_lbl = Label(parent, text="Downloaded", font=("Arial Bold", 10), style="label.TLabel")
+        self.reference_entries_count_lbl = Label(parent, text="???", font=("Arial Bold", 10), style="label.TLabel")
+        self.originals_count_lbl = Label(parent, text="???", font=("Arial Bold", 10), style="label.TLabel")
+        self.downloaded_count_lbl = Label(parent, text="???", font=("Arial Bold", 10), style="label.TLabel")
+        self.reference_clean_btn = Button(parent, text='Clean', command=self.clean_reference, style="button.TLabel")
+        self.originals_clean_btn = Button(parent, text='Clean', command=self.clean_originals, style="button.TLabel")
+        self.downloaded_clean_btn = Button(parent, text='Clean', command=self.clean_downloaded, style="button.TLabel")
 
         self.sourcery_confirm_btn = Button(parent, text="Save", command=self.sourcery_save, style="button.TLabel")
 
@@ -335,6 +348,31 @@ class SourceryOptions():
         self.input_search_depth_entry.place(x = x4, y = y + c * 14)
 
         self.sourcery_confirm_btn.place(x = x3, y = y + c * 16)
+
+        def count_downloaded():
+            z = 0
+            x = listdir(gv.cwd + '/Sourcery/sourced_progress')
+            for elem in x:
+                z += len(listdir(gv.cwd + '/Sourcery/sourced_progress/' + elem))
+            return z
+
+        self.reference_entries_count_lbl.configure(text=str(len(gv.Files.Ref.refs)))
+        try:
+            self.originals_count_lbl.configure(text=str(len(listdir(gv.cwd + '/Sourcery/sourced_original'))))
+            self.downloaded_count_lbl.configure(text=str(count_downloaded()))
+        except:
+            pass
+
+        self.cleanup_lbl.place(x = x3, y = y + c * 18)
+        self.reference_entries_lbl.place(x = x3, y = y + c * 19)
+        self.originals_lbl.place(x = x3, y = y + c * 20)
+        self.downloaded_lbl.place(x = x3, y = y + c * 21)
+        self.reference_entries_count_lbl.place(x = x3+150, y = y + c * 19)
+        self.originals_count_lbl.place(x = x3+150, y = y + c * 20)
+        self.downloaded_count_lbl.place(x = x3+150, y = y + c * 21)
+        self.reference_clean_btn.place(x = x4, y = y + c * 19)
+        self.originals_clean_btn.place(x = x4, y = y + c * 20)
+        self.downloaded_clean_btn.place(x = x4, y = y + c * 21)
 
     def change_to_dark_theme(self):
         gv.Files.Theme.current_theme = "Dark Theme"
@@ -452,6 +490,40 @@ class SourceryOptions():
         gv.config['Sourcery']['input_search_depth'] = str(self.input_search_depth_entry.get())
         gv.write_config()
         gv.Files.Log.write_to_log('Saved Sourcery Options')
+
+    def clean_reference(self):
+        gv.Files.Ref.clean_reference()
+        self.reference_entries_count_lbl.configure(text=str(len(gv.Files.Ref.refs)))
+    
+    def clean_originals(self):
+        try:
+            delete_list = list()
+            for elem in listdir(gv.cwd + '/Sourcery/sourced_original'):
+                if gv.cwd + '/Sourcery/sourced_original/' + elem not in delete_list:
+                    delete_list.append(gv.cwd + '/Sourcery/sourced_original/' + elem)
+            self.leftovers(delete_list)
+            self.originals_count_lbl.configure(text=str(len(listdir(gv.cwd + '/Sourcery/sourced_original'))))
+        except:
+            self.originals_count_lbl.configure(text='ERROR')
+        
+    def clean_downloaded(self):
+        def count_downloaded():
+            z = 0
+            x = listdir(gv.cwd + '/Sourcery/sourced_progress')
+            for elem in x:
+                z += len(listdir(gv.cwd + '/Sourcery/sourced_progress/' + elem))
+            return z
+
+        try:
+            delete_list = list()
+            for elem in listdir(gv.cwd + '/Sourcery/sourced_progress'):
+                for el in listdir(gv.cwd + '/Sourcery/sourced_progress/' + elem):
+                    if gv.cwd + '/Sourcery/sourced_progress/' + elem + '/' + el not in delete_list:
+                        delete_list.append(gv.cwd + '/Sourcery/sourced_progress/' + elem + '/' + el)
+            self.leftovers(delete_list)
+            self.downloaded_count_lbl.configure(text=str(count_downloaded()))
+        except:
+            self.originals_count_lbl.configure(text='ERROR')
 
 class ProviderOptions():
     """Hosts all image provider options Classes"""

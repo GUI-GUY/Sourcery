@@ -126,7 +126,7 @@ class Startpage():
 
         self.display_logfile()
 
-        self.test_btn.place(x = 800, y = 60)
+        #self.test_btn.place(x = 800, y = 60)
         self.display_info_btn.place(x = int(gv.width*0.7), y = int(gv.height/90*6))
         self.display_logfile_btn.place(x = int(gv.width*0.8), y = int(gv.height/90*6))
 

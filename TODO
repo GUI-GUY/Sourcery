@@ -107,18 +107,19 @@ Last Error: 0073
 
 BUGS
 + big selector packs all loaded images in the left top corner when many images (between/above 100-150) are existent
-second process just stops idk
+??? second process just stops idk
 + one or more threads do not exit after closing the gui when more than 50ish images are loaded even when all threads are daemons
 + save not possible
 + massive top left corner after about 50 images have been shown on screen(tkinter probably the problem)
-delete working stuff when reference is empty
+~ delete working stuff when reference is empty
 + ref duplicate detection does not work?
 + widgets do not get deleted
 + fakeuseragent error handling
-3.2.x does not show more than 2 classes
+??? 3.2.x does not show more than 2 classes
 
 beta 0.4
 REMOVE TEST BUTTON
+import logging
 config parser on theme file
 increase CPU performance
 make duplicate loop not check for existing classes but for references
@@ -130,8 +131,6 @@ big selector: show image picked by weight system
 + gui lags hard on huge data loaded
 ATTEMPTING
 3rd service
-Hydrus
-DCP
 Keyboard support
 change font option (maybe not)
 statistics
@@ -166,9 +165,12 @@ on save: copy all images then delete old ones
 on load reference: download images
 show tags in results screen doesn't work after images have been displayed
 move sourced/unsources input images into [folder]
+cleanup include log
 
 
 beta 0.5?
+Hydrus
+DCP
 queue images instead of 'get source' button?
 
 LEGEND:

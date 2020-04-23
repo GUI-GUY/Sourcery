@@ -157,7 +157,7 @@ def save_locked():
     leftovers()
     Startpage_Class.save_locked_btn.configure(state='disabled')
 
-def leftovers():
+def leftovers(delete_list=None):
     """
     Deletes files and folders scheduled to be deleted indicated by delete_dirs_array
     """
@@ -168,7 +168,9 @@ def leftovers():
     #             gv.delete_dirs_array.append(gv.cwd + '/Sourcery/sourced_original' + img)
 
     gv.Files.Log.write_to_log('Deleting empty folders, leftovers etc. ...')
-    for element in gv.delete_dirs_array:
+    if delete_list == None:
+        delete_list = gv.delete_dirs_array
+    for element in delete_list:
         try:
             if path.isdir(element):
                 rmtree(element)
@@ -179,7 +181,7 @@ def leftovers():
             gv.Files.Log.write_to_log("ERROR [0017] " + str(e))
             #mb.showerror("ERROR", "ERROR CODE [0017]\nSomething went wrong while removing the image " + element)
 
-    gv.delete_dirs_array.clear()
+    delete_list.clear()
     gv.Files.Log.write_to_log('Deleted stuff')
 
 def enforce_style():
@@ -315,7 +317,7 @@ if __name__ == '__main__':
     gv.Files.Log.init_log()
     gv.Files.Log.write_to_log('Initialising variables...')
 
-    Options_Class = Options(window, enforce_style)
+    Options_Class = Options(window, enforce_style, leftovers)
     Startpage_Class = Startpage(window, Options_Class, load_from_ref, lock_save, save_locked)
     gv.display_startpage = Startpage_Class.display_startpage
     
