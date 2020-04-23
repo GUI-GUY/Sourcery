@@ -58,7 +58,7 @@ class ProviderImageData():
             self.downloaded_wxh_lbl = Label(gv.res_frame, text = "More images", style='label.TLabel')
         self.downloaded_type_lbl = Label(gv.res_frame, style='label.TLabel')
         self.results_tags_lbl = Label(gv.res_frame, wraplength=gv.res_frame_width/6, style='label.TLabel')
-        self.size = None
+        #self.size = None
 
         self.result_not_in_tagfile_var = IntVar(value=0)
         self.result_not_in_tagfile_chkbtn = Checkbutton(gv.res_frame, text='Not in Tagfile', var=self.result_not_in_tagfile_var, style='chkbtn.TCheckbutton')

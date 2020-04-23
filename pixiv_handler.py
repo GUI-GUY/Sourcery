@@ -2,10 +2,11 @@ from os import getcwd, path, makedirs
 from json import loads
 from copy import deepcopy
 from requests import request, get
-from fake_useragent import UserAgent
+#from fake_useragent import UserAgent
 import global_variables as gv
 
-headers = {"user-agent": UserAgent().random, 'accept-language':'en'}
+#headers = {"user-agent": UserAgent().random, 'accept-language':'en'}
+headers = {'accept-language':'en'}
 
 class Illustration():
     """Includes all information on the pixiv image"""
@@ -220,7 +221,7 @@ def download(pid) :
     replace_template = "_p{page}"
 
     file_name = "{pid}_p{page}.{format}"
-    headers = {"user-agent": UserAgent().random}
+    #headers = {"user-agent": UserAgent().random}
 
     if pid == '':
         #pid = 80147954

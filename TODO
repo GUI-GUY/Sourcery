@@ -114,7 +114,7 @@ second process just stops idk
 delete working stuff when reference is empty
 + ref duplicate detection does not work?
 + widgets do not get deleted
-fakeuseragent error handling
++ fakeuseragent error handling
 3.2.x does not show more than 2 classes
 
 beta 0.4
