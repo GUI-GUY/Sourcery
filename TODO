@@ -164,9 +164,8 @@ reference takes the first reference so if you source an image with more services
 on save: copy all images then delete old ones
 on load reference: download images
 show tags in results screen doesn't work after images have been displayed
-move sourced/unsources input images into [folder]
+move sourced/unsources input images into [folder]/put images where no source is found into output option
 cleanup include log
-
 
 beta 0.5?
 Hydrus

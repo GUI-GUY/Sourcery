@@ -23,8 +23,10 @@ Bugfixes:
 - Put the update loop inside a thread to prevent the gui from lagging
 - Fixed issue where all sourced images would be loaded into memory despite not putting them on screen (results screen)
 - Fixed error not being handled on pixiv api call
-- Capped amount of img_data instances to 50 because a lot of instances caused the big selector page to behave weirdly
-- Capped images per page to 50 because more class instances can't exist now 
+- Capped images per page to 50 because too many would lead to Tkinter problems
+- Fixed bug where Tkinter would put all widgets into the top left corner
+- Removed fakeuseragent since it was not needed
+- Fixed a lot of minor bugs
 
 Features:
 
@@ -34,3 +36,10 @@ Features:
 - Added ability to choose how many images to load from reference
 - Added preloading into the big selector (The next/previous batch of images will now be loaded while you look at the current one)
 - Added unloading of visited big selector sites to keep RAM usage down at the expense of a little more loading time
+- Added cleanup section in the Sourcery options
+- Officially added Reference feature
+- Reworked config file and handling for better readability
+
+General:
+- 2 new classes: Startpage(for the startpage) and Processing(for image sourcing)
+- Removed credfile since it did not hold enough information to warrant being its own file
