@@ -43,3 +43,15 @@ Features:
 General:
 - 2 new classes: Startpage(for the startpage) and Processing(for image sourcing)
 - Removed credfile since it did not hold enough information to warrant being its own file
+
+Update 0.3.3
+
+Bugfixes:
+- Reference file was emptied on restart 
+
+Features:
+- Added debugging (access by clicking the SauceNao button in the options 10 times)
+- Cleanup now asks for confirmation if you want to delete the files
+
+General:
+- Rearranged some messages for the log to not appear confusing

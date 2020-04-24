@@ -32,7 +32,7 @@ def danbooru_fetch_illustration(imgid, comm_error_q=None, danbooru=False, yander
         if 'id' in illustration:
             return illustration
         else:
-            comm_error_q.put(str(illustration))
+            comm_error_q.put('[Sourcery] Work not found: ' + str(illustration))
             return False
     except Exception as e:
         print("ERROR [0056] " + str(e))
