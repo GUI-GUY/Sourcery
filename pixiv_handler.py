@@ -68,7 +68,7 @@ def pixiv_fetch_illustration(img_name_original, imgid, comm_error_q=None):
         return Illustration(js, headers)
     else:
         if comm_error_q != None:
-            comm_error_q.put('[Sourcery] ' + js['message'])
+            comm_error_q.put('[Sourcery] ' + js['message'] + str(imgid))
         else:
             gv.Files.Log.write_to_log(js['message'])
         return False

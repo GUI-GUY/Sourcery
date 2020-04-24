@@ -34,7 +34,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
             comm_error_q.put('[Sourcery] Image has already been sourced')
             continue
         try:
-            comm_error_q.put('[Sourcery] Moving image to working directory')
+            #comm_error_q.put('[Sourcery] Moving image to working directory')
             copy(image, cwd + '/Sourcery/sourced_original')
         except Exception as e:
             die(str(e), comm_error_q, comm_img_q, terminate_c_pipe)
@@ -136,7 +136,7 @@ def process_img_data_new(img_name_original, img_path, input_path, res, minsim, c
             konachan_illustration_list.extend(danbooru_fetcher(img_name_original, source, 'Konachan', konachan_visited, False, False, True, comm_error_q))
 
     if len(danbooru_illustration_list) == 0 and len(pixiv_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0:
-        comm_error_q.put('[Sourcery] None of the requested images were available!')
+        comm_error_q.put('[Sourcery] No sources were found!')
         comm_error_q.put('DELETE' + img_path)
         gv.Files.Ref.new_reference(img_name_original, [], [], [], [], gv.config['Pixiv']['rename'], gv.config['Danbooru']['rename'], gv.config['Yandere']['rename'], gv.config['Konachan']['rename'], minsim, dict_list, input_path)
         return False
