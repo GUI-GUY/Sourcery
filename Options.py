@@ -96,6 +96,7 @@ class Debugging():
         self.lord = lord
 
         self.code_txt = Text(parent, width=int(gv.width/20), height=int(gv.height/30), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
+        self.code_txt.insert(END, gv.config['Debug']['code'])
         self.execute_btn = Button(parent, text="Execute", command=self.execute, style="button.TLabel")
         self.debug_btn = Button(parent, text="Disable Debug mode", command=self.disable_debug, style="button.TLabel")
     
@@ -114,7 +115,13 @@ class Debugging():
         self.lord.NAOO.display()
     
     def execute(self):
-        exec(self.code_txt.get('1.0', END))
+        txt = self.code_txt.get('1.0', END)
+        gv.config['Debug']['code'] = txt
+        gv.write_config()
+        try:
+            exec(txt)
+        except Exception as e:
+            print(e)
 
 class SauceNaoOptions():
     """Includes all widgets for SauceNao and methods to display and modify them"""

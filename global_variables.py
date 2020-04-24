@@ -55,7 +55,8 @@ def init_config():
     }
 
     config['Debug'] = {
-        "show" : '0'
+        "show" : '0',
+        "code" : ''
     }
 
     if path.isfile(cwd + '/Sourcery/config.cfg'):
