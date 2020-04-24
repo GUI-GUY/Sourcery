@@ -23,23 +23,22 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
     3. If success download image else next/die
     """
     # For every input image a request goes out to saucenao and gets decoded
-    for image in input_images_array:
-        img = image.split('/')[-1]
-        comm_img_q.put(img)
-        comm_error_q.put('[Sourcery] Sourcing: ' + img)
+    for image_path in input_images_array:
+        image_name = image_path.split('/')[-1]
+        comm_img_q.put(image_name)
+        comm_error_q.put('[Sourcery] Sourcing: ' + image_name)
         # if an ImageData instance with the same original name, minsim and rename options already exists, skip
-        duplicate_c_pipe.send({'img_name': img, 'minsim': minsim, 'rename_pixiv': gv.config['Pixiv']['rename'], 'rename_danbooru': gv.config['Danbooru']['rename']}) # TODO yandere konachan rename
-        next_img = duplicate_c_pipe.recv()
-        if next_img:
+        duplicate_c_pipe.send({'img_name': image_name, 'minsim': minsim, 'rename_pixiv': gv.config['Pixiv']['rename'], 'rename_danbooru': gv.config['Danbooru']['rename']}) # TODO yandere konachan rename
+        if duplicate_c_pipe.recv():
             comm_error_q.put('[Sourcery] Image has already been sourced')
             continue
         try:
             #comm_error_q.put('[Sourcery] Moving image to working directory')
-            copy(image, cwd + '/Sourcery/sourced_original')
+            copy(image_path, cwd + '/Sourcery/sourced_original')
         except Exception as e:
             die(str(e), comm_error_q, comm_img_q, terminate_c_pipe)
         
-        res = get_response(img, cwd, saucenao_key, minsim, comm_error_q)
+        res = get_response(image_name, cwd, saucenao_key, minsim, comm_error_q)
         if res[0] == 401:
             # Exception while opening image!
             comm_error_q.put('[Sourcery] ' + res[1])
@@ -76,10 +75,10 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
             sleep(10)
         elif res[0] == 200:
             comm_q.put((res[3], res[4]))
-            processed_data = process_img_data_new(img, cwd + '/Sourcery/sourced_original/' + img, image, res, minsim, comm_error_q)
+            processed_data = process_img_data_new(image_name, cwd + '/Sourcery/sourced_original/' + image_name, image_path, res, minsim, comm_error_q)
             if processed_data != False:
-                img_data_q.put(create_DIllustration(img, image, cwd + '/Sourcery/sourced_original/' + img, processed_data, minsim, comm_error_q))
-            #process_img_data(img, image, res, minsim, img_data_q, comm_error_q)   
+                img_data_q.put(create_DIllustration(image_name, image_path, cwd + '/Sourcery/sourced_original/' + image_name, processed_data, minsim, comm_error_q))
+            #process_img_data(image_name, image, res, minsim, img_data_q, comm_error_q)   
             if res[3] < 1:
                 die('Out of searches for today', comm_error_q, comm_img_q, terminate_c_pipe)
             if res[2] < 1:
