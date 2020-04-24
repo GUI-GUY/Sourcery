@@ -47,7 +47,7 @@ General:
 Update 0.3.3
 
 Bugfixes:
-- Reference file was emptied on restart
+- Fixed reference file being emptied on startup making it useless
 - Fixed cleanup not updating the number of references
 
 Features:
