@@ -62,12 +62,16 @@ def pixiv_fetch_illustration(img_name_original, imgid, comm_error_q=None):
         return False
         #mb.showerror("ERROR [0073]", "ERROR CODE [0073]\nImage data could not be retrieved")
     js = loads(res.text)# {'error': True, 'message': '該当作品は削除されたか、存在しない作品IDです。', 'body': []}
-    
     if js['error'] == False:
         #print(js["body"])
         
         return Illustration(js, headers)
-    return False
+    else:
+        if comm_error_q != None:
+            comm_error_q.put('[Sourcery] ' + js['message'])
+        else:
+            gv.Files.Log.write_to_log(js['message'])
+        return False
 
 def pixiv_download(img_name_original, illustration, comm_error_q=None):
     """
