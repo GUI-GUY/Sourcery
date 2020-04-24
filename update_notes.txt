@@ -47,7 +47,8 @@ General:
 Update 0.3.3
 
 Bugfixes:
-- Reference file was emptied on restart 
+- Reference file was emptied on restart
+- Fixed cleanup not updating the number of references
 
 Features:
 - Added debugging (access by clicking the SauceNao button in the options 10 times)

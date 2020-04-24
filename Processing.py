@@ -36,12 +36,15 @@ class Processing():
             while True:
                 if self.duplicate_p_pipe.poll():
                     dup_dict = self.duplicate_p_pipe.recv()
-                    is_dup = False
-                    for data in gv.img_data_array: # {'img_name': img, 'minsim': minsim, 'rename_pixiv': gv.config['Pixiv']['rename'], 'rename_danbooru': gv.config['Danbooru']['rename']}
-                        if str(dup_dict['img_name']) == data.sub_dill.name and str(dup_dict['minsim']) == str(data.sub_dill.minsim):
-                            is_dup = True
-                            break
-                    self.duplicate_p_pipe.send(is_dup)
+                    if dup_dict[0] == 'DATA':
+                        is_dup = False
+                        for data in gv.img_data_array: # {'img_name': img, 'minsim': minsim, 'rename_pixiv': gv.config['Pixiv']['rename'], 'rename_danbooru': gv.config['Danbooru']['rename']}
+                            if str(dup_dict['img_name']) == data.sub_dill.name and str(dup_dict['minsim']) == str(data.sub_dill.minsim):
+                                is_dup = True
+                                break
+                        self.duplicate_p_pipe.send(is_dup)
+                    elif dup_dict[0] == 'REF':
+                        self.duplicate_p_pipe.send(gv.Files.Ref.new_reference(*dup_dict[1]))
         Thread(target=run, daemon=True, name="duplicate_loop").start()
 
     def terminate_loop(self):

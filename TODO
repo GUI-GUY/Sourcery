@@ -166,6 +166,7 @@ on load reference: download images
 show tags in results screen doesn't work after images have been displayed
 move sourced/unsources input images into [folder]/put images where no source is found into output option
 cleanup include log
+shorten long filenames with XXXXXX...XXXXXX.png in log
 
 beta 0.5?
 Hydrus

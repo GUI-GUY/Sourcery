@@ -49,6 +49,7 @@ def load_from_ref_run(c):
     gv.Files.Ref.read_reference()
     loaded_counter = 0
     duplicates_counter = 0
+    no_sources_counter = 0
     #refs = deepcopy()#gv.Files.Ref.read_reference()
     gv.Files.Log.write_to_log('Loading images from reference file...')
     for ref in gv.Files.Ref.refs:
@@ -117,10 +118,11 @@ def load_from_ref_run(c):
         for data in gv.img_data_array:
             if str(ref['old_name']) == data.sub_dill.name and int(ref['minsim']) == gv.config.getint('SauceNAO', 'minsim'):
                 next_img = True
+                duplicates_counter += 1
                 break
         if len(pixiv_illustration_list) == 0 and len(danb_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0:
             next_img = True
-            duplicates_counter += 1
+            no_sources_counter += 1
         if not next_img:
             # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
             dill = DIllustration(ref['input_path'], [{"service":'Original', "name":str(ref['old_name']), "work_path": gv.cwd + '/Sourcery/sourced_original/' + str(ref['old_name'])}, 
@@ -136,6 +138,7 @@ def load_from_ref_run(c):
         gv.Files.Log.write_to_log('References: ' + str(len(gv.Files.Ref.refs)))
         gv.Files.Log.write_to_log('Loaded ' + str(loaded_counter) + ' images from reference file')
         gv.Files.Log.write_to_log('Skipped ' + str(duplicates_counter) + ' images because they were already loaded')
+        gv.Files.Log.write_to_log('Skipped ' + str(no_sources_counter) + ' images because no sources were found')
     Startpage_Class.do_sourcery_btn.configure(state='enabled')
     Startpage_Class.load_from_ref_btn.configure(state='enabled')
 

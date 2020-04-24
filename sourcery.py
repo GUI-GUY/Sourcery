@@ -28,7 +28,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
         comm_img_q.put(image_name)
         comm_error_q.put('[Sourcery] Sourcing: ' + image_name)
         # if an ImageData instance with the same original name, minsim and rename options already exists, skip
-        duplicate_c_pipe.send({'img_name': image_name, 'minsim': minsim, 'rename_pixiv': gv.config['Pixiv']['rename'], 'rename_danbooru': gv.config['Danbooru']['rename']}) # TODO yandere konachan rename
+        duplicate_c_pipe.send(('DATA', {'img_name': image_name, 'minsim': minsim, 'rename_pixiv': gv.config['Pixiv']['rename'], 'rename_danbooru': gv.config['Danbooru']['rename']})) # TODO yandere konachan rename
         if duplicate_c_pipe.recv():
             comm_error_q.put('[Sourcery] Image has already been sourced')
             continue
@@ -75,7 +75,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
             sleep(10)
         elif res[0] == 200:
             comm_q.put((res[3], res[4]))
-            processed_data = process_img_data_new(image_name, cwd + '/Sourcery/sourced_original/' + image_name, image_path, res, minsim, comm_error_q)
+            processed_data = process_img_data_new(image_name, cwd + '/Sourcery/sourced_original/' + image_name, image_path, res, minsim, comm_error_q, duplicate_c_pipe)
             if processed_data != False:
                 img_data_q.put(create_DIllustration(image_name, image_path, cwd + '/Sourcery/sourced_original/' + image_name, processed_data, minsim, comm_error_q))
             #process_img_data(image_name, image, res, minsim, img_data_q, comm_error_q)   
@@ -104,7 +104,7 @@ def create_DIllustration(img_name_original, input_path, work_path, img_data, min
         img_data[0], img_data[1], img_data[2], img_data[3]], img_data[4], minsim)
     return d_illust
 
-def process_img_data_new(img_name_original, img_path, input_path, res, minsim, comm_error_q):
+def process_img_data_new(img_name_original, img_path, input_path, res, minsim, comm_error_q, duplicate_c_pipe):
     """
     Downloads the image from pixiv and Danbooru
     Returns information on the downloads
@@ -158,7 +158,8 @@ def process_img_data_new(img_name_original, img_path, input_path, res, minsim, c
     for elem in konachan_illustration_list:
         konachan_ref_list.append((elem[1], elem[0]['id']))
 
-    ref = gv.Files.Ref.new_reference(img_name_original, pixiv_ref_list, danbooru_ref_list, yandere_ref_list, konachan_ref_list, gv.config['Pixiv']['rename'], gv.config['Danbooru']['rename'], gv.config['Yandere']['rename'], gv.config['Konachan']['rename'], minsim, dict_list, input_path)
+    duplicate_c_pipe.send(('REF', (img_name_original, pixiv_ref_list, danbooru_ref_list, yandere_ref_list, konachan_ref_list, gv.config['Pixiv']['rename'], gv.config['Danbooru']['rename'], gv.config['Yandere']['rename'], gv.config['Konachan']['rename'], minsim, dict_list, input_path)))
+    ref = duplicate_c_pipe.recv()#gv.Files.Ref.new_reference()
 
     return (pixiv_illustration_list, danbooru_illustration_list, yandere_illustration_list, konachan_illustration_list, ref)
 
