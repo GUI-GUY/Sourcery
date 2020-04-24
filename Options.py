@@ -17,18 +17,31 @@ class Options():
         self.NAOO = SauceNaoOptions(parent)
         self.SouO = SourceryOptions(parent, enforce_style, leftovers)
         self.ProO = ProviderOptions(parent)
+        self.Debug = Debugging(parent, self)
         self.options_lbl = Label(parent, text="Options", font=("Arial Bold", 20), style="label.TLabel")
 
         self.provider_options_btn = Button(parent, text="Provider", command=self.display_provider_options, style="button.TLabel")
         self.saucenao_options_btn = Button(parent, text="SauceNao", command=self.display_saucenao_options, style="button.TLabel")
         self.sourcery_options_btn = Button(parent, text="Sourcery", command=self.display_sourcery_options, style="button.TLabel")
+        self.debug_btn = Button(parent, text="Debug", command=self.display_debug, style="button.TLabel")
 
         self.options_back_btn = Button(parent, text="Back", command=gv.display_startpage, style="button.TLabel")
+
+        if gv.config['Debug']['show'] == '1':
+            self.debug_counter = 10
+        else:
+            self.debug_counter = 0
 
     def display_saucenao_options(self):
         """
         Draw 
         """
+        if self.debug_counter < 10:
+            self.debug_counter += 1
+        else:
+            gv.config['Debug']['show'] = '1'
+            gv.write_config()
+            self.saucenao_options_btn.place(x = int(gv.width/160*35), y = int(gv.height/90*5))
         self.forget_all_widgets()
         self.display_basic_options()
         self.NAOO.display()
@@ -59,12 +72,49 @@ class Options():
         self.sourcery_options_btn.place(x = int(gv.width/160*5), y = int(gv.height/90*5))
         self.provider_options_btn.place(x = int(gv.width/160*15), y = int(gv.height/90*5))
         self.saucenao_options_btn.place(x = int(gv.width/160*25), y = int(gv.height/90*5))
+        if self.debug_counter == 10:
+            self.debug_btn.place(x = int(gv.width/160*35), y = int(gv.height/90*5))
 
         self.options_back_btn.place(x = int(gv.width/160*5), y = gv.height-170)
+
+    def display_debug(self):
+        """
+        Draw 
+        """
+        self.forget_all_widgets()
+        self.display_basic_options()
+        self.Debug.display()
 
     def forget_all_widgets(self):
         for widget in self.par.winfo_children():
             widget.place_forget()
+
+class Debugging():
+    """Includes all widgets for Debugging and methods to display and modify them"""
+    def __init__(self, parent, lord):
+        self.par = parent
+        self.lord = lord
+
+        self.code_txt = Text(parent, width=int(gv.width/20), height=int(gv.height/30), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
+        self.execute_btn = Button(parent, text="Execute", command=self.execute, style="button.TLabel")
+        self.debug_btn = Button(parent, text="Disable Debug mode", command=self.disable_debug, style="button.TLabel")
+    
+    def display(self):
+        self.debug_btn.place(x = int(gv.width/160*5), y = int(gv.height/90*8))
+        self.execute_btn.place(x = int(gv.width/160*5), y = int(gv.height/90*12))
+        self.code_txt.place(x = int(gv.width/160*5), y = int(gv.height/90*15))
+        
+
+    def disable_debug(self):
+        self.lord.debug_counter = 0
+        gv.config['Debug']['show'] = '0'
+        gv.write_config()
+        self.lord.forget_all_widgets()
+        self.lord.display_basic_options()
+        self.lord.NAOO.display()
+    
+    def execute(self):
+        exec(self.code_txt.get('1.0', END))
 
 class SauceNaoOptions():
     """Includes all widgets for SauceNao and methods to display and modify them"""

@@ -15,6 +15,7 @@ def init_config():
     config.add_section('Weight')
     config.add_section('SauceNAO')
     config.add_section('Sourcery')
+    config.add_section('Debug')
     
     config['Weight'] = {
         "png" : '10',
@@ -51,6 +52,10 @@ def init_config():
 
     config['Original'] = {
         "single_source_in_tagfile" : '0'
+    }
+
+    config['Debug'] = {
+        "show" : '0'
     }
 
     if path.isfile(cwd + '/Sourcery/config.cfg'):
