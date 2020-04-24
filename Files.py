@@ -393,7 +393,7 @@ class ReferenceFile():
         #print(str(return_array))
         #return return_array
 
-    def clean_reference(self):
+    def clean_reference(self, clear_list=False):
         """
         Deletes the content of the reference file
         """
@@ -405,7 +405,9 @@ class ReferenceFile():
             #mb.showerror("ERROR [0035]", "ERROR CODE [0035]\nSomething went wrong while accessing a configuration file(reference), please try again.")
             return
         f.close()
-        self.refs.clear()
+        if clear_list:
+            self.refs.clear()
+        
 
 if __name__ == "__main__":
     Ref = ReferenceFile(None)

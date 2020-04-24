@@ -492,7 +492,7 @@ class SourceryOptions():
         gv.Files.Log.write_to_log('Saved Sourcery Options')
 
     def clean_reference(self):
-        gv.Files.Ref.clean_reference()
+        gv.Files.Ref.clean_reference(clear_list=True)
         self.reference_entries_count_lbl.configure(text=str(len(gv.Files.Ref.refs)))
     
     def clean_originals(self):

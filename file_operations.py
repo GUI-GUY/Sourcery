@@ -56,7 +56,6 @@ def save():
         gv.img_data_array.remove(data)
         gv.img_data_sem.release()
     remove_later_list.clear()
-    #gv.Files.Ref.clean_reference()
     return True
 
 def gen_tagfile(tags, gen_dir, name):
