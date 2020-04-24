@@ -39,7 +39,7 @@ class Processing():
                     if dup_dict[0] == 'DATA':
                         is_dup = False
                         for data in gv.img_data_array: # {'img_name': img, 'minsim': minsim, 'rename_pixiv': gv.config['Pixiv']['rename'], 'rename_danbooru': gv.config['Danbooru']['rename']}
-                            if str(dup_dict['img_name']) == data.sub_dill.name and str(dup_dict['minsim']) == str(data.sub_dill.minsim):
+                            if str(dup_dict[1]['img_name']) == data.sub_dill.name and str(dup_dict[1]['minsim']) == str(data.sub_dill.minsim):
                                 is_dup = True
                                 break
                         self.duplicate_p_pipe.send(is_dup)
