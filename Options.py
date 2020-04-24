@@ -492,19 +492,21 @@ class SourceryOptions():
         gv.Files.Log.write_to_log('Saved Sourcery Options')
 
     def clean_reference(self):
-        gv.Files.Ref.clean_reference(clear_list=True)
-        self.reference_entries_count_lbl.configure(text=str(len(gv.Files.Ref.refs)))
+        if mb.askyesno('Delete?', 'Delete all Reference file entries?'):
+            gv.Files.Ref.clean_reference(clear_list=True)
+            self.reference_entries_count_lbl.configure(text=str(len(gv.Files.Ref.refs)))
     
     def clean_originals(self):
-        try:
-            delete_list = list()
-            for elem in listdir(gv.cwd + '/Sourcery/sourced_original'):
-                if gv.cwd + '/Sourcery/sourced_original/' + elem not in delete_list:
-                    delete_list.append(gv.cwd + '/Sourcery/sourced_original/' + elem)
-            self.leftovers(delete_list)
-            self.originals_count_lbl.configure(text=str(len(listdir(gv.cwd + '/Sourcery/sourced_original'))))
-        except:
-            self.originals_count_lbl.configure(text='ERROR')
+        if mb.askyesno('Delete?', 'Delete all Original files in the working directory (not in the Input folder)?'):
+            try:
+                delete_list = list()
+                for elem in listdir(gv.cwd + '/Sourcery/sourced_original'):
+                    if gv.cwd + '/Sourcery/sourced_original/' + elem not in delete_list:
+                        delete_list.append(gv.cwd + '/Sourcery/sourced_original/' + elem)
+                self.leftovers(delete_list)
+                self.originals_count_lbl.configure(text=str(len(listdir(gv.cwd + '/Sourcery/sourced_original'))))
+            except:
+                self.originals_count_lbl.configure(text='ERROR')
         
     def clean_downloaded(self):
         def count_downloaded():
@@ -513,17 +515,17 @@ class SourceryOptions():
             for elem in x:
                 z += len(listdir(gv.cwd + '/Sourcery/sourced_progress/' + elem))
             return z
-
-        try:
-            delete_list = list()
-            for elem in listdir(gv.cwd + '/Sourcery/sourced_progress'):
-                for el in listdir(gv.cwd + '/Sourcery/sourced_progress/' + elem):
-                    if gv.cwd + '/Sourcery/sourced_progress/' + elem + '/' + el not in delete_list:
-                        delete_list.append(gv.cwd + '/Sourcery/sourced_progress/' + elem + '/' + el)
-            self.leftovers(delete_list)
-            self.downloaded_count_lbl.configure(text=str(count_downloaded()))
-        except:
-            self.originals_count_lbl.configure(text='ERROR')
+        if mb.askyesno('Delete?', 'Delete all Downloaded files in the working directory (not in the Input folder)?'):
+            try:
+                delete_list = list()
+                for elem in listdir(gv.cwd + '/Sourcery/sourced_progress'):
+                    for el in listdir(gv.cwd + '/Sourcery/sourced_progress/' + elem):
+                        if gv.cwd + '/Sourcery/sourced_progress/' + elem + '/' + el not in delete_list:
+                            delete_list.append(gv.cwd + '/Sourcery/sourced_progress/' + elem + '/' + el)
+                self.leftovers(delete_list)
+                self.downloaded_count_lbl.configure(text=str(count_downloaded()))
+            except:
+                self.originals_count_lbl.configure(text='ERROR')
 
 class ProviderOptions():
     """Hosts all image provider options Classes"""
