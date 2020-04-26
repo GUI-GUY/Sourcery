@@ -39,7 +39,10 @@ class ProviderImageData():
         self.process_big_imgs_init = False
 
     def init_widgets(self):
-        self.downloaded_chkbtn = cb(master = gv.res_frame, var=self.downloaded_var,
+        def sub_data_toggle():
+            for elem in self.sub_dir_img_array:
+                elem.var.set(self.downloaded_var.get()) 
+        self.downloaded_chkbtn = cb(master = gv.res_frame, var=self.downloaded_var, command=sub_data_toggle,
             foreground=gv.Files.Theme.foreground, 
             background=gv.Files.Theme.background, 
             borderwidth = 1,
@@ -126,7 +129,7 @@ class ProviderImageData():
                     if self.sub_dill.path not in gv.delete_dirs_array:
                         gv.delete_dirs_array.append(self.sub_dill.path)
                 for img in self.sub_dir_array:
-                    data = SubImageData(img, self.sub_dill.path, self.sub_dill.service, gv.window, gv.big_frame, master_folder=self.sub_dill.name_no_suffix, siblings=self.siblings_array)
+                    data = SubImageData(img, self.sub_dill.path, self.sub_dill.service, gv.window, gv.big_frame, folder_var=self.downloaded_var, master_folder=self.sub_dill.name_no_suffix, siblings=self.siblings_array)
                     if data not in self.sub_dir_img_array:
                         self.sub_dir_img_array.append(data)
                 self.siblings_array.extend(self.sub_dir_img_array)

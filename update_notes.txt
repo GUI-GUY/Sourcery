@@ -56,3 +56,16 @@ Features:
 
 General:
 - Rearranged some messages for the log to not appear confusing
+
+Update 0.3.4
+
+Features:
+- Big selector now shows the image chosen by the weight system
+- Right/e and Left/q and Up/w and Down/s buttons can now be used to navigate in the big selector
+- Backspace can be used for exiting the big selector
+- a/d button can be used to toggle checked state on the left/right image
+- When you un/check a folder, all images "in it" will be un/checked as well
+- The displayed image in the big selector wiöö now be highlighted on the right
+
+General:
+- Reworked parallel loading a little bit

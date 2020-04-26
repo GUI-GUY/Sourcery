@@ -118,7 +118,7 @@ BUGS
 ??? 3.2.x does not show more than 2 classes
 
 beta 0.4
-REMOVE TEST BUTTON
++ REMOVE TEST BUTTON
 import logging
 config parser on theme file
 increase CPU performance
@@ -127,11 +127,15 @@ make button to jump to newest log entry
 timeout and continue prompt if one service takes too long to download
 + gui lags with too many images in input
 + only input is sometimes shown on reference load
-big selector: show image picked by weight system
++ big selector: show image picked by weight system
 + gui lags hard on huge data loaded
 ATTEMPTING
 3rd service
 Keyboard support
+    + right/e left/q in big selector
+    + backspace
+    + a/d for toggling checked
+    + up/w down/s in big selector
 change font option (maybe not)
 statistics
 elapsed time / ETA
@@ -145,8 +149,6 @@ Notification rework
     stopping (please wait)
     show imgname in big selector
     tell user how many images have been sourced successfully/unsuccessfully
-bind keys
-import configparser
 pixiv gif support
 danbooru gif support
 weighted tags
@@ -159,7 +161,7 @@ show progress of sourced imaged/all images
 https://www.reddit.com/r/learnpython/comments/6dndqz/how_would_you_make_text_that_automatically_wraps/
 make own scrollbar class
 https://pypi.org/project/tk-html-widgets/ for pixiv caption
-fix yandere& konachan scrollframe color bug
+fix yandere & konachan scrollframe color bug
 reference takes the first reference so if you source an image with more services later on this will get ignored
 on save: copy all images then delete old ones
 on load reference: download images
@@ -167,6 +169,8 @@ show tags in results screen doesn't work after images have been displayed
 move sourced/unsources input images into [folder]/put images where no source is found into output option
 cleanup include log
 shorten long filenames with XXXXXX...XXXXXX.png in log
+folder button in big selector
+when pressing right/left too often you skip images and "image "pyimage230" doesn't exist"
 
 beta 0.5?
 Hydrus

@@ -80,6 +80,7 @@ class ThemeFile():
         self.current_theme = 'Dark Theme'
         self.background = '#252525'
         self.foreground = '#ddd'
+        self.selected_background = 'grey'
         self.button_background = '#444'
         self.button_background_active = 'white'
         self.button_foreground_active = 'black'
@@ -88,6 +89,7 @@ class ThemeFile():
         self.checkbutton_pressed = 'green'
         self.custom_background = '#1f1f1f'
         self.custom_foreground = 'white'
+        self.custom_selected_background = 'grey'
         self.custom_button_background = 'purple'
         self.custom_button_background_active = '#dd64d3'
         self.custom_button_foreground_active = 'black'
@@ -131,6 +133,8 @@ class ThemeFile():
                 self.background = assign[assign.find('=')+1:-1]
             if assign.startswith('foreground='):
                 self.foreground = assign[assign.find('=')+1:-1]
+            if assign.startswith('selected_background='):
+                self.selected_background = assign[assign.find('=')+1:-1]
             if assign.startswith('button_background='):
                 self.button_background = assign[assign.find('=')+1:-1]
             if assign.startswith('button_background_active='):
@@ -143,10 +147,12 @@ class ThemeFile():
                 self.button_foreground_pressed = assign[assign.find('=')+1:-1]
             if assign.startswith('checkbutton_pressed='):
                 self.checkbutton_pressed = assign[assign.find('=')+1:-1]
+            
 
         if ct: #if current theme is custom theme
             self.custom_background = self.background
             self.custom_foreground = self.foreground
+            self.custom_selected_background = self.selected_background
             self.custom_button_background = self.button_background
             self.custom_button_background_active = self.button_background_active
             self.custom_button_foreground_active = self.button_foreground_active
@@ -162,6 +168,8 @@ class ThemeFile():
                     self.custom_background = assign[assign.find('=')+1:-1]
                 if assign.startswith('foreground='):
                     self.custom_foreground = assign[assign.find('=')+1:-1]
+                if assign.startswith('selected_background='):
+                    self.custom_selected_background = assign[assign.find('=')+1:-1]
                 if assign.startswith('button_background='):
                     self.custom_button_background = assign[assign.find('=')+1:-1]
                 if assign.startswith('button_background_active='):
@@ -186,6 +194,7 @@ class ThemeFile():
             "\n\nDark Theme"
             "\nbackground=#252525"
             "\nforeground=#ddd"
+            "\nselected_background=grey"
             "\nbutton_background=#444"
             "\nbutton_background_active=white"
             "\nbutton_foreground_active=black"
@@ -204,6 +213,7 @@ class ThemeFile():
             "\n\nCustom Theme"
             "\nbackground=" + self.custom_background +
             "\nforeground=" + self.custom_foreground +
+            "\nselected_background=" + self.custom_selected_background +
             "\nbutton_background=" + self.custom_button_background +
             "\nbutton_background_active=" + self.custom_button_background_active +
             "\nbutton_foreground_active=" + self.custom_button_foreground_active +

@@ -1,6 +1,6 @@
 from os import path, listdir, remove, makedirs
 from shutil import move, rmtree
-from tkinter import IntVar, W, N
+from tkinter import IntVar, W, N, E, S, ACTIVE, NORMAL
 from tkinter import Checkbutton as cb
 from tkinter import messagebox as mb
 from tkinter.ttk import Checkbutton, Label, Button
@@ -12,7 +12,7 @@ import global_variables as gv
 
 class SubImageData():
     """Includes information for images in subdirectories of downloads"""
-    def __init__(self, name, path, service, parent, scrollparent, var=None, master_folder='', siblings=list()):
+    def __init__(self, name, path, service, parent, scrollparent, folder_var=None, var=None, master_folder='', siblings=list()):
         self.name = name
         self.path = path + '/' + name
         self.service = service
@@ -26,15 +26,20 @@ class SubImageData():
             self.var = IntVar(value=0)
         else:
             self.var = var
+        self.folder_var = folder_var
         
         self.folder = master_folder
 
         self.siblings_array = siblings
 
+        self.is_displayed = False
         self.load_init = False
     
     def init_widgets(self):
-        self.chkbtn = cb(self.par, var=self.var,
+        def folder_toggle():
+            if self.var.get() == 0:
+                self.folder_var.set(0)
+        self.chkbtn = cb(self.par, var=self.var, command= folder_toggle,
             foreground=gv.Files.Theme.foreground, 
             background=gv.Files.Theme.background, 
             borderwidth = 1,
@@ -46,7 +51,7 @@ class SubImageData():
             overrelief='ridge',#no default
             offrelief='flat',#default raised
             indicatoron='false')# sunken, raised, groove, ridge, flat, style="chkbtn.TCheckbutton"
-        self.thumb_chkbtn = cb(self.scrollpar, var=self.var,
+        self.thumb_chkbtn = cb(self.scrollpar, var=self.var, command= folder_toggle,
                 foreground=gv.Files.Theme.foreground, 
                 background=gv.Files.Theme.background, 
                 borderwidth = 1,
@@ -85,7 +90,10 @@ class SubImageData():
         self.size = deepcopy(self.img_obj.size)
         self.img_obj = resize(self.img_obj)
         self.photoImg = ImageTk.PhotoImage(self.img_obj)
-        self.img_obj.close()
+        try:
+            self.img_obj.close()
+        except:
+            pass
         self.img_obj = None
         
         def assign():
@@ -109,7 +117,10 @@ class SubImageData():
             #img_obj_thumb = deepcopy(self.img_obj)
             img_obj_thumb.thumbnail((70, 70), resample=Image.ANTIALIAS)
             self.photoImg_thumb = ImageTk.PhotoImage(img_obj_thumb)
-            img_obj_thumb.close()
+            try:
+                img_obj_thumb.close()
+            except:
+                pass
             def assign2():
                 self.thumb_chkbtn.configure(image=self.photoImg_thumb)
                 self.thumb_chkbtn.image = self.photoImg_thumb
@@ -123,10 +134,10 @@ class SubImageData():
         Use this for the downloaded images
         Display the preview and corresponding info on the big selector scrollframe
         """
-        self.thumb_chkbtn.grid(row=t, column=0, rowspan=4)
-        self.lbl.grid(row=t+0, column=1, sticky=W)
-        self.wxh_lbl.grid(row=t+1, column=1, sticky=W)
-        self.type_lbl.grid(row=t+2, column=1, sticky=W)
+        self.thumb_chkbtn.grid(row=t, column=0, rowspan=4, sticky=W+E+N+S)
+        self.lbl.grid(row=t+0, column=1, sticky=W+E)
+        self.wxh_lbl.grid(row=t+1, column=1, sticky=W+E)
+        self.type_lbl.grid(row=t+2, column=1, sticky=W+E)
         self.show_btn.grid(row=t+3, column=1, sticky=W)
     
     def display_place(self):
@@ -144,14 +155,34 @@ class SubImageData():
         """
         Displays the image on the screen and forgets all siblings
         """
+        
         for sib in self.siblings_array:
             sib.forget()
+        self.is_displayed = True
         self.lbl2.place(x = int(gv.width*0.44), y = int(gv.height/90*2))
         self.chkbtn.place(x = int(gv.width*0.43), y = int(gv.height/90*4))
+        try:
+            self.thumb_chkbtn.configure(background=gv.Files.Theme.selected_background)
+        except:
+            pass
+        self.lbl.configure(background=gv.Files.Theme.selected_background)
+        self.wxh_lbl.configure(background=gv.Files.Theme.selected_background)
+        self.type_lbl.configure(background=gv.Files.Theme.selected_background)
+        self.show_btn.configure(state=ACTIVE)
+        gv.window.bind("<d>", lambda e: self.var.set(not self.var.get()))
 
     def forget(self):
         self.lbl2.place_forget()
         self.chkbtn.place_forget()
+        try:
+            self.thumb_chkbtn.configure(background=gv.Files.Theme.background)
+        except:
+            pass
+        self.lbl.configure(background=gv.Files.Theme.background)
+        self.wxh_lbl.configure(background=gv.Files.Theme.background)
+        self.type_lbl.configure(background=gv.Files.Theme.background)
+        self.show_btn.configure(state=NORMAL)
+        self.is_displayed = False
 
     def save(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, t=-1, head_dir='', second_try=False):
         #--If only one image is checked, save your image in the subfolder with the name--#
