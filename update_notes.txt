@@ -69,3 +69,11 @@ Features:
 
 General:
 - Reworked parallel loading a little bit
+
+Update 0.3.5
+
+Features:
+- Added gelbooru as provider
+
+General:
+- Code compression & optimization

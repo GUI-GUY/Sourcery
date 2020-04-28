@@ -108,12 +108,8 @@ results_tags_yandere = config['Yandere']['tags'].split()
 results_tags_konachan = config['Konachan']['tags'].split()
 results_tags_gelbooru = config['Gelbooru']['tags'].split()
 
-def class_parallel_loader(method, lock, display=False):
-    with lock:
-        if not display:
-            method(lock)
-        else:
-            method(lock, display)
+def class_parallel_loader(method):
+    method()
 
 # COLORS = ['white', 'snow', 'ghost white', 'white smoke', 'gainsboro', 'floral white', 'old lace',
 #     'linen', 'antique white', 'papaya whip', 'blanched almond', 'bisque', 'peach puff',

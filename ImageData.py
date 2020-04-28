@@ -181,12 +181,12 @@ class ImageData():
     def display_view_results(self, event=None):
         self.forget_all_widgets()
         if self.prev_imgdata != None:
-            z = Thread(target=gv.class_parallel_loader, args=[self.prev_imgdata.unload_big_imgs, self.prev_imgdata.big_lock], name=self.prev_imgdata.sub_dill.name_no_suffix, daemon=True)
+            z = Thread(target=self.prev_imgdata.unload_big_imgs, name=self.prev_imgdata.sub_dill.name_no_suffix, daemon=True)
             z.start()
         if self.next_imgdata != None:
-            y = Thread(target=gv.class_parallel_loader, args=[self.next_imgdata.unload_big_imgs, self.next_imgdata.big_lock], name=self.next_imgdata.sub_dill.name_no_suffix, daemon=True)
+            y = Thread(target=self.next_imgdata.unload_big_imgs, name=self.next_imgdata.sub_dill.name_no_suffix, daemon=True)
             y.start()
-        x = Thread(target=gv.class_parallel_loader, args=[self.unload_big_imgs, self.big_lock], name=self.sub_dill.name_no_suffix, daemon=True)
+        x = Thread(target=self.unload_big_imgs, name=self.sub_dill.name_no_suffix, daemon=True)
         x.start()
 
         gv.window.bind("<Up>", '')
@@ -432,36 +432,23 @@ class ImageData():
         self.prev_btn.place(x = round(gv.width*0.90), y = int(gv.height/90*4))
         self.next_btn.place(x = round(gv.width*0.94), y = int(gv.height/90*4))
         self.display_big_selector_imgs()
-        x = Thread(target=gv.class_parallel_loader, args=[self.process_big_imgs, self.big_lock, True], name=self.sub_dill.name_no_suffix, daemon=True)
+        x = Thread(target=self.process_big_imgs, name=self.sub_dill.name_no_suffix, daemon=True)
         x.start()
-        #self.back_btn.after(0, gv.class_parallel_loader, self.process_big_imgs, self.big_lock, True)
-        #self.back_btn.after(0, self.process_big_imgs, self.big_lock, True)#
-        
 
-    def process_big_imgs(self, lock, display=False):
+    def process_big_imgs(self):
         """
         Turns images into usable photoimages for tkinter\n
         IMPORTANT:\n
         Call load before
         """
-        if lock == None:
-            lock = self.big_lock
-        def process(lock):
-            with lock:
-                if not self.process_big_imgs_init:
-                    self.original_SubImgData.load()
-                    
-                    for service in self.service_list:
-                        for elem in service:
-                            if elem.load_init:
-                                elem.process_big_imgs()
-                    self.process_big_imgs_init = True
-        process(lock)
-        # process_thread = Thread(target=process, args=[lock], name=self.sub_dill.name_no_suffix, daemon=True)
-        # process_thread.start()
-
-        # if display:
-        #     gv.res_frame.after(0, self.display_big_selector_imgs)
+        if not self.process_big_imgs_init:
+            self.original_SubImgData.load()
+            
+            for service in self.service_list:
+                for elem in service:
+                    if elem.load_init:
+                        elem.process_big_imgs()
+            self.process_big_imgs_init = True
         
     def display_big_selector_imgs(self):
         if not self.big_active:
@@ -505,14 +492,13 @@ class ImageData():
             gv.window.bind("<Left>", self.prev_imgdata.display_big_selector)
             gv.window.bind("<q>", self.prev_imgdata.display_big_selector)
 
-    def unload_big_imgs(self, lock):
-        with lock:
-            self.original_SubImgData.unload_big_imgs()
-            for service in self.service_list:
-                for elem in service:
-                    if elem.load_init:
-                        elem.unload_big_imgs()
-            self.process_big_imgs_init = False
+    def unload_big_imgs(self):
+        self.original_SubImgData.unload_big_imgs()
+        for service in self.service_list:
+            for elem in service:
+                if elem.load_init:
+                    elem.unload_big_imgs()
+        self.process_big_imgs_init = False
     
     def modify_big_widgets(self):
         """
@@ -541,25 +527,29 @@ class ImageData():
             self.next_imgdata = None
         
         if self.prev_imgdata != None:
-            self.prev_imgdata.process_big_imgs(self.prev_imgdata.big_lock)
-            # t = Thread(target=gv.class_parallel_loader, args=[self.prev_imgdata.process_big_imgs, self.prev_imgdata.big_lock], name=self.prev_imgdata.sub_dill.name_no_suffix, daemon=True)
-            # t.start()
+            #self.prev_imgdata.process_big_imgs()
+            t = Thread(target=self.prev_imgdata.process_big_imgs, name=self.prev_imgdata.sub_dill.name_no_suffix, daemon=True)
+            t.start()
             if self.prev_imgdata.prev_imgdata != None:
-                self.prev_imgdata.prev_imgdata.process_big_imgs(self.prev_imgdata.prev_imgdata.big_lock)
-                # z = Thread(target=gv.class_parallel_loader, args=[self.prev_imgdata.prev_imgdata.unload_big_imgs, self.prev_imgdata.prev_imgdata.big_lock], name=self.prev_imgdata.prev_imgdata.sub_dill.name_no_suffix, daemon=True)
-                # z.start()
+                #self.prev_imgdata.prev_imgdata.process_big_imgs()
+                z = Thread(target=self.prev_imgdata.prev_imgdata.unload_big_imgs, name=self.prev_imgdata.prev_imgdata.sub_dill.name_no_suffix, daemon=True)
+                z.start()
                 if self.prev_imgdata.prev_imgdata.prev_imgdata != None:
-                    self.prev_imgdata.prev_imgdata.prev_imgdata.unload_big_imgs(self.prev_imgdata.prev_imgdata.prev_imgdata.big_lock)
+                    #self.prev_imgdata.prev_imgdata.prev_imgdata.unload_big_imgs()
+                    q = Thread(target=self.prev_imgdata.prev_imgdata.prev_imgdata.unload_big_imgs, name=self.prev_imgdata.prev_imgdata.prev_imgdata.sub_dill.name_no_suffix, daemon=True)
+                    q.start()
         if self.next_imgdata != None:
-            self.next_imgdata.process_big_imgs(self.next_imgdata.big_lock)
-            # x = Thread(target=gv.class_parallel_loader, args=[self.next_imgdata.process_big_imgs, self.next_imgdata.big_lock], name=self.next_imgdata.sub_dill.name_no_suffix, daemon=True)
-            # x.start()
+            #self.next_imgdata.process_big_imgs()
+            x = Thread(target=self.next_imgdata.process_big_imgs, name=self.next_imgdata.sub_dill.name_no_suffix, daemon=True)
+            x.start()
             if self.next_imgdata.next_imgdata != None:
-                self.next_imgdata.next_imgdata.process_big_imgs(self.next_imgdata.next_imgdata.big_lock)
-                # y = Thread(target=gv.class_parallel_loader, args=[self.next_imgdata.next_imgdata.unload_big_imgs, self.next_imgdata.next_imgdata.big_lock], name=self.next_imgdata.next_imgdata.sub_dill.name_no_suffix, daemon=True)
-                # y.start()
+                #self.next_imgdata.next_imgdata.process_big_imgs()
+                y = Thread(target=self.next_imgdata.next_imgdata.unload_big_imgs, name=self.next_imgdata.next_imgdata.sub_dill.name_no_suffix, daemon=True)
+                y.start()
                 if self.next_imgdata.next_imgdata.next_imgdata != None:
-                    self.next_imgdata.next_imgdata.next_imgdata.unload_big_imgs(self.next_imgdata.next_imgdata.next_imgdata.big_lock)
+                    #self.next_imgdata.next_imgdata.next_imgdata.unload_big_imgs()
+                    e = Thread(target=self.next_imgdata.next_imgdata.next_imgdata.unload_big_imgs, name=self.next_imgdata.next_imgdata.next_imgdata.sub_dill.name_no_suffix, daemon=True)
+                    e.start()
        
     def save(self, second_try=False, save_counter=0):
         """

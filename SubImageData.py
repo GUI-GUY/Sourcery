@@ -1,5 +1,6 @@
 from os import path, listdir, remove, makedirs
 from shutil import move, rmtree
+from threading import Lock
 from tkinter import IntVar, W, N, E, S, ACTIVE, NORMAL
 from tkinter import Checkbutton as cb
 from tkinter import messagebox as mb
@@ -32,6 +33,7 @@ class SubImageData():
 
         self.siblings_array = siblings
 
+        self.big_lock = Lock()
         self.is_displayed = False
         self.load_init = False
     
@@ -76,55 +78,57 @@ class SubImageData():
         """
         if self.load_init:
             return True
-
-        try:
-            self.img_obj = Image.open(self.path)
-        except Exception as e:
-            if not second_try:
-                return self.load(True)
-            else:
-                print("ERROR [0044] " + str(e))
-                gv.Files.Log.write_to_log("ERROR [0044] " + str(e))
-                mb.showerror("ERROR [0044]", "ERROR CODE [0044]\nSomething went wrong while accessing an image, please restart Sourcery.")
-                return False
-        self.size = deepcopy(self.img_obj.size)
-        self.img_obj = resize(self.img_obj)
-        self.photoImg = ImageTk.PhotoImage(self.img_obj)
-        try:
-            self.img_obj.close()
-        except:
-            pass
-        self.img_obj = None
-        
-        def assign():
-            self.chkbtn.configure(image=self.photoImg)
-            self.chkbtn.image = self.photoImg
-            self.wxh_lbl.configure(text=self.size)
-            self.type_lbl.configure(text=self.name[self.name.rfind(".")+1:])
-        self.par.after(1, assign)
-
-        if self.scrollpar != None:
+        with self.big_lock:
             try:
-                img_obj_thumb = Image.open(self.path)
+                self.img_obj = Image.open(self.path)
             except Exception as e:
                 if not second_try:
                     return self.load(True)
                 else:
-                    print("ERROR [0071] " + str(e))
-                    gv.Files.Log.write_to_log("ERROR [0071] " + str(e))
-                    mb.showerror("ERROR [0071]", "ERROR CODE [0071]\nSomething went wrong while accessing an image, please restart Sourcery.")
+                    print("ERROR [0044] " + str(e))
+                    gv.Files.Log.write_to_log("ERROR [0044] " + str(e))
+                    mb.showerror("ERROR [0044]", "ERROR CODE [0044]\nSomething went wrong while accessing an image, please restart Sourcery.")
                     return False
-            #img_obj_thumb = deepcopy(self.img_obj)
-            img_obj_thumb.thumbnail((70, 70), resample=Image.ANTIALIAS)
-            self.photoImg_thumb = ImageTk.PhotoImage(img_obj_thumb)
+            self.size = deepcopy(self.img_obj.size)
+            self.img_obj = resize(self.img_obj)
+            self.photoImg = ImageTk.PhotoImage(self.img_obj)
             try:
-                img_obj_thumb.close()
+                self.img_obj.close()
             except:
                 pass
-            def assign2():
-                self.thumb_chkbtn.configure(image=self.photoImg_thumb)
-                self.thumb_chkbtn.image = self.photoImg_thumb
-            self.thumb_chkbtn.after(1, assign2)
+            self.img_obj = None
+            
+            def assign():
+                    self.chkbtn.configure(image=self.photoImg)
+                    self.chkbtn.image = self.photoImg
+                    self.wxh_lbl.configure(text=self.size)
+                    self.type_lbl.configure(text=self.name[self.name.rfind(".")+1:])
+            self.par.after(1, assign)
+
+        if self.scrollpar != None:
+            with self.big_lock:
+                try:
+                    img_obj_thumb = Image.open(self.path)
+                except Exception as e:
+                    if not second_try:
+                        return self.load(True)
+                    else:
+                        print("ERROR [0071] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0071] " + str(e))
+                        mb.showerror("ERROR [0071]", "ERROR CODE [0071]\nSomething went wrong while accessing an image, please restart Sourcery.")
+                        return False
+                #img_obj_thumb = deepcopy(self.img_obj)
+                img_obj_thumb.thumbnail((70, 70), resample=Image.ANTIALIAS)
+                self.photoImg_thumb = ImageTk.PhotoImage(img_obj_thumb)
+                try:
+                    img_obj_thumb.close()
+                except:
+                    pass
+                def assign2():
+                    
+                        self.thumb_chkbtn.configure(image=self.photoImg_thumb)
+                        self.thumb_chkbtn.image = self.photoImg_thumb
+                self.thumb_chkbtn.after(1, assign2)
 
         self.load_init = True
         return True
@@ -272,14 +276,15 @@ class SubImageData():
                 return gen_tagfile(all_tags, gen_dir, name)
 
     def unload_big_imgs(self):
-        if self.chkbtn != None:
-            self.chkbtn.configure(image=None)
-            self.chkbtn.image = None
-        if self.thumb_chkbtn != None:
-            self.thumb_chkbtn.configure(image=None)
-            self.thumb_chkbtn.image = None
-        self.photoImg_thumb = None
-        self.photoImg = None
+        with self.big_lock:
+            if self.chkbtn != None:
+                self.chkbtn.configure(image=None)
+                self.chkbtn.image = None
+            if self.thumb_chkbtn != None:
+                self.thumb_chkbtn.configure(image=None)
+                self.thumb_chkbtn.image = None
+            self.photoImg_thumb = None
+            self.photoImg = None
         self.load_init = False
 
     def self_destruct(self):
