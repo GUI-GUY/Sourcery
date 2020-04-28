@@ -460,73 +460,17 @@ class ProviderImageData():
         return False
 
     def gen_tagfile(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, gen_dir, name):
-        if self.sub_dill.service == 'Pixiv' and gv.config['Pixiv']['gen_tagfile'] == '1':
+        if gv.config[self.sub_dill.service]['gen_tagfile'] == '1':
             all_tags = list()
-            if gv.config['Pixiv']['tagfile_pixiv'] == '1':
+            if gv.config[self.sub_dill.service]['tagfile_pixiv'] == '1':
                 all_tags.extend(pixiv_tags)
-            if gv.config['Pixiv']['tagfile_danbooru'] == '1':
+            if gv.config[self.sub_dill.service]['tagfile_danbooru'] == '1':
                 all_tags.extend(danbooru_tags)
-            if gv.config['Pixiv']['tagfile_yandere'] == '1':
+            if gv.config[self.sub_dill.service]['tagfile_yandere'] == '1':
                 all_tags.extend(yandere_tags)
-            if gv.config['Pixiv']['tagfile_konachan'] == '1':
+            if gv.config[self.sub_dill.service]['tagfile_konachan'] == '1':
                 all_tags.extend(konachan_tags)
-            if gv.config['Pixiv']['tagfile_gelbooru'] == '1':
-                all_tags.extend(gelbooru_tags)
-            all_tags.extend(exception_tags)
-            return gen_tagfile(all_tags, gen_dir, name)
-        elif self.sub_dill.service == 'Danbooru' and gv.config['Danbooru']['gen_tagfile'] == '1':
-            all_tags = list()
-            if gv.config['Danbooru']['tagfile_pixiv'] == '1':
-                all_tags.extend(pixiv_tags)
-            if gv.config['Danbooru']['tagfile_danbooru'] == '1':
-                all_tags.extend(danbooru_tags)
-            if gv.config['Danbooru']['tagfile_yandere'] == '1':
-                all_tags.extend(yandere_tags)
-            if gv.config['Danbooru']['tagfile_konachan'] == '1':
-                all_tags.extend(konachan_tags)
-            if gv.config['Danbooru']['tagfile_gelbooru'] == '1':
-                all_tags.extend(gelbooru_tags)
-            all_tags.extend(exception_tags)
-            return gen_tagfile(all_tags, gen_dir, name)
-        elif self.sub_dill.service == 'Yandere' and gv.config['Yandere']['gen_tagfile'] == '1':
-            all_tags = list()
-            if gv.config['Yandere']['tagfile_pixiv'] == '1':
-                all_tags.extend(pixiv_tags)
-            if gv.config['Yandere']['tagfile_danbooru'] == '1':
-                all_tags.extend(danbooru_tags)
-            if gv.config['Yandere']['tagfile_yandere'] == '1':
-                all_tags.extend(yandere_tags)
-            if gv.config['Yandere']['tagfile_konachan'] == '1':
-                all_tags.extend(konachan_tags)
-            if gv.config['Yandere']['tagfile_gelbooru'] == '1':
-                all_tags.extend(gelbooru_tags)
-            all_tags.extend(exception_tags)
-            return gen_tagfile(all_tags, gen_dir, name)
-        elif self.sub_dill.service == 'Konachan' and gv.config['Konachan']['gen_tagfile'] == '1':
-            all_tags = list()
-            if gv.config['Konachan']['tagfile_pixiv'] == '1':
-                all_tags.extend(pixiv_tags)
-            if gv.config['Konachan']['tagfile_danbooru'] == '1':
-                all_tags.extend(danbooru_tags)
-            if gv.config['Konachan']['tagfile_yandere'] == '1':
-                all_tags.extend(yandere_tags)
-            if gv.config['Konachan']['tagfile_konachan'] == '1':
-                all_tags.extend(konachan_tags)
-            if gv.config['Konachan']['tagfile_gelbooru'] == '1':
-                all_tags.extend(gelbooru_tags)
-            all_tags.extend(exception_tags)
-            return gen_tagfile(all_tags, gen_dir, name)
-        elif self.sub_dill.service == 'Gelbooru' and gv.config['Gelbooru']['gen_tagfile'] == '1':
-            all_tags = list()
-            if gv.config['Gelbooru']['tagfile_pixiv'] == '1':
-                all_tags.extend(pixiv_tags)
-            if gv.config['Gelbooru']['tagfile_danbooru'] == '1':
-                all_tags.extend(danbooru_tags)
-            if gv.config['Gelbooru']['tagfile_yandere'] == '1':
-                all_tags.extend(yandere_tags)
-            if gv.config['Gelbooru']['tagfile_konachan'] == '1':
-                all_tags.extend(konachan_tags)
-            if gv.config['Gelbooru']['tagfile_gelbooru'] == '1':
+            if gv.config[self.sub_dill.service]['tagfile_gelbooru'] == '1':
                 all_tags.extend(gelbooru_tags)
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)

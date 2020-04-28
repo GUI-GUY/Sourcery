@@ -113,7 +113,7 @@ def class_parallel_loader(method, lock, display=False):
         if not display:
             method(lock)
         else:
-            method(display)
+            method(lock, display)
 
 # COLORS = ['white', 'snow', 'ghost white', 'white smoke', 'gainsboro', 'floral white', 'old lace',
 #     'linen', 'antique white', 'papaya whip', 'blanched almond', 'bisque', 'peach puff',

@@ -89,7 +89,7 @@ def load_from_ref_run(c):
                         x = d
                         break
                 if x != None:
-                    danb_illustration_list.append((booru_fetch_illustration(int(elem['id']), danbooru=True), elem['new_name'], x))
+                    danb_illustration_list.append((booru_fetch_illustration(int(elem['id']), 'Danbooru'), elem['new_name'], x))
                 visited_ids.append(elem['id'])
         
         yandere_illustration_list = list()
@@ -102,7 +102,7 @@ def load_from_ref_run(c):
                         x = d
                         break
                 if x != None:
-                    yandere_illustration_list.append((booru_fetch_illustration(int(elem['id']), yandere=True), elem['new_name'], x))
+                    yandere_illustration_list.append((booru_fetch_illustration(int(elem['id']), 'Yandere'), elem['new_name'], x))
                 visited_ids.append(elem['id'])
         
         konachan_illustration_list = list()
@@ -115,7 +115,7 @@ def load_from_ref_run(c):
                         x = d
                         break
                 if x != None:
-                    konachan_illustration_list.append((booru_fetch_illustration(int(elem['id']), konachan=True), elem['new_name'], x))
+                    konachan_illustration_list.append((booru_fetch_illustration(int(elem['id']), 'Konachan'), elem['new_name'], x))
                 visited_ids.append(elem['id'])
         
         gelbooru_illustration_list = list()
@@ -128,7 +128,7 @@ def load_from_ref_run(c):
                         x = d
                         break
                 if x != None:
-                    gelbooru_illustration_list.append((booru_fetch_illustration(int(elem['id']), gelbooru=True), elem['new_name'], x))
+                    gelbooru_illustration_list.append((booru_fetch_illustration(int(elem['id']), 'Gelbooru'), elem['new_name'], x))
                 visited_ids.append(elem['id'])
         
         next_img = False

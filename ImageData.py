@@ -431,10 +431,12 @@ class ImageData():
         self.back_btn.place(x = round(gv.width*0.86), y = int(gv.height/90*4))
         self.prev_btn.place(x = round(gv.width*0.90), y = int(gv.height/90*4))
         self.next_btn.place(x = round(gv.width*0.94), y = int(gv.height/90*4))
-        # x = Thread(target=gv.class_parallel_loader, args=[self.process_big_imgs, self.big_lock, True], name=self.sub_dill.name_no_suffix, daemon=True)
-        # x.start()
+        self.display_big_selector_imgs()
+        x = Thread(target=gv.class_parallel_loader, args=[self.process_big_imgs, self.big_lock, True], name=self.sub_dill.name_no_suffix, daemon=True)
+        x.start()
         #self.back_btn.after(0, gv.class_parallel_loader, self.process_big_imgs, self.big_lock, True)
-        self.back_btn.after(0, self.process_big_imgs, self.big_lock, True)
+        #self.back_btn.after(0, self.process_big_imgs, self.big_lock, True)#
+        
 
     def process_big_imgs(self, lock, display=False):
         """
@@ -454,12 +456,12 @@ class ImageData():
                             if elem.load_init:
                                 elem.process_big_imgs()
                     self.process_big_imgs_init = True
+        process(lock)
+        # process_thread = Thread(target=process, args=[lock], name=self.sub_dill.name_no_suffix, daemon=True)
+        # process_thread.start()
 
-        process_thread = Thread(target=process, args=[lock], name=self.sub_dill.name_no_suffix, daemon=True)
-        process_thread.start()
-
-        if display:
-            gv.res_frame.after(0, self.display_big_selector_imgs)
+        # if display:
+        #     gv.res_frame.after(0, self.display_big_selector_imgs)
         
     def display_big_selector_imgs(self):
         if not self.big_active:
