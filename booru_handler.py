@@ -11,24 +11,24 @@ danbooru_folder = 'D:\All_Files\python\GitHub\Sourcery\Sourcery\dan'
 
 
 # request json, get urls of pictures and download them
-def booru_fetch_illustration(imgid, comm_error_q=None, danbooru=False, yandere=False, konachan=False, gelbooru=False):
+def booru_fetch_illustration(imgid, service, comm_error_q=None):
     """
     Request info from danbooru API to given imgid\n
     Return illustration dictionary on success, False otherwise
     """
     try:
-        if danbooru:
+        if service == 'Danbooru':
             r = get('https://danbooru.donmai.us/posts/' + str(imgid) + '.json')
-        elif yandere:
+        elif service == 'Yandere':
             r = get('https://yande.re/post.json?tags=id:' + str(imgid))
-        elif konachan:
+        elif service == 'Konachan':
             r = get('https://konachan.com/post.json?tags=id:' + str(imgid))
-        elif gelbooru:
+        elif service == 'Gelbooru':
             r = get('https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&id=' + str(imgid))
         else:
             return False
         illustration = r.json()
-        if yandere or konachan:
+        if service == 'Yandere' or service == 'Konachan' or service == 'Gelbooru':
             if 'id' in illustration[0]:
                 return illustration[0]
         if 'id' in illustration:
@@ -45,7 +45,7 @@ def booru_fetch_illustration(imgid, comm_error_q=None, danbooru=False, yandere=F
         #mb.showerror("ERROR [0056]", "ERROR CODE [0056]\nImage data could not be retrieved")
         return False
     
-def booru_download(img_name_original, imgid, illustration, comm_error_q=None, service=''):
+def booru_download(img_name_original, imgid, illustration, service='', comm_error_q=None):
     """
     Downloads given image from Danbooru and renames it properly\n
     Return the new name on success, False otherwise
@@ -54,6 +54,8 @@ def booru_download(img_name_original, imgid, illustration, comm_error_q=None, se
         return False
     else:
         if 'file_url' in illustration:
+            if 'file_ext' not in illustration:
+                illustration['file_ext'] = illustration['file_url'].split('.')[-1]
             try:
                 if gv.config[service]['rename'] == '1':
                     new_name = rename(illustration['file_url'].split('/')[-1], service.lower())

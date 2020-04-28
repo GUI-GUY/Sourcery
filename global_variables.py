@@ -12,6 +12,7 @@ def init_config():
     config.add_section('Danbooru')
     config.add_section('Yandere')
     config.add_section('Konachan')
+    config.add_section('Gelbooru')
     config.add_section('Weight')
     config.add_section('SauceNAO')
     config.add_section('Sourcery')
@@ -29,6 +30,7 @@ def init_config():
         "danbooru" : '10',
         "yandere" : '5',
         "konachan" : '5',
+        "gelbooru" : '5',
         "original" : '5'
     }
     
@@ -67,10 +69,9 @@ def init_config():
 def write_config():
     config.write(open(cwd + '/Sourcery/config.cfg', 'w'))#TODO
 
-
 cwd = getcwd()
 Files = Files()
-default_dict = {"rename":'0', "tags":'', "gen_tagfile":'0', "tagfile_pixiv":'0', "tagfile_danbooru":'0', "tagfile_yandere":'0', "tagfile_konachan":'0', "direct_replace":'0', "use":'1'}
+default_dict = {"rename":'0', "tags":'', "gen_tagfile":'0', "tagfile_pixiv":'0', "tagfile_danbooru":'0', "tagfile_yandere":'0', "tagfile_konachan":'0', "tagfile_gelbooru":'0', "direct_replace":'0', "use":'1'}
 config = ConfigParser(defaults=default_dict)
 init_config()
 input_dir = config['Sourcery']['input_dir']
@@ -105,11 +106,12 @@ results_tags_danbooru = config['Danbooru']['tags'].split()
 results_tags_pixiv = config['Pixiv']['tags'].split()
 results_tags_yandere = config['Yandere']['tags'].split()
 results_tags_konachan = config['Konachan']['tags'].split()
+results_tags_gelbooru = config['Gelbooru']['tags'].split()
 
 def class_parallel_loader(method, lock, display=False):
     with lock:
         if not display:
-            method()
+            method(lock)
         else:
             method(display)
 

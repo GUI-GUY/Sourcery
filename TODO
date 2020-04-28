@@ -131,8 +131,10 @@ beta 0.3.4
 
 
 beta 0.3.5
-3rd service(gelbooru)
++ 3rd service(gelbooru)
 make button to jump to newest log entry
+BUGS:
+big_lock blocks
 
 beta 0.3.6
 import logging

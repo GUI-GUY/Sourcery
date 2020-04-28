@@ -27,6 +27,11 @@ class DIllustration():
             ill = SubDIllustration('Konachan', elem, minsim)
             if ill.validity_check():
                 self.konachan_subdillustration.append(ill)
+        self.gelbooru_subdillustration = list()
+        for elem in illustration_list[5]:
+            ill = SubDIllustration('Gelbooru', elem, minsim)
+            if ill.validity_check():
+                self.gelbooru_subdillustration.append(ill)
 
 class SubDIllustration():
     """Includes all meta information on the downloaded image such as names, locations..."""
@@ -66,6 +71,8 @@ class SubDIllustration():
             self.yandere_init(data_triple)
         elif service == 'Konachan':
             self.konachan_init(data_triple)
+        elif service == 'Gelbooru':
+            self.gelbooru_init(data_triple)
         elif service == 'Original':
             self.path = data_triple[2]['path']
 
@@ -137,6 +144,21 @@ class SubDIllustration():
             self.tags.append(tag)
         self.tags.append('rating:' + illustration['rating'])
         self.tags.append('booru:konachan')
+    
+    def gelbooru_init(self, data_triple):
+        illustration = data_triple[0]
+        self.id = illustration['id']
+        self.title = 'N/A'
+        self.caption = 'N/A'
+        self.description = 'N/A'
+        self.create_date = illustration['created_at']
+        self.width = str(illustration['width'])
+        self.height = str(illustration['height'])
+        self.creator = 'N/A'
+        for tag in illustration['tags'].strip("'").split():
+            self.tags.append(tag)
+        self.tags.append('rating:' + illustration['rating'])
+        self.tags.append('booru:gelbooru')
 
     def validity_check(self):
         if self.is_folder:

@@ -20,7 +20,7 @@ from threading import Thread, enumerate as enu
 from file_operations import is_image, save, open_input, open_output, display_statistics, change_input, change_output
 from sourcery import do_sourcery
 from pixiv_handler import pixiv_fetch_illustration
-from danbooru_handler import danbooru_fetch_illustration
+from booru_handler import booru_fetch_illustration
 from Options import Options
 #from image_preloader import preload_main
 from ImageData import ImageData
@@ -60,6 +60,10 @@ def load_from_ref_run(c):
         danb_info_list = list(ref['danbooru'])
         yandere_info_list = list(ref['yandere'])
         konachan_info_list = list(ref['konachan'])
+        if 'gelbooru' in ref:
+            gelbooru_info_list = list(ref['gelbooru'])
+        else:
+            gelbooru_info_list = list()
         dict_list = ref['dict_list']
 
         pixiv_illustration_list = list()
@@ -85,7 +89,7 @@ def load_from_ref_run(c):
                         x = d
                         break
                 if x != None:
-                    danb_illustration_list.append((danbooru_fetch_illustration(int(elem['id']), danbooru=True), elem['new_name'], x))
+                    danb_illustration_list.append((booru_fetch_illustration(int(elem['id']), danbooru=True), elem['new_name'], x))
                 visited_ids.append(elem['id'])
         
         yandere_illustration_list = list()
@@ -98,7 +102,7 @@ def load_from_ref_run(c):
                         x = d
                         break
                 if x != None:
-                    yandere_illustration_list.append((danbooru_fetch_illustration(int(elem['id']), yandere=True), elem['new_name'], x))
+                    yandere_illustration_list.append((booru_fetch_illustration(int(elem['id']), yandere=True), elem['new_name'], x))
                 visited_ids.append(elem['id'])
         
         konachan_illustration_list = list()
@@ -111,7 +115,20 @@ def load_from_ref_run(c):
                         x = d
                         break
                 if x != None:
-                    konachan_illustration_list.append((danbooru_fetch_illustration(int(elem['id']), konachan=True), elem['new_name'], x))
+                    konachan_illustration_list.append((booru_fetch_illustration(int(elem['id']), konachan=True), elem['new_name'], x))
+                visited_ids.append(elem['id'])
+        
+        gelbooru_illustration_list = list()
+        visited_ids = list()
+        for elem in gelbooru_info_list:
+            if elem['id'] not in visited_ids:
+                x = None
+                for d in dict_list:
+                    if d['service_name'] == 'Gelbooru' and int(d['illust_id']) == int(elem['id']):
+                        x = d
+                        break
+                if x != None:
+                    gelbooru_illustration_list.append((booru_fetch_illustration(int(elem['id']), gelbooru=True), elem['new_name'], x))
                 visited_ids.append(elem['id'])
         
         next_img = False
@@ -120,13 +137,13 @@ def load_from_ref_run(c):
                 next_img = True
                 duplicates_counter += 1
                 break
-        if len(pixiv_illustration_list) == 0 and len(danb_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0:
+        if len(pixiv_illustration_list) == 0 and len(danb_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0 and len(gelbooru_illustration_list) == 0:
             next_img = True
             no_sources_counter += 1
         if not next_img:
             # dict_list is list of {"service_name": service_name, "illust_id": illust_id, "source": source}
             dill = DIllustration(ref['input_path'], [{"service":'Original', "name":str(ref['old_name']), "work_path": gv.cwd + '/Sourcery/sourced_original/' + str(ref['old_name'])}, 
-            pixiv_illustration_list, danb_illustration_list, yandere_illustration_list, konachan_illustration_list], ref, ref['minsim'])
+                pixiv_illustration_list, danb_illustration_list, yandere_illustration_list, konachan_illustration_list, gelbooru_illustration_list], ref, ref['minsim'])
             Startpage_Class.Processing_Class.img_data_q.put(dill)
             c -= 1
             loaded_counter += 1
@@ -340,10 +357,5 @@ if __name__ == '__main__':
     Startpage_Class.Processing_Class.terminate_loop()
     Startpage_Class.refresh_startpage()
     Startpage_Class.display_startpage()
-    # def enum():
-    #     while not (Startpage_Class.Processing_Class.img_data_q.empty()):
-    #         Startpage_Class.Processing_Class.img_data_q.get(False)
-    #         print(enu())
-    # register(enum)
 
     window.mainloop()

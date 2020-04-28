@@ -58,6 +58,9 @@ class WeightSystem():
         self.konachan_weight_lbl = Label(self.scrollpar_frame, text="Konachan", font=("Arial Bold", 10), style="label.TLabel")
         self.konachan_weight_entry = Entry(self.scrollpar_frame, width=width, validate='all', validatecommand=(vcmd, '%P'), style="button.TLabel")
         self.konachan_weight_entry.insert(0, gv.config['Weight']['konachan'])
+        self.gelbooru_weight_lbl = Label(self.scrollpar_frame, text="Gelbooru", font=("Arial Bold", 10), style="label.TLabel")
+        self.gelbooru_weight_entry = Entry(self.scrollpar_frame, width=width, validate='all', validatecommand=(vcmd, '%P'), style="button.TLabel")
+        self.gelbooru_weight_entry.insert(0, gv.config['Weight']['gelbooru'])
         
 
         self.image_0_lbl = Label(self.scrollpar_frame, text="Image 1", font=("Arial Bold", 10), style="label.TLabel")
@@ -121,6 +124,8 @@ class WeightSystem():
                 img_0_weight = img_0_weight + int(self.yandere_weight_entry.get())
             if s0_var == 'Konachan':
                 img_0_weight = img_0_weight + int(self.konachan_weight_entry.get())
+            if s0_var == 'Gelbooru':
+                img_0_weight = img_0_weight + int(self.gelbooru_weight_entry.get())
             if s0_var == 'Original':
                 img_0_weight = img_0_weight + int(self.original_weight_entry.get())
             if int(self.width_0_entry.get())/int(self.height_0_entry.get()) == int(self.width_1_entry.get())/int(self.height_1_entry.get()):
@@ -147,6 +152,12 @@ class WeightSystem():
                 img_1_weight = img_1_weight + int(self.danbooru_weight_entry.get())
             if s1_var == 'Pixiv':
                 img_1_weight = img_1_weight + int(self.pixiv_weight_entry.get())
+            if s1_var == 'Yandere':
+                img_1_weight = img_1_weight + int(self.yandere_weight_entry.get())
+            if s1_var == 'Konachan':
+                img_1_weight = img_1_weight + int(self.konachan_weight_entry.get())
+            if s1_var == 'Gelbooru':
+                img_1_weight = img_1_weight + int(self.gelbooru_weight_entry.get())
             if s1_var == 'Original':
                 img_1_weight = img_1_weight + int(self.original_weight_entry.get())
                     
@@ -164,6 +175,7 @@ class WeightSystem():
         self.lord.DanO.forget()
         self.lord.YanO.forget()
         self.lord.KonO.forget()
+        self.lord.GelO.forget()
 
         y = int(gv.height/90*10)
         c = 23
@@ -200,8 +212,10 @@ class WeightSystem():
         self.yandere_weight_entry.grid(row=39, column=1, sticky=W, padx=2, pady=1)
         self.konachan_weight_lbl.grid(row=41, column=0, sticky=W, padx=2, pady=1)
         self.konachan_weight_entry.grid(row=41, column=1, sticky=W, padx=2, pady=1)
-        self.original_weight_lbl.grid(row=43, column=0, sticky=W, padx=2, pady=1)
-        self.original_weight_entry.grid(row=43, column=1, sticky=W, padx=2, pady=1)
+        self.gelbooru_weight_lbl.grid(row=43, column=0, sticky=W, padx=2, pady=1)
+        self.gelbooru_weight_entry.grid(row=43, column=1, sticky=W, padx=2, pady=1)
+        self.original_weight_lbl.grid(row=45, column=0, sticky=W, padx=2, pady=1)
+        self.original_weight_entry.grid(row=45, column=1, sticky=W, padx=2, pady=1)
 
 
         self.image_0_lbl.grid(row=45, column=0, sticky=W, padx=2, pady=1)
@@ -255,6 +269,8 @@ class WeightSystem():
         self.yandere_weight_entry.grid_forget()
         self.konachan_weight_lbl.grid_forget()
         self.konachan_weight_entry.grid_forget()
+        self.gelbooru_weight_lbl.grid_forget()
+        self.gelbooru_weight_entry.grid_forget()
         self.original_weight_lbl.grid_forget()
         self.original_weight_entry.grid_forget()
 
@@ -292,6 +308,7 @@ class WeightSystem():
         gv.config['Weight']['danbooru'] = self.danbooru_weight_entry.get()
         gv.config['Weight']['yandere'] = self.yandere_weight_entry.get()
         gv.config['Weight']['konachan'] = self.konachan_weight_entry.get()
+        gv.config['Weight']['gelbooru'] = self.konachan_weight_entry.get()
         gv.config['Weight']['original'] = self.original_weight_entry.get()
         gv.config['Weight']['higher_resolution'] = self.higher_resolution_weight_entry.get()
         gv.write_config()

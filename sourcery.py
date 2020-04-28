@@ -3,7 +3,7 @@ from time import sleep
 from shutil import copy
 from saucenao_caller import get_response, decode_response
 from pixiv_handler import pixiv_download, pixiv_fetch_illustration
-from danbooru_handler import danbooru_download, danbooru_fetch_illustration
+from booru_handler import booru_download, booru_fetch_illustration
 from DIllustration import DIllustration
 import global_variables as gv
 
@@ -101,7 +101,7 @@ def create_DIllustration(img_name_original, input_path, work_path, img_data, min
     """
     d_illust = DIllustration(input_path, 
         [{"service":'Original', "name":img_name_original, "work_path":work_path}, 
-        img_data[0], img_data[1], img_data[2], img_data[3]], img_data[4], minsim)
+        img_data[0], img_data[1], img_data[2], img_data[3], img_data[4]], img_data[5], minsim)
     return d_illust
 
 def process_img_data_new(img_name_original, img_path, input_path, res, minsim, comm_error_q, duplicate_c_pipe):
@@ -124,20 +124,24 @@ def process_img_data_new(img_name_original, img_path, input_path, res, minsim, c
     konachan_visited = list()
     konachan_illustration_list = list()
 
+    gelbooru_visited = list()
+    gelbooru_illustration_list = list()
+
     new_name = img_name_original
 
     for source in dict_list:
         if source['illust_id'] != 0:
             comm_error_q.put('[Sourcery] Fetching ' + source['service_name'] + ' illustration...')
             pixiv_illustration_list.extend(pixiv_fetcher(img_name_original, source, pixiv_visited, comm_error_q))
-            danbooru_illustration_list.extend(danbooru_fetcher(img_name_original, source, 'Danbooru', danbooru_visited, True, False, False, comm_error_q))
-            yandere_illustration_list.extend(danbooru_fetcher(img_name_original, source, 'Yandere', yandere_visited, False, True, False, comm_error_q))
-            konachan_illustration_list.extend(danbooru_fetcher(img_name_original, source, 'Konachan', konachan_visited, False, False, True, comm_error_q))
+            danbooru_illustration_list.extend(booru_fetcher(img_name_original, source, 'Danbooru', danbooru_visited, comm_error_q))
+            yandere_illustration_list.extend(booru_fetcher(img_name_original, source, 'Yandere', yandere_visited, comm_error_q))
+            konachan_illustration_list.extend(booru_fetcher(img_name_original, source, 'Konachan', konachan_visited, comm_error_q))
+            gelbooru_illustration_list.extend(booru_fetcher(img_name_original, source, 'Gelbooru', konachan_visited, comm_error_q))
 
-    if len(danbooru_illustration_list) == 0 and len(pixiv_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0:
+    if len(danbooru_illustration_list) == 0 and len(pixiv_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0 and len(gelbooru_illustration_list) == 0:
         comm_error_q.put('[Sourcery] No sources were found!')
         comm_error_q.put('DELETE' + img_path)
-        gv.Files.Ref.new_reference(img_name_original, [], [], [], [], gv.config['Pixiv']['rename'], gv.config['Danbooru']['rename'], gv.config['Yandere']['rename'], gv.config['Konachan']['rename'], minsim, dict_list, input_path)
+        gv.Files.Ref.new_reference(img_name_original, [], [], [], [], [], gv.config['Pixiv']['rename'], gv.config['Danbooru']['rename'], gv.config['Yandere']['rename'], gv.config['Konachan']['rename'], gv.config['Konachan']['rename'], minsim, dict_list, input_path)
         return False
 
     comm_error_q.put('[Sourcery] Downloaded illustrations successfully')
@@ -158,11 +162,14 @@ def process_img_data_new(img_name_original, img_path, input_path, res, minsim, c
     for elem in konachan_illustration_list:
         konachan_ref_list.append((elem[1], elem[0]['id']))
 
-    duplicate_c_pipe.send(('REF', (img_name_original, pixiv_ref_list, danbooru_ref_list, yandere_ref_list, konachan_ref_list, gv.config['Pixiv']['rename'], gv.config['Danbooru']['rename'], gv.config['Yandere']['rename'], gv.config['Konachan']['rename'], minsim, dict_list, input_path)))
+    gelbooru_ref_list = list()
+    for elem in gelbooru_illustration_list:
+        gelbooru_ref_list.append((elem[1], elem[0]['id']))
+
+    duplicate_c_pipe.send(('REF', (img_name_original, pixiv_ref_list, danbooru_ref_list, yandere_ref_list, konachan_ref_list, gelbooru_ref_list, gv.config['Pixiv']['rename'], gv.config['Danbooru']['rename'], gv.config['Yandere']['rename'], gv.config['Konachan']['rename'], gv.config['Gelbooru']['rename'], minsim, dict_list, input_path)))
     ref = duplicate_c_pipe.recv()#gv.Files.Ref.new_reference()
 
-    return (pixiv_illustration_list, danbooru_illustration_list, yandere_illustration_list, konachan_illustration_list, ref)
-
+    return (pixiv_illustration_list, danbooru_illustration_list, yandere_illustration_list, konachan_illustration_list, gelbooru_illustration_list, ref)
 
 def pixiv_fetcher(img_name_original, source, visited, comm_error_q):
     illustration_list = list()
@@ -177,24 +184,24 @@ def pixiv_fetcher(img_name_original, source, visited, comm_error_q):
                 visited.append(source['illust_id'])
     return illustration_list
 
-def danbooru_fetcher(img_name_original, source, service, visited, danbooru, yandere, konachan, comm_error_q):
+def booru_fetcher(img_name_original, source, service, visited, comm_error_q):
     illustration_list = list()
     illustration = False
     parent_name = False
     name = False
     if source['service_name'] == service:
         if source['illust_id'] not in visited:
-            illustration = danbooru_fetch_illustration(source['illust_id'], comm_error_q, danbooru=danbooru, yandere=yandere, konachan=konachan)
+            illustration = booru_fetch_illustration(source['illust_id'], service, comm_error_q)
             if illustration != False:
                 if 'parent_id' in illustration:
                     if illustration['parent_id'] != None and illustration['parent_id'] not in visited:
-                        parent_illustration = danbooru_fetch_illustration(illustration['parent_id'], comm_error_q, danbooru=danbooru, yandere=yandere, konachan=konachan)
+                        parent_illustration = booru_fetch_illustration(illustration['parent_id'], service, comm_error_q)
                         if parent_illustration != False:
-                            parent_name = danbooru_download(img_name_original, illustration['parent_id'], parent_illustration, comm_error_q, danbooru=danbooru, yandere=yandere, konachan=konachan)
+                            parent_name = booru_download(img_name_original, illustration['parent_id'], parent_illustration, service, comm_error_q)
                         if parent_name != False:
                             illustration_list.append((parent_illustration, parent_name, {"service_name": 'Konachan', "member_id": -1, "illust_id": illustration['parent_id'], "source": parent_illustration['source'], "similarity": source['similarity']}))
                             visited.append(illustration['parent_id'])
-                name = danbooru_download(img_name_original, source['illust_id'], illustration, comm_error_q, danbooru=danbooru, yandere=yandere, konachan=konachan)
+                name = booru_download(img_name_original, source['illust_id'], illustration, service, comm_error_q)
             if name != False:
                 illustration_list.append((illustration, name, source))
                 visited.append(source['illust_id'])

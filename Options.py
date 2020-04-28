@@ -601,6 +601,7 @@ class ProviderOptions():
         self.DanO = Provider('Danbooru' , parent, self)
         self.YanO = Provider('Yandere' , parent, self)
         self.KonO = Provider('Konachan' , parent, self)
+        self.GelO = Provider('Gelbooru' , parent, self)
         self.Weight = WeightSystem(parent, self)
 
         self.original_lbl = Label(self.par, text='Original', font=('Arial Bold', 13), style="label.TLabel")
@@ -610,11 +611,14 @@ class ProviderOptions():
         self.tagfile_danbooru_var = IntVar(value=gv.config.getint('Original', 'tagfile_danbooru'))
         self.tagfile_yandere_var = IntVar(value=gv.config.getint('Original', 'tagfile_yandere'))
         self.tagfile_konachan_var = IntVar(value=gv.config.getint('Original', 'tagfile_konachan'))
+        self.tagfile_gelbooru_var = IntVar(value=gv.config.getint('Original', 'tagfile_gelbooru'))
+
         self.gen_tagfile_chkbtn = Checkbutton(self.par, text='Generate tagfiles for original images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
         self.tagfile_pixiv_chkbtn = Checkbutton(self.par, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
         self.tagfile_danbooru_chkbtn = Checkbutton(self.par, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
         self.tagfile_yandere_chkbtn = Checkbutton(self.par, text='Include yandere tags', var=self.tagfile_yandere_var, style="chkbtn.TCheckbutton")
         self.tagfile_konachan_chkbtn = Checkbutton(self.par, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
+        self.tagfile_gelbooru_chkbtn = Checkbutton(self.par, text='Include gelbooru tags', var=self.tagfile_gelbooru_var, style="chkbtn.TCheckbutton")
 
         self.single_source_in_tagfile_var = IntVar(value=gv.config.getint('Original', 'single_source_in_tagfile'))
         self.single_source_in_tagfile_chkbtn = Checkbutton(self.par, text='If only one source is available, include its tags', var=self.single_source_in_tagfile_var, style="chkbtn.TCheckbutton")
@@ -624,6 +628,7 @@ class ProviderOptions():
         self.danbooru_btn = Button(self.par, text='Danbooru', command=self.DanO.display, style ="button.TLabel")
         self.yandere_btn = Button(self.par, text='Yandere', command=self.YanO.display, style ="button.TLabel")
         self.konachan_btn = Button(self.par, text='Konachan', command=self.KonO.display, style ="button.TLabel")
+        self.gelbooru_btn = Button(self.par, text='Gelbooru', command=self.GelO.display, style ="button.TLabel")
         self.weight_btn = Button(self.par, text='Weight System', command=self.Weight.weight_display, style ="button.TLabel")
 
         self.save_btn = Button(self.par, text='Save', command=self.save_all, style ="button.TLabel")
@@ -646,7 +651,8 @@ class ProviderOptions():
         self.danbooru_btn.place(x = x1, y = y + c * 3)
         self.yandere_btn.place(x = x1, y = y + c * 4)
         self.konachan_btn.place(x = x1, y = y + c * 5)
-        self.weight_btn.place(x = x1, y = y + c * 7)
+        self.gelbooru_btn.place(x = x1, y = y + c * 6)
+        self.weight_btn.place(x = x1, y = y + c * 8)
         
         self.save_btn.place(x = x2, y = y + c * 26)
 
@@ -660,6 +666,7 @@ class ProviderOptions():
         self.tagfile_danbooru_chkbtn.place_forget()
         self.tagfile_yandere_chkbtn.place_forget()
         self.tagfile_konachan_chkbtn.place_forget()
+        self.tagfile_gelbooru_chkbtn.place_forget()
         self.single_source_in_tagfile_chkbtn.place_forget()
 
         #self.save_btn.place_forget()
@@ -669,6 +676,7 @@ class ProviderOptions():
         self.DanO.forget()
         self.YanO.forget()
         self.KonO.forget()
+        self.GelO.forget()
         self.Weight.forget()
 
         y = int(gv.height/90*10)
@@ -682,6 +690,7 @@ class ProviderOptions():
         self.tagfile_danbooru_chkbtn.place(x = x2, y = y + c * 4)
         self.tagfile_yandere_chkbtn.place(x = x2, y = y + c * 5)
         self.tagfile_konachan_chkbtn.place(x = x2, y = y + c * 6)
+        self.tagfile_gelbooru_chkbtn.place(x = x2, y = y + c * 6)
 
         self.all_services_lbl.place(x = x2, y = y + c * 8)
         self.single_source_in_tagfile_chkbtn.place(x = x2, y = y + c * 9)
@@ -691,6 +700,7 @@ class ProviderOptions():
         self.DanO.save()
         self.YanO.save()
         self.KonO.save()
+        self.GelO.save()
         self.Weight.weight_save()
         self.original_save()
 
@@ -701,6 +711,7 @@ class ProviderOptions():
         gv.config['Original']['tagfile_danbooru'] = str(self.tagfile_danbooru_var.get())
         gv.config['Original']['tagfile_yandere'] = str(self.tagfile_yandere_var.get())
         gv.config['Original']['tagfile_konachan'] = str(self.tagfile_konachan_var.get())
+        gv.config['Original']['tagfile_gelbooru'] = str(self.tagfile_gelbooru_var.get())
         gv.config['Original']['single_source_in_tagfile'] = str(self.single_source_in_tagfile_var.get())
         gv.write_config()
         gv.Files.Log.write_to_log('Saved Original options')
@@ -730,11 +741,14 @@ class Provider():
         self.tagfile_danbooru_var = IntVar(value=gv.config.getint(self.name, 'tagfile_danbooru'))
         self.tagfile_yandere_var = IntVar(value=gv.config.getint(self.name, 'tagfile_yandere'))
         self.tagfile_konachan_var = IntVar(value=gv.config.getint(self.name, 'tagfile_konachan'))
+        self.tagfile_gelbooru_var = IntVar(value=gv.config.getint(self.name, 'tagfile_gelbooru'))
+
         self.gen_tagfile_chkbtn = Checkbutton(self.scrollpar_frame, text='Generate tagfiles for ' + self.name.lower() + ' images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
         self.tagfile_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
         self.tagfile_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
         self.tagfile_yandere_chkbtn = Checkbutton(self.scrollpar_frame, text='Include yandere tags', var=self.tagfile_yandere_var, style="chkbtn.TCheckbutton")
         self.tagfile_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
+        self.tagfile_gelbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include gelbooru tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
         
         #self.save_btn = Button(parent, text='Save', command=self.save, style ="button.TLabel")
 
@@ -746,6 +760,7 @@ class Provider():
         self.lord.DanO.forget()
         self.lord.YanO.forget()
         self.lord.KonO.forget()
+        self.lord.GelO.forget()
         self.lord.Weight.forget()
 
         y = int(gv.height/90*10)
@@ -764,8 +779,9 @@ class Provider():
         self.tagfile_danbooru_chkbtn.grid(row= 15, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
         self.tagfile_yandere_chkbtn.grid(row= 16, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
         self.tagfile_konachan_chkbtn.grid(row= 17, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
+        self.tagfile_gelbooru_chkbtn.grid(row= 18, column= 0, sticky=W, padx=15, pady=1, columnspan=2)
 
-        self.rename_chkbtn.grid(row= 18, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+        self.rename_chkbtn.grid(row= 19, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
 
         self.lbl.place(x = x2, y = y + c * 1)
         self.scrollpar.display(x = x2, y= y + c * 2)
@@ -783,6 +799,9 @@ class Provider():
         self.gen_tagfile_chkbtn.grid_forget()
         self.tagfile_pixiv_chkbtn.grid_forget()
         self.tagfile_danbooru_chkbtn.grid_forget()
+        self.tagfile_yandere_chkbtn.grid_forget()
+        self.tagfile_konachan_chkbtn.grid_forget()
+        self.tagfile_gelbooru_chkbtn.grid_forget()
 
         self.rename_chkbtn.grid_forget()
 
@@ -798,6 +817,7 @@ class Provider():
         gv.config[self.name]['tagfile_danbooru'] = str(self.tagfile_danbooru_var.get())
         gv.config[self.name]['tagfile_yandere'] = str(self.tagfile_yandere_var.get())
         gv.config[self.name]['tagfile_konachan'] = str(self.tagfile_konachan_var.get())
+        gv.config[self.name]['tagfile_gelbooru'] = str(self.tagfile_konachan_var.get())
         gv.config[self.name]['use'] = str(self.use_var.get())
         gv.write_config()
         if self.name == 'Pixiv':
@@ -808,6 +828,6 @@ class Provider():
             gv.results_tags_yandere = self.tags.split()
         elif self.name == 'Konachan':
             gv.results_tags_konachan = self.tags.split()
-        # elif self.name == 'Gelbooru':
-        #     gv.results_tags_gelbooru = self.tags.split()
+        elif self.name == 'Gelbooru':
+            gv.results_tags_gelbooru = self.tags.split()
         gv.Files.Log.write_to_log('Saved ' + self.name + ' options')

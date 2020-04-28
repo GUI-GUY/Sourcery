@@ -65,7 +65,7 @@ def get_response(image_name, cwd, api_key, minsim, comm_error_q=None):
         index_hanime='0'
         index_movies='0'
         index_shows='0'
-        index_gelbooru='0'
+        index_gelbooru=gv.config['Gelbooru']['use']
         index_konachan=gv.config['Konachan']['use']
         index_sankaku='0'
         index_animepictures='0'
@@ -193,43 +193,14 @@ def decode_response(results, EnableRename=False):
                             illust_id = elem['data']['danbooru_id']
                             source = elem['data']['ext_urls']
                             ret_dict.append({"service_name": service_name, "illust_id": illust_id, "source": source, "similarity": float(elem['header']['similarity'])})
+                elif elem['header']['index_id'] == 25:
+                    #9->gelbooru
+                    service_name='Gelbooru'
+                    illust_id = elem['data']['gelbooru_id']
+                    source = elem['data']['ext_urls']
+                    ret_dict.append({"service_name": service_name, "illust_id": illust_id, "source": source, "similarity": float(elem['header']['similarity'])})
                 else:
                     ret_dict.append({"service_name": service_name, "member_id": member_id, "illust_id": illust_id, "source": source, "similarity": float(elem['header']['similarity'])})
-                # elif index_id == 8:
-                #     #8->nico nico seiga
-                #     service_name='seiga'
-                #     member_id = results['results'][0]['data']['member_id']
-                #     illust_id = results['results'][0]['data']['seiga_id']
-                # elif index_id == 10:
-                #     #10->drawr
-                #     service_name='drawr'
-                #     member_id = results['results'][0]['data']['member_id']
-                #     illust_id = results['results'][0]['data']['drawr_id']								
-                # elif index_id == 11:
-                #     #11->nijie
-                #     service_name='nijie'
-                #     member_id = results['results'][0]['data']['member_id']
-                #     illust_id = results['results'][0]['data']['nijie_id']
-                # elif index_id == 34:
-                #     #34->da
-                #     service_name='da'
-                #     illust_id = results['results'][0]['data']['da_id']
-                # else:
-                #     #unknown
-                #     #print('Unhandled Index! Exiting...')
-                #     #sys.exit(2)
-                    
-                # try:
-                #     if member_id >= 0:
-                #         newfname = os.path.join(cwd + '/Output/', service_name+'_'+str(member_id)+'_'+str(illust_id)+page_string+'.'+fname.split(".")[-1].lower())
-                #     else:
-                #         newfname = os.path.join(cwd + '/Output/', service_name+'_'+str(illust_id)+page_string+'.'+fname.split(".")[-1].lower())
-                #     print('New Name: '+newfname)
-                #     if EnableRename:
-                #         os.rename(fname, newfname)
-                # except Exception as e:
-                #     print(str(e))
-                #     sys.exit(3)
             
         # else:
         #     print('miss... '+str(results['results'][0]['header']['similarity']))

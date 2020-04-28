@@ -184,7 +184,7 @@ class SubImageData():
         self.show_btn.configure(state=NORMAL)
         self.is_displayed = False
 
-    def save(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, t=-1, head_dir='', second_try=False):
+    def save(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, t=-1, head_dir='', second_try=False):
         #--If only one image is checked, save your image in the subfolder with the name--#
         if t == -1:
             if self.var.get() == 1:
@@ -192,19 +192,19 @@ class SubImageData():
                     makedirs(gv.output_dir + '/' + self.folder, 0o777, True)
                 except Exception as e:
                     if not second_try:
-                        return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
+                        return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                     else:
                         print("ERROR [0051] " + str(e))
                         gv.Files.Log.write_to_log("ERROR [0051] " + str(e))
                         #mb.showerror("ERROR [0051]", "ERROR CODE [0051]\nSomething went wrong while creating the folder" + gv.output_dir + '/' + self.folder)
                         return False
-                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gv.output_dir + '/' + self.folder, self.name[:self.name.rfind('.')]):
-                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gv.output_dir + '/' + self.folder, self.name[:self.name.rfind('.')])
+                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, gv.output_dir + '/' + self.folder, self.name[:self.name.rfind('.')]):
+                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, gv.output_dir + '/' + self.folder, self.name[:self.name.rfind('.')])
                 try:
                     move(self.path, gv.output_dir + '/' + self.folder + '/' + self.name)
                 except Exception as e:
                     if not second_try:
-                        return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
+                        return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                     else:
                         print("ERROR [0037] " + str(e))
                         gv.Files.Log.write_to_log("ERROR [0037] " + str(e))
@@ -221,20 +221,20 @@ class SubImageData():
                     makedirs(head_dir + '/' + self.folder, 0o777, True)
                 except Exception as e:
                     if not second_try:
-                        return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
+                        return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                     else:
                         print("ERROR [0052] " + str(e))
                         gv.Files.Log.write_to_log("ERROR [0052] " + str(e))
                         #mb.showerror("ERROR [0052]", "ERROR CODE [0051]\nSomething went wrong while creating the folder" + head_dir + '/' + self.folder)
                         return False
-                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, head_dir + '/' + self.folder, self.name[:self.name.rfind('.')]):
-                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, head_dir + '/' + self.folder, self.name[:self.name.rfind('.')])
+                if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, head_dir + '/' + self.folder, self.name[:self.name.rfind('.')]):
+                    self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, head_dir + '/' + self.folder, self.name[:self.name.rfind('.')])
              
                 try:
                     move(self.path, head_dir + '/' + self.folder + '/' + self.name)
                 except Exception as e:
                     if not second_try:
-                        return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
+                        return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                     else:
                         print("ERROR [0049] " + str(e))
                         gv.Files.Log.write_to_log("ERROR [0049] " + str(e))
@@ -252,7 +252,7 @@ class SubImageData():
             return True
         return False
 
-    def gen_tagfile(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, exception_tags, gen_dir, name):
+    def gen_tagfile(self, pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, gen_dir, name):
         p_pos = name.rfind('_p')
         all_tags = list()
         if p_pos != -1:
@@ -266,6 +266,8 @@ class SubImageData():
                 all_tags.extend(yandere_tags)
             if gv.config['Pixiv']['tagfile_konachan'] == '1':
                 all_tags.extend(konachan_tags)
+            if gv.config['Pixiv']['tagfile_gelbooru'] == '1':
+                all_tags.extend(gelbooru_tags)
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
         elif self.service == 'Danbooru' and gv.config['Danbooru']['gen_tagfile'] == '1':
@@ -277,6 +279,8 @@ class SubImageData():
                 all_tags.extend(yandere_tags)
             if gv.config['Danbooru']['tagfile_konachan'] == '1':
                 all_tags.extend(konachan_tags)
+            if gv.config['Danbooru']['tagfile_gelbooru'] == '1':
+                all_tags.extend(gelbooru_tags)
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
         elif self.service == 'Yandere' and gv.config['Yandere']['gen_tagfile'] == '1':
@@ -288,6 +292,8 @@ class SubImageData():
                 all_tags.extend(yandere_tags)
             if gv.config['Yandere']['tagfile_konachan'] == '1':
                 all_tags.extend(konachan_tags)
+            if gv.config['Yandere']['tagfile_gelbooru'] == '1':
+                all_tags.extend(gelbooru_tags)
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
         elif self.service == 'Konachan' and gv.config['Konachan']['gen_tagfile'] == '1':
@@ -299,6 +305,21 @@ class SubImageData():
                 all_tags.extend(yandere_tags)
             if gv.config['Konachan']['tagfile_konachan'] == '1':
                 all_tags.extend(konachan_tags)
+            if gv.config['Konachan']['tagfile_gelbooru'] == '1':
+                all_tags.extend(gelbooru_tags)
+            all_tags.extend(exception_tags)
+            return gen_tagfile(all_tags, gen_dir, name)
+        elif self.service == 'Gelbooru' and gv.config['Gelbooru']['gen_tagfile'] == '1':
+            if gv.config['Gelbooru']['tagfile_pixiv'] == '1':
+                all_tags.extend(pixiv_tags)
+            if gv.config['Gelbooru']['tagfile_danbooru'] == '1':
+                all_tags.extend(danbooru_tags)
+            if gv.config['Gelbooru']['tagfile_yandere'] == '1':
+                all_tags.extend(yandere_tags)
+            if gv.config['Gelbooru']['tagfile_konachan'] == '1':
+                all_tags.extend(konachan_tags)
+            if gv.config['Gelbooru']['tagfile_gelbooru'] == '1':
+                all_tags.extend(gelbooru_tags)
             all_tags.extend(exception_tags)
             return gen_tagfile(all_tags, gen_dir, name)
 

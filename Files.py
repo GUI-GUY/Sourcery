@@ -29,7 +29,7 @@ class Files():
             makedirs(cwd + "/Sourcery/sourced_progress/danbooru", 0o777, True)
             makedirs(cwd + "/Sourcery/sourced_progress/yandere", 0o777, True)
             makedirs(cwd + "/Sourcery/sourced_progress/konachan", 0o777, True)
-            # makedirs(cwd + "/Sourcery/sourced_progress/gelbooru", 0o777, True)
+            makedirs(cwd + "/Sourcery/sourced_progress/gelbooru", 0o777, True)
         except Exception as e:
             print("ERROR [0007] " + str(e))
             #self.Log.write_to_log("ERROR [0007] " + str(e))
@@ -290,7 +290,7 @@ class ReferenceFile():
         if self.read_reference():
             self.write_reference()
 
-    def new_reference(self, old_name, pixiv_list, danbooru_list, yandere_list, konachan_list, rename_pixiv, rename_danbooru, rename_yandere, rename_konachan, minsim, dict_list, input_path):
+    def new_reference(self, old_name, pixiv_list, danbooru_list, yandere_list, konachan_list, gelbooru_list, rename_pixiv, rename_danbooru, rename_yandere, rename_konachan, rename_gelbooru, minsim, dict_list, input_path):
         """
         Appends a new image reference to the reference file
         """
@@ -334,15 +334,27 @@ class ReferenceFile():
                             "\", \"id\" : \"" + str(elem[1]) +
                             "\"}, ")
             konachan_ref = konachan_ref[:-2] + "]"
+        gelbooru_ref = "["
+        if len(gelbooru_list) == 0:
+            gelbooru_ref = "[]"
+        else:
+            for elem in gelbooru_list:
+                gelbooru_ref = (gelbooru_ref + 
+                            "{\"new_name\" : \"" + elem[0] +
+                            "\", \"id\" : \"" + str(elem[1]) +
+                            "\"}, ")
+            gelbooru_ref = gelbooru_ref[:-2] + "]"
         ref = ("{\"old_name\" : \"" + old_name +
                 "\", \"pixiv\" : " + pixiv_ref +
                 ", \"danbooru\" : " + danbooru_ref +
                 ", \"yandere\" : " + yandere_ref +
                 ", \"konachan\" : " + konachan_ref +
+                ", \"gelbooru\" : " + gelbooru_ref +
                 ", \"rename_pixiv\" : \"" + rename_pixiv +
                 "\", \"rename_danbooru\" : \"" + rename_danbooru +
                 "\", \"rename_yandere\" : \"" + rename_yandere +
                 "\", \"rename_konachan\" : \"" + rename_konachan +
+                "\", \"rename_gelbooru\" : \"" + rename_gelbooru +
                 "\", \"minsim\" : " + str(minsim) +
                 ", \"dict_list\" : " + str(dict_list).replace("'", "\"").replace("\\", "/") +
                 ", \"input_path\" : \"" + input_path.replace("\\", "/") +
