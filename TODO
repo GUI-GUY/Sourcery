@@ -117,65 +117,87 @@ BUGS
 + fakeuseragent error handling
 ??? 3.2.x does not show more than 2 classes
 
-beta 0.4
+beta 0.3.4
 + REMOVE TEST BUTTON
-import logging
-config parser on theme file
-increase CPU performance
-make duplicate loop not check for existing classes but for references
-make button to jump to newest log entry
-timeout and continue prompt if one service takes too long to download
-+ gui lags with too many images in input
-+ only input is sometimes shown on reference load
-+ big selector: show image picked by weight system
-+ gui lags hard on huge data loaded
-ATTEMPTING
-3rd service
-Keyboard support
++ Keyboard support
     + right/e left/q in big selector
     + backspace
     + a/d for toggling checked
     + up/w down/s in big selector
-change font option (maybe not)
-statistics
-elapsed time / ETA
-Danbooru Gold
-scrolling accuracy?
-preload next x images?
-preview/thumbnail scaling/options
++ gui lags with too many images in input
++ only input is sometimes shown on reference load
++ big selector: show image picked by weight system
++ gui lags hard on huge data loaded
+
+
+beta 0.3.5
+3rd service(gelbooru)
+make button to jump to newest log entry
+
+beta 0.3.6
+import logging
+config parser on theme file
+
+beta 0.3.7
 Notification rework
     save: feedback message
     on download tell user
     stopping (please wait)
     show imgname in big selector
     tell user how many images have been sourced successfully/unsuccessfully
+    show progress of sourced imaged/all images
+    elapsed time / ETA
+    ATTEMPTING
+
+beta 0.3.8
+big selector text green/red/white if better/worse/same res/datatype?
+link color
+https://pypi.org/project/tk-html-widgets/ for pixiv caption
+change font option (maybe not)
+preview/thumbnail scaling/options
+https://www.reddit.com/r/learnpython/comments/6dndqz/how_would_you_make_text_that_automatically_wraps/
+fix yandere & konachan scrollframe color bug
+move sourced/unsources input images into [folder]/put images where no source is found into output option
+cleanup include log
+
+beta 0.3.9
+increase CPU performance
+make duplicate loop not check for existing classes but for references
+timeout and continue prompt if one service takes too long to download
+statistics
+Danbooru Gold
+scrolling accuracy? for other OS
+preload next x images?
 pixiv gif support
 danbooru gif support
 weighted tags
 weighted parent/sibling
-big selector text green/red/white if better/worse/same res/datatype?
-link color
 danbooru siblings?
 on numbers cruncher exception write back default value to entry fields
-show progress of sourced imaged/all images
-https://www.reddit.com/r/learnpython/comments/6dndqz/how_would_you_make_text_that_automatically_wraps/
 make own scrollbar class
-https://pypi.org/project/tk-html-widgets/ for pixiv caption
-fix yandere & konachan scrollframe color bug
 reference takes the first reference so if you source an image with more services later on this will get ignored
 on save: copy all images then delete old ones
 on load reference: download images
 show tags in results screen doesn't work after images have been displayed
-move sourced/unsources input images into [folder]/put images where no source is found into output option
-cleanup include log
 shorten long filenames with XXXXXX...XXXXXX.png in log
 folder button in big selector
 when pressing right/left too often you skip images and "image "pyimage230" doesn't exist"
+when input folder isnt found make new one/handle error better
 
+beta 0.4
 beta 0.5?
 Hydrus
+in gui image drawing for censorbars
+    pick color on position and program colors rest
+    color stuff with rotatable bar
+    heurisics to find stripes/squares
+    drawing on second layer
 DCP
 queue images instead of 'get source' button?
+
+future
+HentAI (not good enough yet, have to touch up every image manually aka not really a time saver)
+other AI censorbar detector
 
 LEGEND:
 + done (probably)
