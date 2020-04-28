@@ -11,7 +11,7 @@ danbooru_folder = 'D:\All_Files\python\GitHub\Sourcery\Sourcery\dan'
 
 
 # request json, get urls of pictures and download them
-def danbooru_fetch_illustration(imgid, comm_error_q=None, danbooru=False, yandere=False, konachan=False):
+def booru_fetch_illustration(imgid, comm_error_q=None, danbooru=False, yandere=False, konachan=False, gelbooru=False):
     """
     Request info from danbooru API to given imgid\n
     Return illustration dictionary on success, False otherwise
@@ -23,6 +23,8 @@ def danbooru_fetch_illustration(imgid, comm_error_q=None, danbooru=False, yander
             r = get('https://yande.re/post.json?tags=id:' + str(imgid))
         elif konachan:
             r = get('https://konachan.com/post.json?tags=id:' + str(imgid))
+        elif gelbooru:
+            r = get('https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&id=' + str(imgid))
         else:
             return False
         illustration = r.json()
@@ -43,24 +45,26 @@ def danbooru_fetch_illustration(imgid, comm_error_q=None, danbooru=False, yander
         #mb.showerror("ERROR [0056]", "ERROR CODE [0056]\nImage data could not be retrieved")
         return False
     
-def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None, danbooru=False, yandere=False, konachan=False):
+def booru_download(img_name_original, imgid, illustration, comm_error_q=None, service=''):
     """
     Downloads given image from Danbooru and renames it properly\n
     Return the new name on success, False otherwise
     """
-    if danbooru:
+    if service == '':
+        return False
+    else:
         if 'file_url' in illustration:
             try:
-                if gv.config['Danbooru']['rename'] == '1':
-                    new_name = rename(illustration['file_url'].split('/')[-1], 'danbooru')
+                if gv.config[service]['rename'] == '1':
+                    new_name = rename(illustration['file_url'].split('/')[-1], service.lower())
                 else:
                     dot = img_name_original.rfind('.')
                     if dot != -1:
                         new_name = img_name_original[:dot] + '.' + illustration['file_ext']
                     else:
                         new_name = img_name_original + '.' + illustration['file_ext']
-                    new_name = rename(new_name, 'danbooru')
-                urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/danbooru/' + new_name)
+                    new_name = rename(new_name, service.lower())
+                urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/' + service.lower() + '/' + new_name)
                 return new_name
             except Exception as e:
                 print("ERROR [0057] " + str(e))
@@ -70,54 +74,6 @@ def danbooru_download(img_name_original, imgid, illustration, comm_error_q=None,
                     gv.Files.Log.write_to_log("ERROR [0057] " + str(e))
                 #mb.showerror("ERROR [0057]", "ERROR CODE [0057]\nImage could not be downloaded")
                 return False
-        return False
-    elif yandere:
-        if 'file_url' in illustration:
-            try:
-                if gv.config['Yandere']['rename'] == '1':
-                    new_name = rename(illustration['file_url'].split('/')[-1], yandere)
-                else:
-                    dot = img_name_original.rfind('.')
-                    if dot != -1:
-                        new_name = img_name_original[:dot] + '.' + illustration['file_ext']
-                    else:
-                        new_name = img_name_original + '.' + illustration['file_ext']
-                    new_name = rename(new_name, 'yandere')
-                urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/yandere/' + new_name)
-                return new_name
-            except Exception as e:
-                print("ERROR [0058] " + str(e))
-                if comm_error_q != None:
-                    comm_error_q.put("[Sourcery] ERROR [0058] " + str(e))
-                else:
-                    gv.Files.Log.write_to_log("ERROR [0058] " + str(e))
-                #mb.showerror("ERROR [0058]", "ERROR CODE [0058]\nImage could not be downloaded")
-                return False
-        return False
-    elif konachan:
-        if 'file_url' in illustration:
-            try:
-                if gv.config['Konachan']['rename'] == '1':
-                    new_name = rename(illustration['file_url'].split('/')[-1], 'konachan')
-                else:
-                    dot = img_name_original.rfind('.')
-                    if dot != -1:
-                        new_name = img_name_original[:dot] + '.' + illustration['file_url'].split('.')[-1]
-                    else:
-                        new_name = img_name_original + '.' + illustration['file_url'].split('.')[-1]
-                    new_name = rename(new_name, 'konachan')
-                urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/konachan/' + new_name)
-                return new_name
-            except Exception as e:
-                print("ERROR [0059] " + str(e))
-                if comm_error_q != None:
-                    comm_error_q.put("[Sourcery] ERROR [0059] " + str(e))
-                else:
-                    gv.Files.Log.write_to_log("ERROR [0059] " + str(e))
-                #mb.showerror("ERROR [0059]", "ERROR CODE [0059]\nImage could not be downloaded")
-                return False
-        return False
-    else:
         return False
 
 def rename(desired_name, service, index=-1, new_name=''):
@@ -152,7 +108,7 @@ def rename_length(name):
     return name
 
 if __name__ == '__main__':
-    danbooru_fetch_illustration(1)
+    #danbooru_fetch_illustration(1)
     print('Download successful!')
 
 # [{'id': 3810771, 
