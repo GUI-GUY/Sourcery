@@ -3,8 +3,7 @@
 # __author__ = 'Cardinal Biggles'
 
 from os import listdir, path, remove
-from sys import stderr
-from copy import copy
+from copy import copy, deepcopy
 from multiprocessing import freeze_support
 import time
 from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END, W, simpledialog
@@ -14,7 +13,6 @@ from tkinter.ttk import Label, Button, Style, Entry, Frame
 #from tkinter.filedialog import askdirectory
 #from functools import partial
 from shutil import rmtree
-from copy import deepcopy
 #from distutils.util import strtobool
 from threading import Thread, enumerate as enu
 from file_operations import is_image, save, open_input, open_output, display_statistics, change_input, change_output
@@ -185,6 +183,14 @@ def save_locked():
     Startpage_Class.results_ScrollFrame.display(x = int(width/16*4), y = int(height/9))
     leftovers()
     Startpage_Class.save_locked_btn.configure(state='disabled')
+
+#def new_save_system():
+    # call before leftovers
+    # takes list with tuples: (src, dest, Error1=None/False, Error2=None/False)
+    # copies for every elem in list from src to dst, 
+    # if error, write in Error1 and try again, 
+    # if error, write in Error2 and remove from delete_dirs_array
+
 
 def leftovers(delete_list=None):
     """

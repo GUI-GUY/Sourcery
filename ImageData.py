@@ -527,27 +527,21 @@ class ImageData():
             self.next_imgdata = None
         
         if self.prev_imgdata != None:
-            #self.prev_imgdata.process_big_imgs()
             t = Thread(target=self.prev_imgdata.process_big_imgs, name=self.prev_imgdata.sub_dill.name_no_suffix, daemon=True)
             t.start()
             if self.prev_imgdata.prev_imgdata != None:
-                #self.prev_imgdata.prev_imgdata.process_big_imgs()
                 z = Thread(target=self.prev_imgdata.prev_imgdata.unload_big_imgs, name=self.prev_imgdata.prev_imgdata.sub_dill.name_no_suffix, daemon=True)
                 z.start()
                 if self.prev_imgdata.prev_imgdata.prev_imgdata != None:
-                    #self.prev_imgdata.prev_imgdata.prev_imgdata.unload_big_imgs()
                     q = Thread(target=self.prev_imgdata.prev_imgdata.prev_imgdata.unload_big_imgs, name=self.prev_imgdata.prev_imgdata.prev_imgdata.sub_dill.name_no_suffix, daemon=True)
                     q.start()
         if self.next_imgdata != None:
-            #self.next_imgdata.process_big_imgs()
             x = Thread(target=self.next_imgdata.process_big_imgs, name=self.next_imgdata.sub_dill.name_no_suffix, daemon=True)
             x.start()
             if self.next_imgdata.next_imgdata != None:
-                #self.next_imgdata.next_imgdata.process_big_imgs()
                 y = Thread(target=self.next_imgdata.next_imgdata.unload_big_imgs, name=self.next_imgdata.next_imgdata.sub_dill.name_no_suffix, daemon=True)
                 y.start()
                 if self.next_imgdata.next_imgdata.next_imgdata != None:
-                    #self.next_imgdata.next_imgdata.next_imgdata.unload_big_imgs()
                     e = Thread(target=self.next_imgdata.next_imgdata.next_imgdata.unload_big_imgs, name=self.next_imgdata.next_imgdata.next_imgdata.sub_dill.name_no_suffix, daemon=True)
                     e.start()
        

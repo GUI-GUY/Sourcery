@@ -73,7 +73,8 @@ def booru_download(img_name_original, imgid, illustration, service='', comm_erro
                 if comm_error_q != None:
                     comm_error_q.put("[Sourcery] ERROR [0057] " + str(e))
                 else:
-                    gv.Files.Log.write_to_log("ERROR [0057] " + str(e))
+                    print("ERROR [0057] " + str(e))
+                    #gv.Files.Log.write_to_log("ERROR [0057] " + str(e))
                 #mb.showerror("ERROR [0057]", "ERROR CODE [0057]\nImage could not be downloaded")
                 return False
         return False
@@ -110,8 +111,13 @@ def rename_length(name):
     return name
 
 if __name__ == '__main__':
-    #danbooru_fetch_illustration(1)
-    print('Download successful!')
+    liste = [5261777, 5265046 , 5261812]
+    idx = liste[2]
+    a = booru_fetch_illustration(idx, 'Gelbooru')
+    #print(a)
+    b = booru_download('name', idx, a, 'Gelbooru')
+    if b != False:
+        print('Download successful!')
 
 # [{'id': 3810771, 
 # 'created_at': '2020-03-06T04:51:23.187-05:00', 

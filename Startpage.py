@@ -5,7 +5,7 @@ from threading import Thread, enumerate as enu
 import time
 from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END, W, simpledialog
 from tkinter import Checkbutton as cb
-from tkinter.ttk import Label, Button, Style, Entry, Frame
+from tkinter.ttk import Label, Button, Style, Entry, Frame, Checkbutton
 from ScrollFrame import ScrollFrame
 from Files import Files
 from ImageData import ImageData
@@ -81,6 +81,21 @@ class Startpage():
         self.results_lbl = Label(window, text="Results", font=("Arial Bold", 20), style="label.TLabel")
         self.lock_save_btn = Button(window, text="Lock selected", command=lock_save, style="button.TLabel")
         self.save_locked_btn = Button(window, text="Save selected images", command=save_locked, state = 'disabled', style="button.TLabel")
+        def c():
+            gv.config['DEFAULT']['jump_log'] = str(self.jump_log_var.get())
+        self.jump_log_var = IntVar(value=gv.config.getint('DEFAULT', 'jump_log'))
+        self.jump_log_chkbtn = cb(window, text="Jump to newest entry", var=self.jump_log_var, command=c,
+            foreground=gv.Files.Theme.foreground, 
+            background=gv.Files.Theme.background, 
+            borderwidth = 1,
+            highlightthickness = 0, 
+            selectcolor=gv.Files.Theme.checkbutton_pressed, 
+            activebackground=gv.Files.Theme.button_background_active, 
+            activeforeground=gv.Files.Theme.button_foreground_active, 
+            relief='flat',#default flat
+            overrelief='ridge',#no default
+            offrelief='flat',#default raised
+            indicatoron='false')# sunken, raised, groove, ridge, flat, style="chkbtn.TCheckbutton")
 
         self.index = 0
         self.input_lock = Lock()
@@ -244,6 +259,11 @@ class Startpage():
         self.window.after(100, self.get_processing_status, answer2, currently_processing)
         #return answer2, currently_processing
 
+    def jump_log(self):
+        if gv.config.getboolean('DEFAULT', 'jump_log'):
+            gv.Files.Log.log_text.yview_moveto(1)
+        self.window.after(100, self.jump_log)
+
     def refresh_startpage(self):
         """
         Updates these startpage widgets:
@@ -253,6 +273,7 @@ class Startpage():
         Creates ImageData classes from the information the magic process gives
         Displays all results
         """
+        self.window.after(1, self.jump_log)
         self.window.after(1, self.get_processing_status)
         self.window.after(1, self.make_image_data)
         self.window.after(1, self.load_image_data)
@@ -269,7 +290,8 @@ class Startpage():
 
     def display_logfile(self):
         self.info_ScrollFrame.sub_frame.place_forget()
-        gv.Files.Log.log_text.place(x = (gv.width/3)*1.85, y = int(gv.height/9))
+        gv.Files.Log.log_text.place(x = int(gv.width/3)*1.85, y = int(gv.height/9))
+        self.jump_log_chkbtn.place(x = int(gv.width/3)*1.85, y = int(gv.height/90*80))
 
     def forget_all_widgets(self):
         for widget in self.window.winfo_children():
