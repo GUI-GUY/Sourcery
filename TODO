@@ -138,7 +138,7 @@ BUGS:
 
 beta 0.3.6
 import logging
-config parser on theme file
++ config parser on theme file
 
 beta 0.3.7
 Notification rework

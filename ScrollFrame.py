@@ -8,10 +8,11 @@ class ScrollFrame():
         self.width = width
         self.height = height
         self.sub_frame = Frame(parent, width=width, height=height, style="frame.TFrame")
-        self.canvas = Canvas(self.sub_frame, width=width, height=height, background=gv.Files.Theme.background, highlightthickness=0)
+        theme = gv.Files.Theme.theme['General']['current']
+        self.canvas = Canvas(self.sub_frame, width=width, height=height, background=gv.Files.Theme.theme[theme]['background'], highlightthickness=0)
         self.frame = Frame(self.canvas, width=width, height=height, style="frame.TFrame")
         self.scrollbar = Scrollbar(self.sub_frame, orient="vertical", command=self.canvas.yview)
-            # activebackground=gv.Files.Theme.background,
+            # activebackground=gv.Files.Theme.theme[theme]['background'],
             # activerelief='flat', 
             # background='yellow', 
             # borderwidth=50, 

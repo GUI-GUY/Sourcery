@@ -71,13 +71,14 @@ class ImageData():
         self.locked = False
 
     def init_widgets(self):
+        theme = gv.Files.Theme.theme['General']['current']
         self.original_chkbtn = cb(gv.res_frame, var=self.original_var,
-            foreground=gv.Files.Theme.foreground, 
-            background=gv.Files.Theme.background, 
+            foreground=gv.Files.Theme.theme[theme]['foreground'], 
+            background=gv.Files.Theme.theme[theme]['background'], 
             borderwidth = 1, 
-            selectcolor=gv.Files.Theme.checkbutton_pressed, 
-            activebackground=gv.Files.Theme.button_background_active, 
-            activeforeground=gv.Files.Theme.button_foreground_active, 
+            selectcolor=gv.Files.Theme.theme[theme]['checkbutton_pressed'], 
+            activebackground=gv.Files.Theme.theme[theme]['button_background_active'], 
+            activeforeground=gv.Files.Theme.theme[theme]['button_foreground_active'], 
             relief='flat',#default flat
             overrelief='ridge',#no default
             offrelief='flat',#default raised

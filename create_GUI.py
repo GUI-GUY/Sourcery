@@ -223,28 +223,29 @@ def enforce_style():
     """
     Changes style of all widgets to the currently selected theme.
     """
-    #gv.Files.Theme.read_theme()
-    window.configure(bg=gv.Files.Theme.background)
+    #gv.Files.Theme.theme[theme]['read_theme()
+    theme = gv.Files.Theme.theme['General']['current']
+    window.configure(bg=gv.Files.Theme.theme[theme]['background'])
     style = Style()
-    style.configure("label.TLabel", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
-    style.configure("button.TLabel", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.button_background, font=("Arial Bold", 10))
+    style.configure("label.TLabel", foreground=gv.Files.Theme.theme[theme]['foreground'], background=gv.Files.Theme.theme[theme]['background'], font=("Arial Bold", 10))
+    style.configure("button.TLabel", foreground=gv.Files.Theme.theme[theme]['foreground'], background=gv.Files.Theme.theme[theme]['button_background'], font=("Arial Bold", 10))
     style.map("button.TLabel",
-        foreground=[('pressed', gv.Files.Theme.button_foreground_pressed), ('active', gv.Files.Theme.button_foreground_active)],
-        background=[('pressed', '!disabled', gv.Files.Theme.button_background_pressed), ('disabled', 'black'), ('active', gv.Files.Theme.button_background_active)]
+        foreground=[('pressed', gv.Files.Theme.theme[theme]['button_foreground_pressed']), ('active', gv.Files.Theme.theme[theme]['button_foreground_active'])],
+        background=[('pressed', '!disabled', gv.Files.Theme.theme[theme]['button_background_pressed']), ('disabled', 'black'), ('active', gv.Files.Theme.theme[theme]['button_background_active'])]
     )
-    style.configure("frame.TFrame", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background)
+    style.configure("frame.TFrame", foreground=gv.Files.Theme.theme[theme]['foreground'], background=gv.Files.Theme.theme[theme]['background'])
     style.configure("optmen.TMenubutton", 
-        foreground=gv.Files.Theme.foreground, 
-        background=gv.Files.Theme.button_background, 
-        activebackground=gv.Files.Theme.button_background,
-        activeforeground=gv.Files.Theme.foreground, 
-        highlightbackground=gv.Files.Theme.button_background,
-        highlightcolor=gv.Files.Theme.foreground, 
+        foreground=gv.Files.Theme.theme[theme]['foreground'], 
+        background=gv.Files.Theme.theme[theme]['button_background'], 
+        activebackground=gv.Files.Theme.theme[theme]['button_background'],
+        activeforeground=gv.Files.Theme.theme[theme]['foreground'], 
+        highlightbackground=gv.Files.Theme.theme[theme]['button_background'],
+        highlightcolor=gv.Files.Theme.theme[theme]['foreground'], 
         borderwidth=0, 
         font=("Arial Bold", 10))
     style.configure("chkbtn.TCheckbutton", 
-        foreground=gv.Files.Theme.foreground, 
-        background=gv.Files.Theme.background, 
+        foreground=gv.Files.Theme.theme[theme]['foreground'], 
+        background=gv.Files.Theme.theme[theme]['background'], 
         borderwidth = 0, 
         highlightthickness = 10, 
         font=("Arial Bold", 10)) # sunken, raised, groove, ridge, flat
@@ -252,11 +253,11 @@ def enforce_style():
         if type(elem) == type(cb()):
             try:
                 elem.configure(
-                    foreground=gv.Files.Theme.foreground, 
-                    background=gv.Files.Theme.background, 
-                    selectcolor=gv.Files.Theme.checkbutton_pressed, 
-                    activebackground=gv.Files.Theme.button_background_active, 
-                    activeforeground=gv.Files.Theme.button_foreground_active, 
+                    foreground=gv.Files.Theme.theme[theme]['foreground'], 
+                    background=gv.Files.Theme.theme[theme]['background'], 
+                    selectcolor=gv.Files.Theme.theme[theme]['checkbutton_pressed'], 
+                    activebackground=gv.Files.Theme.theme[theme]['button_background_active'], 
+                    activeforeground=gv.Files.Theme.theme[theme]['button_foreground_active'], 
                 )
             except:
                 pass
@@ -264,11 +265,11 @@ def enforce_style():
         if type(elem) == type(cb()):
             try:
                 elem.configure(
-                    foreground=gv.Files.Theme.foreground, 
-                    background=gv.Files.Theme.background, 
-                    selectcolor=gv.Files.Theme.checkbutton_pressed, 
-                    activebackground=gv.Files.Theme.button_background_active, 
-                    activeforeground=gv.Files.Theme.button_foreground_active, 
+                    foreground=gv.Files.Theme.theme[theme]['foreground'], 
+                    background=gv.Files.Theme.theme[theme]['background'], 
+                    selectcolor=gv.Files.Theme.theme[theme]['checkbutton_pressed'], 
+                    activebackground=gv.Files.Theme.theme[theme]['button_background_active'], 
+                    activeforeground=gv.Files.Theme.theme[theme]['button_foreground_active'], 
                 )
             except:
                 pass
@@ -276,11 +277,11 @@ def enforce_style():
         if type(elem) == type(cb()):
             try:
                 elem.configure(
-                    foreground=gv.Files.Theme.foreground, 
-                    background=gv.Files.Theme.background, 
-                    selectcolor=gv.Files.Theme.checkbutton_pressed, 
-                    activebackground=gv.Files.Theme.button_background_active, 
-                    activeforeground=gv.Files.Theme.button_foreground_active, 
+                    foreground=gv.Files.Theme.theme[theme]['foreground'], 
+                    background=gv.Files.Theme.theme[theme]['background'], 
+                    selectcolor=gv.Files.Theme.theme[theme]['checkbutton_pressed'], 
+                    activebackground=gv.Files.Theme.theme[theme]['button_background_active'], 
+                    activeforeground=gv.Files.Theme.theme[theme]['button_foreground_active'], 
                 )
             except:
                 pass
@@ -288,8 +289,8 @@ def enforce_style():
         if type(elem) == type(Text()):
             try:
                 elem.configure(
-                    foreground=gv.Files.Theme.foreground, 
-                    background=gv.Files.Theme.background, 
+                    foreground=gv.Files.Theme.theme[theme]['foreground'], 
+                    background=gv.Files.Theme.theme[theme]['background'], 
                     font=("Arial Bold", 10)
                 )
             except:
@@ -298,8 +299,8 @@ def enforce_style():
         if type(elem) == type(Text()):
             try:
                 elem.configure(
-                    foreground=gv.Files.Theme.foreground, 
-                    background=gv.Files.Theme.background, 
+                    foreground=gv.Files.Theme.theme[theme]['foreground'], 
+                    background=gv.Files.Theme.theme[theme]['background'], 
                     font=("Arial Bold", 10)
                 )
             except:
@@ -308,8 +309,8 @@ def enforce_style():
         if type(elem) == type(Text()):
             try:
                 elem.configure(
-                    foreground=gv.Files.Theme.foreground, 
-                    background=gv.Files.Theme.background, 
+                    foreground=gv.Files.Theme.theme[theme]['foreground'], 
+                    background=gv.Files.Theme.theme[theme]['background'], 
                     font=("Arial Bold", 10)
                 )
             except:
@@ -318,23 +319,23 @@ def enforce_style():
         if type(elem) == type(Text()):
             try:
                 elem.configure(
-                    foreground=gv.Files.Theme.foreground, 
-                    background=gv.Files.Theme.background, 
+                    foreground=gv.Files.Theme.theme[theme]['foreground'], 
+                    background=gv.Files.Theme.theme[theme]['background'], 
                     font=("Arial Bold", 10)
                 )
             except:
                 pass
         
-    gv.Files.Log.log_text.configure(foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
+    gv.Files.Log.log_text.configure(foreground=gv.Files.Theme.theme[theme]['foreground'], background=gv.Files.Theme.theme[theme]['background'], font=("Arial Bold", 10))
     
-    #style.configure("scroll.Vertical.TScrollbar", foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.button_background, throughcolor=gv.Files.Theme.button_background, activebackground=gv.Files.Theme.button_background)
-    Startpage_Class.results_ScrollFrame.canvas.configure(background=gv.Files.Theme.background)
-    Startpage_Class.info_ScrollFrame.canvas.configure(background=gv.Files.Theme.background)
-    Startpage_Class.big_selector_ScrollFrame.canvas.configure(background=gv.Files.Theme.background)
-    Startpage_Class.canvas_startpage.configure(background=gv.Files.Theme.background)
-    Options_Class.ProO.PixO.scrollpar.canvas.configure(background=gv.Files.Theme.background)
-    Options_Class.ProO.DanO.scrollpar.canvas.configure(background=gv.Files.Theme.background)
-    Options_Class.ProO.Weight.scrollpar.canvas.configure(background=gv.Files.Theme.background)
+    #style.configure("scroll.Vertical.TScrollbar", foreground=gv.Files.Theme.theme[theme]['foreground'], background=gv.Files.Theme.theme[theme]['button_background'], throughcolor=gv.Files.Theme.theme[theme]['button_background'], activebackground=gv.Files.Theme.theme[theme]['button_background'])
+    Startpage_Class.results_ScrollFrame.canvas.configure(background=gv.Files.Theme.theme[theme]['background'])
+    Startpage_Class.info_ScrollFrame.canvas.configure(background=gv.Files.Theme.theme[theme]['background'])
+    Startpage_Class.big_selector_ScrollFrame.canvas.configure(background=gv.Files.Theme.theme[theme]['background'])
+    Startpage_Class.canvas_startpage.configure(background=gv.Files.Theme.theme[theme]['background'])
+    Options_Class.ProO.PixO.scrollpar.canvas.configure(background=gv.Files.Theme.theme[theme]['background'])
+    Options_Class.ProO.DanO.scrollpar.canvas.configure(background=gv.Files.Theme.theme[theme]['background'])
+    Options_Class.ProO.Weight.scrollpar.canvas.configure(background=gv.Files.Theme.theme[theme]['background'])
 
 if __name__ == '__main__':
     freeze_support()

@@ -95,7 +95,8 @@ class Debugging():
         self.par = parent
         self.lord = lord
 
-        self.code_txt = Text(parent, width=int(gv.width/20), height=int(gv.height/30), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
+        theme = gv.Files.Theme.theme['General']['current']
+        self.code_txt = Text(parent, width=int(gv.width/20), height=int(gv.height/30), foreground=gv.Files.Theme.theme[theme]['foreground'], background=gv.Files.Theme.theme[theme]['background'], font=("Arial Bold", 10))
         self.code_txt.insert(END, gv.config['Debug']['code'])
         self.execute_btn = Button(parent, text="Execute", command=self.execute, style="button.TLabel")
         self.debug_btn = Button(parent, text="Disable Debug mode", command=self.disable_debug, style="button.TLabel")
@@ -436,52 +437,52 @@ class SourceryOptions():
         self.downloaded_clean_btn.place(x = x4, y = y + c * 21)
 
     def change_to_dark_theme(self):
-        gv.Files.Theme.current_theme = "Dark Theme"
-        gv.Files.Theme.write_theme(gv.Files.Theme.current_theme)
+        gv.Files.Theme.theme['General']['current'] = "Dark Theme"
+        gv.Files.Theme.write_theme()
         self.en_s()
 
     def change_to_light_theme(self):
-        gv.Files.Theme.current_theme = "Light Theme"
-        gv.Files.Theme.write_theme(gv.Files.Theme.current_theme)
+        gv.Files.Theme.theme['General']['current'] = "Light Theme"
+        gv.Files.Theme.write_theme()
         self.en_s()
 
     def change_to_custom_theme(self):
-        gv.Files.Theme.current_theme = "Custom Theme"
-        gv.Files.Theme.write_theme(gv.Files.Theme.current_theme)
+        gv.Files.Theme.theme['General']['current'] = "Custom Theme"
+        gv.Files.Theme.write_theme()
         self.en_s()
 
     def save_custom_theme(self):
         gv.Files.Log.write_to_log('Attempting to save Custom Theme...')
-        gv.Files.Theme.custom_background = str(self.custom_background_color_lbl.cget('background'))
-        gv.Files.Theme.custom_foreground = str(self.custom_foreground_color_lbl.cget('background'))
-        gv.Files.Theme.custom_selected_background = str(self.custom_selected_background_color_lbl.cget('background'))
-        gv.Files.Theme.custom_button_background = str(self.custom_button_background_color_lbl.cget('background'))
-        gv.Files.Theme.custom_button_background_active = str(self.custom_button_background_active_color_lbl.cget('background'))
-        gv.Files.Theme.custom_button_foreground_active = str(self.custom_button_foreground_active_color_lbl.cget('background'))
-        gv.Files.Theme.custom_button_background_pressed = str(self.custom_button_background_pressed_color_lbl.cget('background'))
-        gv.Files.Theme.custom_button_foreground_pressed = str(self.custom_button_foreground_pressed_color_lbl.cget('background'))
-        gv.Files.Theme.custom_checkbutton_pressed = str(self.custom_checkbutton_pressed_color_lbl.cget('background'))
-        e = gv.Files.Theme.write_theme(gv.Files.Theme.current_theme)
-        if e == None:
-            gv.Files.Log.write_to_log('Saved custom theme successfully')
-            if gv.Files.Theme.current_theme == 'Custom Theme':
-                self.change_to_custom_theme()
-        else:
-            gv.Files.Log.write_to_log('Failed to save Custom Theme')
+        gv.Files.Theme.theme['Custom Theme']['background'] = str(self.custom_background_color_lbl.cget('background'))
+        gv.Files.Theme.theme['Custom Theme']['foreground'] = str(self.custom_foreground_color_lbl.cget('background'))
+        gv.Files.Theme.theme['Custom Theme']['selected_background'] = str(self.custom_selected_background_color_lbl.cget('background'))
+        gv.Files.Theme.theme['Custom Theme']['button_background'] = str(self.custom_button_background_color_lbl.cget('background'))
+        gv.Files.Theme.theme['Custom Theme']['button_background_active'] = str(self.custom_button_background_active_color_lbl.cget('background'))
+        gv.Files.Theme.theme['Custom Theme']['button_foreground_active'] = str(self.custom_button_foreground_active_color_lbl.cget('background'))
+        gv.Files.Theme.theme['Custom Theme']['button_background_pressed'] = str(self.custom_button_background_pressed_color_lbl.cget('background'))
+        gv.Files.Theme.theme['Custom Theme']['button_foreground_pressed'] = str(self.custom_button_foreground_pressed_color_lbl.cget('background'))
+        gv.Files.Theme.theme['Custom Theme']['checkbutton_pressed'] = str(self.custom_checkbutton_pressed_color_lbl.cget('background'))
+        e = gv.Files.Theme.write_theme()
+        # if e == None:
+        #     gv.Files.Log.write_to_log('Saved custom theme successfully')
+        #     if gv.Files.Theme.current_theme == 'Custom Theme':
+        #         self.change_to_custom_theme()
+        # else:
+        #     gv.Files.Log.write_to_log('Failed to save Custom Theme')
 
     def color_insert(self):
         """
         Inserts the colors from the theme file into the custom theme preview
         """
-        self.custom_background_color_lbl.configure(background = gv.Files.Theme.custom_background, cursor='hand2')
-        self.custom_foreground_color_lbl.configure(background = gv.Files.Theme.custom_foreground, cursor='hand2')
-        self.custom_selected_background_color_lbl.configure(background = gv.Files.Theme.custom_selected_background, cursor='hand2')
-        self.custom_button_background_color_lbl.configure(background = gv.Files.Theme.custom_button_background, cursor='hand2')
-        self.custom_button_background_active_color_lbl.configure(background = gv.Files.Theme.custom_button_background_active, cursor='hand2')
-        self.custom_button_foreground_active_color_lbl.configure(background = gv.Files.Theme.custom_button_foreground_active, cursor='hand2')
-        self.custom_button_background_pressed_color_lbl.configure(background = gv.Files.Theme.custom_button_background_pressed, cursor='hand2')
-        self.custom_button_foreground_pressed_color_lbl.configure(background = gv.Files.Theme.custom_button_foreground_pressed, cursor='hand2')
-        self.custom_checkbutton_pressed_color_lbl.configure(background = gv.Files.Theme.custom_checkbutton_pressed, cursor='hand2')
+        self.custom_background_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['background'], cursor='hand2')
+        self.custom_foreground_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['foreground'], cursor='hand2')
+        self.custom_selected_background_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['selected_background'], cursor='hand2')
+        self.custom_button_background_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['button_background'], cursor='hand2')
+        self.custom_button_background_active_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['button_background_active'], cursor='hand2')
+        self.custom_button_foreground_active_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['button_foreground_active'], cursor='hand2')
+        self.custom_button_background_pressed_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['button_background_pressed'], cursor='hand2')
+        self.custom_button_foreground_pressed_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['button_foreground_pressed'], cursor='hand2')
+        self.custom_checkbutton_pressed_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['checkbutton_pressed'], cursor='hand2')
     
     def color_bind(self):
         """
@@ -730,8 +731,9 @@ class Provider():
         self.rename_var = IntVar(value=gv.config.getint(self.name, 'rename'))
         self.rename_chkbtn = Checkbutton(self.scrollpar_frame, text='Rename images from ' + self.name.lower() + ' to ' + self.name.lower() + ' name', var=self.rename_var, style="chkbtn.TCheckbutton")
 
+        theme = gv.Files.Theme.theme['General']['current']
         self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
-        self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
+        self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.theme[theme]['foreground'], background=gv.Files.Theme.theme[theme]['background'], font=("Arial Bold", 10))
 
         self.show_tags_txt.insert(END, gv.config[self.name]['tags'])
         self.tags = None

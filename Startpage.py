@@ -43,8 +43,9 @@ class Startpage():
         gv.big_selector_frame = self.big_selector_ScrollFrame.sub_frame
         gv.big_selector_canvas = self.big_selector_ScrollFrame.canvas
 
+        theme = gv.Files.Theme.theme['General']['current']
         self.sub_frame_startpage = Frame(window, width=startpage_frame_width, height=startpage_frame_height, style="frame.TFrame")
-        self.canvas_startpage = Canvas(self.sub_frame_startpage, width=startpage_frame_width, height=startpage_frame_height, background=gv.Files.Theme.background, highlightthickness=0)
+        self.canvas_startpage = Canvas(self.sub_frame_startpage, width=startpage_frame_width, height=startpage_frame_height, background=gv.Files.Theme.theme[theme]['background'], highlightthickness=0)
         self.frame_startpage = Frame(self.canvas_startpage, width=startpage_frame_width, height=startpage_frame_height, style="frame.TFrame")
         self.canvas_startpage.pack(side="left")
         self.canvas_startpage.create_window((0,0),window=self.frame_startpage,anchor='nw')
@@ -84,14 +85,15 @@ class Startpage():
         def c():
             gv.config['DEFAULT']['jump_log'] = str(self.jump_log_var.get())
         self.jump_log_var = IntVar(value=gv.config.getint('DEFAULT', 'jump_log'))
+        theme = gv.Files.Theme.theme['General']['current']
         self.jump_log_chkbtn = cb(window, text="Jump to newest entry", var=self.jump_log_var, command=c,
-            foreground=gv.Files.Theme.foreground, 
-            background=gv.Files.Theme.background, 
+            foreground=gv.Files.Theme.theme[theme]['foreground'], 
+            background=gv.Files.Theme.theme[theme]['background'], 
             borderwidth = 1,
             highlightthickness = 0, 
-            selectcolor=gv.Files.Theme.checkbutton_pressed, 
-            activebackground=gv.Files.Theme.button_background_active, 
-            activeforeground=gv.Files.Theme.button_foreground_active, 
+            selectcolor=gv.Files.Theme.theme[theme]['checkbutton_pressed'], 
+            activebackground=gv.Files.Theme.theme[theme]['button_background_active'], 
+            activeforeground=gv.Files.Theme.theme[theme]['button_foreground_active'], 
             relief='flat',#default flat
             overrelief='ridge',#no default
             offrelief='flat',#default raised

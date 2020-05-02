@@ -42,14 +42,15 @@ class ProviderImageData():
         def sub_data_toggle():
             for elem in self.sub_dir_img_array:
                 elem.var.set(self.downloaded_var.get()) 
+        theme = gv.Files.Theme.theme['General']['current']
         self.downloaded_chkbtn = cb(master = gv.res_frame, var=self.downloaded_var, command=sub_data_toggle,
-            foreground=gv.Files.Theme.foreground, 
-            background=gv.Files.Theme.background, 
+            foreground=gv.Files.Theme.theme[theme]['foreground'], 
+            background=gv.Files.Theme.theme[theme]['background'], 
             borderwidth = 1,
             highlightthickness = 1, 
-            selectcolor=gv.Files.Theme.checkbutton_pressed, 
-            activebackground=gv.Files.Theme.button_background_active, 
-            activeforeground=gv.Files.Theme.button_foreground_active, 
+            selectcolor=gv.Files.Theme.theme[theme]['checkbutton_pressed'], 
+            activebackground=gv.Files.Theme.theme[theme]['button_background_active'], 
+            activeforeground=gv.Files.Theme.theme[theme]['button_foreground_active'], 
             relief='flat',#default flat
             overrelief='ridge',#no default
             offrelief='flat',#default raised
