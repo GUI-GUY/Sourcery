@@ -8,6 +8,7 @@ from tkinter.ttk import Checkbutton, Label, Button
 from PIL import ImageTk, Image
 from webbrowser import open_new
 from copy import deepcopy
+import logging as log
 from file_operations import is_image, gen_tagfile, resize
 import global_variables as gv
 
@@ -87,7 +88,7 @@ class SubImageData():
                     return self.load(True)
                 else:
                     print("ERROR [0044] " + str(e))
-                    gv.Files.Log.write_to_log("ERROR [0044] " + str(e))
+                    gv.Files.Log.write_to_log("ERROR [0044] " + str(e), log.ERROR)
                     mb.showerror("ERROR [0044]", "ERROR CODE [0044]\nSomething went wrong while accessing an image, please restart Sourcery.")
                     return False
             self.size = deepcopy(self.img_obj.size)
@@ -115,7 +116,7 @@ class SubImageData():
                         return self.load(True)
                     else:
                         print("ERROR [0071] " + str(e))
-                        gv.Files.Log.write_to_log("ERROR [0071] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0071] " + str(e), log.ERROR)
                         mb.showerror("ERROR [0071]", "ERROR CODE [0071]\nSomething went wrong while accessing an image, please restart Sourcery.")
                         return False
                 #img_obj_thumb = deepcopy(self.img_obj)
@@ -202,7 +203,7 @@ class SubImageData():
                         return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                     else:
                         print("ERROR [0051] " + str(e))
-                        gv.Files.Log.write_to_log("ERROR [0051] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0051] " + str(e), log.ERROR)
                         #mb.showerror("ERROR [0051]", "ERROR CODE [0051]\nSomething went wrong while creating the folder" + gv.output_dir + '/' + self.folder)
                         return False
                 if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, gv.output_dir + '/' + self.folder, self.name[:self.name.rfind('.')]):
@@ -214,7 +215,7 @@ class SubImageData():
                         return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                     else:
                         print("ERROR [0037] " + str(e))
-                        gv.Files.Log.write_to_log("ERROR [0037] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0037] " + str(e), log.ERROR)
                         #mb.showerror("ERROR [0037]", "ERROR CODE [0037]\nSomething went wrong while moving the image " + self.path_original)
                         return False
             return True
@@ -231,7 +232,7 @@ class SubImageData():
                         return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                     else:
                         print("ERROR [0052] " + str(e))
-                        gv.Files.Log.write_to_log("ERROR [0052] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0052] " + str(e), log.ERROR)
                         #mb.showerror("ERROR [0052]", "ERROR CODE [0051]\nSomething went wrong while creating the folder" + head_dir + '/' + self.folder)
                         return False
                 if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, head_dir + '/' + self.folder, self.name[:self.name.rfind('.')]):
@@ -244,7 +245,7 @@ class SubImageData():
                         return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                     else:
                         print("ERROR [0049] " + str(e))
-                        gv.Files.Log.write_to_log("ERROR [0049] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0049] " + str(e), log.ERROR)
                         #mb.showerror("ERROR [0049]", "ERROR CODE [0049]\nSomething went wrong while moving the image " + self.path)
                         return False
             return True

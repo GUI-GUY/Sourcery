@@ -41,7 +41,8 @@ def booru_fetch_illustration(imgid, service, comm_error_q=None):
         if comm_error_q != None:
             comm_error_q.put("[Sourcery] ERROR [0056] " + str(e))
         else:
-            gv.Files.Log.write_to_log("ERROR [0056] " + str(e))
+            print("ERROR [0056] " + str(e))
+            #gv.Files.Log.write_to_log("ERROR [0056] " + str(e))
         #mb.showerror("ERROR [0056]", "ERROR CODE [0056]\nImage data could not be retrieved")
         return False
     

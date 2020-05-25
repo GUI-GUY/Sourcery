@@ -1,6 +1,7 @@
 from os import makedirs, path, getcwd
 from sys import stderr
 from configparser import ConfigParser
+import logging as log
 from tkinter import END, Text
 from tkinter import messagebox as mb
 from time import strftime
@@ -13,7 +14,7 @@ class Files():
     """Hosts all File classes and creates neccesary files and folders on startup"""
     def __init__(self):
         self.create_files()
-        self.Log = LogFile()
+        self.Log = LogText()
         self.Theme = ThemeFile(self.Log)
         self.Ref = ReferenceFile(self.Log)
         
@@ -132,49 +133,31 @@ class ThemeFile():
     def write_theme(self):
         self.theme.write(open(cwd + '/Sourcery/theme.cfg', 'w'))#TODO
 
-class LogFile():
-    """Includes the opened log and the log text frame on the startpage and also methods to write these to the log file"""
+class LogText():
+    """Includes the log text frame on the startpage and also methods to write these to the log file"""
     def __init__(self):
-        self.log = -1
         self.log_text = None
-        self.init_log_init = False
-        #self.init_log()
 
     def init_log(self):
-        if self.init_log_init:
-            return
-        try:
-            self.log = open(cwd + '/Sourcery/log', 'a')
-            self.log.write('\nSourcery started. Date:' + strftime("20%y|%m|%d") + ' Time:' + strftime("%H:%M:%S") + '\n')
-            self.log_text.configure(state='normal')
-            self.log_text.insert(END, '\nSourcery started. Date:' + strftime("20%y|%m|%d") + ' Time:' + strftime("%H:%M:%S") + '\n')
-            self.log_text.configure(state='disabled')
-        except Exception as e:
-            print("ERROR [0038] " + str(e))
-            #self.Log.write_to_log("ERROR [0038] " + str(e))
-            mb.showerror("ERROR [0038]", "ERROR CODE [0038]\nSomething went wrong while accessing a configuration file(log), please restart Sourcery.")
-        self.init_log_init = True
+        self.log_text.configure(state='normal')
+        self.log_text.insert(END, '\nSourcery started. Date: ' + strftime("20%y|%m|%d") + ' Time: ' + strftime("%H:%M:%S") + '\n')
+        self.log_text.configure(state='disabled')
 
-    def write_to_log(self, message = ''):
-        if self.log == -1:
-            self.init_log()
-        if message != '':
-            try:
-                self.log.write('[' + strftime("%H:%M:%S") + '] ' + message + '\n')
-                self.log.flush()
-                self.log_text.configure(state='normal')
-                self.log_text.insert(END,'[' + strftime("%H:%M:%S") + '] ' + message + '\n')
-                self.log_text.configure(state='disabled')
-            except Exception as e:
-                print("ERROR [0050] " + str(e))
-                #self.Log.write_to_log("ERROR [0050] " + str(e))
-                mb.showerror("ERROR [0050]", "ERROR CODE [0050]\nSomething went wrong while accessing a configuration file(log), please restart Sourcery as soon as possible.")
+    def write_to_log(self, message = '', mode = 0):
+        self.log_text.configure(state='normal')
+        self.log_text.insert(END,'[' + strftime("%H:%M:%S") + '] ' + message + '\n')
+        self.log_text.configure(state='disabled')
 
-    def write(self, message):
-        self.write_to_log(message)
-        #self.log.write('[' + strftime("%H:%M:%S") + '] ' + message + '\n')
-        stderr.flush()
-        #self.log.flush()
+        if mode == log.DEBUG:
+            log.debug(message)
+        elif mode == log.INFO:
+            log.info(message)
+        elif mode == log.WARNING:
+            log.warning(message)
+        elif mode == log.ERROR:
+            log.error(message)
+        elif mode == log.CRITICAL:
+            log.critical(message)
 
 class ReferenceFile():
     """Includes methods to add a new reference, read these from the reference file or delete its contents"""
@@ -323,7 +306,7 @@ class ReferenceFile():
         f.close()
         if clear_list:
             self.refs.clear()
-        
+
 
 if __name__ == "__main__":
     Ref = ReferenceFile(None)

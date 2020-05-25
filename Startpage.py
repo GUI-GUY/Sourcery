@@ -6,6 +6,7 @@ import time
 from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END, W, simpledialog
 from tkinter import Checkbutton as cb
 from tkinter.ttk import Label, Button, Style, Entry, Frame, Checkbutton
+import logging as log
 from ScrollFrame import ScrollFrame
 from Files import Files
 from ImageData import ImageData
@@ -161,7 +162,7 @@ class Startpage():
             self.input_images_array.extend(listdir(gv.input_dir))
         except Exception as e:
             print('ERROR [0040] ' + str(e))
-            gv.Files.Log.write_to_log('ERROR [0040] ' + str(e))
+            gv.Files.Log.write_to_log('ERROR [0040] ' + str(e), log.ERROR)
             #mb.showerror("ERROR [0040]", "ERROR CODE [0040]\nSomething went wrong while accessing a the 'Input' folder, please restart Sourcery.")
         delete = list()
         for img in self.input_images_array:
@@ -186,7 +187,7 @@ class Startpage():
                 if b in gv.img_data_array:
                     gv.img_data_array.remove(b)
                 print("ERROR [0060] " + str(e))
-                gv.Files.Log.write_to_log("ERROR [0060] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0060] " + str(e), log.ERROR)
                 #mb.showerror("ERROR [0060]", "ERROR CODE [0060]\nImage data could not be loaded, skipped.")
         self.window.after(100, self.make_image_data)
             
@@ -197,19 +198,19 @@ class Startpage():
                 if not load:
                     data.self_destruct()
                     gv.img_data_array.remove(data)
-                    gv.Files.Log.write_to_log('Problem while loading images, skipped')
+                    gv.Files.Log.write_to_log('Problem while loading images, skipped', log.INFO)
                 elif load:
                     data.init_widgets()
                     data.process_results_imgs()
                     data.modify_results_widgets()
                     x = data.display_results(gv.last_occupied_result+1)
                     if x == -1:# This means direct replace has triggered
-                        gv.Files.Log.write_to_log('Saving image:' + data.sub_dill.name + '...' )
+                        gv.Files.Log.write_to_log('Saving image:' + data.sub_dill.name + '...' , log.INFO)
                         if data.save():
-                            gv.Files.Log.write_to_log('Successfully saved image')
+                            gv.Files.Log.write_to_log('Successfully saved image', log.INFO)
                             data.self_destruct()
                         else:
-                            gv.Files.Log.write_to_log('Did not save image')# TODO delete reference
+                            gv.Files.Log.write_to_log('Did not save image', log.INFO)# TODO delete reference
                         gv.img_data_array.remove(data)
                     else:
                         gv.last_occupied_result = x
@@ -236,7 +237,7 @@ class Startpage():
             self.currently_sourcing_img_lbl.configure(text=answer2)
         if answer2 == 'Stopped' or answer2 == 'Finished':
             if self.Processing_Class.comm_error_q.empty():
-                gv.Files.Log.write_to_log('Sourcing process was stopped or is finished')
+                gv.Files.Log.write_to_log('Sourcing process was stopped or is finished', log.INFO)
                 self.do_sourcery_btn.configure(state='enabled')
                 self.load_from_ref_btn.configure(state='enabled')
                 self.stop_btn.configure(state='enabled')
@@ -251,11 +252,11 @@ class Startpage():
                         remove(e[6:])
                 except Exception as e:
                     print('ERROR [0067] ' + str(e))
-                    gv.Files.Log.write_to_log("ERROR [0067] " + str(e))
+                    gv.Files.Log.write_to_log("ERROR [0067] " + str(e), log.ERROR)
                     #mb.showerror("ERROR", "ERROR CODE [0067]\nSomething went wrong while removing the image " + element)
             else:
                 self.error_lbl.configure(text=e)
-                gv.Files.Log.write_to_log(e)
+                gv.Files.Log.write_to_log(e, log.ERROR)
         except:
             pass
         self.window.after(100, self.get_processing_status, answer2, currently_processing)

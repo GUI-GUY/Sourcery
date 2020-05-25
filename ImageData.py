@@ -9,6 +9,7 @@ from tkinter.ttk import Checkbutton, Label, Button
 from PIL import ImageTk, Image
 from webbrowser import open_new
 from copy import deepcopy
+import logging as log
 from file_operations import is_image, gen_tagfile
 from ProviderImageData import ProviderImageData
 from SubImageData import SubImageData
@@ -118,7 +119,7 @@ class ImageData():
         except Exception as e:
                 print("ERROR [0069] " + str(e))
                 #mb.showerror("ERROR [0069]", "ERROR CODE [0069]\nSomething went wrong while loading an image.")
-                gv.Files.Log.write_to_log("ERROR [0069] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0069] " + str(e), log.ERROR)
                 return False
         
         if self.original_image_thumb == None:
@@ -625,7 +626,7 @@ class ImageData():
                     return self.save(True, save_counter)
                 else:
                     print("ERROR [0061] " + str(e))
-                    gv.Files.Log.write_to_log("ERROR [0061] " + str(e))
+                    gv.Files.Log.write_to_log("ERROR [0061] " + str(e), log.ERROR)
                     #mb.showerror("ERROR [0061]", "ERROR CODE [0061]\nSomething went wrong while creating the output folder)
                     return False
             t = 0
@@ -641,7 +642,7 @@ class ImageData():
                         return self.save(True, save_counter)
                     else:
                         print("ERROR [0013] " + str(e))
-                        gv.Files.Log.write_to_log("ERROR [0013] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0013] " + str(e), log.ERROR)
                         #mb.showerror("ERROR [0013]", "ERROR CODE [0013]\nSomething went wrong while moving the image " + self.sub_dill.path)
                         return False
                 t += 1
@@ -664,7 +665,7 @@ class ImageData():
                     return self.save(True, save_counter)
                 else:
                     print("ERROR [0062] " + str(e))
-                    gv.Files.Log.write_to_log("ERROR [0062] " + str(e))
+                    gv.Files.Log.write_to_log("ERROR [0062] " + str(e), log.ERROR)
                     #mb.showerror("ERROR [0062]", "ERROR CODE [0062]\nSomething went wrong while creating the output folder)
                     return False
             if self.original_var.get() == 1:
@@ -677,7 +678,7 @@ class ImageData():
                         return self.save(True, save_counter)
                     else:
                         print("ERROR [0048] " + str(e))
-                        gv.Files.Log.write_to_log("ERROR [0048] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0048] " + str(e), log.ERROR)
                         #mb.showerror("ERROR [0048]", "ERROR CODE [0048]\nSomething went wrong while moving the image " + self.path_original)
                         return False
             else:

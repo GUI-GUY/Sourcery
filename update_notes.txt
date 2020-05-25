@@ -82,3 +82,4 @@ Update 0.3.6
 
 General
 - Improved Theme file readability and code
+- Updated logging to use python logging module

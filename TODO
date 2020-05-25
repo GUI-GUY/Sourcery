@@ -185,6 +185,8 @@ shorten long filenames with XXXXXX...XXXXXX.png in log
 folder button in big selector
 when pressing right/left too often you skip images and "image "pyimage230" doesn't exist"
 when input folder isnt found make new one/handle error better
+save system:
+    instead of paths in delete_images_array, put in a pointer to the class
 
 beta 0.4
 beta 0.5?
