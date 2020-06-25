@@ -753,6 +753,14 @@ class Provider():
         self.tagfile_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
         self.tagfile_gelbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include gelbooru tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
         
+        self.api_key_lbl = Label(self.scrollpar_frame, text="Api Key", style="label.TLabel")
+        self.api_key_entry = Entry(self.scrollpar_frame, width=30, style="button.TLabel")
+        self.user_id_lbl = Label(self.scrollpar_frame, text="User ID", style="label.TLabel")
+        self.user_id_entry = Entry(self.scrollpar_frame, width=30, style="button.TLabel")
+        self.api_key_entry.insert(0, gv.config['Gelbooru']['api_key'])
+        self.user_id_entry.insert(0, gv.config['Gelbooru']['user_id'])
+
+
         #self.save_btn = Button(parent, text='Save', command=self.save, style ="button.TLabel")
 
     def display(self):
@@ -786,6 +794,12 @@ class Provider():
 
         self.rename_chkbtn.grid(row= 19, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
 
+        if self.name == "Gelbooru":
+            self.api_key_lbl.grid(row= 20, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+            self.api_key_entry.grid(row= 20, column= 1, sticky=W, padx=2, pady=1, columnspan=2)
+            self.user_id_lbl.grid(row= 21, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
+            self.user_id_entry.grid(row= 21, column= 1, sticky=W, padx=2, pady=1, columnspan=2)
+
         self.lbl.place(x = x2, y = y + c * 1)
         self.scrollpar.display(x = x2, y= y + c * 2)
 
@@ -805,6 +819,10 @@ class Provider():
         self.tagfile_yandere_chkbtn.grid_forget()
         self.tagfile_konachan_chkbtn.grid_forget()
         self.tagfile_gelbooru_chkbtn.grid_forget()
+        self.api_key_lbl.grid_forget()
+        self.api_key_entry.grid_forget()
+        self.user_id_lbl.grid_forget()
+        self.user_id_entry.grid_forget()
 
         self.rename_chkbtn.grid_forget()
 
@@ -822,7 +840,6 @@ class Provider():
         gv.config[self.name]['tagfile_konachan'] = str(self.tagfile_konachan_var.get())
         gv.config[self.name]['tagfile_gelbooru'] = str(self.tagfile_konachan_var.get())
         gv.config[self.name]['use'] = str(self.use_var.get())
-        gv.write_config()
         if self.name == 'Pixiv':
             gv.results_tags_pixiv = self.tags.split()
         elif self.name == 'Danbooru':
@@ -833,4 +850,7 @@ class Provider():
             gv.results_tags_konachan = self.tags.split()
         elif self.name == 'Gelbooru':
             gv.results_tags_gelbooru = self.tags.split()
+            gv.config['Gelbooru']['api_key'] = str(self.api_key_entry.get())
+            gv.config['Gelbooru']['user_id'] = str(self.user_id_entry.get())
+        gv.write_config()
         gv.Files.Log.write_to_log('Saved ' + self.name + ' options', log.INFO)

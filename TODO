@@ -139,6 +139,11 @@ BUGS:
 beta 0.3.6
 import logging
 + config parser on theme file
+BUGS:
+logging starts a new "thread" everytime 'get sources' is run
+on 403 for gelbooru the sourcerer freezes
++ gelbooru needs login
+
 
 beta 0.3.7
 Notification rework

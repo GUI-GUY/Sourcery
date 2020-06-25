@@ -189,7 +189,6 @@ def save_locked():
     # if error, write in Error1 and try again, 
     # if error, write in Error2 and remove from delete_dirs_array
 
-
 def leftovers(delete_list=None):
     """
     Deletes files and folders scheduled to be deleted indicated by delete_dirs_array

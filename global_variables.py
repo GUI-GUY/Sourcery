@@ -73,7 +73,7 @@ def write_config():
 
 cwd = getcwd()
 Files = Files()
-default_dict = {"rename":'0', "tags":'', "gen_tagfile":'0', "tagfile_pixiv":'0', "tagfile_danbooru":'0', "tagfile_yandere":'0', "tagfile_konachan":'0', "tagfile_gelbooru":'0', "direct_replace":'0', "use":'1', "jump_log":'1'}
+default_dict = {"rename":'0', "tags":'', "gen_tagfile":'0', "tagfile_pixiv":'0', "tagfile_danbooru":'0', "tagfile_yandere":'0', "tagfile_konachan":'0', "tagfile_gelbooru":'0', "direct_replace":'0', "use":'1', "jump_log":'1', "api_key":'', "user_id":''}
 config = ConfigParser(defaults=default_dict)
 init_config()
 input_dir = config['Sourcery']['input_dir']

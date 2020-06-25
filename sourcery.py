@@ -16,7 +16,7 @@ def die(message, comm_error_q, comm_img_q, terminate_c_pipe):
         terminate_c_pipe.send(True)
     #exit()
 
-def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, duplicate_c_pipe, terminate_c_pipe):
+def do_sourcery(cwd, input_images_array, login_dict, minsim, input_dir, comm_q, comm_img_q, comm_stop_q, comm_error_q, img_data_q, duplicate_c_pipe, terminate_c_pipe):
     """
     1. for all images in input folder:
     2. get SauceNao information
@@ -38,7 +38,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
         except Exception as e:
             die(str(e), comm_error_q, comm_img_q, terminate_c_pipe)
         
-        res = get_response(image_name, cwd, saucenao_key, minsim, comm_error_q)
+        res = get_response(image_name, cwd, login_dict["saucenao_key"], minsim, comm_error_q)
         if res[0] == 401:
             # Exception while opening image!
             comm_error_q.put('[Sourcery] ' + res[1])
@@ -75,7 +75,7 @@ def do_sourcery(cwd, input_images_array, saucenao_key, minsim, input_dir, comm_q
             sleep(10)
         elif res[0] == 200:
             comm_q.put((res[3], res[4]))
-            processed_data = process_img_data_new(image_name, cwd + '/Sourcery/sourced_original/' + image_name, image_path, res, minsim, comm_error_q, duplicate_c_pipe)
+            processed_data = process_img_data_new(image_name, cwd + '/Sourcery/sourced_original/' + image_name, image_path, res, minsim, login_dict, comm_error_q, duplicate_c_pipe)
             if processed_data != False:
                 img_data_q.put(create_DIllustration(image_name, image_path, cwd + '/Sourcery/sourced_original/' + image_name, processed_data, minsim, comm_error_q))
             #process_img_data(image_name, image, res, minsim, img_data_q, comm_error_q)   
@@ -104,7 +104,7 @@ def create_DIllustration(img_name_original, input_path, work_path, img_data, min
         img_data[0], img_data[1], img_data[2], img_data[3], img_data[4]], img_data[5], minsim)
     return d_illust
 
-def process_img_data_new(img_name_original, img_path, input_path, res, minsim, comm_error_q, duplicate_c_pipe):
+def process_img_data_new(img_name_original, img_path, input_path, res, minsim, login_dict, comm_error_q, duplicate_c_pipe):
     """
     Downloads the image from pixiv and Danbooru
     Returns information on the downloads
@@ -133,10 +133,10 @@ def process_img_data_new(img_name_original, img_path, input_path, res, minsim, c
         if source['illust_id'] != 0:
             comm_error_q.put('[Sourcery] Fetching ' + source['service_name'] + ' illustration...')
             pixiv_illustration_list.extend(pixiv_fetcher(img_name_original, source, pixiv_visited, comm_error_q))
-            danbooru_illustration_list.extend(booru_fetcher(img_name_original, source, 'Danbooru', danbooru_visited, comm_error_q))
-            yandere_illustration_list.extend(booru_fetcher(img_name_original, source, 'Yandere', yandere_visited, comm_error_q))
-            konachan_illustration_list.extend(booru_fetcher(img_name_original, source, 'Konachan', konachan_visited, comm_error_q))
-            gelbooru_illustration_list.extend(booru_fetcher(img_name_original, source, 'Gelbooru', konachan_visited, comm_error_q))
+            danbooru_illustration_list.extend(booru_fetcher(img_name_original, source, 'Danbooru', danbooru_visited, login_dict, comm_error_q))
+            yandere_illustration_list.extend(booru_fetcher(img_name_original, source, 'Yandere', yandere_visited, login_dict, comm_error_q))
+            konachan_illustration_list.extend(booru_fetcher(img_name_original, source, 'Konachan', konachan_visited, login_dict, comm_error_q))
+            gelbooru_illustration_list.extend(booru_fetcher(img_name_original, source, 'Gelbooru', konachan_visited, login_dict, comm_error_q))
 
     if len(danbooru_illustration_list) == 0 and len(pixiv_illustration_list) == 0 and len(yandere_illustration_list) == 0 and len(konachan_illustration_list) == 0 and len(gelbooru_illustration_list) == 0:
         comm_error_q.put('[Sourcery] No sources were found!')
@@ -184,18 +184,18 @@ def pixiv_fetcher(img_name_original, source, visited, comm_error_q):
                 visited.append(source['illust_id'])
     return illustration_list
 
-def booru_fetcher(img_name_original, source, service, visited, comm_error_q):
+def booru_fetcher(img_name_original, source, service, visited, login_dict, comm_error_q):
     illustration_list = list()
     illustration = False
     parent_name = False
     name = False
     if source['service_name'] == service:
         if source['illust_id'] not in visited:
-            illustration = booru_fetch_illustration(source['illust_id'], service, comm_error_q)
+            illustration = booru_fetch_illustration(source['illust_id'], service, login_dict, comm_error_q)
             if illustration != False:
                 if 'parent_id' in illustration:
                     if illustration['parent_id'] != None and illustration['parent_id'] not in visited:
-                        parent_illustration = booru_fetch_illustration(illustration['parent_id'], service, comm_error_q)
+                        parent_illustration = booru_fetch_illustration(illustration['parent_id'], service, login_dict, comm_error_q)
                         if parent_illustration != False:
                             parent_name = booru_download(img_name_original, illustration['parent_id'], parent_illustration, service, comm_error_q)
                         if parent_name != False:
