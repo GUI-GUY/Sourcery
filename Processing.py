@@ -25,7 +25,8 @@ class Processing():
         self.parent.load_from_ref_btn.configure(state='disabled')
         gv.Files.Log.write_to_log('Starting second process for sourcing images', log.INFO)
         self.parent.input_lock.acquire()
-        self.process = Process(target=do_sourcery, args=(gv.cwd, self.parent.input_images_array, {"saucenao_key":gv.config['SauceNAO']['api_key'], "gelbooru_api_key":gv.config['Gelbooru']['api_key'], "gelbooru_user_id":gv.config['Gelbooru']['user_id']}, gv.config['SauceNAO']['minsim'], gv.input_dir, self.comm_q, self.comm_img_q, self.comm_stop_q, self.comm_error_q, self.img_data_q, self.duplicate_c_pipe, self.terminate_c_pipe, ))
+        login_dict = {"saucenao_key":gv.config.get('SauceNAO','api_key'), "gelbooru_api_key":gv.config.get('Gelbooru','api_key'), "gelbooru_user_id":gv.config.get('Gelbooru','user_id')}
+        self.process = Process(target=do_sourcery, args=(gv.cwd, self.parent.input_images_array, login_dict, gv.config.get('SauceNAO','minsim'), gv.input_dir, self.comm_q, self.comm_img_q, self.comm_stop_q, self.comm_error_q, self.img_data_q, self.duplicate_c_pipe, self.terminate_c_pipe, ))
         self.process.start()
         self.parent.input_lock.release()
 

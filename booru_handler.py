@@ -24,7 +24,7 @@ def booru_fetch_illustration(imgid, service, login_dict, comm_error_q=None):
         elif service == 'Konachan':
             r = get('https://konachan.com/post.json?tags=id:' + str(imgid))
         elif service == 'Gelbooru':
-            if login_dict["gelbooru_api_key"] != '' and login_dict["gelbooru_user_id"] != '':
+            if login_dict["gelbooru_api_key"] != '' or login_dict["gelbooru_user_id"] != '':
                 r = get('https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&api_key=' + login_dict["gelbooru_api_key"] + '&user_id=' + login_dict["gelbooru_user_id"] + '&id=' + str(imgid))
             else:
                 comm_error_q.put('[Sourcery] Gelbooru requires login')

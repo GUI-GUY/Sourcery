@@ -61,7 +61,7 @@ class Startpage():
         self.saucenao_requests_count_lbl = Label(self.frame_startpage, text="???/200", style="label.TLabel")
         #self.elapsed_time_lbl = Label(self.frame_startpage, text="Elapsed time:", style="label.TLabel")
         #self.eta_lbl = Label(self.frame_startpage, text="ETA:", style="label.TLabel")
-        self.error_lbl = Label(self.frame_startpage, text="", wraplength=startpage_frame_width-10, style="label.TLabel")
+        self.info_lbl = Label(self.frame_startpage, text="", wraplength=startpage_frame_width-10, style="label.TLabel")
 
         self.change_input_btn = Button(window, text="Change Input", command=change_input, style="button.TLabel")
         self.open_input_btn = Button(window, text="Open Input", command=open_input, style="button.TLabel")
@@ -130,7 +130,7 @@ class Startpage():
         self.saucenao_requests_count_lbl.grid(row=2, column=1, sticky=W, padx = 10)
         #self.elapsed_time_lbl.grid(row= 5, column= 0)
         #self.eta_lbl.grid(row= 5, column= 0)
-        self.error_lbl.grid(row=7, column=0, columnspan=3, sticky=W)
+        self.info_lbl.grid(row=7, column=0, columnspan=3, sticky=W)
 
         self.do_sourcery_btn.grid(row= 3, column= 0, sticky=W, pady = 1)
         self.stop_btn.grid(row= 4, column= 0, sticky=W, pady = 1)
@@ -255,8 +255,8 @@ class Startpage():
                     gv.Files.Log.write_to_log("ERROR [0067] " + str(e), log.ERROR)
                     #mb.showerror("ERROR", "ERROR CODE [0067]\nSomething went wrong while removing the image " + element)
             else:
-                self.error_lbl.configure(text=e)
-                gv.Files.Log.write_to_log(e, log.ERROR)
+                self.info_lbl.configure(text=e)
+                gv.Files.Log.write_to_log(e, log.INFO)
         except:
             pass
         self.window.after(100, self.get_processing_status, answer2, currently_processing)

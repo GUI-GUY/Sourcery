@@ -137,12 +137,14 @@ BUGS:
 +~ big_lock blocks
 
 beta 0.3.6
-import logging
+~ import logging
 + config parser on theme file
 BUGS:
-logging starts a new "thread" everytime 'get sources' is run
-on 403 for gelbooru the sourcerer freezes
++ logging starts a new "thread" everytime 'get sources' is run
+- on 403 for gelbooru the sourcerer freezes
 + gelbooru needs login
+~ gelbooru login need restart maybe
+~ manage old logfiles/delete
 
 
 beta 0.3.7
@@ -155,6 +157,10 @@ Notification rework
     show progress of sourced imaged/all images
     elapsed time / ETA
     ATTEMPTING
+    If no service is picked
+    gelbooru needs login occasionaly
+put all use service on startpage
+logfile into cleanup
 
 beta 0.3.8
 big selector text green/red/white if better/worse/same res/datatype?
@@ -190,6 +196,7 @@ shorten long filenames with XXXXXX...XXXXXX.png in log
 folder button in big selector
 when pressing right/left too often you skip images and "image "pyimage230" doesn't exist"
 when input folder isnt found make new one/handle error better
+"change log to debug mode" button
 save system:
     instead of paths in delete_images_array, put in a pointer to the class
 

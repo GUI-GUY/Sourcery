@@ -656,7 +656,7 @@ class ProviderOptions():
         self.gelbooru_btn.place(x = x1, y = y + c * 6)
         self.weight_btn.place(x = x1, y = y + c * 8)
         
-        self.save_btn.place(x = x2, y = y + c * 26)
+        self.save_btn.place(x = x2, y = y + c * 31)
 
         self.original_display()
 
@@ -753,14 +753,19 @@ class Provider():
         self.tagfile_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
         self.tagfile_gelbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include gelbooru tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
         
+        self.gelbooru_login1_lbl = Label(self.scrollpar_frame, text="Gelbooru occasionally wants to know your login data, which can be found at the bottom of this page:", style="label.TLabel")
+        self.gelbooru_link_lbl = Label(self.scrollpar_frame, text="https://gelbooru.com/index.php?page=account&s=options", style="label.TLabel")
+        self.gelbooru_link_lbl.configure(foreground='#2626ff', cursor='hand2', font=('Arial', 10))
+        self.gelbooru_link_lbl.bind("<Button-1>", self.hyperlink)
+        self.gelbooru_login2_lbl = Label(self.scrollpar_frame, text="There you can also change the option \"Display all site content\" or \"Safe Only Listing\" for content control", style="label.TLabel")
         self.api_key_lbl = Label(self.scrollpar_frame, text="Api Key", style="label.TLabel")
         self.api_key_entry = Entry(self.scrollpar_frame, width=30, style="button.TLabel")
         self.user_id_lbl = Label(self.scrollpar_frame, text="User ID", style="label.TLabel")
         self.user_id_entry = Entry(self.scrollpar_frame, width=30, style="button.TLabel")
         self.api_key_entry.insert(0, gv.config['Gelbooru']['api_key'])
         self.user_id_entry.insert(0, gv.config['Gelbooru']['user_id'])
-
-
+        self.gelbooru_login3_lbl = Label(self.scrollpar_frame, text="(Restart of Sourcery on change is recommended)", style="label.TLabel")
+        
         #self.save_btn = Button(parent, text='Save', command=self.save, style ="button.TLabel")
 
     def display(self):
@@ -795,10 +800,14 @@ class Provider():
         self.rename_chkbtn.grid(row= 19, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
 
         if self.name == "Gelbooru":
-            self.api_key_lbl.grid(row= 20, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
-            self.api_key_entry.grid(row= 20, column= 1, sticky=W, padx=2, pady=1, columnspan=2)
-            self.user_id_lbl.grid(row= 21, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
-            self.user_id_entry.grid(row= 21, column= 1, sticky=W, padx=2, pady=1, columnspan=2)
+            self.gelbooru_login1_lbl.grid(row= 22, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
+            self.gelbooru_link_lbl.grid(row= 23, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
+            self.gelbooru_login2_lbl.grid(row= 24, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
+            self.api_key_lbl.grid(row= 25, column= 0, sticky=W, padx=2, pady=1, columnspan=1)
+            self.api_key_entry.grid(row= 25, column= 1, sticky=W, padx=2, pady=1, columnspan=1)
+            self.user_id_lbl.grid(row= 26, column= 0, sticky=W, padx=2, pady=1, columnspan=1)
+            self.user_id_entry.grid(row= 26, column= 1, sticky=W, padx=2, pady=1, columnspan=1)
+            self.gelbooru_login3_lbl.grid(row= 27, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
 
         self.lbl.place(x = x2, y = y + c * 1)
         self.scrollpar.display(x = x2, y= y + c * 2)
@@ -819,10 +828,14 @@ class Provider():
         self.tagfile_yandere_chkbtn.grid_forget()
         self.tagfile_konachan_chkbtn.grid_forget()
         self.tagfile_gelbooru_chkbtn.grid_forget()
+        self.gelbooru_login1_lbl.grid_forget()
+        self.gelbooru_link_lbl.grid_forget()
+        self.gelbooru_login2_lbl.grid_forget()
         self.api_key_lbl.grid_forget()
         self.api_key_entry.grid_forget()
         self.user_id_lbl.grid_forget()
         self.user_id_entry.grid_forget()
+        self.gelbooru_login3_lbl.grid_forget()
 
         self.rename_chkbtn.grid_forget()
 
@@ -854,3 +867,9 @@ class Provider():
             gv.config['Gelbooru']['user_id'] = str(self.user_id_entry.get())
         gv.write_config()
         gv.Files.Log.write_to_log('Saved ' + self.name + ' options', log.INFO)
+
+    def hyperlink(self, event):
+        """
+        Opens a webbrowser with a URL on click of a widget that is bound to this method
+        """
+        open_new(event.widget.cget("text"))

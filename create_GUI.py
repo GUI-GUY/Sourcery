@@ -28,7 +28,7 @@ from ScrollFrame import ScrollFrame
 from Startpage import Startpage
 from Files import Files
 import global_variables as gv
-from atexit import register
+#from atexit import register
 
 
 def load_from_ref():
@@ -335,7 +335,9 @@ def enforce_style():
     Options_Class.ProO.Weight.scrollpar.canvas.configure(background=gv.Files.Theme.theme[theme]['background'])
 
 if __name__ == '__main__':
+    gv.init_log()
     freeze_support()
+
 
     window = gv.window = Tk()
     window.title("Sourcery")

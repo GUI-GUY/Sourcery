@@ -71,6 +71,13 @@ def init_config():
 def write_config():
     config.write(open(cwd + '/Sourcery/config.cfg', 'w'))#TODO
 
+def init_log():
+    f = open(cwd + '/Sourcery/sourcery.log', 'a')
+    f.write('\nSourcery started. Date: ' + strftime("20%y-%m-%d") + ' Time: ' + strftime("%H:%M:%S") + '\n') #TODO
+    f.close()
+    log.basicConfig(format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%H:%M:%S', filename= cwd + '/Sourcery/sourcery.log', level=log.INFO)
+
+
 cwd = getcwd()
 Files = Files()
 default_dict = {"rename":'0', "tags":'', "gen_tagfile":'0', "tagfile_pixiv":'0', "tagfile_danbooru":'0', "tagfile_yandere":'0', "tagfile_konachan":'0', "tagfile_gelbooru":'0', "direct_replace":'0', "use":'1', "jump_log":'1', "api_key":'', "user_id":''}
@@ -79,10 +86,6 @@ init_config()
 input_dir = config['Sourcery']['input_dir']
 output_dir = config['Sourcery']['output_dir']
 
-f = open(cwd + '/Sourcery/example.log', 'a')
-f.write('\nSourcery started. Date: ' + strftime("20%y-%m-%d") + ' Time: ' + strftime("%H:%M:%S") + '\n') #TODO
-f.close()
-log.basicConfig(format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%H:%M:%S', filename= cwd + '/Sourcery/example.log', level=log.DEBUG)
 
 width = 0
 height = 0
