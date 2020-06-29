@@ -199,6 +199,7 @@ queue images instead of 'get source' button?
 
 future
 HentAI (not good enough yet, have to touch up every image manually aka not really a time saver)
+HentAI + Greenhouse(let HentAI find the area, get the color under the green from the original and let greenhouse color the adjacent pixlels in the same color)
 other AI censorbar detector
 
 LEGEND:

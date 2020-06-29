@@ -73,7 +73,8 @@ General:
 Update 0.3.5
 
 Features:
-- Added gelbooru as provider
+- Added gelbooru as provider(gelbooru sometimes asks for login data, will be addressed in future update)
+- Added button that lets you scroll to the bottom of the log
 
 General:
 - Code compression & optimization
