@@ -6,6 +6,7 @@ import time
 from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END, W, simpledialog
 from tkinter import Checkbutton as cb
 from tkinter.ttk import Label, Button, Style, Entry, Frame, Checkbutton
+import logging as log
 from ScrollFrame import ScrollFrame
 from Files import Files
 from ImageData import ImageData
@@ -43,8 +44,9 @@ class Startpage():
         gv.big_selector_frame = self.big_selector_ScrollFrame.sub_frame
         gv.big_selector_canvas = self.big_selector_ScrollFrame.canvas
 
+        theme = gv.Files.Theme.theme['General']['current']
         self.sub_frame_startpage = Frame(window, width=startpage_frame_width, height=startpage_frame_height, style="frame.TFrame")
-        self.canvas_startpage = Canvas(self.sub_frame_startpage, width=startpage_frame_width, height=startpage_frame_height, background=gv.Files.Theme.background, highlightthickness=0)
+        self.canvas_startpage = Canvas(self.sub_frame_startpage, width=startpage_frame_width, height=startpage_frame_height, background=gv.Files.Theme.theme[theme]['background'], highlightthickness=0)
         self.frame_startpage = Frame(self.canvas_startpage, width=startpage_frame_width, height=startpage_frame_height, style="frame.TFrame")
         self.canvas_startpage.pack(side="left")
         self.canvas_startpage.create_window((0,0),window=self.frame_startpage,anchor='nw')
@@ -59,7 +61,7 @@ class Startpage():
         self.saucenao_requests_count_lbl = Label(self.frame_startpage, text="???/200", style="label.TLabel")
         #self.elapsed_time_lbl = Label(self.frame_startpage, text="Elapsed time:", style="label.TLabel")
         #self.eta_lbl = Label(self.frame_startpage, text="ETA:", style="label.TLabel")
-        self.error_lbl = Label(self.frame_startpage, text="", wraplength=startpage_frame_width-10, style="label.TLabel")
+        self.info_lbl = Label(self.frame_startpage, text="", wraplength=startpage_frame_width-10, style="label.TLabel")
 
         self.change_input_btn = Button(window, text="Change Input", command=change_input, style="button.TLabel")
         self.open_input_btn = Button(window, text="Open Input", command=open_input, style="button.TLabel")
@@ -84,14 +86,15 @@ class Startpage():
         def c():
             gv.config['DEFAULT']['jump_log'] = str(self.jump_log_var.get())
         self.jump_log_var = IntVar(value=gv.config.getint('DEFAULT', 'jump_log'))
+        theme = gv.Files.Theme.theme['General']['current']
         self.jump_log_chkbtn = cb(window, text="Jump to newest entry", var=self.jump_log_var, command=c,
-            foreground=gv.Files.Theme.foreground, 
-            background=gv.Files.Theme.background, 
+            foreground=gv.Files.Theme.theme[theme]['foreground'], 
+            background=gv.Files.Theme.theme[theme]['background'], 
             borderwidth = 1,
             highlightthickness = 0, 
-            selectcolor=gv.Files.Theme.checkbutton_pressed, 
-            activebackground=gv.Files.Theme.button_background_active, 
-            activeforeground=gv.Files.Theme.button_foreground_active, 
+            selectcolor=gv.Files.Theme.theme[theme]['checkbutton_pressed'], 
+            activebackground=gv.Files.Theme.theme[theme]['button_background_active'], 
+            activeforeground=gv.Files.Theme.theme[theme]['button_foreground_active'], 
             relief='flat',#default flat
             overrelief='ridge',#no default
             offrelief='flat',#default raised
@@ -127,7 +130,7 @@ class Startpage():
         self.saucenao_requests_count_lbl.grid(row=2, column=1, sticky=W, padx = 10)
         #self.elapsed_time_lbl.grid(row= 5, column= 0)
         #self.eta_lbl.grid(row= 5, column= 0)
-        self.error_lbl.grid(row=7, column=0, columnspan=3, sticky=W)
+        self.info_lbl.grid(row=7, column=0, columnspan=3, sticky=W)
 
         self.do_sourcery_btn.grid(row= 3, column= 0, sticky=W, pady = 1)
         self.stop_btn.grid(row= 4, column= 0, sticky=W, pady = 1)
@@ -159,7 +162,7 @@ class Startpage():
             self.input_images_array.extend(listdir(gv.input_dir))
         except Exception as e:
             print('ERROR [0040] ' + str(e))
-            gv.Files.Log.write_to_log('ERROR [0040] ' + str(e))
+            gv.Files.Log.write_to_log('ERROR [0040] ' + str(e), log.ERROR)
             #mb.showerror("ERROR [0040]", "ERROR CODE [0040]\nSomething went wrong while accessing a the 'Input' folder, please restart Sourcery.")
         delete = list()
         for img in self.input_images_array:
@@ -184,7 +187,7 @@ class Startpage():
                 if b in gv.img_data_array:
                     gv.img_data_array.remove(b)
                 print("ERROR [0060] " + str(e))
-                gv.Files.Log.write_to_log("ERROR [0060] " + str(e))
+                gv.Files.Log.write_to_log("ERROR [0060] " + str(e), log.ERROR)
                 #mb.showerror("ERROR [0060]", "ERROR CODE [0060]\nImage data could not be loaded, skipped.")
         self.window.after(100, self.make_image_data)
             
@@ -195,19 +198,19 @@ class Startpage():
                 if not load:
                     data.self_destruct()
                     gv.img_data_array.remove(data)
-                    gv.Files.Log.write_to_log('Problem while loading images, skipped')
+                    gv.Files.Log.write_to_log('Problem while loading images, skipped', log.INFO)
                 elif load:
                     data.init_widgets()
                     data.process_results_imgs()
                     data.modify_results_widgets()
                     x = data.display_results(gv.last_occupied_result+1)
                     if x == -1:# This means direct replace has triggered
-                        gv.Files.Log.write_to_log('Saving image:' + data.sub_dill.name + '...' )
+                        gv.Files.Log.write_to_log('Saving image:' + data.sub_dill.name + '...' , log.INFO)
                         if data.save():
-                            gv.Files.Log.write_to_log('Successfully saved image')
+                            gv.Files.Log.write_to_log('Successfully saved image', log.INFO)
                             data.self_destruct()
                         else:
-                            gv.Files.Log.write_to_log('Did not save image')# TODO delete reference
+                            gv.Files.Log.write_to_log('Did not save image', log.INFO)# TODO delete reference
                         gv.img_data_array.remove(data)
                     else:
                         gv.last_occupied_result = x
@@ -234,7 +237,7 @@ class Startpage():
             self.currently_sourcing_img_lbl.configure(text=answer2)
         if answer2 == 'Stopped' or answer2 == 'Finished':
             if self.Processing_Class.comm_error_q.empty():
-                gv.Files.Log.write_to_log('Sourcing process was stopped or is finished')
+                gv.Files.Log.write_to_log('Sourcing process was stopped or is finished', log.INFO)
                 self.do_sourcery_btn.configure(state='enabled')
                 self.load_from_ref_btn.configure(state='enabled')
                 self.stop_btn.configure(state='enabled')
@@ -249,11 +252,11 @@ class Startpage():
                         remove(e[6:])
                 except Exception as e:
                     print('ERROR [0067] ' + str(e))
-                    gv.Files.Log.write_to_log("ERROR [0067] " + str(e))
+                    gv.Files.Log.write_to_log("ERROR [0067] " + str(e), log.ERROR)
                     #mb.showerror("ERROR", "ERROR CODE [0067]\nSomething went wrong while removing the image " + element)
             else:
-                self.error_lbl.configure(text=e)
-                gv.Files.Log.write_to_log(e)
+                self.info_lbl.configure(text=e)
+                gv.Files.Log.write_to_log(e, log.INFO)
         except:
             pass
         self.window.after(100, self.get_processing_status, answer2, currently_processing)

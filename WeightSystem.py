@@ -1,6 +1,7 @@
 from tkinter import IntVar, StringVar, E, W
 from tkinter import messagebox as mb
 from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame, OptionMenu
+import logging as log
 from file_operations import is_input_int_digit
 from ScrollFrame import ScrollFrame
 import global_variables as gv
@@ -297,7 +298,7 @@ class WeightSystem():
 
 
     def weight_save(self):
-        gv.Files.Log.write_to_log('Saving Weight options...')
+        gv.Files.Log.write_to_log('Saving Weight options...', log.INFO)
         gv.config['Weight']['png'] = self.png_weight_entry.get()
         gv.config['Weight']['jpg'] = self.jpg_weight_entry.get()
         gv.config['Weight']['jfif'] = self.jfif_weight_entry.get()
@@ -312,4 +313,4 @@ class WeightSystem():
         gv.config['Weight']['original'] = self.original_weight_entry.get()
         gv.config['Weight']['higher_resolution'] = self.higher_resolution_weight_entry.get()
         gv.write_config()
-        gv.Files.Log.write_to_log('Saved Weight options')
+        gv.Files.Log.write_to_log('Saved Weight options', log.INFO)

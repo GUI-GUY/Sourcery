@@ -11,7 +11,7 @@ danbooru_folder = 'D:\All_Files\python\GitHub\Sourcery\Sourcery\dan'
 
 
 # request json, get urls of pictures and download them
-def booru_fetch_illustration(imgid, service, comm_error_q=None):
+def booru_fetch_illustration(imgid, service, login_dict, comm_error_q=None):
     """
     Request info from danbooru API to given imgid\n
     Return illustration dictionary on success, False otherwise
@@ -24,7 +24,11 @@ def booru_fetch_illustration(imgid, service, comm_error_q=None):
         elif service == 'Konachan':
             r = get('https://konachan.com/post.json?tags=id:' + str(imgid))
         elif service == 'Gelbooru':
-            r = get('https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&id=' + str(imgid))
+            if login_dict["gelbooru_api_key"] != '' or login_dict["gelbooru_user_id"] != '':
+                r = get('https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&api_key=' + login_dict["gelbooru_api_key"] + '&user_id=' + login_dict["gelbooru_user_id"] + '&id=' + str(imgid))
+            else:
+                comm_error_q.put('[Sourcery] Gelbooru requires login')
+                return False
         else:
             return False
         illustration = r.json()
@@ -41,7 +45,8 @@ def booru_fetch_illustration(imgid, service, comm_error_q=None):
         if comm_error_q != None:
             comm_error_q.put("[Sourcery] ERROR [0056] " + str(e))
         else:
-            gv.Files.Log.write_to_log("ERROR [0056] " + str(e))
+            print("ERROR [0056] " + str(e))
+            #gv.Files.Log.write_to_log("ERROR [0056] " + str(e))
         #mb.showerror("ERROR [0056]", "ERROR CODE [0056]\nImage data could not be retrieved")
         return False
     

@@ -4,6 +4,7 @@ from tkinter import messagebox as mb
 from tkinter.ttk import Label, Checkbutton, Button, Style, Entry, Frame, OptionMenu
 from functools import partial
 from webbrowser import open_new
+import logging as log
 #from pixiv_handler import pixiv_login
 from file_operations import change_input, change_output, is_input_int_digit
 from WeightSystem import WeightSystem
@@ -95,7 +96,8 @@ class Debugging():
         self.par = parent
         self.lord = lord
 
-        self.code_txt = Text(parent, width=int(gv.width/20), height=int(gv.height/30), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
+        theme = gv.Files.Theme.theme['General']['current']
+        self.code_txt = Text(parent, width=int(gv.width/20), height=int(gv.height/30), foreground=gv.Files.Theme.theme[theme]['foreground'], background=gv.Files.Theme.theme[theme]['background'], font=("Arial Bold", 10))
         self.code_txt.insert(END, gv.config['Debug']['code'])
         self.execute_btn = Button(parent, text="Execute", command=self.execute, style="button.TLabel")
         self.debug_btn = Button(parent, text="Disable Debug mode", command=self.disable_debug, style="button.TLabel")
@@ -230,13 +232,13 @@ class SauceNaoOptions():
         x2 = int(gv.width/160*20)
         x3 = int(gv.width/160*27)
         x4 = int(gv.width/160*58)
-        gv.Files.Log.write_to_log('Saving SauceNao API-Key')
+        gv.Files.Log.write_to_log('Saving SauceNao API-Key', log.INFO)
         gv.config['SauceNAO']['api_key'] = self.saucenao_key_entry.get()
         e = gv.write_config()
         if e == None:
-            gv.Files.Log.write_to_log('Saved SauceNao API-Key successfully')
+            gv.Files.Log.write_to_log('Saved SauceNao API-Key successfully', log.INFO)
         else:
-            gv.Files.Log.write_to_log('Failed to save SauceNao API-Key')
+            gv.Files.Log.write_to_log('Failed to save SauceNao API-Key', log.INFO)
         self.saucenao_key_confirm_btn.place_forget()
         self.saucenao_key_entry.place_forget()
         self.saucenao_key_change_btn.place(x = x4, y = y + c * 1)
@@ -244,14 +246,14 @@ class SauceNaoOptions():
         self.saucenao_key_number_lbl.place(x = x2, y = y + c * 1)
 
     def saucenao_save(self):
-        gv.Files.Log.write_to_log('Saving SauceNAO options...')
+        gv.Files.Log.write_to_log('Saving SauceNAO options...', log.INFO)
         gv.config['SauceNAO']['minsim'] = self.saucenao_minsim_entry.get()
         gv.config['SauceNAO']['returns'] = self.saucenao_returns_entry.get()
         gv.config['SauceNAO']['depth'] = self.saucenao_depth_entry.get()
         gv.config['SauceNAO']['bias'] = self.saucenao_bias_entry.get()
         gv.config['SauceNAO']['biasmin'] = self.saucenao_biasmin_entry.get()
         gv.write_config()
-        gv.Files.Log.write_to_log('Saved SauceNao Options')
+        gv.Files.Log.write_to_log('Saved SauceNao Options', log.INFO)
 
     def hyperlink(self, event):
         """
@@ -436,52 +438,52 @@ class SourceryOptions():
         self.downloaded_clean_btn.place(x = x4, y = y + c * 21)
 
     def change_to_dark_theme(self):
-        gv.Files.Theme.current_theme = "Dark Theme"
-        gv.Files.Theme.write_theme(gv.Files.Theme.current_theme)
+        gv.Files.Theme.theme['General']['current'] = "Dark Theme"
+        gv.Files.Theme.write_theme()
         self.en_s()
 
     def change_to_light_theme(self):
-        gv.Files.Theme.current_theme = "Light Theme"
-        gv.Files.Theme.write_theme(gv.Files.Theme.current_theme)
+        gv.Files.Theme.theme['General']['current'] = "Light Theme"
+        gv.Files.Theme.write_theme()
         self.en_s()
 
     def change_to_custom_theme(self):
-        gv.Files.Theme.current_theme = "Custom Theme"
-        gv.Files.Theme.write_theme(gv.Files.Theme.current_theme)
+        gv.Files.Theme.theme['General']['current'] = "Custom Theme"
+        gv.Files.Theme.write_theme()
         self.en_s()
 
     def save_custom_theme(self):
-        gv.Files.Log.write_to_log('Attempting to save Custom Theme...')
-        gv.Files.Theme.custom_background = str(self.custom_background_color_lbl.cget('background'))
-        gv.Files.Theme.custom_foreground = str(self.custom_foreground_color_lbl.cget('background'))
-        gv.Files.Theme.custom_selected_background = str(self.custom_selected_background_color_lbl.cget('background'))
-        gv.Files.Theme.custom_button_background = str(self.custom_button_background_color_lbl.cget('background'))
-        gv.Files.Theme.custom_button_background_active = str(self.custom_button_background_active_color_lbl.cget('background'))
-        gv.Files.Theme.custom_button_foreground_active = str(self.custom_button_foreground_active_color_lbl.cget('background'))
-        gv.Files.Theme.custom_button_background_pressed = str(self.custom_button_background_pressed_color_lbl.cget('background'))
-        gv.Files.Theme.custom_button_foreground_pressed = str(self.custom_button_foreground_pressed_color_lbl.cget('background'))
-        gv.Files.Theme.custom_checkbutton_pressed = str(self.custom_checkbutton_pressed_color_lbl.cget('background'))
-        e = gv.Files.Theme.write_theme(gv.Files.Theme.current_theme)
-        if e == None:
-            gv.Files.Log.write_to_log('Saved custom theme successfully')
-            if gv.Files.Theme.current_theme == 'Custom Theme':
-                self.change_to_custom_theme()
-        else:
-            gv.Files.Log.write_to_log('Failed to save Custom Theme')
+        gv.Files.Log.write_to_log('Attempting to save Custom Theme...', log.INFO)
+        gv.Files.Theme.theme['Custom Theme']['background'] = str(self.custom_background_color_lbl.cget('background'))
+        gv.Files.Theme.theme['Custom Theme']['foreground'] = str(self.custom_foreground_color_lbl.cget('background'))
+        gv.Files.Theme.theme['Custom Theme']['selected_background'] = str(self.custom_selected_background_color_lbl.cget('background'))
+        gv.Files.Theme.theme['Custom Theme']['button_background'] = str(self.custom_button_background_color_lbl.cget('background'))
+        gv.Files.Theme.theme['Custom Theme']['button_background_active'] = str(self.custom_button_background_active_color_lbl.cget('background'))
+        gv.Files.Theme.theme['Custom Theme']['button_foreground_active'] = str(self.custom_button_foreground_active_color_lbl.cget('background'))
+        gv.Files.Theme.theme['Custom Theme']['button_background_pressed'] = str(self.custom_button_background_pressed_color_lbl.cget('background'))
+        gv.Files.Theme.theme['Custom Theme']['button_foreground_pressed'] = str(self.custom_button_foreground_pressed_color_lbl.cget('background'))
+        gv.Files.Theme.theme['Custom Theme']['checkbutton_pressed'] = str(self.custom_checkbutton_pressed_color_lbl.cget('background'))
+        e = gv.Files.Theme.write_theme()
+        # if e == None:
+        #     gv.Files.Log.write_to_log('Saved custom theme successfully', log.INFO)
+        #     if gv.Files.Theme.current_theme == 'Custom Theme':
+        #         self.change_to_custom_theme()
+        # else:
+        #     gv.Files.Log.write_to_log('Failed to save Custom Theme', log.INFO)
 
     def color_insert(self):
         """
         Inserts the colors from the theme file into the custom theme preview
         """
-        self.custom_background_color_lbl.configure(background = gv.Files.Theme.custom_background, cursor='hand2')
-        self.custom_foreground_color_lbl.configure(background = gv.Files.Theme.custom_foreground, cursor='hand2')
-        self.custom_selected_background_color_lbl.configure(background = gv.Files.Theme.custom_selected_background, cursor='hand2')
-        self.custom_button_background_color_lbl.configure(background = gv.Files.Theme.custom_button_background, cursor='hand2')
-        self.custom_button_background_active_color_lbl.configure(background = gv.Files.Theme.custom_button_background_active, cursor='hand2')
-        self.custom_button_foreground_active_color_lbl.configure(background = gv.Files.Theme.custom_button_foreground_active, cursor='hand2')
-        self.custom_button_background_pressed_color_lbl.configure(background = gv.Files.Theme.custom_button_background_pressed, cursor='hand2')
-        self.custom_button_foreground_pressed_color_lbl.configure(background = gv.Files.Theme.custom_button_foreground_pressed, cursor='hand2')
-        self.custom_checkbutton_pressed_color_lbl.configure(background = gv.Files.Theme.custom_checkbutton_pressed, cursor='hand2')
+        self.custom_background_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['background'], cursor='hand2')
+        self.custom_foreground_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['foreground'], cursor='hand2')
+        self.custom_selected_background_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['selected_background'], cursor='hand2')
+        self.custom_button_background_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['button_background'], cursor='hand2')
+        self.custom_button_background_active_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['button_background_active'], cursor='hand2')
+        self.custom_button_foreground_active_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['button_foreground_active'], cursor='hand2')
+        self.custom_button_background_pressed_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['button_background_pressed'], cursor='hand2')
+        self.custom_button_foreground_pressed_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['button_foreground_pressed'], cursor='hand2')
+        self.custom_checkbutton_pressed_color_lbl.configure(background = gv.Files.Theme.theme['Custom Theme']['checkbutton_pressed'], cursor='hand2')
     
     def color_bind(self):
         """
@@ -530,7 +532,7 @@ class SourceryOptions():
         self.output_dir_1_lbl.configure(text=gv.output_dir)
 
     def sourcery_save(self):
-        gv.Files.Log.write_to_log('Saving Sourcery options...')
+        gv.Files.Log.write_to_log('Saving Sourcery options...', log.INFO)
         diff = 0
         try:
             diff = int(self.images_per_page_entry.get()) - gv.config.getint('Sourcery', 'imgpp')
@@ -555,7 +557,7 @@ class SourceryOptions():
         gv.config['Konachan']['direct_replace'] = str(self.direct_replace_konachan_var.get())
         gv.config['Sourcery']['input_search_depth'] = str(self.input_search_depth_entry.get())
         gv.write_config()
-        gv.Files.Log.write_to_log('Saved Sourcery Options')
+        gv.Files.Log.write_to_log('Saved Sourcery Options', log.INFO)
 
     def clean_reference(self):
         if mb.askyesno('Delete?', 'Delete all Reference file entries?'):
@@ -654,7 +656,7 @@ class ProviderOptions():
         self.gelbooru_btn.place(x = x1, y = y + c * 6)
         self.weight_btn.place(x = x1, y = y + c * 8)
         
-        self.save_btn.place(x = x2, y = y + c * 26)
+        self.save_btn.place(x = x2, y = y + c * 31)
 
         self.original_display()
 
@@ -705,7 +707,7 @@ class ProviderOptions():
         self.original_save()
 
     def original_save(self):
-        gv.Files.Log.write_to_log('Saving Original options...')
+        gv.Files.Log.write_to_log('Saving Original options...', log.INFO)
         gv.config['Original']['gen_tagfile'] = str(self.gen_tagfile_var.get())
         gv.config['Original']['tagfile_pixiv'] = str(self.tagfile_pixiv_var.get())
         gv.config['Original']['tagfile_danbooru'] = str(self.tagfile_danbooru_var.get())
@@ -714,7 +716,7 @@ class ProviderOptions():
         gv.config['Original']['tagfile_gelbooru'] = str(self.tagfile_gelbooru_var.get())
         gv.config['Original']['single_source_in_tagfile'] = str(self.single_source_in_tagfile_var.get())
         gv.write_config()
-        gv.Files.Log.write_to_log('Saved Original options')
+        gv.Files.Log.write_to_log('Saved Original options', log.INFO)
 
 class Provider():
     """Includes all widgets for Pixiv and methods to display and modify them"""
@@ -730,8 +732,9 @@ class Provider():
         self.rename_var = IntVar(value=gv.config.getint(self.name, 'rename'))
         self.rename_chkbtn = Checkbutton(self.scrollpar_frame, text='Rename images from ' + self.name.lower() + ' to ' + self.name.lower() + ' name', var=self.rename_var, style="chkbtn.TCheckbutton")
 
+        theme = gv.Files.Theme.theme['General']['current']
         self.show_tags_lbl = Label(self.scrollpar_frame, text="Put tags seperated by spaces or newlines here\nto make them show up in the results screen:", style="label.TLabel")
-        self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.foreground, background=gv.Files.Theme.background, font=("Arial Bold", 10))
+        self.show_tags_txt = Text(self.scrollpar_frame, width=int(gv.width/30), height=int(gv.height*0.01), foreground=gv.Files.Theme.theme[theme]['foreground'], background=gv.Files.Theme.theme[theme]['background'], font=("Arial Bold", 10))
 
         self.show_tags_txt.insert(END, gv.config[self.name]['tags'])
         self.tags = None
@@ -749,6 +752,19 @@ class Provider():
         self.tagfile_yandere_chkbtn = Checkbutton(self.scrollpar_frame, text='Include yandere tags', var=self.tagfile_yandere_var, style="chkbtn.TCheckbutton")
         self.tagfile_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
         self.tagfile_gelbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include gelbooru tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
+        
+        self.gelbooru_login1_lbl = Label(self.scrollpar_frame, text="Gelbooru occasionally wants to know your login data, which can be found at the bottom of this page:", style="label.TLabel")
+        self.gelbooru_link_lbl = Label(self.scrollpar_frame, text="https://gelbooru.com/index.php?page=account&s=options", style="label.TLabel")
+        self.gelbooru_link_lbl.configure(foreground='#2626ff', cursor='hand2', font=('Arial', 10))
+        self.gelbooru_link_lbl.bind("<Button-1>", self.hyperlink)
+        self.gelbooru_login2_lbl = Label(self.scrollpar_frame, text="There you can also change the option \"Display all site content\" or \"Safe Only Listing\" for content control", style="label.TLabel")
+        self.api_key_lbl = Label(self.scrollpar_frame, text="Api Key", style="label.TLabel")
+        self.api_key_entry = Entry(self.scrollpar_frame, width=30, style="button.TLabel")
+        self.user_id_lbl = Label(self.scrollpar_frame, text="User ID", style="label.TLabel")
+        self.user_id_entry = Entry(self.scrollpar_frame, width=30, style="button.TLabel")
+        self.api_key_entry.insert(0, gv.config['Gelbooru']['api_key'])
+        self.user_id_entry.insert(0, gv.config['Gelbooru']['user_id'])
+        self.gelbooru_login3_lbl = Label(self.scrollpar_frame, text="(Restart of Sourcery on change is recommended)", style="label.TLabel")
         
         #self.save_btn = Button(parent, text='Save', command=self.save, style ="button.TLabel")
 
@@ -783,6 +799,16 @@ class Provider():
 
         self.rename_chkbtn.grid(row= 19, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
 
+        if self.name == "Gelbooru":
+            self.gelbooru_login1_lbl.grid(row= 22, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
+            self.gelbooru_link_lbl.grid(row= 23, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
+            self.gelbooru_login2_lbl.grid(row= 24, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
+            self.api_key_lbl.grid(row= 25, column= 0, sticky=W, padx=2, pady=1, columnspan=1)
+            self.api_key_entry.grid(row= 25, column= 1, sticky=W, padx=2, pady=1, columnspan=1)
+            self.user_id_lbl.grid(row= 26, column= 0, sticky=W, padx=2, pady=1, columnspan=1)
+            self.user_id_entry.grid(row= 26, column= 1, sticky=W, padx=2, pady=1, columnspan=1)
+            self.gelbooru_login3_lbl.grid(row= 27, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
+
         self.lbl.place(x = x2, y = y + c * 1)
         self.scrollpar.display(x = x2, y= y + c * 2)
 
@@ -802,13 +828,21 @@ class Provider():
         self.tagfile_yandere_chkbtn.grid_forget()
         self.tagfile_konachan_chkbtn.grid_forget()
         self.tagfile_gelbooru_chkbtn.grid_forget()
+        self.gelbooru_login1_lbl.grid_forget()
+        self.gelbooru_link_lbl.grid_forget()
+        self.gelbooru_login2_lbl.grid_forget()
+        self.api_key_lbl.grid_forget()
+        self.api_key_entry.grid_forget()
+        self.user_id_lbl.grid_forget()
+        self.user_id_entry.grid_forget()
+        self.gelbooru_login3_lbl.grid_forget()
 
         self.rename_chkbtn.grid_forget()
 
         #self.save_btn.place_forget()
 
     def save(self):
-        gv.Files.Log.write_to_log('Saving ' + self.name + ' options...')
+        gv.Files.Log.write_to_log('Saving ' + self.name + ' options...', log.INFO)
         gv.config[self.name]['rename'] = str(self.rename_var.get())
         self.tags = self.show_tags_txt.get('1.0', END)
         gv.config[self.name]['tags'] = self.tags
@@ -819,7 +853,6 @@ class Provider():
         gv.config[self.name]['tagfile_konachan'] = str(self.tagfile_konachan_var.get())
         gv.config[self.name]['tagfile_gelbooru'] = str(self.tagfile_konachan_var.get())
         gv.config[self.name]['use'] = str(self.use_var.get())
-        gv.write_config()
         if self.name == 'Pixiv':
             gv.results_tags_pixiv = self.tags.split()
         elif self.name == 'Danbooru':
@@ -830,4 +863,13 @@ class Provider():
             gv.results_tags_konachan = self.tags.split()
         elif self.name == 'Gelbooru':
             gv.results_tags_gelbooru = self.tags.split()
-        gv.Files.Log.write_to_log('Saved ' + self.name + ' options')
+            gv.config['Gelbooru']['api_key'] = str(self.api_key_entry.get())
+            gv.config['Gelbooru']['user_id'] = str(self.user_id_entry.get())
+        gv.write_config()
+        gv.Files.Log.write_to_log('Saved ' + self.name + ' options', log.INFO)
+
+    def hyperlink(self, event):
+        """
+        Opens a webbrowser with a URL on click of a widget that is bound to this method
+        """
+        open_new(event.widget.cget("text"))

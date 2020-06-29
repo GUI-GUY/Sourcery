@@ -8,6 +8,7 @@ from tkinter.ttk import Checkbutton, Label, Button
 from PIL import ImageTk, Image
 from webbrowser import open_new
 from copy import deepcopy
+import logging as log
 from file_operations import is_image, gen_tagfile, resize
 import global_variables as gv
 
@@ -41,26 +42,27 @@ class SubImageData():
         def folder_toggle():
             if self.var.get() == 0:
                 self.folder_var.set(0)
+        theme = gv.Files.Theme.theme['General']['current']
         self.chkbtn = cb(self.par, var=self.var, command= folder_toggle,
-            foreground=gv.Files.Theme.foreground, 
-            background=gv.Files.Theme.background, 
+            foreground=gv.Files.Theme.theme[theme]['foreground'], 
+            background=gv.Files.Theme.theme[theme]['background'], 
             borderwidth = 1,
             highlightthickness = 6, 
-            selectcolor=gv.Files.Theme.checkbutton_pressed, 
-            activebackground=gv.Files.Theme.button_background_active, 
-            activeforeground=gv.Files.Theme.button_foreground_active, 
+            selectcolor=gv.Files.Theme.theme[theme]['checkbutton_pressed'], 
+            activebackground=gv.Files.Theme.theme[theme]['button_background_active'], 
+            activeforeground=gv.Files.Theme.theme[theme]['button_foreground_active'], 
             relief='flat',#default flat
             overrelief='ridge',#no default
             offrelief='flat',#default raised
             indicatoron='false')# sunken, raised, groove, ridge, flat, style="chkbtn.TCheckbutton"
         self.thumb_chkbtn = cb(self.scrollpar, var=self.var, command= folder_toggle,
-                foreground=gv.Files.Theme.foreground, 
-                background=gv.Files.Theme.background, 
+                foreground=gv.Files.Theme.theme[theme]['foreground'], 
+                background=gv.Files.Theme.theme[theme]['background'], 
                 borderwidth = 1,
                 highlightthickness = 1, 
-                selectcolor=gv.Files.Theme.checkbutton_pressed, 
-                activebackground=gv.Files.Theme.button_background_active, 
-                activeforeground=gv.Files.Theme.button_foreground_active, 
+                selectcolor=gv.Files.Theme.theme[theme]['checkbutton_pressed'], 
+                activebackground=gv.Files.Theme.theme[theme]['button_background_active'], 
+                activeforeground=gv.Files.Theme.theme[theme]['button_foreground_active'], 
                 relief='flat',#default flat
                 overrelief='ridge',#no default
                 offrelief='flat',#default raised
@@ -86,7 +88,7 @@ class SubImageData():
                     return self.load(True)
                 else:
                     print("ERROR [0044] " + str(e))
-                    gv.Files.Log.write_to_log("ERROR [0044] " + str(e))
+                    gv.Files.Log.write_to_log("ERROR [0044] " + str(e), log.ERROR)
                     mb.showerror("ERROR [0044]", "ERROR CODE [0044]\nSomething went wrong while accessing an image, please restart Sourcery.")
                     return False
             self.size = deepcopy(self.img_obj.size)
@@ -114,7 +116,7 @@ class SubImageData():
                         return self.load(True)
                     else:
                         print("ERROR [0071] " + str(e))
-                        gv.Files.Log.write_to_log("ERROR [0071] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0071] " + str(e), log.ERROR)
                         mb.showerror("ERROR [0071]", "ERROR CODE [0071]\nSomething went wrong while accessing an image, please restart Sourcery.")
                         return False
                 #img_obj_thumb = deepcopy(self.img_obj)
@@ -165,26 +167,28 @@ class SubImageData():
         self.is_displayed = True
         self.lbl2.place(x = int(gv.width*0.44), y = int(gv.height/90*2))
         self.chkbtn.place(x = int(gv.width*0.43), y = int(gv.height/90*4))
+        theme = gv.Files.Theme.theme['General']['current']
         try:
-            self.thumb_chkbtn.configure(background=gv.Files.Theme.selected_background)
+            self.thumb_chkbtn.configure(background=gv.Files.Theme.theme[theme]['selected_background'])
         except:
             pass
-        self.lbl.configure(background=gv.Files.Theme.selected_background)
-        self.wxh_lbl.configure(background=gv.Files.Theme.selected_background)
-        self.type_lbl.configure(background=gv.Files.Theme.selected_background)
+        self.lbl.configure(background=gv.Files.Theme.theme[theme]['selected_background'])
+        self.wxh_lbl.configure(background=gv.Files.Theme.theme[theme]['selected_background'])
+        self.type_lbl.configure(background=gv.Files.Theme.theme[theme]['selected_background'])
         self.show_btn.configure(state=ACTIVE)
         gv.window.bind("<d>", lambda e: self.var.set(not self.var.get()))
 
     def forget(self):
         self.lbl2.place_forget()
         self.chkbtn.place_forget()
+        theme = gv.Files.Theme.theme['General']['current']
         try:
-            self.thumb_chkbtn.configure(background=gv.Files.Theme.background)
+            self.thumb_chkbtn.configure(background=gv.Files.Theme.theme[theme]['background'])
         except:
             pass
-        self.lbl.configure(background=gv.Files.Theme.background)
-        self.wxh_lbl.configure(background=gv.Files.Theme.background)
-        self.type_lbl.configure(background=gv.Files.Theme.background)
+        self.lbl.configure(background=gv.Files.Theme.theme[theme]['background'])
+        self.wxh_lbl.configure(background=gv.Files.Theme.theme[theme]['background'])
+        self.type_lbl.configure(background=gv.Files.Theme.theme[theme]['background'])
         self.show_btn.configure(state=NORMAL)
         self.is_displayed = False
 
@@ -199,7 +203,7 @@ class SubImageData():
                         return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                     else:
                         print("ERROR [0051] " + str(e))
-                        gv.Files.Log.write_to_log("ERROR [0051] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0051] " + str(e), log.ERROR)
                         #mb.showerror("ERROR [0051]", "ERROR CODE [0051]\nSomething went wrong while creating the folder" + gv.output_dir + '/' + self.folder)
                         return False
                 if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, gv.output_dir + '/' + self.folder, self.name[:self.name.rfind('.')]):
@@ -211,7 +215,7 @@ class SubImageData():
                         return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                     else:
                         print("ERROR [0037] " + str(e))
-                        gv.Files.Log.write_to_log("ERROR [0037] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0037] " + str(e), log.ERROR)
                         #mb.showerror("ERROR [0037]", "ERROR CODE [0037]\nSomething went wrong while moving the image " + self.path_original)
                         return False
             return True
@@ -228,7 +232,7 @@ class SubImageData():
                         return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                     else:
                         print("ERROR [0052] " + str(e))
-                        gv.Files.Log.write_to_log("ERROR [0052] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0052] " + str(e), log.ERROR)
                         #mb.showerror("ERROR [0052]", "ERROR CODE [0051]\nSomething went wrong while creating the folder" + head_dir + '/' + self.folder)
                         return False
                 if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, head_dir + '/' + self.folder, self.name[:self.name.rfind('.')]):
@@ -241,7 +245,7 @@ class SubImageData():
                         return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                     else:
                         print("ERROR [0049] " + str(e))
-                        gv.Files.Log.write_to_log("ERROR [0049] " + str(e))
+                        gv.Files.Log.write_to_log("ERROR [0049] " + str(e), log.ERROR)
                         #mb.showerror("ERROR [0049]", "ERROR CODE [0049]\nSomething went wrong while moving the image " + self.path)
                         return False
             return True
