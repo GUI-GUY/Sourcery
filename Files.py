@@ -14,7 +14,8 @@ class Files():
     """Hosts all File classes and creates neccesary files and folders on startup"""
     def __init__(self):
         self.create_files()
-        self.Log = LogText()
+        #self.Log = LogText()
+        self.Log = None #TODO
         self.Theme = ThemeFile(self.Log)
         self.Ref = ReferenceFile(self.Log)
         
@@ -41,23 +42,23 @@ class Files():
         """
         Creates all configuration files if they are not yet existent
         """
-        if not path.exists(cwd + '/Sourcery/theme'):
+        if not path.exists(cwd + '/Sourcery/theme.cfg'):
             try:
-                theme = open(cwd + '/Sourcery/theme', 'x')
+                theme = open(cwd + '/Sourcery/theme.cfg', 'x')
                 theme.close()
             except Exception as e:
                 print("ERROR [0028] " + str(e))
                 #self.Log.write_to_log("ERROR [0028] " + str(e))
                 mb.showerror("ERROR [0028]", "ERROR CODE [0028]\nSomething went wrong while accessing a configuration file(log), please restart Sourcery.")
             #self.Theme.write_theme('Dark Theme')# ['blue', 'red', '#123456', 'orange', 'grey', 'purple', 'magenta']
-        if not path.exists(cwd + '/Sourcery/log'):
-            try:
-                log = open(cwd + '/Sourcery/log', 'x')
-                log.close()
-            except Exception as e:
-                print("ERROR [0024] " + str(e))
-                #self.Log.write_to_log("ERROR [0024] " + str(e))
-                mb.showerror("ERROR [0024]", "ERROR CODE [0024]\nSomething went wrong while accessing a configuration file(log), please restart Sourcery.")
+        # if not path.exists(cwd + '/Sourcery/log'):
+        #     try:
+        #         log = open(cwd + '/Sourcery/log', 'x')
+        #         log.close()
+        #     except Exception as e:
+        #         print("ERROR [0024] " + str(e))
+        #         #self.Log.write_to_log("ERROR [0024] " + str(e))
+        #         mb.showerror("ERROR [0024]", "ERROR CODE [0024]\nSomething went wrong while accessing a configuration file(log), please restart Sourcery.")
         if not path.exists(cwd + '/Sourcery/config.cfg'):
             try:
                 config = open(cwd + '/Sourcery/config.cfg', 'x')
@@ -133,31 +134,31 @@ class ThemeFile():
     def write_theme(self):
         self.theme.write(open(cwd + '/Sourcery/theme.cfg', 'w'))#TODO
 
-class LogText():
-    """Includes the log text frame on the startpage and also methods to write these to the log file"""
-    def __init__(self):
-        self.log_text = None
+# class LogText():
+#     """Includes the log text frame on the startpage and also methods to write these to the log file"""
+#     def __init__(self):
+#         self.log_text = None
 
-    def init_log(self):
-        self.log_text.configure(state='normal')
-        self.log_text.insert(END, '\nSourcery started. Date: ' + strftime("20%y|%m|%d") + ' Time: ' + strftime("%H:%M:%S") + '\n')
-        self.log_text.configure(state='disabled')
+#     def init_log(self):
+#         self.log_text.configure(state='normal')
+#         self.log_text.insert(END, '\nSourcery started. Date: ' + strftime("20%y|%m|%d") + ' Time: ' + strftime("%H:%M:%S") + '\n')
+#         self.log_text.configure(state='disabled')
 
-    def write_to_log(self, message = '', mode = 0):
-        self.log_text.configure(state='normal')
-        self.log_text.insert(END,'[' + strftime("%H:%M:%S") + '] ' + message + '\n')
-        self.log_text.configure(state='disabled')
+#     def write_to_log(self, message = '', mode = 0):
+#         self.log_text.configure(state='normal')
+#         self.log_text.insert(END,'[' + strftime("%H:%M:%S") + '] ' + message + '\n')
+#         self.log_text.configure(state='disabled')
 
-        if mode == log.DEBUG:
-            log.debug(message)
-        elif mode == log.INFO:
-            log.info(message)
-        elif mode == log.WARNING:
-            log.warning(message)
-        elif mode == log.ERROR:
-            log.error(message)
-        elif mode == log.CRITICAL:
-            log.critical(message)
+#         if mode == log.DEBUG:
+#             log.debug(message)
+#         elif mode == log.INFO:
+#             log.info(message)
+#         elif mode == log.WARNING:
+#             log.warning(message)
+#         elif mode == log.ERROR:
+#             log.error(message)
+#         elif mode == log.CRITICAL:
+#             log.critical(message)
 
 class ReferenceFile():
     """Includes methods to add a new reference, read these from the reference file or delete its contents"""

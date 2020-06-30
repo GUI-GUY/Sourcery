@@ -23,7 +23,7 @@ class Processing():
         """
         self.parent.do_sourcery_btn.configure(state='disabled')
         self.parent.load_from_ref_btn.configure(state='disabled')
-        gv.Files.Log.write_to_log('Starting second process for sourcing images', log.INFO)
+        gv.Logger.write_to_log('Starting second process for sourcing images', log.INFO)
         self.parent.input_lock.acquire()
         login_dict = {"saucenao_key":gv.config.get('SauceNAO','api_key'), "gelbooru_api_key":gv.config.get('Gelbooru','api_key'), "gelbooru_user_id":gv.config.get('Gelbooru','user_id')}
         self.process = Process(target=do_sourcery, args=(gv.cwd, self.parent.input_images_array, login_dict, gv.config.get('SauceNAO','minsim'), gv.input_dir, self.comm_q, self.comm_img_q, self.comm_stop_q, self.comm_error_q, self.img_data_q, self.duplicate_c_pipe, self.terminate_c_pipe, ))
@@ -61,7 +61,7 @@ class Processing():
                             self.process.terminate()
                         except Exception as e:
                             print('ERROR [0063] ' + str(e))
-                            gv.Files.Log.write_to_log('ERROR [0063] ' + str(e), log.ERROR)
+                            gv.Logger.write_to_log('ERROR [0063] ' + str(e), log.ERROR)
                             self.terminate_p_pipe.send(False)
                             #mb.showerror("ERROR [0063]", "ERROR CODE [0063]\nSomething went wrong while accessing a the 'Input' folder, please restart Sourcery.")
         Thread(target=run, daemon=True, name="terminate_loop").start()
@@ -71,7 +71,7 @@ class Processing():
         Stop further search for images and halt the magic process.
         """
         if self.process.is_alive():
-            gv.Files.Log.write_to_log('Stopping sourcing process...', log.INFO)
+            gv.Logger.write_to_log('Stopping sourcing process...', log.INFO)
             self.comm_stop_q.put("Stopped")
             self.parent.stop_btn.configure(state='disabled')
         #currently_sourcing_img_lbl.configure(text="Stopped")

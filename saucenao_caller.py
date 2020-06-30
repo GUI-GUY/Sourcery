@@ -32,7 +32,7 @@ def get_response(image_name, cwd, api_key, minsim, comm_error_q=None):
         if comm_error_q != None:
             comm_error_q.put('[Sourcery] ERROR [0019] ' + str(e))
         else:
-            gv.Files.Log.write_to_log('ERROR [0019] ' + str(e), log.ERROR)
+            gv.Logger.write_to_log('ERROR [0019] ' + str(e), log.ERROR)
         #mb.showerror("ERROR CODE [0015]\nSomething went wrong while opening the image " + image_name)
         return [401, 'Something went wrong while opening the image ' + image_name]
     image = image.convert('RGB')
@@ -94,7 +94,7 @@ def get_response(image_name, cwd, api_key, minsim, comm_error_q=None):
         if comm_error_q != None:
             comm_error_q.put('[Sourcery] ERROR [0068] ' + str(e))
         else:
-            gv.Files.Log.write_to_log('ERROR [0068] ' + str(e), log.ERROR)
+            gv.Logger.write_to_log('ERROR [0068] ' + str(e), log.ERROR)
         #mb.showerror("ERROR CODE [0068]\nSomething went wrong while requesting data from SauceNAO)
         return [666, 'Something went wrong while requesting data from SauceNAO:\n' + str(e)]
     if r.status_code != 200:

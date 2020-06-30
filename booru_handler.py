@@ -46,7 +46,7 @@ def booru_fetch_illustration(imgid, service, login_dict, comm_error_q=None):
             comm_error_q.put("[Sourcery] ERROR [0056] " + str(e))
         else:
             print("ERROR [0056] " + str(e))
-            #gv.Files.Log.write_to_log("ERROR [0056] " + str(e))
+            #gv.Logger.write_to_log("ERROR [0056] " + str(e))
         #mb.showerror("ERROR [0056]", "ERROR CODE [0056]\nImage data could not be retrieved")
         return False
     
@@ -79,7 +79,7 @@ def booru_download(img_name_original, imgid, illustration, service='', comm_erro
                     comm_error_q.put("[Sourcery] ERROR [0057] " + str(e))
                 else:
                     print("ERROR [0057] " + str(e))
-                    #gv.Files.Log.write_to_log("ERROR [0057] " + str(e))
+                    #gv.Logger.write_to_log("ERROR [0057] " + str(e))
                 #mb.showerror("ERROR [0057]", "ERROR CODE [0057]\nImage could not be downloaded")
                 return False
         return False

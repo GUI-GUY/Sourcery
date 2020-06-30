@@ -122,7 +122,7 @@ class ProviderImageData():
                 else:
                     print("ERROR [0070] " + str(e))
                     #mb.showerror("ERROR [0070]", "ERROR CODE [0070]\nSomething went wrong while loading an image.")
-                    gv.Files.Log.write_to_log("ERROR [0070] " + str(e), log.ERROR)
+                    gv.Logger.write_to_log("ERROR [0070] " + str(e), log.ERROR)
                     return False
         else:
             try:
@@ -141,13 +141,13 @@ class ProviderImageData():
                 else:
                     print("ERROR [0046] " + str(e))
                     #mb.showerror("ERROR [0046]", "ERROR CODE [0046]\nSomething went wrong while loading an image.")
-                    gv.Files.Log.write_to_log("ERROR [0046] " + str(e), log.ERROR)
+                    gv.Logger.write_to_log("ERROR [0046] " + str(e), log.ERROR)
                     return False
             try:
                 self.downloaded_image_thumb = Image.open(self.sub_dill.path + '/' + listdir(self.sub_dill.path)[0])
             except Exception as e:
                 print("ERROR [0047] " + str(e))
-                gv.Files.Log.write_to_log("ERROR [0047] " + str(e), log.ERROR)
+                gv.Logger.write_to_log("ERROR [0047] " + str(e), log.ERROR)
                 mb.showerror("ERROR [0047]", "ERROR CODE [0047]\nSomething went wrong while accessing an image, please restart Sourcery.")
                 return False
 
@@ -317,7 +317,7 @@ class ProviderImageData():
                 else:
                     print("ERROR [0072] " + str(e))
                     #mb.showerror("ERROR [0072]", "ERROR CODE [0072]\nSomething went wrong while loading an image.")
-                    gv.Files.Log.write_to_log("ERROR [0072] " + str(e), log.ERROR)
+                    gv.Logger.write_to_log("ERROR [0072] " + str(e), log.ERROR)
                     return False
         else:
             try:
@@ -327,7 +327,7 @@ class ProviderImageData():
                     return self.load(True)
                 else:
                     print("ERROR [0043] " + str(e))
-                    gv.Files.Log.write_to_log("ERROR [0043] " + str(e), log.ERROR)
+                    gv.Logger.write_to_log("ERROR [0043] " + str(e), log.ERROR)
                     mb.showerror("ERROR [0043]", "ERROR CODE [0043]\nSomething went wrong while accessing an image, please restart Sourcery.")
                     return False
         self.downloaded_image_preview.thumbnail(self.preview_size, resample=Image.ANTIALIAS)
@@ -393,7 +393,7 @@ class ProviderImageData():
                         return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                     else:
                         print("ERROR [0054] " + str(e))
-                        gv.Files.Log.write_to_log("ERROR [0054] " + str(e), log.ERROR)
+                        gv.Logger.write_to_log("ERROR [0054] " + str(e), log.ERROR)
                         #mb.showerror("ERROR [0054]", "ERROR CODE [0054]\nSomething went wrong while moving the image " + self.sub_dill.path)
                         return False
                 for img in self.sub_dir_img_array:
@@ -421,7 +421,7 @@ class ProviderImageData():
                             return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                         else:
                             print("ERROR [0055] " + str(e))
-                            gv.Files.Log.write_to_log("ERROR [0055] " + str(e), log.ERROR)
+                            gv.Logger.write_to_log("ERROR [0055] " + str(e), log.ERROR)
                             #mb.showerror("ERROR [0055]", "ERROR CODE [0055]\nSomething went wrong while moving the image " + self.sub_dill.path)
                             return False
                     for img in self.sub_dir_img_array:
@@ -436,7 +436,7 @@ class ProviderImageData():
                             return self.save(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, t=t, head_dir=head_dir, second_try=True)
                         else:
                             print("ERROR [0056] " + str(e))
-                            gv.Files.Log.write_to_log("ERROR [0056] " + str(e), log.ERROR)
+                            gv.Logger.write_to_log("ERROR [0056] " + str(e), log.ERROR)
                             #mb.showerror("ERROR [0056]", "ERROR CODE [0056]\nSomething went wrong while moving the image " + self.sub_dill.path)
                             return False
                     if not self.gen_tagfile(pixiv_tags, danbooru_tags, yandere_tags, konachan_tags, gelbooru_tags, exception_tags, head_dir, self.sub_dill.name_no_suffix + '_' + str(t)):

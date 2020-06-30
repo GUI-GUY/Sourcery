@@ -84,3 +84,8 @@ General
 - Improved Theme file readability and code
 - Updated logging to use python logging module
 - Added gelbooru login since it needs your data occasionally
+
+Update 0.3.7
+
+General
+- Log is now visible in the options screen 

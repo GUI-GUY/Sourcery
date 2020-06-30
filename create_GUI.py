@@ -49,7 +49,7 @@ def load_from_ref_run(c):
     duplicates_counter = 0
     no_sources_counter = 0
     #refs = deepcopy()#gv.Files.Ref.read_reference()
-    gv.Files.Log.write_to_log('Loading images from reference file...', log.INFO)
+    gv.Logger.write_to_log('Loading images from reference file...', log.INFO)
     for ref in gv.Files.Ref.refs:
         if c == 0:
             break
@@ -146,12 +146,12 @@ def load_from_ref_run(c):
             c -= 1
             loaded_counter += 1
     if len(gv.Files.Ref.refs) == 0:
-        gv.Files.Log.write_to_log('Reference file is empty', log.INFO)
+        gv.Logger.write_to_log('Reference file is empty', log.INFO)
     else:
-        gv.Files.Log.write_to_log('References: ' + str(len(gv.Files.Ref.refs)))
-        gv.Files.Log.write_to_log('Loaded ' + str(loaded_counter) + ' images from reference file', log.INFO)
-        gv.Files.Log.write_to_log('Skipped ' + str(duplicates_counter) + ' images because they were already loaded', log.INFO)
-        gv.Files.Log.write_to_log('Skipped ' + str(no_sources_counter) + ' images because no sources were found', log.INFO)
+        gv.Logger.write_to_log('References: ' + str(len(gv.Files.Ref.refs)))
+        gv.Logger.write_to_log('Loaded ' + str(loaded_counter) + ' images from reference file', log.INFO)
+        gv.Logger.write_to_log('Skipped ' + str(duplicates_counter) + ' images because they were already loaded', log.INFO)
+        gv.Logger.write_to_log('Skipped ' + str(no_sources_counter) + ' images because no sources were found', log.INFO)
     Startpage_Class.do_sourcery_btn.configure(state='enabled')
     Startpage_Class.load_from_ref_btn.configure(state='enabled')
 
@@ -173,11 +173,11 @@ def save_locked():
     """
     Save locked images from results page
     """
-    gv.Files.Log.write_to_log('Saving selected images...', log.INFO)
+    gv.Logger.write_to_log('Saving selected images...', log.INFO)
     if save():
-        gv.Files.Log.write_to_log('Saved images', log.INFO)
+        gv.Logger.write_to_log('Saved images', log.INFO)
     else:
-        gv.Files.Log.write_to_log('Cancelled saving images', log.INFO)
+        gv.Logger.write_to_log('Cancelled saving images', log.INFO)
     Startpage_Class.results_ScrollFrame.display(x = int(width/16*4), y = int(height/9))
     leftovers()
     Startpage_Class.save_locked_btn.configure(state='disabled')
@@ -199,7 +199,7 @@ def leftovers(delete_list=None):
     #         if gv.cwd + '/Sourcery/sourced_original' + img not in gv.delete_dirs_array:
     #             gv.delete_dirs_array.append(gv.cwd + '/Sourcery/sourced_original' + img)
 
-    gv.Files.Log.write_to_log('Deleting empty folders, leftovers etc. ...', log.INFO)
+    gv.Logger.write_to_log('Deleting empty folders, leftovers etc. ...', log.INFO)
     if delete_list == None:
         delete_list = gv.delete_dirs_array
     for element in delete_list:
@@ -210,11 +210,11 @@ def leftovers(delete_list=None):
                 remove(element)
         except Exception as e:
             print('ERROR [0017] ' + str(e))
-            gv.Files.Log.write_to_log("ERROR [0017] " + str(e), log.ERROR)
+            gv.Logger.write_to_log("ERROR [0017] " + str(e), log.ERROR)
             #mb.showerror("ERROR", "ERROR CODE [0017]\nSomething went wrong while removing the image " + element)
 
     delete_list.clear()
-    gv.Files.Log.write_to_log('Deleted stuff', log.INFO)
+    gv.Logger.write_to_log('Deleted stuff', log.INFO)
 
 def enforce_style():
     """
@@ -323,7 +323,7 @@ def enforce_style():
             except:
                 pass
         
-    gv.Files.Log.log_text.configure(foreground=gv.Files.Theme.theme[theme]['foreground'], background=gv.Files.Theme.theme[theme]['background'], font=("Arial Bold", 10))
+    gv.Logger.log_text.configure(foreground=gv.Files.Theme.theme[theme]['foreground'], background=gv.Files.Theme.theme[theme]['background'], font=("Arial Bold", 10))
     
     #style.configure("scroll.Vertical.TScrollbar", foreground=gv.Files.Theme.theme[theme]['foreground'], background=gv.Files.Theme.theme[theme]['button_background'], throughcolor=gv.Files.Theme.theme[theme]['button_background'], activebackground=gv.Files.Theme.theme[theme]['button_background'])
     Startpage_Class.results_ScrollFrame.canvas.configure(background=gv.Files.Theme.theme[theme]['background'])
@@ -335,9 +335,7 @@ def enforce_style():
     Options_Class.ProO.Weight.scrollpar.canvas.configure(background=gv.Files.Theme.theme[theme]['background'])
 
 if __name__ == '__main__':
-    gv.init_log()
     freeze_support()
-
 
     window = gv.window = Tk()
     window.title("Sourcery")
@@ -348,12 +346,12 @@ if __name__ == '__main__':
     #window.geometry(str(width-500) + 'x' + str(height-500))
     #dateS =  time.strftime("20%y-%m-%d")
 
-    gv.Files.Log.log_text = Text(window, height=int(gv.height*7/9/16), width=int(gv.width/3/7))
-    gv.Files.Log.init_log()
+    gv.Logger.log_text = Text(window, height=int(gv.height*7/9/16), width=int(gv.width/3/7))
+    gv.Logger.init_log()
     log.info('Initialising variables...')
 
     Options_Class = Options(window, enforce_style, leftovers)
-    Startpage_Class = Startpage(window, Options_Class, load_from_ref, lock_save, save_locked)
+    Startpage_Class = gv.Startpage_Class = Startpage(window, Options_Class, load_from_ref, lock_save, save_locked)
     gv.display_startpage = Startpage_Class.display_startpage
     
     enforce_style() 

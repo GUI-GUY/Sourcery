@@ -59,7 +59,7 @@ def pixiv_fetch_illustration(img_name_original, imgid, comm_error_q=None):
         if comm_error_q != None:
             comm_error_q.put("[Sourcery] ERROR [0073] " + str(e))
         else:
-            gv.Files.Log.write_to_log("ERROR [0073] " + str(e), log.ERROR)
+            gv.Logger.write_to_log("ERROR [0073] " + str(e), log.ERROR)
         return False
         #mb.showerror("ERROR [0073]", "ERROR CODE [0073]\nImage data could not be retrieved")
     js = loads(res.text)# {'error': True, 'message': '該当作品は削除されたか、存在しない作品IDです。', 'body': []}
@@ -71,7 +71,7 @@ def pixiv_fetch_illustration(img_name_original, imgid, comm_error_q=None):
         if comm_error_q != None:
             comm_error_q.put('[Sourcery] ' + js['message'] + ' ID: ' + str(imgid))
         else:
-            gv.Files.Log.write_to_log(js['message'], log.ERROR)
+            gv.Logger.write_to_log(js['message'], log.ERROR)
         return False
 
 def pixiv_download(img_name_original, illustration, comm_error_q=None):
@@ -106,7 +106,7 @@ def pixiv_download(img_name_original, illustration, comm_error_q=None):
                     comm_error_q.put("[Sourcery] ERROR [0066] " + str(e))
                     return False
                 else:
-                    gv.Files.Log.write_to_log("ERROR [0066] " + str(e), log.ERROR)
+                    gv.Logger.write_to_log("ERROR [0066] " + str(e), log.ERROR)
                 #mb.showerror("ERROR [0066]", "ERROR CODE [0066]\nImage could not be downloaded")
             filetype = img_url.split(".")[-1]
             try:
@@ -118,7 +118,7 @@ def pixiv_download(img_name_original, illustration, comm_error_q=None):
                     comm_error_q.put("[Sourcery] ERROR [0065] " + str(e))
                     return False
                 else:
-                    gv.Files.Log.write_to_log("ERROR [0065] " + str(e), log.ERROR)
+                    gv.Logger.write_to_log("ERROR [0065] " + str(e), log.ERROR)
                 #mb.showerror("ERROR [0065]", "ERROR CODE [0065]\nImage could not be downloaded")
         return folder_name[:-1]
     else:
@@ -144,7 +144,7 @@ def pixiv_download(img_name_original, illustration, comm_error_q=None):
                 comm_error_q.put("[Sourcery] ERROR [0064] " + str(e))
                 return False
             else:
-                gv.Files.Log.write_to_log("ERROR [0064] " + str(e), log.ERROR)
+                gv.Logger.write_to_log("ERROR [0064] " + str(e), log.ERROR)
             #mb.showerror("ERROR [0064]", "ERROR CODE [0064]\nImage could not be downloaded")
         return new_name
     

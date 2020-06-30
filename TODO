@@ -148,6 +148,7 @@ BUGS:
 
 
 beta 0.3.7
++ log is always visible
 Notification rework
     save: feedback message
     on download tell user

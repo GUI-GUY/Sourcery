@@ -75,6 +75,10 @@ class Options():
         self.saucenao_options_btn.place(x = int(gv.width/160*25), y = int(gv.height/90*5))
         if self.debug_counter == 10:
             self.debug_btn.place(x = int(gv.width/160*35), y = int(gv.height/90*5))
+        
+        gv.Startpage_Class.display_logfile()
+        #gv.Logger.log_text.place(x = int(gv.width/3)*1.85, y = int(gv.height/9))
+        #self.jump_log_chkbtn.place(x = int(gv.width/3)*1.85, y = int(gv.height/90*80))
 
         self.options_back_btn.place(x = int(gv.width/160*5), y = gv.height-170)
 
@@ -232,13 +236,13 @@ class SauceNaoOptions():
         x2 = int(gv.width/160*20)
         x3 = int(gv.width/160*27)
         x4 = int(gv.width/160*58)
-        gv.Files.Log.write_to_log('Saving SauceNao API-Key', log.INFO)
+        gv.Logger.write_to_log('Saving SauceNao API-Key', log.INFO)
         gv.config['SauceNAO']['api_key'] = self.saucenao_key_entry.get()
         e = gv.write_config()
         if e == None:
-            gv.Files.Log.write_to_log('Saved SauceNao API-Key successfully', log.INFO)
+            gv.Logger.write_to_log('Saved SauceNao API-Key successfully', log.INFO)
         else:
-            gv.Files.Log.write_to_log('Failed to save SauceNao API-Key', log.INFO)
+            gv.Logger.write_to_log('Failed to save SauceNao API-Key', log.INFO)
         self.saucenao_key_confirm_btn.place_forget()
         self.saucenao_key_entry.place_forget()
         self.saucenao_key_change_btn.place(x = x4, y = y + c * 1)
@@ -246,14 +250,14 @@ class SauceNaoOptions():
         self.saucenao_key_number_lbl.place(x = x2, y = y + c * 1)
 
     def saucenao_save(self):
-        gv.Files.Log.write_to_log('Saving SauceNAO options...', log.INFO)
+        gv.Logger.write_to_log('Saving SauceNAO options...', log.INFO)
         gv.config['SauceNAO']['minsim'] = self.saucenao_minsim_entry.get()
         gv.config['SauceNAO']['returns'] = self.saucenao_returns_entry.get()
         gv.config['SauceNAO']['depth'] = self.saucenao_depth_entry.get()
         gv.config['SauceNAO']['bias'] = self.saucenao_bias_entry.get()
         gv.config['SauceNAO']['biasmin'] = self.saucenao_biasmin_entry.get()
         gv.write_config()
-        gv.Files.Log.write_to_log('Saved SauceNao Options', log.INFO)
+        gv.Logger.write_to_log('Saved SauceNao Options', log.INFO)
 
     def hyperlink(self, event):
         """
@@ -453,7 +457,7 @@ class SourceryOptions():
         self.en_s()
 
     def save_custom_theme(self):
-        gv.Files.Log.write_to_log('Attempting to save Custom Theme...', log.INFO)
+        gv.Logger.write_to_log('Attempting to save Custom Theme...', log.INFO)
         gv.Files.Theme.theme['Custom Theme']['background'] = str(self.custom_background_color_lbl.cget('background'))
         gv.Files.Theme.theme['Custom Theme']['foreground'] = str(self.custom_foreground_color_lbl.cget('background'))
         gv.Files.Theme.theme['Custom Theme']['selected_background'] = str(self.custom_selected_background_color_lbl.cget('background'))
@@ -465,11 +469,11 @@ class SourceryOptions():
         gv.Files.Theme.theme['Custom Theme']['checkbutton_pressed'] = str(self.custom_checkbutton_pressed_color_lbl.cget('background'))
         e = gv.Files.Theme.write_theme()
         # if e == None:
-        #     gv.Files.Log.write_to_log('Saved custom theme successfully', log.INFO)
+        #     gv.Logger.write_to_log('Saved custom theme successfully', log.INFO)
         #     if gv.Files.Theme.current_theme == 'Custom Theme':
         #         self.change_to_custom_theme()
         # else:
-        #     gv.Files.Log.write_to_log('Failed to save Custom Theme', log.INFO)
+        #     gv.Logger.write_to_log('Failed to save Custom Theme', log.INFO)
 
     def color_insert(self):
         """
@@ -532,7 +536,7 @@ class SourceryOptions():
         self.output_dir_1_lbl.configure(text=gv.output_dir)
 
     def sourcery_save(self):
-        gv.Files.Log.write_to_log('Saving Sourcery options...', log.INFO)
+        gv.Logger.write_to_log('Saving Sourcery options...', log.INFO)
         diff = 0
         try:
             diff = int(self.images_per_page_entry.get()) - gv.config.getint('Sourcery', 'imgpp')
@@ -557,7 +561,7 @@ class SourceryOptions():
         gv.config['Konachan']['direct_replace'] = str(self.direct_replace_konachan_var.get())
         gv.config['Sourcery']['input_search_depth'] = str(self.input_search_depth_entry.get())
         gv.write_config()
-        gv.Files.Log.write_to_log('Saved Sourcery Options', log.INFO)
+        gv.Logger.write_to_log('Saved Sourcery Options', log.INFO)
 
     def clean_reference(self):
         if mb.askyesno('Delete?', 'Delete all Reference file entries?'):
@@ -707,7 +711,7 @@ class ProviderOptions():
         self.original_save()
 
     def original_save(self):
-        gv.Files.Log.write_to_log('Saving Original options...', log.INFO)
+        gv.Logger.write_to_log('Saving Original options...', log.INFO)
         gv.config['Original']['gen_tagfile'] = str(self.gen_tagfile_var.get())
         gv.config['Original']['tagfile_pixiv'] = str(self.tagfile_pixiv_var.get())
         gv.config['Original']['tagfile_danbooru'] = str(self.tagfile_danbooru_var.get())
@@ -716,7 +720,7 @@ class ProviderOptions():
         gv.config['Original']['tagfile_gelbooru'] = str(self.tagfile_gelbooru_var.get())
         gv.config['Original']['single_source_in_tagfile'] = str(self.single_source_in_tagfile_var.get())
         gv.write_config()
-        gv.Files.Log.write_to_log('Saved Original options', log.INFO)
+        gv.Logger.write_to_log('Saved Original options', log.INFO)
 
 class Provider():
     """Includes all widgets for Pixiv and methods to display and modify them"""
@@ -842,7 +846,7 @@ class Provider():
         #self.save_btn.place_forget()
 
     def save(self):
-        gv.Files.Log.write_to_log('Saving ' + self.name + ' options...', log.INFO)
+        gv.Logger.write_to_log('Saving ' + self.name + ' options...', log.INFO)
         gv.config[self.name]['rename'] = str(self.rename_var.get())
         self.tags = self.show_tags_txt.get('1.0', END)
         gv.config[self.name]['tags'] = self.tags
@@ -866,7 +870,7 @@ class Provider():
             gv.config['Gelbooru']['api_key'] = str(self.api_key_entry.get())
             gv.config['Gelbooru']['user_id'] = str(self.user_id_entry.get())
         gv.write_config()
-        gv.Files.Log.write_to_log('Saved ' + self.name + ' options', log.INFO)
+        gv.Logger.write_to_log('Saved ' + self.name + ' options', log.INFO)
 
     def hyperlink(self, event):
         """

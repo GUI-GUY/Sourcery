@@ -43,12 +43,12 @@ def save():
         if data.locked:
             # if not data.delete_both():
             #     continue
-            gv.Files.Log.write_to_log('Attempting to save image:' + data.sub_dill.name + '...' , log.INFO)
+            gv.Logger.write_to_log('Attempting to save image:' + data.sub_dill.name + '...' , log.INFO)
             if not data.save():
                 print('error while saving')
-                gv.Files.Log.write_to_log('error while saving', log.INFO)
+                gv.Logger.write_to_log('error while saving', log.INFO)
                 continue
-            gv.Files.Log.write_to_log('Successfully saved image', log.INFO)
+            gv.Logger.write_to_log('Successfully saved image', log.INFO)
             data.forget_results()
             gv.imgpp_sem.release()
             data.self_destruct()
@@ -90,7 +90,7 @@ def gen_tagfile(tags, gen_dir, name):
         return True
     except Exception as e:
         print("ERROR [0053] " + str(e))
-        gv.Files.Log.write_to_log("ERROR [0053] " + str(e), log.ERROR)
+        gv.Logger.write_to_log("ERROR [0053] " + str(e), log.ERROR)
         #mb.showerror("ERROR [0053]", "ERROR CODE [0053]\nSomething went wrong while generating the tagfile" + gen_dir + '/' + name + '.txt')
         return False
 
@@ -104,7 +104,7 @@ def open_input():
         startfile(gv.input_dir)
     except Exception as e:
         print('ERROR [0022] ' + str(e))
-        gv.Files.Log.write_to_log('ERROR [0022] ' + str(e), log.ERROR)
+        gv.Logger.write_to_log('ERROR [0022] ' + str(e), log.ERROR)
         #mb.showerror("ERROR", e)
 
 def change_output():
@@ -117,7 +117,7 @@ def open_output():
         startfile(gv.output_dir)
     except Exception as e:
         print('ERROR [0023] ' + str(e))
-        gv.Files.Log.write_to_log('ERROR [0023] ' + str(e), log.ERROR)
+        gv.Logger.write_to_log('ERROR [0023] ' + str(e), log.ERROR)
         #mb.showerror("ERROR", e)
 
 def display_statistics():
