@@ -157,10 +157,10 @@ Notification rework
     tell user how many images have been sourced successfully/unsuccessfully
     show progress of sourced imaged/all images
     elapsed time / ETA
-    ATTEMPTING
+    + ATTEMPTING
     If no service is picked
     gelbooru needs login occasionaly
-put all use service on startpage
++ put all use service on startpage
 logfile into cleanup
 
 beta 0.3.8

@@ -63,6 +63,15 @@ class Startpage():
         #self.eta_lbl = Label(self.frame_startpage, text="ETA:", style="label.TLabel")
         self.info_lbl = Label(self.frame_startpage, text="", wraplength=startpage_frame_width-10, style="label.TLabel")
 
+        self.use_pixiv_chkbtn = Checkbutton(self.frame_startpage, text='Use Pixiv', var=self.Options_Class.ProO.PixO.use_var, style="chkbtn.TCheckbutton")
+        self.use_Danbooru_chkbtn = Checkbutton(self.frame_startpage, text='Use Danbooru', var=self.Options_Class.ProO.DanO.use_var, style="chkbtn.TCheckbutton")
+        self.use_Yandere_chkbtn = Checkbutton(self.frame_startpage, text='Use Yandere', var=self.Options_Class.ProO.YanO.use_var, style="chkbtn.TCheckbutton")
+        self.use_Konachan_chkbtn = Checkbutton(self.frame_startpage, text='Use Konachan', var=self.Options_Class.ProO.KonO.use_var, style="chkbtn.TCheckbutton")
+        self.use_Gelbooru_chkbtn = Checkbutton(self.frame_startpage, text='Use Gelbooru', var=self.Options_Class.ProO.GelO.use_var, style="chkbtn.TCheckbutton")
+        #self.use__chkbtn = Checkbutton(self.frame_startpage, text='Use ', var=self.Options_Class.ProO..use_var, style="chkbtn.TCheckbutton")
+
+        self.use_save_btn = Button(self.frame_startpage, text='Save', command=self.Options_Class.ProO.save_all, style ="button.TLabel")
+
         self.change_input_btn = Button(window, text="Change Input", command=change_input, style="button.TLabel")
         self.open_input_btn = Button(window, text="Open Input", command=open_input, style="button.TLabel")
         self.change_output_btn = Button(window, text="Change Output", command=change_output, style="button.TLabel")
@@ -131,6 +140,13 @@ class Startpage():
         #self.elapsed_time_lbl.grid(row= 5, column= 0)
         #self.eta_lbl.grid(row= 5, column= 0)
         self.info_lbl.grid(row=7, column=0, columnspan=3, sticky=W)
+
+        self.use_pixiv_chkbtn.grid(row=9, column=0, sticky=W)
+        self.use_Danbooru_chkbtn.grid(row=10, column=0, sticky=W)
+        self.use_Yandere_chkbtn.grid(row=11, column=0, sticky=W)
+        self.use_Konachan_chkbtn.grid(row=12, column=0, sticky=W)
+        self.use_Gelbooru_chkbtn.grid(row=13, column=0, sticky=W)
+        self.use_save_btn.grid(row=14, column=0, sticky=W)
 
         self.do_sourcery_btn.grid(row= 3, column= 0, sticky=W, pady = 1)
         self.stop_btn.grid(row= 4, column= 0, sticky=W, pady = 1)

@@ -90,3 +90,4 @@ Update 0.3.7
 
 General
 - Log is now visible in the options screen 
+- You can now toggle which services to use from the startpage
