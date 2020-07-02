@@ -341,12 +341,15 @@ class SourceryOptions():
         self.reference_entries_lbl = Label(parent, text="Reference entries", font=("Arial Bold", 10), style="label.TLabel")
         self.originals_lbl = Label(parent, text="Originals", font=("Arial Bold", 10), style="label.TLabel")
         self.downloaded_lbl = Label(parent, text="Downloaded", font=("Arial Bold", 10), style="label.TLabel")
+        self.log_length_lbl = Label(parent, text="Log lines", font=("Arial Bold", 10), style="label.TLabel")
         self.reference_entries_count_lbl = Label(parent, text="???", font=("Arial Bold", 10), style="label.TLabel")
         self.originals_count_lbl = Label(parent, text="???", font=("Arial Bold", 10), style="label.TLabel")
         self.downloaded_count_lbl = Label(parent, text="???", font=("Arial Bold", 10), style="label.TLabel")
+        self.log_length_count_lbl = Label(parent, text="???", font=("Arial Bold", 10), style="label.TLabel")
         self.reference_clean_btn = Button(parent, text='Clean', command=self.clean_reference, style="button.TLabel")
         self.originals_clean_btn = Button(parent, text='Clean', command=self.clean_originals, style="button.TLabel")
         self.downloaded_clean_btn = Button(parent, text='Clean', command=self.clean_downloaded, style="button.TLabel")
+        self.log_length_btn = Button(parent, text='Clean', command=self.clean_log, style="button.TLabel")
 
         self.sourcery_confirm_btn = Button(parent, text="Save", command=self.sourcery_save, style="button.TLabel")
 
@@ -422,24 +425,44 @@ class SourceryOptions():
             for elem in x:
                 z += len(listdir(gv.cwd + '/Sourcery/sourced_progress/' + elem))
             return z
+        
+        def count_log_lines():
+            i = 0
+            with open(gv.cwd + '/Sourcery/sourcery.log', 'r') as f:
+                for i, l in enumerate(f, 1):
+                    pass
+            return i
+
 
         self.reference_entries_count_lbl.configure(text=str(len(gv.Files.Ref.refs)))
         try:
             self.originals_count_lbl.configure(text=str(len(listdir(gv.cwd + '/Sourcery/sourced_original'))))
+        except:
+            self.originals_count_lbl.configure(text='Reload screen')
+
+        try:
             self.downloaded_count_lbl.configure(text=str(count_downloaded()))
         except:
-            pass
+            self.downloaded_count_lbl.configure(text='Reload screen')
+        
+        try:
+            self.log_length_count_lbl.configure(text=str(count_log_lines()))
+        except :
+            self.log_length_count_lbl.configure(text='Reload screen')
 
         self.cleanup_lbl.place(x = x3, y = y + c * 18)
         self.reference_entries_lbl.place(x = x3, y = y + c * 19)
         self.originals_lbl.place(x = x3, y = y + c * 20)
         self.downloaded_lbl.place(x = x3, y = y + c * 21)
+        self.log_length_lbl.place(x = x3, y = y + c * 22)
         self.reference_entries_count_lbl.place(x = x3+150, y = y + c * 19)
         self.originals_count_lbl.place(x = x3+150, y = y + c * 20)
         self.downloaded_count_lbl.place(x = x3+150, y = y + c * 21)
+        self.log_length_count_lbl.place(x = x3+150, y = y + c * 22)
         self.reference_clean_btn.place(x = x4, y = y + c * 19)
         self.originals_clean_btn.place(x = x4, y = y + c * 20)
         self.downloaded_clean_btn.place(x = x4, y = y + c * 21)
+        self.log_length_btn.place(x = x4, y = y + c * 22)
 
     def change_to_dark_theme(self):
         gv.Files.Theme.theme['General']['current'] = "Dark Theme"
@@ -598,6 +621,27 @@ class SourceryOptions():
                 self.downloaded_count_lbl.configure(text=str(count_downloaded()))
             except:
                 self.originals_count_lbl.configure(text='ERROR')
+
+    def clean_log(self):
+        def count_log_lines():
+                i = 0
+                with open(gv.cwd + '/Sourcery/sourcery.log', 'r') as f:
+                    for i, l in enumerate(f, 1):
+                        pass
+                return i
+
+        if mb.askyesno('Delete?', 'Delete all entries in the logfile?'):
+            f = open(gv.cwd + '/Sourcery/sourcery.log', 'w')
+            f.close()
+
+            gv.Logger.init_log(text=False, file=True)
+            gv.Logger.write_to_log('Last action: Cleaned all log entries', log.INFO)
+
+            try:
+                self.log_length_count_lbl.configure(text=str(count_log_lines()))
+            except :
+                self.log_length_count_lbl.configure(text='Reload screen')
+            
 
 class ProviderOptions():
     """Hosts all image provider options Classes"""

@@ -161,7 +161,7 @@ Notification rework
     If no service is picked
     gelbooru needs login occasionaly
 + put all use service on startpage
-logfile into cleanup
++ logfile into cleanup
 
 beta 0.3.8
 big selector text green/red/white if better/worse/same res/datatype?
