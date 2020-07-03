@@ -52,6 +52,18 @@ class ImageData():
         self.original_image_thumb = None
         self.original_photoImage_thumb = None
 
+        self.original_chkbtn = None
+        self.original_lbl = None
+        self.original_wxh_lbl = None
+        self.original_type_lbl = None
+        self.original_cropped_lbl = None
+
+        self.big_selector_btn = None
+        self.info_btn = None      
+        self.back_btn = None
+        self.next_btn = None
+        self.prev_btn = None
+
         self.index = index
         self.prev_imgdata = None
         self.next_imgdata = None
@@ -740,8 +752,9 @@ class ImageData():
             self.original_SubImgData.self_destruct()
         self.original_photoImage_thumb = None
 
-        self.original_chkbtn.configure(image=None)
-        self.original_chkbtn.image = None
+        if self.original_chkbtn != None:
+            self.original_chkbtn.configure(image=None)
+            self.original_chkbtn.image = None
 
         for service in self.service_list:
             for elem in service:
@@ -751,14 +764,25 @@ class ImageData():
         del self.original_image_thumb
         del self.original_photoImage_thumb
 
-        self.original_chkbtn.destroy()
-        self.original_lbl.destroy()
-        self.original_wxh_lbl.destroy()
-        self.original_type_lbl.destroy()
-        self.original_cropped_lbl.destroy()
+        if self.original_chkbtn != None:
+            self.original_chkbtn.destroy()
+        if self.original_lbl != None:
+            self.original_lbl.destroy()
+        if self.original_wxh_lbl != None:
+            self.original_wxh_lbl.destroy()
 
-        self.big_selector_btn.destroy()
-        self.info_btn.destroy()
-        self.back_btn.destroy()
-        self.next_btn.destroy()
-        self.prev_btn.destroy()
+        if self.original_type_lbl != None:
+            self.original_type_lbl.destroy()
+        if self.original_cropped_lbl != None:
+            self.original_cropped_lbl.destroy()
+
+        if self.big_selector_btn != None:
+            self.big_selector_btn.destroy()
+        if self.info_btn != None:
+            self.info_btn.destroy()
+        if self.back_btn != None:
+            self.back_btn.destroy()
+        if self.next_btn != None:
+            self.next_btn.destroy()
+        if self.prev_btn != None:
+            self.prev_btn.destroy()

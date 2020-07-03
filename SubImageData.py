@@ -34,6 +34,14 @@ class SubImageData():
 
         self.siblings_array = siblings
 
+        self.chkbtn = None
+        self.thumb_chkbtn = None
+        self.lbl = None
+        self.lbl2 = None
+        self.wxh_lbl = None
+        self.type_lbl = None
+        self.show_btn = None
+
         self.big_lock = Lock()
         self.is_displayed = False
         self.load_init = False
@@ -72,7 +80,6 @@ class SubImageData():
         self.wxh_lbl = Label(self.scrollpar, style='label.TLabel')
         self.type_lbl = Label(self.scrollpar, style='label.TLabel')
         self.show_btn = Button(self.scrollpar, command=self.show, text='Show', style='button.TLabel')
-
 
     def load(self, second_try=False):
         """
@@ -300,11 +307,20 @@ class SubImageData():
             self.thumb_chkbtn.image = None
         del self.photoImg_thumb
         del self.photoImg
-        self.chkbtn.destroy()
-        self.thumb_chkbtn.destroy()
-        self.lbl.destroy()
-        self.lbl2.destroy()
-        self.wxh_lbl.destroy()
-        self.type_lbl.destroy()
-        self.show_btn.destroy()
+
+        if self.chkbtn != None:
+            self.chkbtn.destroy()
+        if self.thumb_chkbtn != None:
+            self.thumb_chkbtn.destroy()
+        if self.lbl != None:
+            self.lbl.destroy()
+        if self.lbl2 != None:
+            self.lbl2.destroy()
+        if self.wxh_lbl != None:
+            self.wxh_lbl.destroy()
+        if self.type_lbl != None:
+            self.type_lbl.destroy()
+        if self.show_btn != None:
+            self.show_btn.destroy()
+
 

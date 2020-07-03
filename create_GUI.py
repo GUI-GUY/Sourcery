@@ -77,6 +77,7 @@ def load_from_ref_run(c):
                     pixiv_illustration_list.append((pixiv_fetch_illustration(ref['old_name'], int(elem['id'])), elem['new_name'], x))
                 visited_ids.append(elem['id'])
         
+        login_dict = {"gelbooru_api_key":gv.config.get('Gelbooru','api_key'), "gelbooru_user_id":gv.config.get('Gelbooru','user_id')}
         danb_illustration_list = list()
         visited_ids = list()
         for elem in danb_info_list:
@@ -87,7 +88,8 @@ def load_from_ref_run(c):
                         x = d
                         break
                 if x != None:
-                    danb_illustration_list.append((booru_fetch_illustration(int(elem['id']), 'Danbooru'), elem['new_name'], x))
+                    
+                    danb_illustration_list.append((booru_fetch_illustration(int(elem['id']), 'Danbooru', login_dict), elem['new_name'], x))
                 visited_ids.append(elem['id'])
         
         yandere_illustration_list = list()
@@ -100,7 +102,7 @@ def load_from_ref_run(c):
                         x = d
                         break
                 if x != None:
-                    yandere_illustration_list.append((booru_fetch_illustration(int(elem['id']), 'Yandere'), elem['new_name'], x))
+                    yandere_illustration_list.append((booru_fetch_illustration(int(elem['id']), 'Yandere', login_dict), elem['new_name'], x))
                 visited_ids.append(elem['id'])
         
         konachan_illustration_list = list()
@@ -113,7 +115,7 @@ def load_from_ref_run(c):
                         x = d
                         break
                 if x != None:
-                    konachan_illustration_list.append((booru_fetch_illustration(int(elem['id']), 'Konachan'), elem['new_name'], x))
+                    konachan_illustration_list.append((booru_fetch_illustration(int(elem['id']), 'Konachan', login_dict), elem['new_name'], x))
                 visited_ids.append(elem['id'])
         
         gelbooru_illustration_list = list()
@@ -126,7 +128,7 @@ def load_from_ref_run(c):
                         x = d
                         break
                 if x != None:
-                    gelbooru_illustration_list.append((booru_fetch_illustration(int(elem['id']), 'Gelbooru'), elem['new_name'], x))
+                    gelbooru_illustration_list.append((booru_fetch_illustration(int(elem['id']), 'Gelbooru', login_dict), elem['new_name'], x))
                 visited_ids.append(elem['id'])
         
         next_img = False

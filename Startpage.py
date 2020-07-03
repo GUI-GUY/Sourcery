@@ -210,12 +210,11 @@ class Startpage():
     def load_image_data(self):
         for data in gv.img_data_array:
             if not data.placed and gv.imgpp_sem.acquire(False):
-                load = data.load()
-                if not load:
+                if not data.load():
                     data.self_destruct()
                     gv.img_data_array.remove(data)
                     gv.Logger.write_to_log('Problem while loading images, skipped', log.INFO)
-                elif load:
+                else:
                     data.init_widgets()
                     data.process_results_imgs()
                     data.modify_results_widgets()
