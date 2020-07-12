@@ -642,7 +642,6 @@ class SourceryOptions():
             except :
                 self.log_length_count_lbl.configure(text='Reload screen')
             
-
 class ProviderOptions():
     """Hosts all image provider options Classes"""
     def __init__(self, parent):
@@ -652,6 +651,7 @@ class ProviderOptions():
         self.YanO = Provider('Yandere' , parent, self)
         self.KonO = Provider('Konachan' , parent, self)
         self.GelO = Provider('Gelbooru' , parent, self)
+        self.Providerlist = [self.PixO, self.DanO, self.YanO, self.KonO, self.GelO]
         self.Weight = WeightSystem(parent, self)
 
         self.original_lbl = Label(self.par, text='Original', font=('Arial Bold', 13), style="label.TLabel")

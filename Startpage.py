@@ -19,7 +19,7 @@ import global_variables as gv
 class Startpage():
     """Includes all startpage widgets and methods"""
     def __init__(self, window, options_class, load_from_ref, lock_save, save_locked):
-        self.Processing_Class = Processing(self)
+        self.Processing_Class = Processing(self, options_class)
         self.Options_Class = options_class
         self.Options_Class.options_back_btn.configure(command=self.display_startpage)
         self.window = window

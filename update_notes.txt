@@ -92,3 +92,5 @@ General
 - Log is now visible in the options screen 
 - Added toggle for which services to use from the startpage
 - Added option to clean the log
+- Notification improvements
+    - It is no longer possible to search for sources when no provider is chosen

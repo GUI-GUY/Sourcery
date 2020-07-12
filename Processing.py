@@ -6,8 +6,9 @@ import global_variables as gv
 
 class Processing():
     """Includes methods for the sourcing process"""
-    def __init__(self, parent):
+    def __init__(self, parent, options_class):
         self.parent = parent
+        self.Options_Class = options_class
         self.process = Process()
         self.comm_q = Queue() # Queue for 'Remaining searches'
         self.comm_img_q = Queue() # Queue for 'Currently Sourcing'
@@ -23,12 +24,27 @@ class Processing():
         """
         self.parent.do_sourcery_btn.configure(state='disabled')
         self.parent.load_from_ref_btn.configure(state='disabled')
-        gv.Logger.write_to_log('Starting second process for sourcing images', log.INFO)
-        self.parent.input_lock.acquire()
-        login_dict = {"saucenao_key":gv.config.get('SauceNAO','api_key'), "gelbooru_api_key":gv.config.get('Gelbooru','api_key'), "gelbooru_user_id":gv.config.get('Gelbooru','user_id')}
-        self.process = Process(target=do_sourcery, args=(gv.cwd, self.parent.input_images_array, login_dict, gv.config.get('SauceNAO','minsim'), gv.input_dir, self.comm_q, self.comm_img_q, self.comm_stop_q, self.comm_error_q, self.img_data_q, self.duplicate_c_pipe, self.terminate_c_pipe, ))
-        self.process.start()
-        self.parent.input_lock.release()
+        if self.magic_possible():
+            gv.Logger.write_to_log('Starting second process for sourcing images', log.INFO)
+            self.parent.input_lock.acquire()
+            login_dict = {"saucenao_key":gv.config.get('SauceNAO','api_key'), "gelbooru_api_key":gv.config.get('Gelbooru','api_key'), "gelbooru_user_id":gv.config.get('Gelbooru','user_id')}
+            self.process = Process(target=do_sourcery, args=(gv.cwd, self.parent.input_images_array, login_dict, gv.config.get('SauceNAO','minsim'), gv.input_dir, self.comm_q, self.comm_img_q, self.comm_stop_q, self.comm_error_q, self.img_data_q, self.duplicate_c_pipe, self.terminate_c_pipe, ))
+            self.process.start()
+            self.parent.input_lock.release()
+        else:
+            gv.Logger.write_to_log('Please select at least one provider.', log.INFO)
+            self.parent.do_sourcery_btn.configure(state='enabled')
+            self.parent.load_from_ref_btn.configure(state='enabled')
+
+    def magic_possible(self):
+        """
+        Returns True if images can be sourced
+        """
+        at_least_one_provider_checked = False
+        for pro in self.Options_Class.ProO.Providerlist:
+            if pro.use_var.get() == 1:
+                at_least_one_provider_checked = True
+        return at_least_one_provider_checked
 
     def duplicate_loop(self):
         """
