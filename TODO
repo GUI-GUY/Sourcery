@@ -155,14 +155,14 @@ Notification rework
     stopping (please wait)
     show imgname in big selector
     tell user how many images have been sourced successfully/unsuccessfully
-    show progress of sourced imaged/all images
+    show progress of sourced images/all images
     elapsed time / ETA
     + ATTEMPTING
     + If no service is picked
-    gelbooru needs login occasionaly
+    gelbooru needs login occasionally
 + put all use service on startpage
 + logfile into cleanup
-gelbooru needs login
+gelbooru needs login(maybe you need to open browser or fakeuseragent)
 
 beta 0.3.8
 big selector text green/red/white if better/worse/same res/datatype?
