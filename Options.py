@@ -650,7 +650,7 @@ class ProviderOptions():
         self.DanO = Provider('Danbooru' , parent, self)
         self.YanO = Provider('Yandere' , parent, self)
         self.KonO = Provider('Konachan' , parent, self)
-        self.GelO = Provider('Gelbooru' , parent, self)
+        self.GelO = ProviderGelbooru('Gelbooru' , parent, self)
         self.Providerlist = [self.PixO, self.DanO, self.YanO, self.KonO, self.GelO]
         self.Weight = WeightSystem(parent, self)
 
@@ -740,10 +740,10 @@ class ProviderOptions():
         self.tagfile_danbooru_chkbtn.place(x = x2, y = y + c * 4)
         self.tagfile_yandere_chkbtn.place(x = x2, y = y + c * 5)
         self.tagfile_konachan_chkbtn.place(x = x2, y = y + c * 6)
-        self.tagfile_gelbooru_chkbtn.place(x = x2, y = y + c * 6)
+        self.tagfile_gelbooru_chkbtn.place(x = x2, y = y + c * 7)
 
-        self.all_services_lbl.place(x = x2, y = y + c * 8)
-        self.single_source_in_tagfile_chkbtn.place(x = x2, y = y + c * 9)
+        self.all_services_lbl.place(x = x2, y = y + c * 9)
+        self.single_source_in_tagfile_chkbtn.place(x = x2, y = y + c * 10)
 
     def save_all(self):
         self.PixO.save()
@@ -799,22 +799,7 @@ class Provider():
         self.tagfile_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
         self.tagfile_yandere_chkbtn = Checkbutton(self.scrollpar_frame, text='Include yandere tags', var=self.tagfile_yandere_var, style="chkbtn.TCheckbutton")
         self.tagfile_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
-        self.tagfile_gelbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include gelbooru tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
-        
-        self.gelbooru_login1_lbl = Label(self.scrollpar_frame, text="Gelbooru occasionally wants to know your login data, which can be found at the bottom of this page:", style="label.TLabel")
-        self.gelbooru_link_lbl = Label(self.scrollpar_frame, text="https://gelbooru.com/index.php?page=account&s=options", style="label.TLabel")
-        self.gelbooru_link_lbl.configure(foreground='#2626ff', cursor='hand2', font=('Arial', 10))
-        self.gelbooru_link_lbl.bind("<Button-1>", self.hyperlink)
-        self.gelbooru_login2_lbl = Label(self.scrollpar_frame, text="There you can also change the option \"Display all site content\" or \"Safe Only Listing\" for content control", style="label.TLabel")
-        self.api_key_lbl = Label(self.scrollpar_frame, text="Api Key", style="label.TLabel")
-        self.api_key_entry = Entry(self.scrollpar_frame, width=30, style="button.TLabel")
-        self.user_id_lbl = Label(self.scrollpar_frame, text="User ID", style="label.TLabel")
-        self.user_id_entry = Entry(self.scrollpar_frame, width=30, style="button.TLabel")
-        self.api_key_entry.insert(0, gv.config['Gelbooru']['api_key'])
-        self.user_id_entry.insert(0, gv.config['Gelbooru']['user_id'])
-        self.gelbooru_login3_lbl = Label(self.scrollpar_frame, text="(Restart of Sourcery on change is recommended)", style="label.TLabel")
-        
-        #self.save_btn = Button(parent, text='Save', command=self.save, style ="button.TLabel")
+        self.tagfile_gelbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include gelbooru tags', var=self.tagfile_gelbooru_var, style="chkbtn.TCheckbutton")
 
     def display(self):
         """
@@ -847,20 +832,8 @@ class Provider():
 
         self.rename_chkbtn.grid(row= 19, column= 0, sticky=W, padx=2, pady=1, columnspan=2)
 
-        if self.name == "Gelbooru":
-            self.gelbooru_login1_lbl.grid(row= 22, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
-            self.gelbooru_link_lbl.grid(row= 23, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
-            self.gelbooru_login2_lbl.grid(row= 24, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
-            self.api_key_lbl.grid(row= 25, column= 0, sticky=W, padx=2, pady=1, columnspan=1)
-            self.api_key_entry.grid(row= 25, column= 1, sticky=W, padx=2, pady=1, columnspan=1)
-            self.user_id_lbl.grid(row= 26, column= 0, sticky=W, padx=2, pady=1, columnspan=1)
-            self.user_id_entry.grid(row= 26, column= 1, sticky=W, padx=2, pady=1, columnspan=1)
-            self.gelbooru_login3_lbl.grid(row= 27, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
-
         self.lbl.place(x = x2, y = y + c * 1)
         self.scrollpar.display(x = x2, y= y + c * 2)
-
-        #self.save_btn.place(x = int(gv.width/160*40), y = gv.height-220)    
 
     def forget(self):
         self.lbl.place_forget()
@@ -876,6 +849,57 @@ class Provider():
         self.tagfile_yandere_chkbtn.grid_forget()
         self.tagfile_konachan_chkbtn.grid_forget()
         self.tagfile_gelbooru_chkbtn.grid_forget()
+
+        self.rename_chkbtn.grid_forget()
+
+    def save(self):
+        gv.Logger.write_to_log('Saving ' + self.name + ' options...', log.INFO)
+        gv.config[self.name]['rename'] = str(self.rename_var.get())
+        self.tags = self.show_tags_txt.get('1.0', END)
+        gv.config[self.name]['tags'] = self.tags
+        gv.config[self.name]['gen_tagfile'] = str(self.gen_tagfile_var.get())
+        gv.config[self.name]['use'] = str(self.use_var.get())
+        exec("gv.config[self.name]['tagfile_" + self.name.lower() + "'] = str(self.tagfile_" + self.name.lower() + "_var.get())")
+        exec("gv.results_tags_" + self.name.lower() + " = self.tags.split()")
+        gv.write_config()
+        gv.Logger.write_to_log('Saved ' + self.name + ' options', log.INFO)
+
+    def hyperlink(self, event):
+        """
+        Opens a webbrowser with a URL on click of a widget that is bound to this method
+        """
+        open_new(event.widget.cget("text"))
+
+class ProviderGelbooru(Provider):
+    def __init__(self, name, parent, lord):
+        super().__init__(name, parent, lord)
+
+        self.gelbooru_login1_lbl = Label(self.scrollpar_frame, text="Gelbooru occasionally wants to know your login data, which can be found at the bottom of this page:", style="label.TLabel")
+        self.gelbooru_link_lbl = Label(self.scrollpar_frame, text="https://gelbooru.com/index.php?page=account&s=options", style="label.TLabel")
+        self.gelbooru_link_lbl.configure(foreground='#2626ff', cursor='hand2', font=('Arial', 10))
+        self.gelbooru_link_lbl.bind("<Button-1>", self.hyperlink)
+        self.gelbooru_login2_lbl = Label(self.scrollpar_frame, text="There you can also change the option \"Display all site content\" or \"Safe Only Listing\" for content control", style="label.TLabel")
+        self.api_key_lbl = Label(self.scrollpar_frame, text="Api Key", style="label.TLabel")
+        self.api_key_entry = Entry(self.scrollpar_frame, width=30, style="button.TLabel")
+        self.user_id_lbl = Label(self.scrollpar_frame, text="User ID", style="label.TLabel")
+        self.user_id_entry = Entry(self.scrollpar_frame, width=30, style="button.TLabel")
+        self.api_key_entry.insert(0, gv.config['Gelbooru']['api_key'])
+        self.user_id_entry.insert(0, gv.config['Gelbooru']['user_id'])
+        self.gelbooru_login3_lbl = Label(self.scrollpar_frame, text="(Restart of Sourcery on change is recommended)", style="label.TLabel")
+        
+    def display(self):
+        super().display()
+
+        self.gelbooru_login1_lbl.grid(row= 22, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
+        self.gelbooru_link_lbl.grid(row= 23, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
+        self.gelbooru_login2_lbl.grid(row= 24, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
+        self.api_key_lbl.grid(row= 25, column= 0, sticky=W, padx=2, pady=1, columnspan=1)
+        self.api_key_entry.grid(row= 25, column= 1, sticky=W, padx=2, pady=1, columnspan=1)
+        self.user_id_lbl.grid(row= 26, column= 0, sticky=W, padx=2, pady=1, columnspan=1)
+        self.user_id_entry.grid(row= 26, column= 1, sticky=W, padx=2, pady=1, columnspan=1)
+        self.gelbooru_login3_lbl.grid(row= 27, column= 0, sticky=W, padx=2, pady=1, columnspan=3)
+
+    def forget(self):
         self.gelbooru_login1_lbl.grid_forget()
         self.gelbooru_link_lbl.grid_forget()
         self.gelbooru_login2_lbl.grid_forget()
@@ -885,39 +909,10 @@ class Provider():
         self.user_id_entry.grid_forget()
         self.gelbooru_login3_lbl.grid_forget()
 
-        self.rename_chkbtn.grid_forget()
-
-        #self.save_btn.place_forget()
-
+        return super().forget()
+    
     def save(self):
-        gv.Logger.write_to_log('Saving ' + self.name + ' options...', log.INFO)
-        gv.config[self.name]['rename'] = str(self.rename_var.get())
-        self.tags = self.show_tags_txt.get('1.0', END)
-        gv.config[self.name]['tags'] = self.tags
-        gv.config[self.name]['gen_tagfile'] = str(self.gen_tagfile_var.get())
-        gv.config[self.name]['tagfile_pixiv'] = str(self.tagfile_pixiv_var.get())
-        gv.config[self.name]['tagfile_danbooru'] = str(self.tagfile_danbooru_var.get())
-        gv.config[self.name]['tagfile_yandere'] = str(self.tagfile_yandere_var.get())
-        gv.config[self.name]['tagfile_konachan'] = str(self.tagfile_konachan_var.get())
-        gv.config[self.name]['tagfile_gelbooru'] = str(self.tagfile_konachan_var.get())
-        gv.config[self.name]['use'] = str(self.use_var.get())
-        if self.name == 'Pixiv':
-            gv.results_tags_pixiv = self.tags.split()
-        elif self.name == 'Danbooru':
-            gv.results_tags_danbooru = self.tags.split()
-        elif self.name == 'Yandere':
-            gv.results_tags_yandere = self.tags.split()
-        elif self.name == 'Konachan':
-            gv.results_tags_konachan = self.tags.split()
-        elif self.name == 'Gelbooru':
-            gv.results_tags_gelbooru = self.tags.split()
-            gv.config['Gelbooru']['api_key'] = str(self.api_key_entry.get())
-            gv.config['Gelbooru']['user_id'] = str(self.user_id_entry.get())
-        gv.write_config()
-        gv.Logger.write_to_log('Saved ' + self.name + ' options', log.INFO)
+        gv.config['Gelbooru']['api_key'] = str(self.api_key_entry.get())
+        gv.config['Gelbooru']['user_id'] = str(self.user_id_entry.get())
 
-    def hyperlink(self, event):
-        """
-        Opens a webbrowser with a URL on click of a widget that is bound to this method
-        """
-        open_new(event.widget.cget("text"))
+        return super().save()

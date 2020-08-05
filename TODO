@@ -163,6 +163,12 @@ Notification rework
 + put all use service on startpage
 + logfile into cleanup
 gelbooru needs login(maybe you need to open browser or fakeuseragent)
++ something is covered up in weight system
+log file is being created
+theme file is being created
++ options-original-include gelbooru tags is covering something
++ konachan and gelbooru checkbuttons are the same
+split provider into baseclass and child for gelbooru
 
 beta 0.3.8
 big selector text green/red/white if better/worse/same res/datatype?
@@ -172,7 +178,7 @@ change font option (maybe not)
 preview/thumbnail scaling/options
 https://www.reddit.com/r/learnpython/comments/6dndqz/how_would_you_make_text_that_automatically_wraps/
 fix yandere & konachan scrollframe color bug
-move sourced/unsources input images into [folder]/put images where no source is found into output option
+move sourced/unsourced input images into [folder]/put images where no source is found into output option
 cleanup include log
 
 beta 0.3.9
