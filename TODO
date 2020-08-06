@@ -169,6 +169,9 @@ gelbooru needs login(maybe you need to open browser or fakeuseragent)
 + options-original-include gelbooru tags is covering something
 + konachan and gelbooru checkbuttons are the same
 + split provider into baseclass and child for gelbooru
++ gelbooru gives 403 on download
+
+LAST ERROR No. 0074
 
 beta 0.3.8
 big selector text green/red/white if better/worse/same res/datatype?
@@ -180,6 +183,10 @@ https://www.reddit.com/r/learnpython/comments/6dndqz/how_would_you_make_text_tha
 fix yandere & konachan scrollframe color bug
 move sourced/unsourced input images into [folder]/put images where no source is found into output option
 cleanup include log
+
+BUGS
+use save_button on startpage gets overlayed when info_lbl is bigger than one line because the frame is too small
+Gui just stops when no sources for a single image have been found
 
 beta 0.3.9
 increase CPU performance

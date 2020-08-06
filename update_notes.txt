@@ -94,3 +94,8 @@ General
 - Added option to clean the log
 - Notification improvements
     - It is no longer possible to search for sources when no provider is chosen
+
+Bugfixes
+- Some Labels were overlaying in Providers
+- Konachan and Gelbooru checkbuttons were linked to the same variable
+- Gelbooru no longer gives 403 on download

@@ -2,13 +2,14 @@ from os import getcwd, path # path manipulation
 from urllib.request import urlretrieve
 from requests import get
 #from webbrowser import open_new
-#from fake_useragent import UserAgent
+from fake_useragent import UserAgent
 import global_variables as gv
 
 # https://github.com/uncountablecat/danbooru-grabber
 # make sure the folder already exists!
 danbooru_folder = 'D:\All_Files\python\GitHub\Sourcery\Sourcery\dan'
 
+header = UserAgent()
 
 # request json, get urls of pictures and download them
 def booru_fetch_illustration(imgid, service, login_dict, comm_error_q=None):
@@ -18,14 +19,14 @@ def booru_fetch_illustration(imgid, service, login_dict, comm_error_q=None):
     """
     try:
         if service == 'Danbooru':
-            r = get('https://danbooru.donmai.us/posts/' + str(imgid) + '.json')
+            r = get('https://danbooru.donmai.us/posts/' + str(imgid) + '.json', headers = {"user_agent": header.random})
         elif service == 'Yandere':
-            r = get('https://yande.re/post.json?tags=id:' + str(imgid))
+            r = get('https://yande.re/post.json?tags=id:' + str(imgid), headers = {"user_agent": header.random})
         elif service == 'Konachan':
-            r = get('https://konachan.com/post.json?tags=id:' + str(imgid))
+            r = get('https://konachan.com/post.json?tags=id:' + str(imgid), headers = {"user_agent": header.random})
         elif service == 'Gelbooru':
             if login_dict["gelbooru_api_key"] != '' or login_dict["gelbooru_user_id"] != '':
-                r = get('https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&api_key=' + login_dict["gelbooru_api_key"] + '&user_id=' + login_dict["gelbooru_user_id"] + '&id=' + str(imgid))
+                r = get('https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&api_key=' + login_dict["gelbooru_api_key"] + '&user_id=' + login_dict["gelbooru_user_id"] + '&id=' + str(imgid), headers = {"user_agent": header.random})
             else:
                 comm_error_q.put('[Sourcery] Gelbooru requires login')
                 return False
@@ -71,10 +72,23 @@ def booru_download(img_name_original, imgid, illustration, service='', comm_erro
                     else:
                         new_name = img_name_original + '.' + illustration['file_ext']
                     new_name = rename(new_name, service.lower())
-                urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/' + service.lower() + '/' + new_name)
+                #urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/' + service.lower() + '/' + new_name)
+                
+                try:
+                    r = get(illustration['file_url'], headers = {"user_agent": header.random})
+                except Exception as e:
+                    #print("ERROR [0074] " + str(e))
+                    if comm_error_q != None:
+                        comm_error_q.put("[Sourcery] ERROR [0074] " + str(e))
+                    else:
+                        print("ERROR [0074] " + str(e))
+                
+                with open(getcwd() + '/Sourcery/sourced_progress/' + service.lower() + '/' + new_name, 'wb') as outfile:
+                    outfile.write(r.content)
+                
                 return new_name
             except Exception as e:
-                print("ERROR [0057] " + str(e))
+                #print("ERROR [0057] " + str(e))
                 if comm_error_q != None:
                     comm_error_q.put("[Sourcery] ERROR [0057] " + str(e))
                 else:

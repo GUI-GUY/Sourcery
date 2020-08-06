@@ -146,7 +146,7 @@ class Startpage():
         self.use_Yandere_chkbtn.grid(row=11, column=0, sticky=W)
         self.use_Konachan_chkbtn.grid(row=12, column=0, sticky=W)
         self.use_Gelbooru_chkbtn.grid(row=13, column=0, sticky=W)
-        self.use_save_btn.grid(row=14, column=0, sticky=W)
+        self.use_save_btn.grid(row=15, column=0, sticky=W)
 
         self.do_sourcery_btn.grid(row= 3, column= 0, sticky=W, pady = 1)
         self.stop_btn.grid(row= 4, column= 0, sticky=W, pady = 1)
