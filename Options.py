@@ -757,11 +757,8 @@ class ProviderOptions():
     def original_save(self):
         gv.Logger.write_to_log('Saving Original options...', log.INFO)
         gv.config['Original']['gen_tagfile'] = str(self.gen_tagfile_var.get())
-        gv.config['Original']['tagfile_pixiv'] = str(self.tagfile_pixiv_var.get())
-        gv.config['Original']['tagfile_danbooru'] = str(self.tagfile_danbooru_var.get())
-        gv.config['Original']['tagfile_yandere'] = str(self.tagfile_yandere_var.get())
-        gv.config['Original']['tagfile_konachan'] = str(self.tagfile_konachan_var.get())
-        gv.config['Original']['tagfile_gelbooru'] = str(self.tagfile_gelbooru_var.get())
+        for s in gv.services:
+            exec("gv.config['Original']['tagfile_" + s + "'] = str(self.tagfile_" + s + "_var.get())")
         gv.config['Original']['single_source_in_tagfile'] = str(self.single_source_in_tagfile_var.get())
         gv.write_config()
         gv.Logger.write_to_log('Saved Original options', log.INFO)
@@ -788,18 +785,11 @@ class Provider():
         self.tags = None
 
         self.gen_tagfile_var = IntVar(value=gv.config.getint(self.name, 'gen_tagfile'))
-        self.tagfile_pixiv_var = IntVar(value=gv.config.getint(self.name, 'tagfile_pixiv'))
-        self.tagfile_danbooru_var = IntVar(value=gv.config.getint(self.name, 'tagfile_danbooru'))
-        self.tagfile_yandere_var = IntVar(value=gv.config.getint(self.name, 'tagfile_yandere'))
-        self.tagfile_konachan_var = IntVar(value=gv.config.getint(self.name, 'tagfile_konachan'))
-        self.tagfile_gelbooru_var = IntVar(value=gv.config.getint(self.name, 'tagfile_gelbooru'))
-
         self.gen_tagfile_chkbtn = Checkbutton(self.scrollpar_frame, text='Generate tagfiles for ' + self.name.lower() + ' images', var=self.gen_tagfile_var, style="chkbtn.TCheckbutton")
-        self.tagfile_pixiv_chkbtn = Checkbutton(self.scrollpar_frame, text='Include pixiv tags', var=self.tagfile_pixiv_var, style="chkbtn.TCheckbutton")
-        self.tagfile_danbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include danbooru tags', var=self.tagfile_danbooru_var, style="chkbtn.TCheckbutton")
-        self.tagfile_yandere_chkbtn = Checkbutton(self.scrollpar_frame, text='Include yandere tags', var=self.tagfile_yandere_var, style="chkbtn.TCheckbutton")
-        self.tagfile_konachan_chkbtn = Checkbutton(self.scrollpar_frame, text='Include konachan tags', var=self.tagfile_konachan_var, style="chkbtn.TCheckbutton")
-        self.tagfile_gelbooru_chkbtn = Checkbutton(self.scrollpar_frame, text='Include gelbooru tags', var=self.tagfile_gelbooru_var, style="chkbtn.TCheckbutton")
+
+        for s in gv.services:
+            exec("self.tagfile_" + s + "_var = IntVar(value=gv.config.getint(self.name, 'tagfile_" + s + "'))")
+            exec("self.tagfile_" + s + "_chkbtn = Checkbutton(self.scrollpar_frame, text='Include " + s + " tags', var=self.tagfile_" + s + "_var, style=\"chkbtn.TCheckbutton\")")
 
     def display(self):
         """
@@ -859,7 +849,8 @@ class Provider():
         gv.config[self.name]['tags'] = self.tags
         gv.config[self.name]['gen_tagfile'] = str(self.gen_tagfile_var.get())
         gv.config[self.name]['use'] = str(self.use_var.get())
-        exec("gv.config[self.name]['tagfile_" + self.name.lower() + "'] = str(self.tagfile_" + self.name.lower() + "_var.get())")
+        for s in gv.services:
+            exec("gv.config[self.name]['tagfile_" + s + "'] = str(self.tagfile_" + s + "_var.get())")
         exec("gv.results_tags_" + self.name.lower() + " = self.tags.split()")
         gv.write_config()
         gv.Logger.write_to_log('Saved ' + self.name + ' options', log.INFO)

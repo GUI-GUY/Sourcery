@@ -164,11 +164,11 @@ Notification rework
 + logfile into cleanup
 gelbooru needs login(maybe you need to open browser or fakeuseragent)
 + something is covered up in weight system
-log file is being created
-theme file is being created
+? log file is being created
+? theme file is being created
 + options-original-include gelbooru tags is covering something
 + konachan and gelbooru checkbuttons are the same
-split provider into baseclass and child for gelbooru
++ split provider into baseclass and child for gelbooru
 
 beta 0.3.8
 big selector text green/red/white if better/worse/same res/datatype?

@@ -106,6 +106,7 @@ imgpp_sem = Semaphore(config.getint('Sourcery', 'imgpp'))
 img_data_sem = Semaphore(50)
 
 # global lists
+services = ["pixiv", "danbooru", "yandere", "konachan", "gelbooru"]
 delete_dirs_array = list() # For empty directories or dirs where no original is present
 img_data_array = list() # For all ImageData instances
 results_tags_danbooru = config['Danbooru']['tags'].split()
