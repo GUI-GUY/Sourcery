@@ -25,7 +25,7 @@ class Startpage():
         self.window = window
         self.input_images_array = list()
 
-        startpage_frame_height = int(gv.height/3)
+        startpage_frame_height = int(gv.height/2)
         startpage_frame_width = int(gv.width/5)
         gv.res_frame_height = results_frame_height = int(gv.height*7/9)
         gv.res_frame_width = results_frame_width = int(gv.width/3)

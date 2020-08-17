@@ -162,7 +162,7 @@ Notification rework
     gelbooru needs login occasionally
 + put all use service on startpage
 + logfile into cleanup
-gelbooru needs login(maybe you need to open browser or fakeuseragent)
++ gelbooru needs login(maybe you need to open browser or fakeuseragent)
 + something is covered up in weight system
 ? log file is being created
 ? theme file is being created
@@ -170,6 +170,8 @@ gelbooru needs login(maybe you need to open browser or fakeuseragent)
 + konachan and gelbooru checkbuttons are the same
 + split provider into baseclass and child for gelbooru
 + gelbooru gives 403 on download
++ use save_button on startpage gets overlayed when info_lbl is bigger than one line because the frame is too small
++ fakeuseragent not available
 
 LAST ERROR No. 0074
 
@@ -185,7 +187,6 @@ move sourced/unsourced input images into [folder]/put images where no source is 
 cleanup include log
 
 BUGS
-use save_button on startpage gets overlayed when info_lbl is bigger than one line because the frame is too small
 Gui just stops when no sources for a single image have been found
 
 beta 0.3.9

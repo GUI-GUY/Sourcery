@@ -9,7 +9,12 @@ import global_variables as gv
 # make sure the folder already exists!
 danbooru_folder = 'D:\All_Files\python\GitHub\Sourcery\Sourcery\dan'
 
-header = UserAgent()
+try:
+    header = UserAgent().random
+except:
+    header = "Mozilla/5.0 (Windows; U; Windows NT 6.1; zh-HK) AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0.2 Safari/533.18.5"
+
+print(header.random)
 
 # request json, get urls of pictures and download them
 def booru_fetch_illustration(imgid, service, login_dict, comm_error_q=None):
@@ -19,14 +24,14 @@ def booru_fetch_illustration(imgid, service, login_dict, comm_error_q=None):
     """
     try:
         if service == 'Danbooru':
-            r = get('https://danbooru.donmai.us/posts/' + str(imgid) + '.json', headers = {"user_agent": header.random})
+            r = get('https://danbooru.donmai.us/posts/' + str(imgid) + '.json', headers = {"user_agent": header})
         elif service == 'Yandere':
-            r = get('https://yande.re/post.json?tags=id:' + str(imgid), headers = {"user_agent": header.random})
+            r = get('https://yande.re/post.json?tags=id:' + str(imgid), headers = {"user_agent": header})
         elif service == 'Konachan':
-            r = get('https://konachan.com/post.json?tags=id:' + str(imgid), headers = {"user_agent": header.random})
+            r = get('https://konachan.com/post.json?tags=id:' + str(imgid), headers = {"user_agent": header})
         elif service == 'Gelbooru':
             if login_dict["gelbooru_api_key"] != '' or login_dict["gelbooru_user_id"] != '':
-                r = get('https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&api_key=' + login_dict["gelbooru_api_key"] + '&user_id=' + login_dict["gelbooru_user_id"] + '&id=' + str(imgid), headers = {"user_agent": header.random})
+                r = get('https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&api_key=' + login_dict["gelbooru_api_key"] + '&user_id=' + login_dict["gelbooru_user_id"] + '&id=' + str(imgid), headers = {"user_agent": header})
             else:
                 comm_error_q.put('[Sourcery] Gelbooru requires login')
                 return False
@@ -75,7 +80,7 @@ def booru_download(img_name_original, imgid, illustration, service='', comm_erro
                 #urlretrieve(illustration['file_url'], getcwd() + '/Sourcery/sourced_progress/' + service.lower() + '/' + new_name)
                 
                 try:
-                    r = get(illustration['file_url'], headers = {"user_agent": header.random})
+                    r = get(illustration['file_url'], headers = {"user_agent": header})
                 except Exception as e:
                     #print("ERROR [0074] " + str(e))
                     if comm_error_q != None:
