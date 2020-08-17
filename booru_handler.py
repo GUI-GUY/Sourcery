@@ -14,8 +14,6 @@ try:
 except:
     header = "Mozilla/5.0 (Windows; U; Windows NT 6.1; zh-HK) AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0.2 Safari/533.18.5"
 
-print(header.random)
-
 # request json, get urls of pictures and download them
 def booru_fetch_illustration(imgid, service, login_dict, comm_error_q=None):
     """

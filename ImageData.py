@@ -100,6 +100,7 @@ class ImageData():
         self.original_wxh_lbl = Label(gv.res_frame, style='label.TLabel')
         self.original_type_lbl = Label(gv.res_frame, style='label.TLabel')
         self.original_cropped_lbl = Label(gv.res_frame, style='label.TLabel')
+        self.original_cropped_big_lbl = Label(gv.res_frame, style='label.TLabel')
 
         self.big_selector_btn = Button(gv.res_frame, command=self.display_big_selector, text='Big Selector', style='button.TLabel')
         self.info_btn = Button(gv.res_frame, command=self.display_info, text='More Info', style='button.TLabel')        
@@ -177,6 +178,7 @@ class ImageData():
         self.original_wxh_lbl.configure(text = str(self.size))
         self.original_type_lbl.configure(text = self.sub_dill.filetype)
         self.original_cropped_lbl.configure(text = self.sub_dill.name_no_suffix)
+        self.original_cropped_big_lbl.configure(text = self.sub_dill.name_no_suffix)
 
         for service in self.service_list:
             for elem in service:

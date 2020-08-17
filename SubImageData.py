@@ -36,8 +36,8 @@ class SubImageData():
 
         self.chkbtn = None
         self.thumb_chkbtn = None
-        self.lbl = None
-        self.lbl2 = None
+        self.service_name_lbl = None
+        self.service_name_lbl2 = None
         self.wxh_lbl = None
         self.type_lbl = None
         self.show_btn = None
@@ -75,8 +75,8 @@ class SubImageData():
                 overrelief='ridge',#no default
                 offrelief='flat',#default raised
                 indicatoron='false')
-        self.lbl = Label(self.scrollpar, text=self.service, style='label.TLabel')
-        self.lbl2 = Label(self.par, text=self.service, style='label.TLabel')
+        self.service_name_lbl = Label(self.scrollpar, text=self.service, style='label.TLabel')
+        self.service_name_lbl2 = Label(self.par, text=self.service + '   ' + self.name, style='label.TLabel')
         self.wxh_lbl = Label(self.scrollpar, style='label.TLabel')
         self.type_lbl = Label(self.scrollpar, style='label.TLabel')
         self.show_btn = Button(self.scrollpar, command=self.show, text='Show', style='button.TLabel')
@@ -148,7 +148,7 @@ class SubImageData():
         Display the preview and corresponding info on the big selector scrollframe
         """
         self.thumb_chkbtn.grid(row=t, column=0, rowspan=4, sticky=W+E+N+S)
-        self.lbl.grid(row=t+0, column=1, sticky=W+E)
+        self.service_name_lbl.grid(row=t+0, column=1, sticky=W+E)
         self.wxh_lbl.grid(row=t+1, column=1, sticky=W+E)
         self.type_lbl.grid(row=t+2, column=1, sticky=W+E)
         self.show_btn.grid(row=t+3, column=1, sticky=W)
@@ -159,8 +159,8 @@ class SubImageData():
         Display the corresponding info above the big selector scrollframe
         """
         self.chkbtn.place(x = int(gv.width/160*1.5), y = int(gv.height/90*4))
-        self.lbl2.place(x = int(gv.width/160*3.2), y = int(gv.height/90*2))
-        self.lbl.place(x = int(gv.width*0.86), y = int(gv.height/90*6.3))
+        self.service_name_lbl2.place(x = int(gv.width/160*3.2), y = int(gv.height/90*2))
+        self.service_name_lbl.place(x = int(gv.width*0.86), y = int(gv.height/90*6.3))
         self.wxh_lbl.place(x = int(gv.width*0.90), y = int(gv.height/90*6.3))
         self.type_lbl.place(x = int(gv.width*0.94), y = int(gv.height/90*6.3))
 
@@ -172,28 +172,28 @@ class SubImageData():
         for sib in self.siblings_array:
             sib.forget()
         self.is_displayed = True
-        self.lbl2.place(x = int(gv.width*0.44), y = int(gv.height/90*2))
+        self.service_name_lbl2.place(x = int(gv.width*0.44), y = int(gv.height/90*2))
         self.chkbtn.place(x = int(gv.width*0.43), y = int(gv.height/90*4))
         theme = gv.Files.Theme.theme['General']['current']
         try:
             self.thumb_chkbtn.configure(background=gv.Files.Theme.theme[theme]['selected_background'])
         except:
             pass
-        self.lbl.configure(background=gv.Files.Theme.theme[theme]['selected_background'])
+        self.service_name_lbl.configure(background=gv.Files.Theme.theme[theme]['selected_background'])
         self.wxh_lbl.configure(background=gv.Files.Theme.theme[theme]['selected_background'])
         self.type_lbl.configure(background=gv.Files.Theme.theme[theme]['selected_background'])
         self.show_btn.configure(state=ACTIVE)
         gv.window.bind("<d>", lambda e: self.var.set(not self.var.get()))
 
     def forget(self):
-        self.lbl2.place_forget()
+        self.service_name_lbl2.place_forget()
         self.chkbtn.place_forget()
         theme = gv.Files.Theme.theme['General']['current']
         try:
             self.thumb_chkbtn.configure(background=gv.Files.Theme.theme[theme]['background'])
         except:
             pass
-        self.lbl.configure(background=gv.Files.Theme.theme[theme]['background'])
+        self.service_name_lbl.configure(background=gv.Files.Theme.theme[theme]['background'])
         self.wxh_lbl.configure(background=gv.Files.Theme.theme[theme]['background'])
         self.type_lbl.configure(background=gv.Files.Theme.theme[theme]['background'])
         self.show_btn.configure(state=NORMAL)
@@ -312,10 +312,10 @@ class SubImageData():
             self.chkbtn.destroy()
         if self.thumb_chkbtn != None:
             self.thumb_chkbtn.destroy()
-        if self.lbl != None:
-            self.lbl.destroy()
-        if self.lbl2 != None:
-            self.lbl2.destroy()
+        if self.service_name_lbl != None:
+            self.service_name_lbl.destroy()
+        if self.service_name_lbl2 != None:
+            self.service_name_lbl2.destroy()
         if self.wxh_lbl != None:
             self.wxh_lbl.destroy()
         if self.type_lbl != None:
