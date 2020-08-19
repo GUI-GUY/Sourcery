@@ -95,6 +95,7 @@ General
 - Notification improvements
     - It is no longer possible to search for sources when no provider is chosen
     - Image name is now visible in big selector
+    - Startpage now shows rough estimated time until processing is finished
 
 Bugfixes
 - Some Labels were overlaying in Providers

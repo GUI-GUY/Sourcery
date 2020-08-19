@@ -60,7 +60,8 @@ class Startpage():
         self.remaining_searches_lbl = Label(self.frame_startpage, text="Remaining SauceNao\nsearches today:", style="label.TLabel")
         self.saucenao_requests_count_lbl = Label(self.frame_startpage, text="???/200", style="label.TLabel")
         #self.elapsed_time_lbl = Label(self.frame_startpage, text="Elapsed time:", style="label.TLabel")
-        #self.eta_lbl = Label(self.frame_startpage, text="ETA:", style="label.TLabel")
+        self.eta_lbl = Label(self.frame_startpage, text="Estimated time until finished:", style="label.TLabel")
+        self.eta_time_lbl = Label(self.frame_startpage, text="00:00", style="label.TLabel")
         self.info_lbl = Label(self.frame_startpage, text="", wraplength=startpage_frame_width-10, style="label.TLabel")
 
         self.use_pixiv_chkbtn = Checkbutton(self.frame_startpage, text='Use Pixiv', var=self.Options_Class.ProO.PixO.use_var, style="chkbtn.TCheckbutton")
@@ -109,6 +110,7 @@ class Startpage():
             offrelief='flat',#default raised
             indicatoron='false')# sunken, raised, groove, ridge, flat, style="chkbtn.TCheckbutton")
 
+        self.session_sourced_count = -1
         self.index = 0
         self.input_lock = Lock()
 
@@ -131,26 +133,29 @@ class Startpage():
         self.open_output_btn.place(x = x, y = y + c * 2)
         self.options_btn.place(x = x, y = y + c * 3)
         
-        self.images_in_input_lbl.grid(row=0, column=0, sticky=W)
-        self.images_in_input_count_lbl.grid(row=0, column=1, sticky=W, padx = 10)
-        self.currently_sourcing_lbl.grid(row=1, column=0, sticky=W)
-        self.currently_sourcing_img_lbl.grid(row=1, column=1, sticky=W, padx = 10)
-        self.remaining_searches_lbl.grid(row=2, column=0, sticky=W)
-        self.saucenao_requests_count_lbl.grid(row=2, column=1, sticky=W, padx = 10)
-        #self.elapsed_time_lbl.grid(row= 5, column= 0)
-        #self.eta_lbl.grid(row= 5, column= 0)
-        self.info_lbl.grid(row=7, column=0, columnspan=3, sticky=W)
+        t1= 0
+        self.images_in_input_lbl.grid(row=t1+0, column=0, sticky=W)
+        self.images_in_input_count_lbl.grid(row=t1+0, column=1, sticky=W, padx = 10)
+        self.currently_sourcing_lbl.grid(row=t1+1, column=0, sticky=W)
+        self.currently_sourcing_img_lbl.grid(row=t1+1, column=1, sticky=W, padx = 10)
+        self.remaining_searches_lbl.grid(row=t1+2, column=0, sticky=W)
+        self.saucenao_requests_count_lbl.grid(row=t1+2, column=1, sticky=W, padx = 10)
+        #self.elapsed_time_lbl.grid(row=t1+5, column= 0)
+        self.eta_lbl.grid(row=t1+3, column=0, sticky=W)
+        self.eta_time_lbl.grid(row=t1+3, column= 1, sticky=W, padx = 10)
+        self.do_sourcery_btn.grid(row=t1+4, column= 0, sticky=W, pady = 1)
+        self.stop_btn.grid(row=t1+5, column= 0, sticky=W, pady = 1)
+        self.load_from_ref_btn.grid(row=t1+6, column= 0, sticky=W, pady = 1, columnspan=2)
+        self.info_lbl.grid(row=t1+7, column=0, columnspan=3, sticky=W)
 
-        self.use_pixiv_chkbtn.grid(row=9, column=0, sticky=W)
-        self.use_Danbooru_chkbtn.grid(row=10, column=0, sticky=W)
-        self.use_Yandere_chkbtn.grid(row=11, column=0, sticky=W)
-        self.use_Konachan_chkbtn.grid(row=12, column=0, sticky=W)
-        self.use_Gelbooru_chkbtn.grid(row=13, column=0, sticky=W)
-        self.use_save_btn.grid(row=15, column=0, sticky=W)
+        t2 = 9
+        self.use_pixiv_chkbtn.grid(row=t2+0, column=0, sticky=W)
+        self.use_Danbooru_chkbtn.grid(row=t2+1, column=0, sticky=W)
+        self.use_Yandere_chkbtn.grid(row=t2+2, column=0, sticky=W)
+        self.use_Konachan_chkbtn.grid(row=t2+3, column=0, sticky=W)
+        self.use_Gelbooru_chkbtn.grid(row=t2+4, column=0, sticky=W)
+        self.use_save_btn.grid(row=t2+5, column=0, sticky=W)
 
-        self.do_sourcery_btn.grid(row= 3, column= 0, sticky=W, pady = 1)
-        self.stop_btn.grid(row= 4, column= 0, sticky=W, pady = 1)
-        self.load_from_ref_btn.grid(row= 5, column= 0, sticky=W, pady = 1, columnspan=2)
 
         self.results_lbl.place(x = int(gv.width/16*4), y = int(gv.height/90*6))
         self.save_locked_btn.place(x = int(gv.width*0.48), y = int(gv.height*0.9))
@@ -188,9 +193,12 @@ class Startpage():
             if elem in self.input_images_array:
                 self.input_images_array.remove(elem)
         self.input_lock.release()
+
+        input_len = len(self.input_images_array)
         def update(text):
             self.images_in_input_count_lbl.configure(text=text)
-        self.window.after(0, update, str(len(self.input_images_array)))
+        self.window.after(0, update, str(input_len))
+        return input_len
 
     def make_image_data(self):
         if not self.Processing_Class.img_data_q.empty():
@@ -246,8 +254,10 @@ class Startpage():
                 try:
                     answer2 = self.Processing_Class.comm_img_q.get(False)
                     if answer2 != currently_processing:
+                        self.session_sourced_count += 1
                         currently_processing = answer2
                 except:
+                    print("Debug exception: Startpage.py line 255")
                     pass
             self.currently_sourcing_img_lbl.configure(text=answer2)
         if answer2 == 'Stopped' or answer2 == 'Finished':
@@ -256,6 +266,7 @@ class Startpage():
                 self.do_sourcery_btn.configure(state='enabled')
                 self.load_from_ref_btn.configure(state='enabled')
                 self.stop_btn.configure(state='enabled')
+                self.session_sourced_count = 0
                 answer2 = ''
         try:
             e = self.Processing_Class.comm_error_q.get(False)
@@ -282,6 +293,19 @@ class Startpage():
             gv.Logger.log_text.yview_moveto(1)
         self.window.after(100, self.jump_log)
 
+    def eta(self, inlength, total_seconds):
+        "Determines the estimated time until the input images would be finished when processing would be started."
+        if not self.Processing_Class.process.is_alive():
+            s = min(200*6, inlength * 6)
+            total_seconds = s
+            self.eta_time_lbl.configure(text=time.strftime('%M:%S', time.gmtime(s)))
+        else:
+            s = total_seconds - self.session_sourced_count * 6
+            for x in range(6):
+                self.eta_time_lbl.configure(text=time.strftime('%M:%S', time.gmtime(s-x)))
+                time.sleep(1)
+        return total_seconds
+
     def refresh_startpage(self):
         """
         Updates these startpage widgets:
@@ -295,10 +319,11 @@ class Startpage():
         self.window.after(1, self.get_processing_status)
         self.window.after(1, self.make_image_data)
         self.window.after(1, self.load_image_data)
-
+        
         def update():
+            ts = 0
             while True:
-                self.count_input()
+                ts = self.eta(self.count_input(), ts)
                 time.sleep(0.3)
 
         Thread(target=update, daemon=True, name="startpage_update").start()
