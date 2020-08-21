@@ -60,7 +60,7 @@ class Startpage():
         self.remaining_searches_lbl = Label(self.frame_startpage, text="Remaining SauceNao\nsearches today:", style="label.TLabel")
         self.saucenao_requests_count_lbl = Label(self.frame_startpage, text="???/200", style="label.TLabel")
         #self.elapsed_time_lbl = Label(self.frame_startpage, text="Elapsed time:", style="label.TLabel")
-        self.eta_lbl = Label(self.frame_startpage, text="Estimated time until finished:", style="label.TLabel")
+        self.eta_lbl = Label(self.frame_startpage, text="Estimated time to finish:", style="label.TLabel")
         self.eta_time_lbl = Label(self.frame_startpage, text="00:00", style="label.TLabel")
         self.info_lbl = Label(self.frame_startpage, text="", wraplength=startpage_frame_width-10, style="label.TLabel")
 
