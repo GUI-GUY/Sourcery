@@ -59,7 +59,10 @@ class Startpage():
         self.currently_sourcing_img_lbl = Label(self.frame_startpage, text="None", wraplength=startpage_frame_width/2.4, style="label.TLabel")
         self.remaining_searches_lbl = Label(self.frame_startpage, text="Remaining SauceNao\nsearches today:", style="label.TLabel")
         self.saucenao_requests_count_lbl = Label(self.frame_startpage, text="???/200", style="label.TLabel")
-        #self.elapsed_time_lbl = Label(self.frame_startpage, text="Elapsed time:", style="label.TLabel")
+        self.elapsed_time_lbl = Label(self.frame_startpage, text="Elapsed time:", style="label.TLabel")
+        self.elapsed_time_time_lbl = Label(self.frame_startpage, text="00:00", style="label.TLabel")
+        self.imgs_processed_lbl = Label(self.frame_startpage, text="Images processed:", style="label.TLabel")
+        self.imgs_processed_n_lbl = Label(self.frame_startpage, text="0", style="label.TLabel")
         self.eta_lbl = Label(self.frame_startpage, text="Estimated time to finish:", style="label.TLabel")
         self.eta_time_lbl = Label(self.frame_startpage, text="00:00", style="label.TLabel")
         self.info_lbl = Label(self.frame_startpage, text="", wraplength=startpage_frame_width-10, style="label.TLabel")
@@ -143,12 +146,14 @@ class Startpage():
         #self.elapsed_time_lbl.grid(row=t1+5, column= 0)
         self.eta_lbl.grid(row=t1+3, column=0, sticky=W)
         self.eta_time_lbl.grid(row=t1+3, column= 1, sticky=W, padx = 10)
-        self.do_sourcery_btn.grid(row=t1+4, column= 0, sticky=W, pady = 1)
-        self.stop_btn.grid(row=t1+5, column= 0, sticky=W, pady = 1)
-        self.load_from_ref_btn.grid(row=t1+6, column= 0, sticky=W, pady = 1, columnspan=2)
-        self.info_lbl.grid(row=t1+7, column=0, columnspan=3, sticky=W)
+        self.imgs_processed_lbl.grid(row=t1+4, column= 0, sticky=W)
+        self.imgs_processed_n_lbl.grid(row=t1+4, column= 1, sticky=W, padx = 10)
+        self.do_sourcery_btn.grid(row=t1+6, column= 0, sticky=W, pady = 1)
+        self.stop_btn.grid(row=t1+7, column= 0, sticky=W, pady = 1)
+        self.load_from_ref_btn.grid(row=t1+8, column= 0, sticky=W, pady = 1, columnspan=2)
+        self.info_lbl.grid(row=t1+9, column=0, columnspan=3, sticky=W)
 
-        t2 = 9
+        t2 = 11
         self.use_pixiv_chkbtn.grid(row=t2+0, column=0, sticky=W)
         self.use_Danbooru_chkbtn.grid(row=t2+1, column=0, sticky=W)
         self.use_Yandere_chkbtn.grid(row=t2+2, column=0, sticky=W)
@@ -266,7 +271,7 @@ class Startpage():
                 self.do_sourcery_btn.configure(state='enabled')
                 self.load_from_ref_btn.configure(state='enabled')
                 self.stop_btn.configure(state='enabled')
-                self.session_sourced_count = 0
+                self.session_sourced_count = -1
                 answer2 = ''
         try:
             e = self.Processing_Class.comm_error_q.get(False)
@@ -293,16 +298,18 @@ class Startpage():
             gv.Logger.log_text.yview_moveto(1)
         self.window.after(100, self.jump_log)
 
-    def eta(self, inlength, total_seconds):
-        "Determines the estimated time until the input images would be finished when processing would be started."
+    def timer(self, inlength, total_seconds):
+        "Determines the estimated time until the input images would be finished when processing would be / has started."
         if not self.Processing_Class.process.is_alive():
             s = min(200*6, inlength * 6)
             total_seconds = s
             self.eta_time_lbl.configure(text=time.strftime('%M:%S', time.gmtime(s)))
+            self.
         else:
             s = total_seconds - self.session_sourced_count * 6
             for x in range(6):
                 self.eta_time_lbl.configure(text=time.strftime('%M:%S', time.gmtime(s-x)))
+                self.imgs_processed_n_lbl.configure(text=str(self.session_sourced_count))
                 time.sleep(1)
         return total_seconds
 
@@ -323,7 +330,9 @@ class Startpage():
         def update():
             ts = 0
             while True:
-                ts = self.eta(self.count_input(), ts)
+                ci = self.count_input()
+                ts = self.timer(ci, ts)
+                
                 time.sleep(0.3)
 
         Thread(target=update, daemon=True, name="startpage_update").start()
