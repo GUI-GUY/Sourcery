@@ -98,6 +98,7 @@ General
     - Startpage now shows rough estimated time until processing is finished
     - Startpage shows how many images have already been decensored in the last batch
     - Startpage shows elapsed time
+    - Successful/Unsuccessful sourcing tries get tracked and shown at the end of a batch
 
 Bugfixes
 - Some Labels were overlaying in Providers

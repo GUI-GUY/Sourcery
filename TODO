@@ -154,7 +154,7 @@ Notification rework
     on download tell user
     stopping (please wait)
     + show imgname in big selector
-    tell user at the end how many images have been sourced successfully/unsuccessfully
+    + tell user at the end how many images have been sourced successfully/unsuccessfully
     + show progress of sourced images/all images
     + elapsed time
     + ETA
