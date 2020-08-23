@@ -235,7 +235,7 @@ class Startpage():
                     data.modify_results_widgets()
                     x = data.display_results(gv.last_occupied_result+1)
                     if x == -1:# This means direct replace has triggered
-                        gv.Logger.write_to_log('Saving image:' + data.sub_dill.name + '...' , log.INFO)
+                        gv.Logger.write_to_log('Saving image:' + data.sub_dill.name , log.INFO)
                         if data.save():
                             gv.Logger.write_to_log('Successfully saved image', log.INFO)
                             data.self_destruct()

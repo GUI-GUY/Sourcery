@@ -43,7 +43,7 @@ def save():
         if data.locked:
             # if not data.delete_both():
             #     continue
-            gv.Logger.write_to_log('Attempting to save image:' + data.sub_dill.name + '...' , log.INFO)
+            gv.Logger.write_to_log('Attempting to save image:' + data.sub_dill.name, log.INFO)
             if not data.save():
                 print('error while saving')
                 gv.Logger.write_to_log('error while saving', log.INFO)

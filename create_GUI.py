@@ -350,7 +350,7 @@ if __name__ == '__main__':
 
     gv.Logger.log_text = Text(window, height=int(gv.height*7/9/16), width=int(gv.width/3/7))
     gv.Logger.init_log()
-    log.info('Initialising variables...')
+    log.info('Initialising variables')
 
     Options_Class = Options(window, enforce_style, leftovers)
     Startpage_Class = gv.Startpage_Class = Startpage(window, Options_Class, load_from_ref, lock_save, save_locked)

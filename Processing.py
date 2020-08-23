@@ -87,7 +87,7 @@ class Processing():
         Stop further search for images and halt the magic process.
         """
         if self.process.is_alive():
-            gv.Logger.write_to_log('Stopping sourcing process...', log.INFO)
+            gv.Logger.write_to_log('Stopping sourcing process', log.INFO)
             self.comm_stop_q.put("Stopped")
             self.parent.stop_btn.configure(state='disabled')
         #currently_sourcing_img_lbl.configure(text="Stopped")

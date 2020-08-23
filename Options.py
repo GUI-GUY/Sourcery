@@ -250,7 +250,7 @@ class SauceNaoOptions():
         self.saucenao_key_number_lbl.place(x = x2, y = y + c * 1)
 
     def saucenao_save(self):
-        gv.Logger.write_to_log('Saving SauceNAO options...', log.INFO)
+        gv.Logger.write_to_log('Saving SauceNAO options', log.INFO)
         gv.config['SauceNAO']['minsim'] = self.saucenao_minsim_entry.get()
         gv.config['SauceNAO']['returns'] = self.saucenao_returns_entry.get()
         gv.config['SauceNAO']['depth'] = self.saucenao_depth_entry.get()
@@ -480,7 +480,7 @@ class SourceryOptions():
         self.en_s()
 
     def save_custom_theme(self):
-        gv.Logger.write_to_log('Attempting to save Custom Theme...', log.INFO)
+        gv.Logger.write_to_log('Attempting to save Custom Theme', log.INFO)
         gv.Files.Theme.theme['Custom Theme']['background'] = str(self.custom_background_color_lbl.cget('background'))
         gv.Files.Theme.theme['Custom Theme']['foreground'] = str(self.custom_foreground_color_lbl.cget('background'))
         gv.Files.Theme.theme['Custom Theme']['selected_background'] = str(self.custom_selected_background_color_lbl.cget('background'))
@@ -559,7 +559,7 @@ class SourceryOptions():
         self.output_dir_1_lbl.configure(text=gv.output_dir)
 
     def sourcery_save(self):
-        gv.Logger.write_to_log('Saving Sourcery options...', log.INFO)
+        gv.Logger.write_to_log('Saving Sourcery options', log.INFO)
         diff = 0
         try:
             diff = int(self.images_per_page_entry.get()) - gv.config.getint('Sourcery', 'imgpp')
@@ -755,7 +755,7 @@ class ProviderOptions():
         self.original_save()
 
     def original_save(self):
-        gv.Logger.write_to_log('Saving Original options...', log.INFO)
+        gv.Logger.write_to_log('Saving Original options', log.INFO)
         gv.config['Original']['gen_tagfile'] = str(self.gen_tagfile_var.get())
         for s in gv.services:
             exec("gv.config['Original']['tagfile_" + s + "'] = str(self.tagfile_" + s + "_var.get())")
@@ -843,7 +843,7 @@ class Provider():
         self.rename_chkbtn.grid_forget()
 
     def save(self):
-        gv.Logger.write_to_log('Saving ' + self.name + ' options...', log.INFO)
+        gv.Logger.write_to_log('Saving ' + self.name + ' options', log.INFO)
         gv.config[self.name]['rename'] = str(self.rename_var.get())
         self.tags = self.show_tags_txt.get('1.0', END)
         gv.config[self.name]['tags'] = self.tags

@@ -146,7 +146,7 @@ def process_img_data_new(img_name_original, img_path, input_path, res, minsim, l
 
     for source in dict_list:
         if source['illust_id'] != 0:
-            comm_error_q.put('[Sourcery] Fetching ' + source['service_name'] + ' illustration...')
+            comm_error_q.put('[Sourcery] Fetching ' + source['service_name'] + ' illustration')
             pixiv_illustration_list.extend(pixiv_fetcher(img_name_original, source, pixiv_visited, comm_error_q))
             danbooru_illustration_list.extend(booru_fetcher(img_name_original, source, 'Danbooru', danbooru_visited, login_dict, comm_error_q))
             yandere_illustration_list.extend(booru_fetcher(img_name_original, source, 'Yandere', yandere_visited, login_dict, comm_error_q))

@@ -299,7 +299,7 @@ class WeightSystem():
 
 
     def weight_save(self):
-        gv.Logger.write_to_log('Saving Weight options...', log.INFO)
+        gv.Logger.write_to_log('Saving Weight options', log.INFO)
         gv.config['Weight']['png'] = self.png_weight_entry.get()
         gv.config['Weight']['jpg'] = self.jpg_weight_entry.get()
         gv.config['Weight']['jfif'] = self.jfif_weight_entry.get()
