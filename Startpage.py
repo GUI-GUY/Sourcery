@@ -235,7 +235,7 @@ class Startpage():
                     data.modify_results_widgets()
                     x = data.display_results(gv.last_occupied_result+1)
                     if x == -1:# This means direct replace has triggered
-                        gv.Logger.write_to_log('Saving image:' + data.sub_dill.name , log.INFO)
+                        gv.Logger.write_to_log('Saving image:' + data.sub_dill.name, log.INFO)
                         if data.save():
                             gv.Logger.write_to_log('Successfully saved image', log.INFO)
                             data.self_destruct()
@@ -307,9 +307,7 @@ class Startpage():
             self.eta_time_lbl.configure(text=time.strftime('%M:%S', time.gmtime(s)))
         else:
             self.elapsed_time_time_lbl.configure(text=time.strftime('%M:%S', time.gmtime(time.time()-start_time)))
-
-
-        
+            self.imgs_processed_n_lbl.configure(text=self.session_sourced_count)
 
     def refresh_startpage(self):
         """

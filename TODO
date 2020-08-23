@@ -151,7 +151,7 @@ beta 0.3.7
 + log is always visible
 Notification rework
     save: feedback message
-    on download tell user
+    ??? on download tell user
     stopping (please wait)
     + show imgname in big selector
     + tell user at the end how many images have been sourced successfully/unsuccessfully
