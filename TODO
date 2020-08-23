@@ -156,7 +156,7 @@ Notification rework
     + show imgname in big selector
     tell user at the end how many images have been sourced successfully/unsuccessfully
     + show progress of sourced images/all images
-    elapsed time
+    + elapsed time
     + ETA
     + ATTEMPTING
     + If no service is picked

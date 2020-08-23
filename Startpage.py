@@ -3,6 +3,7 @@ from shutil import rmtree
 from multiprocessing import Lock
 from threading import Thread, enumerate as enu
 import time
+import math
 from tkinter import Tk, IntVar, Canvas, Scrollbar, Text, END, W, simpledialog
 from tkinter import Checkbutton as cb
 from tkinter.ttk import Label, Button, Style, Entry, Frame, Checkbutton
@@ -143,11 +144,12 @@ class Startpage():
         self.currently_sourcing_img_lbl.grid(row=t1+1, column=1, sticky=W, padx = 10)
         self.remaining_searches_lbl.grid(row=t1+2, column=0, sticky=W)
         self.saucenao_requests_count_lbl.grid(row=t1+2, column=1, sticky=W, padx = 10)
-        #self.elapsed_time_lbl.grid(row=t1+5, column= 0)
         self.eta_lbl.grid(row=t1+3, column=0, sticky=W)
         self.eta_time_lbl.grid(row=t1+3, column= 1, sticky=W, padx = 10)
-        self.imgs_processed_lbl.grid(row=t1+4, column= 0, sticky=W)
-        self.imgs_processed_n_lbl.grid(row=t1+4, column= 1, sticky=W, padx = 10)
+        self.elapsed_time_lbl.grid(row=t1+4, column= 0, sticky=W)
+        self.elapsed_time_time_lbl.grid(row=t1+4, column= 1, sticky=W, padx = 10)
+        self.imgs_processed_lbl.grid(row=t1+5, column= 0, sticky=W)
+        self.imgs_processed_n_lbl.grid(row=t1+5, column= 1, sticky=W, padx = 10)
         self.do_sourcery_btn.grid(row=t1+6, column= 0, sticky=W, pady = 1)
         self.stop_btn.grid(row=t1+7, column= 0, sticky=W, pady = 1)
         self.load_from_ref_btn.grid(row=t1+8, column= 0, sticky=W, pady = 1, columnspan=2)
@@ -298,20 +300,16 @@ class Startpage():
             gv.Logger.log_text.yview_moveto(1)
         self.window.after(100, self.jump_log)
 
-    def timer(self, inlength, total_seconds):
-        "Determines the estimated time until the input images would be finished when processing would be / has started."
+    def update_timer(self, inlength, start_time):
+        "Updates the estimated time until the input images would be finished when processing would be / has started and the elapsed time."
         if not self.Processing_Class.process.is_alive():
             s = min(200*6, inlength * 6)
-            total_seconds = s
             self.eta_time_lbl.configure(text=time.strftime('%M:%S', time.gmtime(s)))
-            self.
         else:
-            s = total_seconds - self.session_sourced_count * 6
-            for x in range(6):
-                self.eta_time_lbl.configure(text=time.strftime('%M:%S', time.gmtime(s-x)))
-                self.imgs_processed_n_lbl.configure(text=str(self.session_sourced_count))
-                time.sleep(1)
-        return total_seconds
+            self.elapsed_time_time_lbl.configure(text=time.strftime('%M:%S', time.gmtime(time.time()-start_time)))
+
+
+        
 
     def refresh_startpage(self):
         """
@@ -328,11 +326,10 @@ class Startpage():
         self.window.after(1, self.load_image_data)
         
         def update():
-            ts = 0
+            start_time = time.time()
             while True:
                 ci = self.count_input()
-                ts = self.timer(ci, ts)
-                
+                self.update_timer(ci, start_time)
                 time.sleep(0.3)
 
         Thread(target=update, daemon=True, name="startpage_update").start()

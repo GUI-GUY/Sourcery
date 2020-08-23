@@ -97,6 +97,7 @@ General
     - Image name is now visible in big selector
     - Startpage now shows rough estimated time until processing is finished
     - Startpage shows how many images have already been decensored in the last batch
+    - Startpage shows elapsed time
 
 Bugfixes
 - Some Labels were overlaying in Providers
