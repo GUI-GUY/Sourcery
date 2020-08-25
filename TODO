@@ -150,9 +150,8 @@ BUGS:
 beta 0.3.7
 + log is always visible
 Notification rework
-    save: feedback message
     ??? on download tell user
-    stopping (please wait)
+    * stopping (please wait)
     + show imgname in big selector
     + tell user at the end how many images have been sourced successfully/unsuccessfully
     + show progress of sourced images/all images
@@ -185,7 +184,7 @@ preview/thumbnail scaling/options
 https://www.reddit.com/r/learnpython/comments/6dndqz/how_would_you_make_text_that_automatically_wraps/
 fix yandere & konachan scrollframe color bug
 move sourced/unsourced input images into [folder]/put images where no source is found into output option
-cleanup include log
+save: feedback message
 
 BUGS
 Gui just stops when no sources for a single image have been found
